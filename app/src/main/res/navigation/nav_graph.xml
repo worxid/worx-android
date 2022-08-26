@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/nav_graph"
+    app:startDestination="@+id/splash_fragment">
+    <fragment
+        android:id="@+id/splash_fragment"
+        android:name="id.worx.device.client.view.SplashFragment"
+        android:label="Splash">
+    </fragment>
+    <fragment
+        android:id="@+id/welcome_fragment"
+        android:name="id.worx.device.client.view.WelcomeFragment"
+        android:label="Welcome">
+    </fragment>
+    <fragment
+        android:id="@+id/create_team_fragment"
+        android:name="id.worx.device.client.view.CreateTeamFragment"
+        android:label="CreateTeamFragment" />
+</navigation>
