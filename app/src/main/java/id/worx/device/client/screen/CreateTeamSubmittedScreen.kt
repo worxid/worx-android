@@ -8,6 +8,7 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.res.painterResource
@@ -34,7 +35,8 @@ fun CreateTeamSubmittedScreen(onEvent: (CreateTeamSubmittedEvent) -> Unit) {
     ) {
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
             Image(
-                modifier = Modifier.padding(horizontal = 120.dp, vertical = 45.dp),
+                modifier = Modifier.padding(vertical = 45.dp)
+                    .scale(0.75f),
                 painter = painterResource(R.drawable.worx_logo),
                 contentDescription = "Worx Logo",
                 colorFilter = ColorFilter.tint(color = Color.Black)

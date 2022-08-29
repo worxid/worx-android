@@ -1,3 +1,16 @@
 <resources>
     <string name="app_name">Worx</string>
+    <string name="full_name">Full Name</string>
+    <string name="ready_to_join">Ready to join</string>
+    <string name="admin_will_approve">Admin will approve your device</string>
+    <string name="name">Name</string>
+    <string name="email">Email</string>
+    <string name="password">Password</string>
+    <string name="work_phone">Work Phone</string>
+    <string name="organization_code">Organization Code</string>
+    <string name="send_request">Send Request</string>
+    <string name="back_to_join_request">Back To Join Request</string>
+    <string name="waiting_for_verification">Waiting for verification</string>
+    <string name="verification_rejected">Your verification was rejected</string>
+    <string name="make_new_request">Make A New Request</string>
 </resources>

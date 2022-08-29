@@ -1,5 +1,6 @@
 package id.worx.device.client.screen
 
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -14,6 +15,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
@@ -30,33 +32,27 @@ import id.worx.device.client.theme.PrimaryMain
 import id.worx.device.client.theme.Typography
 import id.worx.device.client.theme.WorxTheme
 
-sealed class CreateTeamEvent {
-    data class CreateTeam(
+sealed class JoinTeamEvent {
+    data class JoinTeam(
         val fullName: String,
-        val email: String,
-        val password: String,
-        val workPhone: String,
-        val organizationName: String
-    ) : CreateTeamEvent()
+        val organizationCode: String
+    ) : JoinTeamEvent()
 
-    object NavigateBack : CreateTeamEvent()
+    object NavigateBack : JoinTeamEvent()
 }
 
 @Composable
-fun CreateTeamScreen(
-    onNavigationEvent: (CreateTeamEvent) -> Unit
+fun JoinTeamScreen(
+    onEvent: (JoinTeamEvent) -> Unit
 ) {
     var namePr by remember { mutableStateOf(0) }
-    var emailPr by remember { mutableStateOf(0) }
-    var passwordPr by remember { mutableStateOf(0) }
-    var phonePr by remember { mutableStateOf(0) }
     var orgPr by remember { mutableStateOf(0) }
 
     Scaffold(
         topBar = {
             WorxTopAppBar({
-                onNavigationEvent(CreateTeamEvent.NavigateBack)
-            }, progress = namePr + emailPr + passwordPr + phonePr + orgPr, "Create New Team")
+                onEvent(JoinTeamEvent.NavigateBack)
+            }, progress = namePr + orgPr, "Join An Existing Team")
         }
     ) { padding ->
         Column(
@@ -66,68 +62,36 @@ fun CreateTeamScreen(
                 .verticalScroll(rememberScrollState())
         ) {
             var name by remember { mutableStateOf("") }
-            var email by remember { mutableStateOf("") }
-            var password by remember { mutableStateOf("") }
-            var phone by remember { mutableStateOf("") }
             var organization by remember { mutableStateOf("") }
 
+            Text(
+                text = stringResource(R.string.ready_to_join),
+                style = Typography.h6,
+            modifier = Modifier.padding(start = 16.dp, top=40.dp))
+            Text(
+                text = stringResource(R.string.admin_will_approve),
+                style = Typography.body1,
+                modifier = Modifier.padding(start = 16.dp, top=8.dp, end = 16.dp, bottom = 40.dp))
             WorxTextField(
-                label = "Full Name",
+                label = stringResource(R.string.name),
                 KeyboardOptions(keyboardType = KeyboardType.Text),
                 onValueChange = {
                     namePr = if (it == "" || it.isEmpty()) {
                         0
                     } else {
-                        20
+                        50
                     }
                     name = it
                 }
             )
             WorxTextField(
-                label = "Email",
-                KeyboardOptions(keyboardType = KeyboardType.Email),
-                onValueChange = {
-                    emailPr = if (it == "" || it.isEmpty()) {
-                        0
-                    } else {
-                        20
-                    }
-                    email = it
-                }
-            )
-            WorxTextField(
-                label = "Password",
-                KeyboardOptions(keyboardType = KeyboardType.Password),
-                onValueChange = {
-                    passwordPr = if (it == "" || it.isEmpty()) {
-                        0
-                    } else {
-                        20
-                    }
-                    password = it
-                },
-                isPassword = true
-            )
-            WorxTextField(
-                label = "Work Phone",
-                KeyboardOptions(keyboardType = KeyboardType.Phone),
-                onValueChange = {
-                    phonePr = if (it == "" || it.isEmpty()) {
-                        0
-                    } else {
-                        20
-                    }
-                    phone = it
-                }
-            )
-            WorxTextField(
-                label = "Organization Name",
+                label = stringResource(R.string.organization_code),
                 KeyboardOptions(keyboardType = KeyboardType.Phone),
                 onValueChange = {
                     orgPr = if (it == "" || it.isEmpty()) {
                         0
                     } else {
-                        20
+                        50
                     }
                     organization = it
                 }
@@ -135,27 +99,25 @@ fun CreateTeamScreen(
             Spacer(modifier = Modifier.weight(1f))
             RedFullWidthButton(
                 onClickCallback = {
-                    onNavigationEvent(
-                        CreateTeamEvent.CreateTeam(
+                    onEvent(
+                        JoinTeamEvent.JoinTeam(
                             name,
-                            email,
-                            password,
-                            phone,
                             organization
                         )
                     )
                 },
-                label = "Create New Team",
+                label = stringResource(R.string.send_request),
                 modifier = Modifier.padding(vertical = 20.dp)
             )
         }
     }
 }
 
-@Preview(name = "CreateTeam Screen", showSystemUi = true)
+
+@Preview(name = "JoinTeam Screen", showSystemUi = true)
 @Composable
-fun CreateTeamScreenPreview() {
+fun JoinTeamScreenPreview() {
     WorxTheme {
-        CreateTeamScreen({})
+        JoinTeamScreen({})
     }
 }

@@ -17,4 +17,20 @@
         android:id="@+id/create_team_fragment"
         android:name="id.worx.device.client.view.CreateTeamFragment"
         android:label="CreateTeamFragment" />
+    <fragment
+        android:id="@+id/create_team_submitted_fragment"
+        android:name="id.worx.device.client.view.CreateTeamSubmittedFragment"
+        android:label="CreateTeamSubmittedFragment" />
+    <fragment
+        android:id="@+id/join_team_fragment"
+        android:name="id.worx.device.client.view.JoinTeamFragment"
+        android:label="JoinTeamFragment" />
+    <fragment
+        android:id="@+id/waiting_verification_fragment"
+        android:name="id.worx.device.client.view.WaitingVerificationFragment"
+        android:label="WaitingVerificationFragment" />
+    <fragment
+        android:id="@+id/verification_rejected_fragment"
+        android:name="id.worx.device.client.view.VerificationRejectedFragment"
+        android:label="VerificationRejectedFragment" />
 </navigation>

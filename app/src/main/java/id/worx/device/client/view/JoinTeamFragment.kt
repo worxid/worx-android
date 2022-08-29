@@ -12,11 +12,13 @@ import id.worx.device.client.Screen
 import id.worx.device.client.navigate
 import id.worx.device.client.screen.CreateTeamEvent
 import id.worx.device.client.screen.CreateTeamScreen
+import id.worx.device.client.screen.JoinTeamEvent
+import id.worx.device.client.screen.JoinTeamScreen
 import id.worx.device.client.theme.WorxTheme
 import id.worx.device.client.viewmodel.WelcomeViewModel
 
 @AndroidEntryPoint
-class CreateTeamFragment : Fragment() {
+class JoinTeamFragment : Fragment() {
 
     private val viewModel by viewModels<WelcomeViewModel>()
 
@@ -27,20 +29,20 @@ class CreateTeamFragment : Fragment() {
     ): View? {
         viewModel.navigateTo.observe(viewLifecycleOwner) { navigateToEvent ->
             navigateToEvent.getContentIfNotHandled()?.let { navigateTo ->
-                navigate(navigateTo, Screen.CreateTeam)
+                navigate(navigateTo, Screen.JoinTeam)
             }
         }
 
         return ComposeView(requireContext()).apply {
             setContent {
                 WorxTheme {
-                    CreateTeamScreen(
-                        onNavigationEvent = { event ->
+                    JoinTeamScreen(
+                        onEvent = { event ->
                             when (event) {
-                                is CreateTeamEvent.CreateTeam -> {
-                                    viewModel.submitNewTeam()
+                                is JoinTeamEvent.JoinTeam -> {
+                                    viewModel.joinTeam()
                                 }
-                                CreateTeamEvent.NavigateBack -> {
+                                JoinTeamEvent.NavigateBack -> {
                                     activity?.onBackPressedDispatcher?.onBackPressed()
                                 }
                             }
