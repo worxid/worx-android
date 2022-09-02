@@ -8,6 +8,10 @@ enum class WelcomeScreen {
     Splash, Welcome, CreateTeam, CreateTeamSubmitted,
     JoinTeam, WaitingVerification, VerificationRejected }
 
+enum class MainScreen {
+    Home, Detail
+}
+
 fun Fragment.navigate(to: WelcomeScreen, from: WelcomeScreen) {
     if (to == from) {
         throw InvalidParameterException("Can't navigate to $to")
@@ -31,6 +35,21 @@ fun Fragment.navigate(to: WelcomeScreen, from: WelcomeScreen) {
         }
         WelcomeScreen.VerificationRejected -> {
             findNavController().navigate(R.id.verification_rejected_fragment)
+        }
+        else -> {}
+    }
+}
+
+fun Fragment.navigate(to: MainScreen, from: MainScreen) {
+    if (to == from) {
+        throw InvalidParameterException("Can't navigate to $to")
+    }
+    when (to) {
+        MainScreen.Home -> {
+            findNavController().navigate(R.id.home_fragment)
+        }
+        MainScreen.Detail -> {
+            findNavController().navigate(R.id.detail_form_fragment)
         }
         else -> {}
     }

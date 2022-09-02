@@ -1,5 +1,6 @@
 package id.worx.device.client.screen
 
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
@@ -8,6 +9,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -19,6 +21,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
@@ -26,8 +29,10 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import id.worx.device.client.R
+import id.worx.device.client.model.Form
 import id.worx.device.client.theme.PrimaryMain
 import id.worx.device.client.theme.Typography
+import id.worx.device.client.viewmodel.HomeViewModel
 
 sealed class BottomNavItem(var title: Int, var icon: Int, var screen_route: String) {
 
@@ -37,22 +42,33 @@ sealed class BottomNavItem(var title: Int, var icon: Int, var screen_route: Stri
 }
 
 @Composable
-fun NavigationGraph(navController: NavHostController) {
+fun NavigationGraph(
+    navController: NavHostController,
+    formList: List<Form>,
+    draftList: List<Form>,
+    submissionList: List<Form>,
+    viewModel: HomeViewModel
+) {
     NavHost(navController, startDestination = BottomNavItem.Form.screen_route) {
         composable(BottomNavItem.Form.screen_route) {
-            FormScreen(" Form Screen")
+            FormScreen(formList, viewModel)
         }
         composable(BottomNavItem.Draft.screen_route) {
-            FormScreen("Draft Screen")
+            FormScreen(draftList, viewModel)
         }
         composable(BottomNavItem.Submission.screen_route) {
-            FormScreen("Submission Screen")
+            FormScreen(submissionList, viewModel)
         }
     }
 }
 
 @Composable
-fun HomeScreen() {
+fun HomeScreen(
+    formList: List<Form>,
+    draftList: List<Form>,
+    submissionList: List<Form>,
+    viewModel: HomeViewModel
+) {
     val navController = rememberNavController()
     Scaffold(
         topBar = { MainTopAppBar() },
@@ -60,7 +76,24 @@ fun HomeScreen() {
             BottomNavigationView(navController = navController)
         }
     ) { padding ->
-        NavigationGraph(navController = navController)
+        NavigationGraph(
+            navController = navController,
+            formList = formList,
+            draftList = draftList,
+            submissionList = submissionList,
+            viewModel = viewModel
+        )
+        AnimatedVisibility(
+            visible = viewModel.uiState.collectAsState().value.isLoading
+        ) {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(padding)
+            ) {
+                CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
+            }
+        }
     }
 }
 
@@ -162,6 +195,7 @@ fun MainTopAppBar() {
 
 @Preview(showSystemUi = true)
 @Composable
-private fun BottomNavPreview() {
-    HomeScreen()
+private fun BottomNavPreview(viewModel: HomeViewModel = hiltViewModel()) {
+    val list = arrayListOf<Form>()
+    HomeScreen(list, list, list, viewModel)
 }

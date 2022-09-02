@@ -25,4 +25,5 @@
     <string name="form">Form</string>
     <string name="draft">Draft</string>
     <string name="submission">Submission</string>
+    <string name="add_file">Add File</string>
 </resources>

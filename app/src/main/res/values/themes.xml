@@ -15,4 +15,10 @@
     <style name="Theme.Worx.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
 
     <style name="Theme.Worx.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
+
+    <style name="CalenderViewCustom" parent="ThemeOverlay.MaterialComponents.MaterialCalendar">
+        <item name="colorAccent">#DA3630</item>
+        <item name="colorOnPrimary">#000000</item>
+        <item name="colorSurface">#FFFFFF</item>
+    </style>
 </resources>
