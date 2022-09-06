@@ -15,8 +15,14 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import id.worx.device.client.model.Component
+import id.worx.device.client.screen.components.WorxAttachFile
+import id.worx.device.client.screen.components.WorxAttachImage
+import id.worx.device.client.screen.components.WorxDateInput
+import id.worx.device.client.screen.components.WorxTextField
 import id.worx.device.client.theme.Typography
+import id.worx.device.client.viewmodel.DetailFormViewModel
 
 /*****************
  *  1 = TextField
@@ -25,10 +31,13 @@ import id.worx.device.client.theme.Typography
  *  4 = Dropdown
  ******************/
 @Composable
-fun ValidFormBuilder(componentList: List<Component>) {
-   val data = componentList.map { component ->
-       remember { mutableStateOf("") }
-   }.toMutableList()
+fun ValidFormBuilder(
+    componentList: List<Component>,
+    viewModel: DetailFormViewModel
+) {
+    val data = componentList.map { component ->
+        remember { mutableStateOf("") }
+    }.toMutableList()
 
     LazyColumn(
         modifier = Modifier
@@ -46,7 +55,8 @@ fun ValidFormBuilder(componentList: List<Component>) {
                         onValueChange = {
                             data[index].value = it
                         },
-                    isDeleteTrail = true)
+                        isDeleteTrail = true
+                    )
                 }
                 "2" -> {
                     WorxCheckBox(
@@ -61,7 +71,10 @@ fun ValidFormBuilder(componentList: List<Component>) {
                     )
                 }
                 "4" -> {
-                    WorxDropdown(title = "Dropdown", optionTitles = listOf("Answer 1", "Answer 2", "Answer 3"))
+                    WorxDropdown(
+                        title = "Dropdown",
+                        optionTitles = listOf("Answer 1", "Answer 2", "Answer 3")
+                    )
                 }
                 "5" -> {
                     WorxDateInput(title = "Date")
@@ -72,8 +85,14 @@ fun ValidFormBuilder(componentList: List<Component>) {
                 "7" -> {
                     WorxAttachFile(title = "File")
                 }
+                "8" -> {
+                    WorxAttachImage(title = "Image", { viewModel.goToCameraPhoto() })
+                }
                 else -> {
-                    Text(text = "Unknown component", style = Typography.body1.copy(color = Color.Black))
+                    Text(
+                        text = "Unknown component",
+                        style = Typography.body1.copy(color = Color.Black)
+                    )
                 }
             }
         })
@@ -82,15 +101,18 @@ fun ValidFormBuilder(componentList: List<Component>) {
 
 @Preview(showSystemUi = true)
 @Composable
-fun PreviewFormComponent(){
-    val list = listOf<Component>(
-    Component("1",""),
-    Component("2",""),
-    Component("3",""),
-    Component("4",""),
-    Component("5",""),
-    Component("6",""),
-    Component("7",""))
+fun PreviewFormComponent() {
+    val viewModel: DetailFormViewModel = hiltViewModel()
+    val list = listOf(
+//    Component("1",""),
+//    Component("2",""),
+//    Component("3",""),
+        Component("4", ""),
+        Component("5", ""),
+        Component("6", ""),
+        Component("7", ""),
+        Component("8", "")
+    )
 
-    ValidFormBuilder(componentList = list)
+    ValidFormBuilder(list, viewModel)
 }

@@ -12,12 +12,14 @@ import id.worx.device.client.MainScreen
 import id.worx.device.client.navigate
 import id.worx.device.client.screen.HomeScreen
 import id.worx.device.client.theme.WorxTheme
+import id.worx.device.client.viewmodel.DetailFormViewModel
 import id.worx.device.client.viewmodel.HomeViewModel
 
 @AndroidEntryPoint
 class HomeFragment: Fragment() {
 
     private val viewModel by activityViewModels<HomeViewModel>()
+    private val detailViewModel by activityViewModels<DetailFormViewModel>()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -37,7 +39,8 @@ class HomeFragment: Fragment() {
                         formList = viewModel.list,
                         draftList = viewModel.list2,
                         submissionList = viewModel.list,
-                    viewModel = viewModel)
+                    viewModel = viewModel,
+                    detailVM = detailViewModel)
                 }
             }
         }

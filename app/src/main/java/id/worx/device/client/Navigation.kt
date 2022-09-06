@@ -1,6 +1,7 @@
 package id.worx.device.client
 
 import androidx.fragment.app.Fragment
+import androidx.navigation.NavOptions
 import androidx.navigation.fragment.findNavController
 import java.security.InvalidParameterException
 
@@ -9,7 +10,7 @@ enum class WelcomeScreen {
     JoinTeam, WaitingVerification, VerificationRejected }
 
 enum class MainScreen {
-    Home, Detail
+    Home, Detail, CameraPhoto, PhotoPreview
 }
 
 fun Fragment.navigate(to: WelcomeScreen, from: WelcomeScreen) {
@@ -50,6 +51,16 @@ fun Fragment.navigate(to: MainScreen, from: MainScreen) {
         }
         MainScreen.Detail -> {
             findNavController().navigate(R.id.detail_form_fragment)
+        }
+        MainScreen.CameraPhoto -> {
+            val navBuilder = NavOptions.Builder()
+            val navOptions = navBuilder.setPopUpTo(R.id.camera_photo_fragment, true).build()
+            findNavController().navigate(R.id.camera_photo_fragment, null, navOptions)
+        }
+        MainScreen.PhotoPreview -> {
+            val navBuilder = NavOptions.Builder()
+            val navOptions = navBuilder.setPopUpTo(R.id.photo_preview_fragment, true).build()
+            findNavController().navigate(R.id.photo_preview_fragment, null, navOptions)
         }
         else -> {}
     }

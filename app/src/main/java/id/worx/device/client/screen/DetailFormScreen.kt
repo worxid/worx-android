@@ -4,37 +4,43 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
-import id.worx.device.client.model.Form
 import id.worx.device.client.theme.Typography
 import id.worx.device.client.theme.WorxTheme
-import id.worx.device.client.viewmodel.HomeViewModel
+import id.worx.device.client.viewmodel.DetailFormViewModel
 
 @Composable
 fun DetailFormScreen(
-    viewModel: HomeViewModel,
+    viewModel: DetailFormViewModel,
     onBackNavigation: () -> Unit
 ) {
-    val listForm: Form? by viewModel.selectedForm.observeAsState(null)
+    val uistate = viewModel.uiState
 
     Scaffold(
         topBar = {
             WorxTopAppBar(
                 onBack = onBackNavigation,
                 progress = 0,
-                title = listForm?.title ?: "Loading.."
+                title = if (uistate.detailForm != null) {
+                    uistate.detailForm.title
+                } else {
+                    "Loading.."
+                }
             )
         }
     ) { padding ->
-        if (listForm == null) {
-            Text(modifier= Modifier.padding(padding), text = "Loading..", style = Typography.h5.copy(Color.Black))
+        if (uistate.detailForm != null) {
+            val componentList = uistate.detailForm.componentList
+            ValidFormBuilder(componentList = componentList, viewModel)
         } else {
-            ValidFormBuilder(componentList = listForm!!.componentList)
+            Text(
+                modifier = Modifier.padding(padding),
+                text = "Loading..",
+                style = Typography.h5.copy(Color.Black)
+            )
         }
     }
 }
@@ -42,10 +48,10 @@ fun DetailFormScreen(
 @Preview(showSystemUi = true)
 @Composable
 fun PreviewDetail() {
-    val viewModel: HomeViewModel = hiltViewModel()
+    val viewModel: DetailFormViewModel = hiltViewModel()
     WorxTheme() {
         DetailFormScreen(
-            viewModel = viewModel,
-            {})
+            viewModel = viewModel
+        ) {}
     }
 }

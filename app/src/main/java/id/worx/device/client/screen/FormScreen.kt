@@ -19,12 +19,14 @@ import androidx.compose.ui.unit.sp
 import id.worx.device.client.R
 import id.worx.device.client.model.Form
 import id.worx.device.client.theme.Typography
+import id.worx.device.client.viewmodel.DetailFormViewModel
 import id.worx.device.client.viewmodel.HomeViewModel
 
 @Composable
 fun FormScreen(
     data: List<Form>,
-    viewModel: HomeViewModel
+    viewModel: HomeViewModel,
+    detailFormViewModel: DetailFormViewModel
 ) {
     LazyColumn(
         modifier = Modifier
@@ -33,20 +35,21 @@ fun FormScreen(
         verticalArrangement = Arrangement.spacedBy(12.dp)
     ) {
         items(items = data, itemContent = { item ->
-            ListItemValidForm(item, viewModel)
+            ListItemValidForm(item, viewModel, detailFormViewModel)
         })
     }
 }
 
 @Composable
-fun ListItemValidForm(item: Form, viewModel: HomeViewModel) {
+fun ListItemValidForm(item: Form, viewModel: HomeViewModel, detailFormViewModel: DetailFormViewModel) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
             .border(1.5.dp, color = Color.Black)
             .clickable(
                 onClick = {
-                    viewModel.onClickItem(item)
+                    viewModel.goToDetailScreen()
+                    detailFormViewModel.navigateFromHomeScreen(item)
                 })
     ) {
         Image(

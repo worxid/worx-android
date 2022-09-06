@@ -12,4 +12,12 @@
         android:id="@+id/detail_form_fragment"
         android:name="id.worx.device.client.view.DetailFormFragment"
         android:label="DetailFormFragment" />
+    <fragment
+        android:id="@+id/camera_photo_fragment"
+        android:name="id.worx.device.client.view.CameraPhotoFragment"
+        android:label="CameraPhotoFragment" />
+    <fragment
+        android:id="@+id/photo_preview_fragment"
+        android:name="id.worx.device.client.view.PhotoPreviewFragment"
+        android:label="PhotoPreviewFragment" />
 </navigation>

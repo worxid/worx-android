@@ -8,20 +8,27 @@ import androidx.compose.ui.platform.ComposeView
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import dagger.hilt.android.AndroidEntryPoint
+import id.worx.device.client.MainScreen
+import id.worx.device.client.navigate
 import id.worx.device.client.screen.DetailFormScreen
 import id.worx.device.client.theme.WorxTheme
-import id.worx.device.client.viewmodel.HomeViewModel
+import id.worx.device.client.viewmodel.DetailFormViewModel
 
 @AndroidEntryPoint
 class DetailFormFragment: Fragment() {
 
-    private val viewModel by activityViewModels<HomeViewModel>()
+    private val viewModel by activityViewModels<DetailFormViewModel>()
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
+        viewModel.navigateTo.observe(viewLifecycleOwner) { navigateToEvent ->
+            navigateToEvent.getContentIfNotHandled()?.let { navigateTo ->
+                navigate(navigateTo, MainScreen.Detail)
+            }
+        }
 
         return ComposeView(requireContext()).apply {
             setContent {

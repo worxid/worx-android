@@ -26,4 +26,6 @@
     <string name="draft">Draft</string>
     <string name="submission">Submission</string>
     <string name="add_file">Add File</string>
+    <string name="gallery">Gallery</string>
+    <string name="camera">Camera</string>
 </resources>
