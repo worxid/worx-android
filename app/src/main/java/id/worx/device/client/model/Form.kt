@@ -9,11 +9,17 @@ data class Form(
 
 class Component(
     val type:String,
-    data: String
+    val inputData : InputData,
+    Outputdata: String = ""
 ) {
-    var data: String = data
+    var Outputdata: String = Outputdata
         get() = field
         set(value) {
             field = value
         }
 }
+
+data class InputData(
+    val title: String,
+    val options: List<String> = listOf()
+)

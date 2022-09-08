@@ -17,10 +17,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import id.worx.device.client.model.Component
-import id.worx.device.client.screen.components.WorxAttachFile
-import id.worx.device.client.screen.components.WorxAttachImage
-import id.worx.device.client.screen.components.WorxDateInput
-import id.worx.device.client.screen.components.WorxTextField
+import id.worx.device.client.model.InputData
+import id.worx.device.client.screen.components.*
 import id.worx.device.client.theme.Typography
 import id.worx.device.client.viewmodel.DetailFormViewModel
 
@@ -45,7 +43,7 @@ fun ValidFormBuilder(
             .padding(vertical = 12.dp),
         verticalArrangement = Arrangement.spacedBy(12.dp)
     ) {
-        itemsIndexed(items = componentList, itemContent = { index, item ->
+        itemsIndexed(items = componentList) { index, item ->
             when (item.type) {
                 "1" -> {
                     WorxTextField(
@@ -59,34 +57,25 @@ fun ValidFormBuilder(
                     )
                 }
                 "2" -> {
-                    WorxCheckBox(
-                        title = "Check Box",
-                        optionTitles = listOf("Option 1", "Option 2")
-                    )
+                    WorxCheckBox(index, viewModel)
                 }
                 "3" -> {
-                    WorxRadiobutton(
-                        title = "Radio Button",
-                        optionTitles = listOf("Option 1", "Option 2")
-                    )
+                    WorxRadiobutton(index, viewModel)
                 }
                 "4" -> {
-                    WorxDropdown(
-                        title = "Dropdown",
-                        optionTitles = listOf("Answer 1", "Answer 2", "Answer 3")
-                    )
+                    WorxDropdown(index, viewModel)
                 }
                 "5" -> {
-                    WorxDateInput(title = "Date")
+                    WorxDateInput(index, viewModel)
                 }
                 "6" -> {
-                    WorxRating(title = "Rating")
+                    WorxRating(index, viewModel)
                 }
                 "7" -> {
-                    WorxAttachFile(title = "File")
+                    WorxAttachFile(index, viewModel)
                 }
                 "8" -> {
-                    WorxAttachImage(title = "Image", { viewModel.goToCameraPhoto() })
+                    WorxAttachImage(index, viewModel) { viewModel.goToCameraPhoto() }
                 }
                 else -> {
                     Text(
@@ -95,7 +84,7 @@ fun ValidFormBuilder(
                     )
                 }
             }
-        })
+        }
     }
 }
 
@@ -107,11 +96,11 @@ fun PreviewFormComponent() {
 //    Component("1",""),
 //    Component("2",""),
 //    Component("3",""),
-        Component("4", ""),
-        Component("5", ""),
-        Component("6", ""),
-        Component("7", ""),
-        Component("8", "")
+        Component("4", InputData("WorxDropDown")),
+        Component("5", InputData("Date")),
+        Component("6", InputData("Rating")),
+        Component("7", InputData("File")),
+        Component("8", InputData("Image"))
     )
 
     ValidFormBuilder(list, viewModel)

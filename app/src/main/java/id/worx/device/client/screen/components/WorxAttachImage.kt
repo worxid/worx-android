@@ -27,34 +27,36 @@ import id.worx.device.client.R
 import id.worx.device.client.screen.ActionRedButton
 import id.worx.device.client.theme.GrayDivider
 import id.worx.device.client.theme.Typography
+import id.worx.device.client.viewmodel.DetailFormViewModel
 import java.io.File
 import java.text.SimpleDateFormat
 import java.util.*
 
 @Composable
-fun WorxAttachImage(title: String, navigateToPhotoCamera: () -> Unit) {
-    var filePath by remember { mutableStateOf<String?>(null) }
+fun WorxAttachImage(indexForm:Int, viewModel:DetailFormViewModel, navigateToPhotoCamera: () -> Unit) {
+    val filePath = viewModel.uiState.detailForm?.componentList?.get(indexForm)?.Outputdata ?: ""
     var showImageDataView by remember { mutableStateOf(false) }
 
     val launcherGallery =
         rememberLauncherForActivityResult(
             ActivityResultContracts.StartActivityForResult()
         ) {
-            filePath = it.data?.data?.path
+            it.data?.data?.path?.let { path -> viewModel.setComponentData(indexForm, path) }
         }
 
     Column(modifier = Modifier.fillMaxWidth()) {
         Text(
-            title, style = Typography.body2,
+            viewModel.uiState.detailForm!!.componentList[indexForm].inputData.title,
+            style = Typography.body2,
             modifier = Modifier
                 .padding(horizontal = 16.dp)
                 .padding(bottom = 8.dp)
         )
-        if (showImageDataView && filePath != null) {
-            val file = File(filePath!!)
+        if (showImageDataView && filePath.isNotEmpty()) {
+            val file = File(filePath)
             val fileSize = (file.length() / 1024).toInt()
-            ImageDataView(filePath = filePath!!, fileSize = fileSize) {
-                filePath = null
+            ImageDataView(filePath = filePath, fileSize = fileSize) {
+                viewModel.setComponentData(indexForm, "")
             }
         }
         Row(

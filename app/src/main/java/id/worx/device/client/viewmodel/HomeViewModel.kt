@@ -9,6 +9,7 @@ import id.worx.device.client.Event
 import id.worx.device.client.MainScreen
 import id.worx.device.client.model.Component
 import id.worx.device.client.model.Form
+import id.worx.device.client.model.InputData
 import id.worx.device.client.repository.HomeRepository
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -32,14 +33,14 @@ class HomeViewModel @Inject constructor(
     private val _navigateTo = MutableLiveData<Event<MainScreen>>()
     val navigateTo: LiveData<Event<MainScreen>> = _navigateTo
 
-    private val com1 = Component("1","")
-    private val com2 = Component("2","")
-    private val com3 = Component("3","")
-    private val com4 = Component("4","")
-    private val com5 = Component("5", "")
-    private val com6 = Component("6", "")
-    private val com7 = Component("7", "")
-    private val com8 = Component("8","")
+    private val com1 = Component("1", InputData("TextField"))
+    private val com2 = Component("2",InputData("Check Box", listOf("Option1","Option2","Option3")))
+    private val com3 = Component("3",InputData("Radio Button", listOf("Option1","Option2","Option3")))
+    private val com4 = Component("4",InputData("DropDown", listOf("Option1","Option2","Option3")))
+    private val com5 = Component("5", InputData("Date"))
+    private val com6 = Component("6", InputData("Rating"))
+    private val com7 = Component("7", InputData("File"))
+    private val com8 = Component("8",InputData("Image"))
     val list = listOf(
         Form("0", arrayListOf(com1, com2, com3, com4, com5, com6, com7,com8), "Valid Form0", "Ini adalah deskripsi"),
         Form("1", arrayListOf(com1, com2, com3, com4), "Valid Form1", "Ini adalah deskripsi"),

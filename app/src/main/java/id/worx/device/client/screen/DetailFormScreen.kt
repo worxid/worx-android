@@ -25,7 +25,7 @@ fun DetailFormScreen(
                 onBack = onBackNavigation,
                 progress = 0,
                 title = if (uistate.detailForm != null) {
-                    uistate.detailForm.title
+                    uistate.detailForm!!.title
                 } else {
                     "Loading.."
                 }
@@ -33,7 +33,7 @@ fun DetailFormScreen(
         }
     ) { padding ->
         if (uistate.detailForm != null) {
-            val componentList = uistate.detailForm.componentList
+            val componentList = uistate.detailForm!!.componentList
             ValidFormBuilder(componentList = componentList, viewModel)
         } else {
             Text(

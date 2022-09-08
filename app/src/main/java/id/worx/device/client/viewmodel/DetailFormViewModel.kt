@@ -47,6 +47,14 @@ class DetailFormViewModel @Inject constructor(
         uiState.detailForm = form
     }
 
+    fun setComponentData(index:Int, data: String){
+        val componentList = uiState.detailForm?.componentList
+        componentList?.get(index)?.Outputdata = data
+        uiState.detailForm = uiState.detailForm?.copy(
+            componentList = componentList!!
+        )
+    }
+
     fun goToCameraPhoto() {
         _navigateTo.value = Event(MainScreen.CameraPhoto)
     }

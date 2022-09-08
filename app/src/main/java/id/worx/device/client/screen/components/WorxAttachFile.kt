@@ -16,7 +16,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material.Divider
 import androidx.compose.material.Icon
 import androidx.compose.material.Text
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -28,29 +28,30 @@ import id.worx.device.client.R
 import id.worx.device.client.screen.ActionRedButton
 import id.worx.device.client.theme.GrayDivider
 import id.worx.device.client.theme.Typography
+import id.worx.device.client.viewmodel.DetailFormViewModel
 import java.io.File
 
 @Composable
-fun WorxAttachFile(title: String) {
-    var filePath by remember { mutableStateOf<String?>(null) }
+fun WorxAttachFile(indexForm:Int, viewModel: DetailFormViewModel) {
+    val filePath = viewModel.uiState.detailForm?.componentList?.get(indexForm)?.Outputdata ?: ""
 
     val launcherFile =
         rememberLauncherForActivityResult(
             ActivityResultContracts.StartActivityForResult()
         ) {
-            filePath = it.data?.data?.path
+            it.data?.data?.path?.let { path -> viewModel.setComponentData(indexForm, path) }
         }
 
     Column(modifier = Modifier.fillMaxWidth()) {
         Text(
-            title,
+            viewModel.uiState.detailForm!!.componentList[indexForm].inputData.title,
             style = Typography.body2,
             modifier = Modifier.padding(start = 17.dp, bottom = 8.dp, end = 16.dp)
         )
-        if (!filePath.isNullOrEmpty()) {
-            val file = File(filePath!!)
+        if (filePath.isNotEmpty()) {
+            val file = File(filePath)
             val fileSize = (file.length() / 1024).toInt()
-            FileDataView(filePath = filePath!!, fileSize = fileSize) { filePath = null }
+            FileDataView(filePath = filePath, fileSize = fileSize) { viewModel.setComponentData(indexForm, "") }
         }
         AttachFileButton(launcherFile)
         Divider(color = GrayDivider, modifier = Modifier.padding(top = 12.dp))

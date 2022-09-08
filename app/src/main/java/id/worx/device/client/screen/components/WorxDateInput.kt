@@ -18,28 +18,39 @@ import id.worx.device.client.R
 import id.worx.device.client.theme.GrayDivider
 import id.worx.device.client.theme.PrimaryMain
 import id.worx.device.client.theme.Typography
+import id.worx.device.client.viewmodel.DetailFormViewModel
 import java.text.SimpleDateFormat
 import java.util.*
 
 @Composable
-fun WorxDateInput(title: String) {
-    var selectedDate by remember { mutableStateOf<Date?>(null) }
+fun WorxDateInput(indexForm:Int, viewModel: DetailFormViewModel) {
+    val selectedDate = viewModel.uiState.detailForm?.componentList?.get(indexForm)?.Outputdata ?: ""
     var showDatePicker by remember { mutableStateOf(false) }
 
     val c = Calendar.getInstance()
-    val year = c.get(Calendar.YEAR)
-    val month = c.get(Calendar.MONTH)
-    val day = c.get(Calendar.DAY_OF_MONTH)
+    var year = c.get(Calendar.YEAR)
+    var month = c.get(Calendar.MONTH)
+    var day = c.get(Calendar.DAY_OF_MONTH)
+
+    if (selectedDate.isNotEmpty() || selectedDate != ""){
+        val dateVM : Date = SimpleDateFormat("dd/MM/yy", Locale.getDefault()).parse(selectedDate) as Date
+        year = dateVM.year
+        month = dateVM.month
+        day = dateVM.day
+    }
+
     val mDatePickerDialog = DatePickerDialog(
         LocalContext.current, R.style.CalenderViewCustom, { datePicker, yr, mo, date ->
-            selectedDate = Date(yr, mo, date)
+            val newDate = Date(yr, mo, date)
+            val dateString = SimpleDateFormat("dd/MM/yy", Locale.getDefault()).format(newDate)
+            viewModel.setComponentData(indexForm, dateString)
             showDatePicker = false
         }, year, month, day
     )
 
     Column(modifier = Modifier.fillMaxWidth()) {
         Text(
-            title,
+            viewModel.uiState.detailForm!!.componentList[indexForm].inputData.title,
             style = Typography.body2,
             modifier = Modifier.padding(start = 17.dp, bottom = 8.dp)
         )
@@ -53,7 +64,7 @@ fun WorxDateInput(title: String) {
                 modifier = Modifier.padding(end = 12.dp),
                 enabled = false,
                 colors = TextFieldDefaults.textFieldColors(backgroundColor = GrayDivider),
-                textStyle = if (selectedDate == null) {
+                textStyle = if (selectedDate.isEmpty()|| selectedDate == "") {
                     Typography.body2.copy(color = Color.Black.copy(0.54f))
                 } else {
                     Typography.body2
@@ -65,12 +76,12 @@ fun WorxDateInput(title: String) {
                         contentDescription = "Clear Text",
                         modifier = Modifier
                             .clickable {
-                                selectedDate = null
+                                viewModel.setComponentData(indexForm, "")
                             }
                     )
                 },
-                value = if (selectedDate != null) {
-                    SimpleDateFormat("dd/MM/yy", Locale.getDefault()).format(selectedDate!!)
+                value = if (selectedDate != "" || selectedDate.isNotEmpty()) {
+                    selectedDate
                 } else {
                     "Answer"
                 },
