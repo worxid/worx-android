@@ -17,11 +17,13 @@ import id.worx.device.client.navigate
 import id.worx.device.client.screen.PhotoPreviewScreen
 import id.worx.device.client.theme.WorxTheme
 import id.worx.device.client.viewmodel.CameraViewModel
+import id.worx.device.client.viewmodel.DetailFormViewModel
 
 @AndroidEntryPoint
 class PhotoPreviewFragment: Fragment() {
 
     private val viewModel by activityViewModels<CameraViewModel>()
+    private val detailViewModel by activityViewModels<DetailFormViewModel>()
 
     override fun onResume() {
         super.onResume()
@@ -43,7 +45,7 @@ class PhotoPreviewFragment: Fragment() {
         return ComposeView(requireContext()).apply {
             setContent {
                 WorxTheme {
-                    PhotoPreviewScreen(viewModel)
+                    PhotoPreviewScreen(viewModel, detailViewModel)
                 }
             }
         }

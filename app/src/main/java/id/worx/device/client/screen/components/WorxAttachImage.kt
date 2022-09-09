@@ -2,19 +2,25 @@ package id.worx.device.client.screen.components
 
 import android.Manifest
 import android.content.Context
+import android.content.ContextWrapper
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.net.Uri
+import android.util.Log
 import android.widget.Toast
 import androidx.activity.compose.ManagedActivityResultLauncher
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.Divider
 import androidx.compose.material.Icon
 import androidx.compose.material.Text
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -23,47 +29,62 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
 import coil.compose.AsyncImage
+import com.sangcomz.fishbun.FishBun
+import com.sangcomz.fishbun.ui.album.ui.AlbumActivity
+import com.sangcomz.fishbun.util.getRealPathFromURI
 import id.worx.device.client.R
 import id.worx.device.client.screen.ActionRedButton
 import id.worx.device.client.theme.GrayDivider
 import id.worx.device.client.theme.Typography
 import id.worx.device.client.viewmodel.DetailFormViewModel
 import java.io.File
-import java.text.SimpleDateFormat
-import java.util.*
 
 @Composable
-fun WorxAttachImage(indexForm:Int, viewModel:DetailFormViewModel, navigateToPhotoCamera: () -> Unit) {
-    val filePath = viewModel.uiState.detailForm?.componentList?.get(indexForm)?.Outputdata ?: ""
-    var showImageDataView by remember { mutableStateOf(false) }
+fun WorxAttachImage(indexForm:Int, viewModel:DetailFormViewModel, setIndexData: () -> Unit, navigateToPhotoCamera: () -> Unit) {
+    val form = viewModel.uiState.detailForm!!.componentList[indexForm]
+    val title = form.inputData.title
+
+    val filePath = if (form.Outputdata != ""){
+        remember{ mutableStateOf<String?>(form.Outputdata)}
+    } else {
+        remember{ mutableStateOf<String?>(null)}
+    }
+
+    val context = LocalContext.current
 
     val launcherGallery =
         rememberLauncherForActivityResult(
             ActivityResultContracts.StartActivityForResult()
         ) {
-            it.data?.data?.path?.let { path -> viewModel.setComponentData(indexForm, path) }
+            it.data?.getParcelableArrayListExtra<Uri>(FishBun.INTENT_PATH)?.forEach { uri ->
+                val fPath = getRealPathFromURI(context, uri)
+                Log.d("data", fPath)
+                viewModel.setComponentData(indexForm, uri.toString())
+                filePath.value = fPath
+            }
         }
 
     Column(modifier = Modifier.fillMaxWidth()) {
         Text(
-            viewModel.uiState.detailForm!!.componentList[indexForm].inputData.title,
+            title,
             style = Typography.body2,
             modifier = Modifier
                 .padding(horizontal = 16.dp)
                 .padding(bottom = 8.dp)
         )
-        if (showImageDataView && filePath.isNotEmpty()) {
-            val file = File(filePath)
+        if (!filePath.value.isNullOrEmpty()) {
+            val file = File(filePath.value ?: "")
             val fileSize = (file.length() / 1024).toInt()
-            ImageDataView(filePath = filePath, fileSize = fileSize) {
+            ImageDataView(filePath = filePath.value ?: "", fileSize = fileSize) {
                 viewModel.setComponentData(indexForm, "")
+                filePath.value = null
             }
         }
         Row(
             modifier = Modifier.padding(horizontal = 16.dp),
             horizontalArrangement = Arrangement.spacedBy(12.dp)
         ) {
-            TakeImageButton(navigateToPhotoCamera)
+            TakeImageButton(navigateToPhotoCamera, setIndexData)
             GalleryImageButton(launcherGallery = launcherGallery)
         }
         Divider(color = GrayDivider, modifier = Modifier.padding(top = 12.dp))
@@ -81,7 +102,7 @@ private fun ImageDataView(
             .padding(horizontal = 16.dp, vertical = 12.dp)
     ) {
         AsyncImage(
-            model = File(filePath),
+            model = filePath,
             contentDescription = "Image",
             modifier = Modifier
                 .width(48.dp)
@@ -108,7 +129,8 @@ private fun ImageDataView(
 
 @Composable
 private fun TakeImageButton(
-    navigateToPhotoCamera: () -> Unit
+    navigateToPhotoCamera: () -> Unit,
+    sendIndexFormData: () -> Unit
 ) {
     val context = LocalContext.current
 
@@ -140,45 +162,37 @@ private fun TakeImageButton(
                     ) == PackageManager.PERMISSION_GRANTED
                 }) {
                 navigateToPhotoCamera()
+                sendIndexFormData()
             } else {
                 launcherPermission.launch(requiredPermissions)
             }
         })
 }
 
-private fun createImageFile(
-    context: Context,
-    savePhotoPath: (String) -> Unit
-): File {
-    val timeStamp: String = SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(Date())
-    val storageDir = context.externalMediaDirs.firstOrNull()?.let {
-        File(it, context.resources.getString(R.string.app_name)).apply { mkdirs() }
-    }
-    return File.createTempFile(
-        "JPEG_${timeStamp}_", /* prefix */
-        ".jpg", /* suffix */
-        storageDir /* directory */
-    ).apply {
-        savePhotoPath(absolutePath)
-    }
+fun Context.getActivity(): AppCompatActivity? = when (this) {
+    is AppCompatActivity -> this
+    is ContextWrapper -> baseContext.getActivity()
+    else -> null
 }
 
 @Composable
 private fun GalleryImageButton(
     launcherGallery: ManagedActivityResultLauncher<Intent, ActivityResult>
 ) {
-    val intent = Intent(Intent.ACTION_GET_CONTENT)
-        .apply { type = "image/*" }
-
     val context = LocalContext.current
 
+    val requiredPermissions = arrayOf(
+        Manifest.permission.READ_EXTERNAL_STORAGE,
+        Manifest.permission.WRITE_EXTERNAL_STORAGE
+    )
+
     val launcherPermission = rememberLauncherForActivityResult(
-        ActivityResultContracts.RequestPermission()
-    ) { isGranted: Boolean ->
-        if (isGranted) {
-            launcherGallery.launch(intent)
-        } else {
+        ActivityResultContracts.RequestMultiplePermissions()
+    ) {
+        if (it.containsValue(false)) {
             Toast.makeText(context, "Permission is denied", Toast.LENGTH_LONG).show()
+        } else {
+            launcherGallery.launch(Intent(context, AlbumActivity::class.java))
         }
     }
 
@@ -187,16 +201,16 @@ private fun GalleryImageButton(
         iconRes = R.drawable.ic_image,
         title = stringResource(R.string.gallery),
         actionClick = {
-            when (PackageManager.PERMISSION_GRANTED) {
-                ContextCompat.checkSelfPermission(
-                    context,
-                    Manifest.permission.READ_EXTERNAL_STORAGE
-                ) -> {
-                    launcherGallery.launch(intent)
-                }
-                else -> {
-                    launcherPermission.launch(Manifest.permission.READ_EXTERNAL_STORAGE)
-                }
+            if (
+                requiredPermissions.all {
+                    ContextCompat.checkSelfPermission(
+                        context,
+                        it
+                    ) == PackageManager.PERMISSION_GRANTED
+                }) {
+                launcherGallery.launch(Intent(context, AlbumActivity::class.java))
+            } else {
+                launcherPermission.launch(requiredPermissions)
             }
         })
 }

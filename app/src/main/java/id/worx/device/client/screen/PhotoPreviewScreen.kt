@@ -15,10 +15,11 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.AsyncImage
 import id.worx.device.client.theme.WorxTheme
 import id.worx.device.client.viewmodel.CameraViewModel
+import id.worx.device.client.viewmodel.DetailFormViewModel
 import java.io.File
 
 @Composable
-fun PhotoPreviewScreen(viewModel: CameraViewModel){
+fun PhotoPreviewScreen(viewModel: CameraViewModel, detailViewModel:DetailFormViewModel){
      Box(modifier = Modifier.fillMaxSize()){
          AsyncImage(
              model = viewModel.photoPath.value?.let { File(it) },
@@ -37,15 +38,22 @@ fun PhotoPreviewScreen(viewModel: CameraViewModel){
                  text = "x",
                  fontSize = 36.sp,
                  color = Color.White,
-                 modifier = Modifier.padding(16.dp)
+                 modifier = Modifier
+                     .padding(horizontal = 36.dp, vertical = 20.dp)
                      .clickable { viewModel.rejectPhoto() }
                  )
              Text(
-                 text = "✔️",
+                 text = "\u2713",
                  fontSize = 36.sp,
                  color = Color.White,
-                 modifier = Modifier.padding(16.dp)
-                     .clickable {  }
+                 modifier = Modifier
+                     .padding(horizontal = 36.dp, vertical = 20.dp)
+                     .clickable {
+                         val path = viewModel.photoPath.value!!
+                         val index = viewModel.indexForm.value!!
+                         detailViewModel.setComponentData(index, path)
+                         viewModel.navigateToDetail()
+                     }
              )
          }
      }
@@ -55,7 +63,8 @@ fun PhotoPreviewScreen(viewModel: CameraViewModel){
 @Composable
 private fun PreviewPhotoScreen(){
     val viewModel : CameraViewModel = hiltViewModel()
+    val detailViewModel: DetailFormViewModel = hiltViewModel()
     WorxTheme() {
-        PhotoPreviewScreen(viewModel = viewModel)
+        PhotoPreviewScreen(viewModel = viewModel, detailViewModel)
     }
 }

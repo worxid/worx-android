@@ -14,3 +14,11 @@ dependencyResolutionManagement {
 }
 rootProject.name = "Worx"
 include ':app'
+include ':Fishbun'
+
+gradle.ext.versionCode = 35
+gradle.ext.versionName = '1.0.0-beta01'
+
+gradle.ext.set('minSdk', 15)
+gradle.ext.set('targetSdk', 31)
+gradle.ext.set('compileSdk', 31)

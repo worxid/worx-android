@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
@@ -20,6 +21,7 @@ import id.worx.device.client.model.Component
 import id.worx.device.client.model.InputData
 import id.worx.device.client.screen.components.*
 import id.worx.device.client.theme.Typography
+import id.worx.device.client.viewmodel.CameraViewModel
 import id.worx.device.client.viewmodel.DetailFormViewModel
 
 /*****************
@@ -31,13 +33,16 @@ import id.worx.device.client.viewmodel.DetailFormViewModel
 @Composable
 fun ValidFormBuilder(
     componentList: List<Component>,
-    viewModel: DetailFormViewModel
+    viewModel: DetailFormViewModel,
+    cameraViewModel: CameraViewModel
 ) {
     val data = componentList.map { component ->
         remember { mutableStateOf("") }
     }.toMutableList()
+    val listState = rememberLazyListState()
 
     LazyColumn(
+        state = listState,
         modifier = Modifier
             .fillMaxSize()
             .padding(vertical = 12.dp),
@@ -52,6 +57,7 @@ fun ValidFormBuilder(
                         inputType = KeyboardOptions(keyboardType = KeyboardType.Text),
                         onValueChange = {
                             data[index].value = it
+                            viewModel.setComponentData(index, it)
                         },
                         isDeleteTrail = true
                     )
@@ -75,7 +81,7 @@ fun ValidFormBuilder(
                     WorxAttachFile(index, viewModel)
                 }
                 "8" -> {
-                    WorxAttachImage(index, viewModel) { viewModel.goToCameraPhoto() }
+                    WorxAttachImage(index, viewModel, {cameraViewModel.navigateFromDetailScreen(index)}) { viewModel.goToCameraPhoto() }
                 }
                 else -> {
                     Text(
@@ -92,6 +98,7 @@ fun ValidFormBuilder(
 @Composable
 fun PreviewFormComponent() {
     val viewModel: DetailFormViewModel = hiltViewModel()
+    val cameraViewModel: CameraViewModel = hiltViewModel()
     val list = listOf(
 //    Component("1",""),
 //    Component("2",""),
@@ -103,5 +110,5 @@ fun PreviewFormComponent() {
         Component("8", InputData("Image"))
     )
 
-    ValidFormBuilder(list, viewModel)
+    ValidFormBuilder(list, viewModel, cameraViewModel)
 }

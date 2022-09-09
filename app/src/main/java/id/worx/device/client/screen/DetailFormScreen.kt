@@ -10,11 +10,13 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
 import id.worx.device.client.theme.Typography
 import id.worx.device.client.theme.WorxTheme
+import id.worx.device.client.viewmodel.CameraViewModel
 import id.worx.device.client.viewmodel.DetailFormViewModel
 
 @Composable
 fun DetailFormScreen(
     viewModel: DetailFormViewModel,
+    cameraViewModel: CameraViewModel,
     onBackNavigation: () -> Unit
 ) {
     val uistate = viewModel.uiState
@@ -34,7 +36,7 @@ fun DetailFormScreen(
     ) { padding ->
         if (uistate.detailForm != null) {
             val componentList = uistate.detailForm!!.componentList
-            ValidFormBuilder(componentList = componentList, viewModel)
+            ValidFormBuilder(componentList = componentList, viewModel, cameraViewModel)
         } else {
             Text(
                 modifier = Modifier.padding(padding),
@@ -49,9 +51,11 @@ fun DetailFormScreen(
 @Composable
 fun PreviewDetail() {
     val viewModel: DetailFormViewModel = hiltViewModel()
+    val cameraViewModel: CameraViewModel = hiltViewModel()
     WorxTheme() {
         DetailFormScreen(
-            viewModel = viewModel
+            viewModel = viewModel,
+            cameraViewModel
         ) {}
     }
 }

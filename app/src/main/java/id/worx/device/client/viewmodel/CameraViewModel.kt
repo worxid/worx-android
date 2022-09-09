@@ -20,8 +20,15 @@ class CameraViewModel @Inject constructor(
     private var _photoPath = MutableLiveData<String?>()
     val photoPath: LiveData<String?> = _photoPath
 
+    private var _indexForm = MutableLiveData<Int?>()
+    val indexForm: LiveData<Int?> = _indexForm
+
     init {
         _photoPath.value = null
+    }
+
+    fun navigateFromDetailScreen(indexForm : Int){
+        _indexForm.value = indexForm
     }
 
     fun goToPreviewPhoto(photoPath: String) {
@@ -34,8 +41,9 @@ class CameraViewModel @Inject constructor(
         _navigateTo.value = Event(MainScreen.CameraPhoto)
     }
 
-    fun acceptPhoto() {
+    fun navigateToDetail() {
         _photoPath.value = null
+        _indexForm.value = null
         _navigateTo.value = Event(MainScreen.Detail)
     }
 
