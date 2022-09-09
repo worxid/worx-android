@@ -23,6 +23,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -30,11 +31,13 @@ import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
 import coil.compose.AsyncImage
 import com.sangcomz.fishbun.FishBun
-import com.sangcomz.fishbun.ui.album.ui.AlbumActivity
+import com.sangcomz.fishbun.adapter.image.impl.CoilAdapter
+import com.sangcomz.fishbun.adapter.image.impl.GlideAdapter
 import com.sangcomz.fishbun.util.getRealPathFromURI
 import id.worx.device.client.R
 import id.worx.device.client.screen.ActionRedButton
 import id.worx.device.client.theme.GrayDivider
+import id.worx.device.client.theme.PrimaryMain
 import id.worx.device.client.theme.Typography
 import id.worx.device.client.viewmodel.DetailFormViewModel
 import java.io.File
@@ -192,7 +195,11 @@ private fun GalleryImageButton(
         if (it.containsValue(false)) {
             Toast.makeText(context, "Permission is denied", Toast.LENGTH_LONG).show()
         } else {
-            launcherGallery.launch(Intent(context, AlbumActivity::class.java))
+            FishBun.with(context.getActivity()!!)
+                .setImageAdapter(GlideAdapter())
+                .setMaxCount(1)
+                .setThemeColor(PrimaryMain.toArgb())
+                .startAlbumWithActivityResultCallback(launcherGallery)
         }
     }
 
@@ -208,7 +215,11 @@ private fun GalleryImageButton(
                         it
                     ) == PackageManager.PERMISSION_GRANTED
                 }) {
-                launcherGallery.launch(Intent(context, AlbumActivity::class.java))
+                    FishBun.with(context.getActivity()!!)
+                        .setImageAdapter(CoilAdapter())
+                        .setMaxCount(1)
+                        .setThemeColor(PrimaryMain.toArgb())
+                        .startAlbumWithActivityResultCallback(launcherGallery)
             } else {
                 launcherPermission.launch(requiredPermissions)
             }

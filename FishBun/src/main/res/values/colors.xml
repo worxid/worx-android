@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="black_main">#FFFFFF</color>
+    <color name="white_opacity_10">#0D000000</color>
+    <color name="primary_main">#FFDA3630</color>
+    <color name="main_text">#000000</color>
+    <color name="sub_text">#707070</color>
+    <color name="status_bar">#33000000</color>
+    <color name="divider">#4D000000</color>
+</resources>

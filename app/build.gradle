@@ -82,4 +82,6 @@ dependencies {
     //image picker custom
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     implementation project(':Fishbun')
+
+    debugImplementation 'com.squareup.leakcanary:leakcanary-android:2.9.1'
 }
