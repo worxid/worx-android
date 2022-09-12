@@ -28,4 +28,7 @@
     <string name="add_file">Add File</string>
     <string name="gallery">Gallery</string>
     <string name="camera">Camera</string>
+    <string name="add_signature">Add Signature</string>
+    <string name="erase">Hapus</string>
+    <string name="save">Simpan</string>
 </resources>

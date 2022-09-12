@@ -16,7 +16,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material.Divider
 import androidx.compose.material.Icon
 import androidx.compose.material.Text
-import androidx.compose.runtime.Composable
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -32,26 +32,36 @@ import id.worx.device.client.viewmodel.DetailFormViewModel
 import java.io.File
 
 @Composable
-fun WorxAttachFile(indexForm:Int, viewModel: DetailFormViewModel) {
-    val filePath = viewModel.uiState.detailForm?.componentList?.get(indexForm)?.Outputdata ?: ""
+fun WorxAttachFile(indexForm: Int, viewModel: DetailFormViewModel) {
+    val form = viewModel.uiState.detailForm!!.componentList[indexForm]
+    var filePath by remember { mutableStateOf(form.Outputdata) }
 
     val launcherFile =
         rememberLauncherForActivityResult(
             ActivityResultContracts.StartActivityForResult()
         ) {
-            it.data?.data?.path?.let { path -> viewModel.setComponentData(indexForm, path) }
+            it.data?.data?.path?.let { path ->
+                viewModel.setComponentData(indexForm, path)
+                filePath = path
+            }
         }
 
     Column(modifier = Modifier.fillMaxWidth()) {
         Text(
-            viewModel.uiState.detailForm!!.componentList[indexForm].inputData.title,
+            form.inputData.title,
             style = Typography.body2,
             modifier = Modifier.padding(start = 17.dp, bottom = 8.dp, end = 16.dp)
         )
-        if (filePath.isNotEmpty()) {
-            val file = File(filePath)
+        if (!filePath.isNullOrEmpty()) {
+            val file = File(filePath!!)
             val fileSize = (file.length() / 1024).toInt()
-            FileDataView(filePath = filePath, fileSize = fileSize) { viewModel.setComponentData(indexForm, "") }
+            FileDataView(filePath = filePath!!, fileSize = fileSize) {
+                viewModel.setComponentData(
+                    indexForm,
+                    null
+                )
+                filePath = null
+            }
         }
         AttachFileButton(launcherFile)
         Divider(color = GrayDivider, modifier = Modifier.padding(top = 12.dp))

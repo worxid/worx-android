@@ -14,7 +14,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import id.worx.device.client.theme.PrimaryMain
 import id.worx.device.client.theme.RedDarkButton
@@ -74,7 +73,7 @@ fun ActionRedButton(
 @Composable
 fun WorxTopAppBar(
     onBack: () -> Unit,
-    progress: Int,
+    progress: Int? = null,
     title: String
 ) {
     TopAppBar(
@@ -82,28 +81,30 @@ fun WorxTopAppBar(
         backgroundColor = PrimaryMain,
         contentColor = Color.White
     ) {
-        Row(
+        Box(
             modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
         ) {
             IconButton(
-                modifier = Modifier.padding(horizontal = 16.dp),
-                onClick = onBack
+                onClick = onBack,
+                modifier = Modifier.align(Alignment.CenterStart),
             ) {
                 Icon(Icons.Default.ArrowBack, contentDescription = "Back Button")
             }
             Text(
-                textAlign = TextAlign.Center,
+                modifier = Modifier.align(Alignment.Center),
                 text = title,
-                style = Typography.h6
+                style = Typography.h6,
             )
-            CircularProgressIndicator(
-                progress = progress / 100.toFloat(),
-                modifier = Modifier.padding(horizontal = 16.dp, vertical = 6.dp),
-                color = Color.White.copy(0.3f),
-                strokeWidth = 3.dp,
-            )
+            if (progress != null) {
+                CircularProgressIndicator(
+                    progress = progress / 100.toFloat(),
+                    modifier = Modifier
+                        .padding(horizontal = 16.dp, vertical = 6.dp)
+                        .align(Alignment.CenterEnd),
+                    color = Color.White.copy(0.3f),
+                    strokeWidth = 3.dp,
+                )
+            }
         }
     }
 }

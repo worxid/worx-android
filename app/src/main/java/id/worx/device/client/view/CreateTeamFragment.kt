@@ -10,8 +10,8 @@ import androidx.fragment.app.viewModels
 import dagger.hilt.android.AndroidEntryPoint
 import id.worx.device.client.WelcomeScreen
 import id.worx.device.client.navigate
-import id.worx.device.client.screen.CreateTeamEvent
-import id.worx.device.client.screen.CreateTeamScreen
+import id.worx.device.client.screen.welcome.CreateTeamEvent
+import id.worx.device.client.screen.welcome.CreateTeamScreen
 import id.worx.device.client.theme.WorxTheme
 import id.worx.device.client.viewmodel.WelcomeViewModel
 

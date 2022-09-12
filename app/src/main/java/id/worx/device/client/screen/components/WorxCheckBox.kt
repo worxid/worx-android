@@ -26,11 +26,7 @@ fun WorxCheckBox(indexForm:Int, viewModel: DetailFormViewModel) {
     val title = form.inputData.title
     val optionTitles = form.inputData.options
 
-    val onCheck = if (form.Outputdata != ""){
-        remember{ mutableStateOf<String?>(form.Outputdata)}
-    } else {
-        remember{ mutableStateOf<String?>(null)}
-    }
+    val onCheck = remember{ mutableStateOf<String?>(form.Outputdata)}
 
     Column(modifier = Modifier.fillMaxWidth()) {
         Text(title, style = Typography.body2, modifier = Modifier.padding(start = 16.dp))

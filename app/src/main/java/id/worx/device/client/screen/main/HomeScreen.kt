@@ -1,4 +1,4 @@
-package id.worx.device.client.screen
+package id.worx.device.client.screen.main
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
@@ -29,6 +29,7 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import id.worx.device.client.R
 import id.worx.device.client.model.Form
+import id.worx.device.client.screen.FormScreen
 import id.worx.device.client.theme.PrimaryMain
 import id.worx.device.client.theme.Typography
 import id.worx.device.client.viewmodel.DetailFormViewModel

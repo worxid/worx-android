@@ -1,4 +1,4 @@
-package id.worx.device.client.screen
+package id.worx.device.client.screen.welcome
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -13,6 +13,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import id.worx.device.client.screen.RedFullWidthButton
+import id.worx.device.client.screen.WorxTopAppBar
 import id.worx.device.client.screen.components.WorxTextField
 import id.worx.device.client.theme.WorxTheme
 

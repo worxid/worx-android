@@ -10,8 +10,8 @@ import androidx.fragment.app.viewModels
 import dagger.hilt.android.AndroidEntryPoint
 import id.worx.device.client.WelcomeScreen
 import id.worx.device.client.navigate
-import id.worx.device.client.screen.WelcomeEvent
-import id.worx.device.client.screen.WelcomeScreen
+import id.worx.device.client.screen.welcome.WelcomeEvent
+import id.worx.device.client.screen.welcome.WelcomeScreen
 import id.worx.device.client.theme.WorxTheme
 import id.worx.device.client.viewmodel.WelcomeViewModel
 

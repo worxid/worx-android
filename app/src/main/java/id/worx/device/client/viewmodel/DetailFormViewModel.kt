@@ -20,6 +20,7 @@ import javax.inject.Inject
  */
 data class DetailUiState(
     var detailForm: Form? = null,
+    var currentComponent: Int = -1,
     val isLoading: Boolean = false,
     var errorMessages: List<String> = emptyList(),
 )
@@ -47,7 +48,7 @@ class DetailFormViewModel @Inject constructor(
         uiState.detailForm = form
     }
 
-    fun setComponentData(index:Int, data: String){
+    fun setComponentData(index:Int, data: String?){
         val componentList = uiState.detailForm?.componentList
         componentList?.get(index)?.Outputdata = data
         uiState.detailForm = uiState.detailForm?.copy(
@@ -55,7 +56,26 @@ class DetailFormViewModel @Inject constructor(
         )
     }
 
-    fun goToCameraPhoto() {
+    fun goToCameraPhoto(index: Int) {
+        uiState.currentComponent = index
         _navigateTo.value = Event(MainScreen.CameraPhoto)
+    }
+
+    fun goToSignaturePad(index: Int) {
+        uiState.currentComponent = index
+        _navigateTo.value = Event(MainScreen.SignaturePad)
+    }
+
+    fun saveSignature(bitmap: String){
+        val componentList = uiState.detailForm?.componentList
+        componentList?.get(uiState.currentComponent)?.Outputdata = bitmap
+        uiState.detailForm = uiState.detailForm?.copy(
+            componentList = componentList!!
+        )
+        _navigateTo.value = Event(MainScreen.Detail)
+    }
+
+    fun currentComponentIndex(index: Int){
+        uiState.currentComponent = index
     }
 }

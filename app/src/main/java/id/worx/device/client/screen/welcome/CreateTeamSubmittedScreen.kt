@@ -1,4 +1,4 @@
-package id.worx.device.client.screen
+package id.worx.device.client.screen.welcome
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
@@ -17,10 +17,11 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import id.worx.device.client.R
+import id.worx.device.client.screen.RedFullWidthButton
 import id.worx.device.client.theme.PrimaryMain
 import id.worx.device.client.theme.Typography
 import id.worx.device.client.theme.WorxTheme
-import id.worx.device.client.R
 
 
 sealed class CreateTeamSubmittedEvent {

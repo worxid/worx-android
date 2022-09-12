@@ -1,4 +1,4 @@
-package id.worx.device.client.screen
+package id.worx.device.client.screen.welcome
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Column
@@ -18,11 +18,17 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import id.worx.device.client.R
+import id.worx.device.client.screen.RedFullWidthButton
 import id.worx.device.client.theme.Typography
 import id.worx.device.client.theme.WorxTheme
 
+sealed class VerificationEvent {
+    object MakeNewRequest : VerificationEvent()
+    object BackToJoinRequest: VerificationEvent()
+}
+
 @Composable
-fun VerificationRejectedScreen(onEvent: (VerificationEvent) -> Unit) {
+fun WaitingVerificationScreen(onEvent: (VerificationEvent) -> Unit) {
     Surface(
         modifier = Modifier.fillMaxSize(),
     ) {
@@ -37,17 +43,17 @@ fun VerificationRejectedScreen(onEvent: (VerificationEvent) -> Unit) {
             )
             Spacer(modifier = Modifier.weight(1f))
             Image(
-                painter = painterResource(id = R.drawable.ic_reject_icon),
-                contentDescription = "Rejected icon"
+                painter = painterResource(id = R.drawable.ic_icon_waiting),
+                contentDescription = "Waiting icon"
             )
             Text(
-                stringResource(R.string.verification_rejected),
-                style = Typography.body1.copy(color = Color.Black),
+                stringResource(R.string.waiting_for_verification),
+                style = Typography.body1.copy(color= Color.Black),
                 modifier = Modifier.padding(top = 25.dp, bottom = 20.dp)
             )
             RedFullWidthButton(
-                onClickCallback = { onEvent(VerificationEvent.MakeNewRequest) },
-                label = stringResource(R.string.make_new_request),
+                onClickCallback = { onEvent(VerificationEvent.BackToJoinRequest) },
+                label = stringResource(R.string.back_to_join_request),
                 modifier = Modifier.padding(vertical = 20.dp)
             )
             Spacer(modifier = Modifier.weight(1.5f))
@@ -56,10 +62,10 @@ fun VerificationRejectedScreen(onEvent: (VerificationEvent) -> Unit) {
 }
 
 
-@Preview(name = "Rejected Screen", showSystemUi = true)
+@Preview(name = "Verification Screen", showSystemUi = true)
 @Composable
-fun RejectedScreenPreview() {
+fun VerificationScreenPreview() {
     WorxTheme {
-        VerificationRejectedScreen(onEvent = {})
+        WaitingVerificationScreen({})
     }
 }

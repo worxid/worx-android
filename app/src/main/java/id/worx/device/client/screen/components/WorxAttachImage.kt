@@ -47,11 +47,7 @@ fun WorxAttachImage(indexForm:Int, viewModel:DetailFormViewModel, setIndexData: 
     val form = viewModel.uiState.detailForm!!.componentList[indexForm]
     val title = form.inputData.title
 
-    val filePath = if (form.Outputdata != ""){
-        remember{ mutableStateOf<String?>(form.Outputdata)}
-    } else {
-        remember{ mutableStateOf<String?>(null)}
-    }
+    val filePath = remember{ mutableStateOf(form.Outputdata)}
 
     val context = LocalContext.current
 
@@ -79,7 +75,7 @@ fun WorxAttachImage(indexForm:Int, viewModel:DetailFormViewModel, setIndexData: 
             val file = File(filePath.value ?: "")
             val fileSize = (file.length() / 1024).toInt()
             ImageDataView(filePath = filePath.value ?: "", fileSize = fileSize) {
-                viewModel.setComponentData(indexForm, "")
+                viewModel.setComponentData(indexForm, null)
                 filePath.value = null
             }
         }

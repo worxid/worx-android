@@ -13,8 +13,8 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import dagger.hilt.android.AndroidEntryPoint
-import id.worx.device.client.screen.CreateTeamSubmittedEvent
-import id.worx.device.client.screen.CreateTeamSubmittedScreen
+import id.worx.device.client.screen.welcome.CreateTeamSubmittedEvent
+import id.worx.device.client.screen.welcome.CreateTeamSubmittedScreen
 import id.worx.device.client.theme.WorxTheme
 import id.worx.device.client.viewmodel.WelcomeViewModel
 

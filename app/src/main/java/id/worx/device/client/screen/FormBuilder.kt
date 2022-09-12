@@ -49,6 +49,7 @@ fun ValidFormBuilder(
         verticalArrangement = Arrangement.spacedBy(12.dp)
     ) {
         itemsIndexed(items = componentList) { index, item ->
+            viewModel.currentComponentIndex(index)
             when (item.type) {
                 "1" -> {
                     WorxTextField(
@@ -81,7 +82,17 @@ fun ValidFormBuilder(
                     WorxAttachFile(index, viewModel)
                 }
                 "8" -> {
-                    WorxAttachImage(index, viewModel, {cameraViewModel.navigateFromDetailScreen(index)}) { viewModel.goToCameraPhoto() }
+                    WorxAttachImage(
+                        index,
+                        viewModel,
+                        { cameraViewModel.navigateFromDetailScreen(index) }) {
+                        viewModel.goToCameraPhoto(
+                            index
+                        )
+                    }
+                }
+                "9" -> {
+                    WorxSignature(index, viewModel)
                 }
                 else -> {
                     Text(
@@ -90,6 +101,12 @@ fun ValidFormBuilder(
                     )
                 }
             }
+        }
+        item {
+            RedFullWidthButton(
+                onClickCallback = {},
+                label = "Submit", modifier = Modifier.padding(vertical = 16.dp)
+            )
         }
     }
 }

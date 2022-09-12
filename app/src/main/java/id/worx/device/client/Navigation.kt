@@ -10,7 +10,7 @@ enum class WelcomeScreen {
     JoinTeam, WaitingVerification, VerificationRejected }
 
 enum class MainScreen {
-    Home, Detail, CameraPhoto, PhotoPreview
+    Home, Detail, CameraPhoto, PhotoPreview, SignaturePad
 }
 
 fun Fragment.navigate(to: WelcomeScreen, from: WelcomeScreen) {
@@ -61,6 +61,11 @@ fun Fragment.navigate(to: MainScreen, from: MainScreen) {
             val navBuilder = NavOptions.Builder()
             val navOptions = navBuilder.setPopUpTo(R.id.photo_preview_fragment, true).build()
             findNavController().navigate(R.id.photo_preview_fragment, null, navOptions)
+        }
+        MainScreen.SignaturePad -> {
+            val navBuilder = NavOptions.Builder()
+            val navOptions = navBuilder.setPopUpTo(R.id.signature_pad_fragment, true).build()
+            findNavController().navigate(R.id.signature_pad_fragment, null, navOptions)
         }
         else -> {}
     }

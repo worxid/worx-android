@@ -20,4 +20,8 @@
         android:id="@+id/photo_preview_fragment"
         android:name="id.worx.device.client.view.PhotoPreviewFragment"
         android:label="PhotoPreviewFragment" />
+    <fragment
+        android:id="@+id/signature_pad_fragment"
+        android:name="id.worx.device.client.view.SignaturePadFragment"
+        android:label="SignaturePadFragment" />
 </navigation>

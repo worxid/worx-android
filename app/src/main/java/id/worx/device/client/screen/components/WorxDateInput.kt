@@ -24,7 +24,8 @@ import java.util.*
 
 @Composable
 fun WorxDateInput(indexForm:Int, viewModel: DetailFormViewModel) {
-    val selectedDate = viewModel.uiState.detailForm?.componentList?.get(indexForm)?.Outputdata ?: ""
+    val form = viewModel.uiState.detailForm?.componentList?.get(indexForm)!!
+    val selectedDate = remember { mutableStateOf(form.Outputdata) }
     var showDatePicker by remember { mutableStateOf(false) }
 
     val c = Calendar.getInstance()
@@ -32,8 +33,8 @@ fun WorxDateInput(indexForm:Int, viewModel: DetailFormViewModel) {
     var month = c.get(Calendar.MONTH)
     var day = c.get(Calendar.DAY_OF_MONTH)
 
-    if (selectedDate.isNotEmpty() || selectedDate != ""){
-        val dateVM : Date = SimpleDateFormat("dd/MM/yy", Locale.getDefault()).parse(selectedDate) as Date
+    if (!selectedDate.value.isNullOrEmpty()){
+        val dateVM : Date = SimpleDateFormat("dd/MM/yy", Locale.getDefault()).parse(selectedDate.value!!) as Date
         year = dateVM.year
         month = dateVM.month
         day = dateVM.day
@@ -44,6 +45,7 @@ fun WorxDateInput(indexForm:Int, viewModel: DetailFormViewModel) {
             val newDate = Date(yr, mo, date)
             val dateString = SimpleDateFormat("dd/MM/yy", Locale.getDefault()).format(newDate)
             viewModel.setComponentData(indexForm, dateString)
+            selectedDate.value = dateString
             showDatePicker = false
         }, year, month, day
     )
@@ -64,7 +66,7 @@ fun WorxDateInput(indexForm:Int, viewModel: DetailFormViewModel) {
                 modifier = Modifier.padding(end = 12.dp),
                 enabled = false,
                 colors = TextFieldDefaults.textFieldColors(backgroundColor = GrayDivider),
-                textStyle = if (selectedDate.isEmpty()|| selectedDate == "") {
+                textStyle = if (selectedDate.value.isNullOrEmpty()) {
                     Typography.body2.copy(color = Color.Black.copy(0.54f))
                 } else {
                     Typography.body2
@@ -76,12 +78,13 @@ fun WorxDateInput(indexForm:Int, viewModel: DetailFormViewModel) {
                         contentDescription = "Clear Text",
                         modifier = Modifier
                             .clickable {
-                                viewModel.setComponentData(indexForm, "")
+                                viewModel.setComponentData(indexForm, null)
+                                selectedDate.value = null
                             }
                     )
                 },
-                value = if (selectedDate != "" || selectedDate.isNotEmpty()) {
-                    selectedDate
+                value = if (!selectedDate.value.isNullOrEmpty()) {
+                    selectedDate.value!!
                 } else {
                     "Answer"
                 },

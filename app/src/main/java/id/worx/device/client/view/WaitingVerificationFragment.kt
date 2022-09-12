@@ -12,8 +12,8 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import dagger.hilt.android.AndroidEntryPoint
-import id.worx.device.client.screen.VerificationEvent
-import id.worx.device.client.screen.WaitingVerificationScreen
+import id.worx.device.client.screen.welcome.VerificationEvent
+import id.worx.device.client.screen.welcome.WaitingVerificationScreen
 import id.worx.device.client.theme.WorxTheme
 import id.worx.device.client.viewmodel.WelcomeViewModel
 

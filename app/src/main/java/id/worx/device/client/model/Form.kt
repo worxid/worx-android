@@ -10,9 +10,9 @@ data class Form(
 class Component(
     val type:String,
     val inputData : InputData,
-    Outputdata: String = ""
+    Outputdata: String? = null
 ) {
-    var Outputdata: String = Outputdata
+    var Outputdata: String? = Outputdata
         get() = field
         set(value) {
             field = value

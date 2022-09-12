@@ -26,9 +26,8 @@ import id.worx.device.client.viewmodel.DetailFormViewModel
 fun WorxRating(indexForm: Int, viewModel: DetailFormViewModel) {
     val form = viewModel.uiState.detailForm!!.componentList[indexForm]
     val title = form.inputData.title
-    val optionTitles = form.inputData.options
 
-    val rating = if (form.Outputdata != ""){
+    val rating = if (!form.Outputdata.isNullOrEmpty()){
         remember{ mutableStateOf(Integer.parseInt(form.Outputdata))}
     } else {
         remember{ mutableStateOf(0)}
@@ -36,7 +35,7 @@ fun WorxRating(indexForm: Int, viewModel: DetailFormViewModel) {
 
     Column(modifier = Modifier.fillMaxWidth()) {
         Text(
-            viewModel.uiState.detailForm?.componentList?.get(indexForm)?.inputData?.title ?: "",
+            title,
             style = Typography.body2,
             modifier = Modifier.padding(start = 16.dp, bottom = 8.dp)
         )

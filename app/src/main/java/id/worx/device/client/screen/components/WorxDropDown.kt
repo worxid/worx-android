@@ -23,11 +23,8 @@ fun WorxDropdown(indexForm:Int, viewModel: DetailFormViewModel) {
     val title = form.inputData.title
     val optionTitles = form.inputData.options
 
-    val selected = if (form.Outputdata != ""){
-        remember{ mutableStateOf<String?>(form.Outputdata)}
-    } else {
-        remember{ mutableStateOf<String?>(null)}
-    }
+    val selected = remember{ mutableStateOf<String?>(form.Outputdata)}
+
     var expanded by remember { mutableStateOf(false) }
 
     Column(
@@ -52,7 +49,7 @@ fun WorxDropdown(indexForm:Int, viewModel: DetailFormViewModel) {
                     .fillMaxWidth(),
                 enabled = false,
                 colors = TextFieldDefaults.textFieldColors(backgroundColor = GrayDivider),
-                textStyle = if (selected.value == null) {
+                textStyle = if (selected.value.isNullOrEmpty()) {
                     Typography.body2.copy(color = Color.Black.copy(0.54f))
                 } else {
                     Typography.body2
@@ -64,7 +61,7 @@ fun WorxDropdown(indexForm:Int, viewModel: DetailFormViewModel) {
                         contentDescription = "DropDown"
                     )
                 },
-                value = if (selected.value != null) {
+                value = if (!selected.value.isNullOrEmpty()) {
                     selected.value!!
                 } else {
                     "Answer"
