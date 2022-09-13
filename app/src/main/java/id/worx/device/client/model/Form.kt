@@ -7,17 +7,11 @@ data class Form(
     val description: String
 )
 
-class Component(
+data class Component(
     val type:String,
     val inputData : InputData,
-    Outputdata: String? = null
-) {
-    var Outputdata: String? = Outputdata
-        get() = field
-        set(value) {
-            field = value
-        }
-}
+    var Outputdata: String? = null
+)
 
 data class InputData(
     val title: String,

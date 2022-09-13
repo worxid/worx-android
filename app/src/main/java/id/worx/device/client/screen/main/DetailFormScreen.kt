@@ -25,7 +25,7 @@ fun DetailFormScreen(
         topBar = {
             WorxTopAppBar(
                 onBack = onBackNavigation,
-                progress = 0,
+                progress = viewModel.formProgress.value,
                 title = if (uistate.detailForm != null) {
                     uistate.detailForm!!.title
                 } else {
@@ -36,7 +36,10 @@ fun DetailFormScreen(
     ) { padding ->
         if (uistate.detailForm != null) {
             val componentList = uistate.detailForm!!.componentList
-            ValidFormBuilder(componentList = componentList, viewModel, cameraViewModel)
+            ValidFormBuilder(
+                componentList = componentList,
+                viewModel,
+                cameraViewModel)
         } else {
             Text(
                 modifier = Modifier.padding(padding),

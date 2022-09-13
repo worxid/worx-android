@@ -12,6 +12,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
@@ -99,8 +100,9 @@ fun WorxTopAppBar(
                 CircularProgressIndicator(
                     progress = progress / 100.toFloat(),
                     modifier = Modifier
-                        .padding(horizontal = 16.dp, vertical = 6.dp)
-                        .align(Alignment.CenterEnd),
+                        .padding(horizontal = 16.dp)
+                        .align(Alignment.CenterEnd)
+                        .scale(0.75f),
                     color = Color.White.copy(0.3f),
                     strokeWidth = 3.dp,
                 )

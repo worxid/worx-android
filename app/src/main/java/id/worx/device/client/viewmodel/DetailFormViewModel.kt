@@ -1,8 +1,6 @@
 package id.worx.device.client.viewmodel
 
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
+import androidx.compose.runtime.*
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
@@ -14,6 +12,9 @@ import id.worx.device.client.model.Form
 import id.worx.device.client.repository.HomeRepository
 import javax.inject.Inject
 
+enum class EventStatus{
+    Loading, Filling, Submitted, Done, Saved
+}
 
 /**
  * UI State to hold data
@@ -21,7 +22,7 @@ import javax.inject.Inject
 data class DetailUiState(
     var detailForm: Form? = null,
     var currentComponent: Int = -1,
-    val isLoading: Boolean = false,
+    val status: MutableState<EventStatus> = mutableStateOf(EventStatus.Loading),
     var errorMessages: List<String> = emptyList(),
 )
 
@@ -37,6 +38,9 @@ class DetailFormViewModel @Inject constructor(
     private val _navigateTo = MutableLiveData<Event<MainScreen>>()
     val navigateTo: LiveData<Event<MainScreen>> = _navigateTo
 
+    private val _formProgress = mutableStateOf(0)
+    val formProgress: State<Int> = _formProgress
+
     /**
      * Notify that an error was displayed on the screen
      */
@@ -46,6 +50,7 @@ class DetailFormViewModel @Inject constructor(
 
     fun navigateFromHomeScreen(form: Form){
         uiState.detailForm = form
+        uiState.status.value = EventStatus.Filling
     }
 
     fun setComponentData(index:Int, data: String?){
@@ -54,6 +59,13 @@ class DetailFormViewModel @Inject constructor(
         uiState.detailForm = uiState.detailForm?.copy(
             componentList = componentList!!
         )
+
+        val progressBit = 100/componentList!!.size
+        if (!data.isNullOrEmpty()){
+            _formProgress.value += progressBit
+        } else {
+            _formProgress.value -= progressBit
+        }
     }
 
     fun goToCameraPhoto(index: Int) {
@@ -67,15 +79,19 @@ class DetailFormViewModel @Inject constructor(
     }
 
     fun saveSignature(bitmap: String){
-        val componentList = uiState.detailForm?.componentList
-        componentList?.get(uiState.currentComponent)?.Outputdata = bitmap
-        uiState.detailForm = uiState.detailForm?.copy(
-            componentList = componentList!!
-        )
+        setComponentData(uiState.currentComponent, bitmap)
         _navigateTo.value = Event(MainScreen.Detail)
     }
 
     fun currentComponentIndex(index: Int){
         uiState.currentComponent = index
+    }
+
+    fun submitForm(){
+        uiState.status.value = EventStatus.Submitted
+    }
+
+    fun saveFormAsDraft(){
+        uiState.status.value = EventStatus.Saved
     }
 }

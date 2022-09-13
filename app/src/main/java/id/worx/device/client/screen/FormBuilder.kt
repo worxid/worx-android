@@ -1,28 +1,34 @@
 package id.worx.device.client.screen
 
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
+import androidx.compose.material.*
+import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.window.Dialog
 import androidx.hilt.navigation.compose.hiltViewModel
+import id.worx.device.client.R
 import id.worx.device.client.model.Component
 import id.worx.device.client.model.InputData
 import id.worx.device.client.screen.components.*
+import id.worx.device.client.theme.PrimaryMain
 import id.worx.device.client.theme.Typography
 import id.worx.device.client.viewmodel.CameraViewModel
 import id.worx.device.client.viewmodel.DetailFormViewModel
+import id.worx.device.client.viewmodel.EventStatus
 
 /*****************
  *  1 = TextField
@@ -36,6 +42,47 @@ fun ValidFormBuilder(
     viewModel: DetailFormViewModel,
     cameraViewModel: CameraViewModel
 ) {
+    var showSubmitDialog by remember { mutableStateOf(false) }
+    val formSubmitted by remember { viewModel.uiState.status }
+    var showDraftDialog by remember { mutableStateOf(false) }
+
+    Box(modifier = Modifier.fillMaxSize()) {
+        DetailForm(
+            componentList,
+            viewModel,
+            cameraViewModel
+        )
+        { showSubmitDialog = true }
+        if (showSubmitDialog) {
+            DialogSubmitForm(
+                viewModel,
+                {
+                    viewModel.submitForm()
+                    showSubmitDialog = false
+                },
+                { showDraftDialog = true })
+        }
+        if (showDraftDialog) {
+            DialogDraftForm(
+                { viewModel.saveFormAsDraft() },
+                { showDraftDialog = false })
+        }
+        if (formSubmitted == EventStatus.Submitted) {
+            FormSubmitted() {
+                viewModel.uiState.status.value = EventStatus.Done
+            }
+        }
+    }
+}
+
+@Composable
+fun DetailForm(
+    componentList: List<Component>,
+    viewModel: DetailFormViewModel,
+    cameraViewModel: CameraViewModel,
+    showSubmitDialog: () -> Unit
+) {
+
     val data = componentList.map { component ->
         remember { mutableStateOf("") }
     }.toMutableList()
@@ -104,14 +151,163 @@ fun ValidFormBuilder(
         }
         item {
             RedFullWidthButton(
-                onClickCallback = {},
+                onClickCallback = { showSubmitDialog() },
                 label = "Submit", modifier = Modifier.padding(vertical = 16.dp)
             )
         }
     }
 }
 
-@Preview(showSystemUi = true)
+@OptIn(ExperimentalMaterialApi::class)
+@Composable
+fun DialogSubmitForm(
+    viewModel: DetailFormViewModel,
+    submitForm: () -> Unit,
+    saveDraftForm: () -> Unit
+) {
+    val progress = (viewModel.formProgress.value / 100).toFloat()
+    val fieldsNo = viewModel.uiState.detailForm!!.componentList.size
+
+    ModalBottomSheetLayout(
+        sheetState = ModalBottomSheetState(ModalBottomSheetValue.Expanded),
+        sheetContent = {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .wrapContentHeight()
+                    .background(Color.White),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.spacedBy(20.dp)
+            ) {
+                Text(
+                    modifier = Modifier.padding(top = 24.dp),
+                    text = "Submit",
+                    style = Typography.subtitle1.copy(Color.Black)
+                )
+                Box(
+                    modifier = Modifier
+                        .align(Alignment.CenterHorizontally)
+                        .wrapContentSize()
+                ) {
+                    CircularProgressIndicator(
+                        progress = progress,
+                        modifier = Modifier
+                            .width(102.dp)
+                            .height(102.dp),
+                        color = PrimaryMain,
+                        strokeWidth = 3.5.dp
+                    )
+                    Image(
+                        modifier = Modifier.align(Alignment.Center),
+                        painter = painterResource(R.drawable.ic_red_triangle_warning),
+                        contentDescription = "Image Warning"
+                    )
+                }
+                Text(
+                    text = "${(fieldsNo * progress).toInt()} of ${fieldsNo} Fields Answered",
+                    style = Typography.body2.copy(Color.Black.copy(0.54f))
+                )
+                RedFullWidthButton(
+                    onClickCallback = { submitForm() },
+                    label = "Submit Form",
+                    modifier = Modifier.padding()
+                )
+                Text(
+                    modifier = Modifier
+                        .clickable { saveDraftForm() }
+                        .padding(bottom = 24.dp),
+                    text = "Save Draft",
+                    style = Typography.button.copy(PrimaryMain)
+                )
+            }
+        },
+        content = {}
+    )
+}
+
+@Composable
+fun DialogDraftForm(
+    saveDraft: () -> Unit,
+    closeDialog: () -> Unit
+) {
+    Dialog(
+        content = {
+            Column(
+                modifier = Modifier
+                    .wrapContentSize()
+                    .background(Color.White)
+                    .border(1.5.dp, Color.Black)
+                    .padding(20.dp),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.spacedBy(20.dp)
+            ) {
+                Text(
+                    modifier = Modifier.padding(top = 20.dp),
+                    text = "Save draft?",
+                    style = Typography.button.copy(Color.Black)
+                )
+                Text(
+                    text = "You can optionally add a description to the saved draft",
+                    style = Typography.body2.copy(Color.Black.copy(0.54f))
+                )
+                WorxTextField(
+                    label = "Draft description",
+                    inputType = KeyboardOptions(keyboardType = KeyboardType.Text),
+                    onValueChange = {})
+                Row(
+                    modifier = Modifier
+                        .align(Alignment.End)
+                        .padding(bottom = 20.dp),
+                    horizontalArrangement = Arrangement.spacedBy(20.dp)
+                ) {
+                    Text(text = "Cancel",
+                        style = Typography.button.copy(Color.Black.copy(0.54f)),
+                        modifier = Modifier.clickable { closeDialog() })
+                    Text(text = "Save",
+                        style = Typography.button.copy(PrimaryMain),
+                        modifier = Modifier.clickable { saveDraft() })
+                }
+            }
+        },
+        onDismissRequest = {}
+    )
+}
+
+@Composable
+fun FormSubmitted(
+    closeNotification: () -> Unit
+) {
+    Dialog(
+        content = {
+            Column(
+                modifier = Modifier
+                    .wrapContentSize()
+                    .background(Color.White)
+                    .border(1.5.dp, Color.Black),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.spacedBy(20.dp)
+            ) {
+                Image(
+                    modifier = Modifier.padding(top = 20.dp),
+                    painter = painterResource(id = R.drawable.ic_tick_yellow),
+                    contentDescription = "Tick"
+                )
+                Text(
+                    text = "Successful submit form",
+                    style = Typography.body2
+                )
+                RedFullWidthButton(
+                    onClickCallback = { closeNotification() },
+                    label = "Oke",
+                    modifier = Modifier.padding(bottom = 20.dp)
+                )
+            }
+        },
+        onDismissRequest = {}
+    )
+}
+
+@Preview(name = "PreviewDetailForm", showSystemUi = true)
 @Composable
 fun PreviewFormComponent() {
     val viewModel: DetailFormViewModel = hiltViewModel()
