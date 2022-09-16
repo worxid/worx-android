@@ -16,7 +16,10 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material.Divider
 import androidx.compose.material.Icon
 import androidx.compose.material.Text
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -25,6 +28,8 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
 import id.worx.device.client.R
+import id.worx.device.client.model.FileField
+import id.worx.device.client.model.FileValue
 import id.worx.device.client.screen.ActionRedButton
 import id.worx.device.client.theme.GrayDivider
 import id.worx.device.client.theme.Typography
@@ -33,34 +38,50 @@ import java.io.File
 
 @Composable
 fun WorxAttachFile(indexForm: Int, viewModel: DetailFormViewModel) {
-    val form = viewModel.uiState.detailForm!!.componentList[indexForm]
-    var filePath by remember { mutableStateOf(form.Outputdata) }
+    val form = viewModel.uiState.collectAsState().value.detailForm!!.fields[indexForm] as FileField
+    val fileValue = viewModel.uiState.collectAsState().value.values[form.id] as FileValue?
+    val filePath = if (fileValue != null){
+        remember { mutableStateOf(fileValue.filePath.toList())}
+    } else {
+        remember {
+            mutableStateOf(listOf())
+        }
+    }
 
     val launcherFile =
         rememberLauncherForActivityResult(
             ActivityResultContracts.StartActivityForResult()
         ) {
             it.data?.data?.path?.let { path ->
-                viewModel.setComponentData(indexForm, path)
-                filePath = path
+                val newPathList = ArrayList(filePath.value)
+                newPathList.add(path)
+                filePath.value = newPathList.toList()
+                viewModel.setComponentData(indexForm,
+                    FileValue(value = ArrayList(newPathList.map { 1 }), filePath = newPathList))
             }
         }
 
     Column(modifier = Modifier.fillMaxWidth()) {
         Text(
-            form.inputData.title,
+            form.label ?: "",
             style = Typography.body2,
             modifier = Modifier.padding(start = 17.dp, bottom = 8.dp, end = 16.dp)
         )
-        if (!filePath.isNullOrEmpty()) {
-            val file = File(filePath!!)
-            val fileSize = (file.length() / 1024).toInt()
-            FileDataView(filePath = filePath!!, fileSize = fileSize) {
-                viewModel.setComponentData(
-                    indexForm,
-                    null
-                )
-                filePath = null
+        if (filePath.value.isNotEmpty()) {
+            Column {
+                filePath.value.forEachIndexed { index, item ->
+                    val file = File(item)
+                    val fileSize = (file.length() / 1024).toInt()
+                    FileDataView(filePath = item, fileSize = fileSize) {
+                        val newList = ArrayList(filePath.value)
+                        newList.remove(item)
+                        filePath.value = newList
+                        viewModel.setComponentData(
+                            indexForm,
+                            FileValue(value = ArrayList(newList.map { 1 }), filePath = newList)
+                        )
+                }
+            }
             }
         }
         AttachFileButton(launcherFile)

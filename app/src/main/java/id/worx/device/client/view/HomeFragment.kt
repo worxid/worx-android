@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.platform.ComposeView
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
@@ -36,9 +37,9 @@ class HomeFragment: Fragment() {
             setContent {
                 WorxTheme {
                     HomeScreen(
-                        formList = viewModel.list,
-                        draftList = viewModel.list2,
-                        submissionList = viewModel.list,
+                        formList = viewModel.uiState.collectAsState().value.list,
+                        draftList = viewModel.uiState.collectAsState().value.list,
+                        submissionList = viewModel.uiState.collectAsState().value.list,
                     viewModel = viewModel,
                     detailVM = detailViewModel)
                 }

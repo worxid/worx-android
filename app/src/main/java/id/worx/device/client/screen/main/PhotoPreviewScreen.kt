@@ -13,6 +13,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.AsyncImage
+import id.worx.device.client.model.ImageValue
 import id.worx.device.client.theme.WorxTheme
 import id.worx.device.client.viewmodel.CameraViewModel
 import id.worx.device.client.viewmodel.DetailFormViewModel
@@ -51,7 +52,12 @@ fun PhotoPreviewScreen(viewModel: CameraViewModel, detailViewModel:DetailFormVie
                      .clickable {
                          val path = viewModel.photoPath.value!!
                          val index = viewModel.indexForm.value!!
-                         detailViewModel.setComponentData(index, path)
+                         val id = detailViewModel.uiState.value.detailForm!!.fields[index].id
+                         val value = detailViewModel.uiState.value.values[id] as ImageValue?
+                         val filePath = value?.filePath ?: arrayListOf()
+                         filePath.add(path)
+                         detailViewModel.setComponentData(index,
+                             ImageValue(value = ArrayList(filePath.map { 1 }), filePath = filePath))
                          viewModel.navigateToDetail()
                      }
              )

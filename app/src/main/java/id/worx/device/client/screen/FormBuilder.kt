@@ -21,14 +21,16 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.hilt.navigation.compose.hiltViewModel
 import id.worx.device.client.R
-import id.worx.device.client.model.Component
-import id.worx.device.client.model.InputData
+import id.worx.device.client.model.Fields
+import id.worx.device.client.model.TextFieldValue
+import id.worx.device.client.model.Type
 import id.worx.device.client.screen.components.*
 import id.worx.device.client.theme.PrimaryMain
 import id.worx.device.client.theme.Typography
 import id.worx.device.client.viewmodel.CameraViewModel
 import id.worx.device.client.viewmodel.DetailFormViewModel
 import id.worx.device.client.viewmodel.EventStatus
+import kotlinx.coroutines.flow.update
 
 /*****************
  *  1 = TextField
@@ -38,12 +40,12 @@ import id.worx.device.client.viewmodel.EventStatus
  ******************/
 @Composable
 fun ValidFormBuilder(
-    componentList: List<Component>,
+    componentList: List<Fields>,
     viewModel: DetailFormViewModel,
     cameraViewModel: CameraViewModel
 ) {
     var showSubmitDialog by remember { mutableStateOf(false) }
-    val formSubmitted by remember { viewModel.uiState.status }
+    val formSubmitted = viewModel.uiState.collectAsState().value.status
     var showDraftDialog by remember { mutableStateOf(false) }
 
     Box(modifier = Modifier.fillMaxSize()) {
@@ -69,7 +71,9 @@ fun ValidFormBuilder(
         }
         if (formSubmitted == EventStatus.Submitted) {
             FormSubmitted() {
-                viewModel.uiState.status.value = EventStatus.Done
+                viewModel.uiState.update {
+                    it.copy(status = EventStatus.Done)
+                }
             }
         }
     }
@@ -77,7 +81,7 @@ fun ValidFormBuilder(
 
 @Composable
 fun DetailForm(
-    componentList: List<Component>,
+    componentList: List<Fields>,
     viewModel: DetailFormViewModel,
     cameraViewModel: CameraViewModel,
     showSubmitDialog: () -> Unit
@@ -98,37 +102,37 @@ fun DetailForm(
         itemsIndexed(items = componentList) { index, item ->
             viewModel.currentComponentIndex(index)
             when (item.type) {
-                "1" -> {
+                Type.TextField.type -> {
                     WorxTextField(
-                        label = "FreeText",
+                        label = item.label ?: "Free Text",
                         hint = "Answer",
                         inputType = KeyboardOptions(keyboardType = KeyboardType.Text),
                         onValueChange = {
                             data[index].value = it
-                            viewModel.setComponentData(index, it)
+                            viewModel.setComponentData(index, TextFieldValue(values = it))
                         },
                         isDeleteTrail = true
                     )
                 }
-                "2" -> {
+                Type.Checkbox.type -> {
                     WorxCheckBox(index, viewModel)
                 }
-                "3" -> {
+                Type.RadioGroup.type -> {
                     WorxRadiobutton(index, viewModel)
                 }
-                "4" -> {
+                Type.Dropdown.type -> {
                     WorxDropdown(index, viewModel)
                 }
-                "5" -> {
+                Type.Date.type -> {
                     WorxDateInput(index, viewModel)
                 }
-                "6" -> {
+                Type.Rating.type -> {
                     WorxRating(index, viewModel)
                 }
-                "7" -> {
+                Type.File.type -> {
                     WorxAttachFile(index, viewModel)
                 }
-                "8" -> {
+                Type.Photo.type -> {
                     WorxAttachImage(
                         index,
                         viewModel,
@@ -138,8 +142,11 @@ fun DetailForm(
                         )
                     }
                 }
-                "9" -> {
+                Type.Signature.type -> {
                     WorxSignature(index, viewModel)
+                }
+                Type.Separator.type -> {
+                    WorxSeparator()
                 }
                 else -> {
                     Text(
@@ -166,7 +173,7 @@ fun DialogSubmitForm(
     saveDraftForm: () -> Unit
 ) {
     val progress = (viewModel.formProgress.value / 100).toFloat()
-    val fieldsNo = viewModel.uiState.detailForm!!.componentList.size
+    val fieldsNo = viewModel.uiState.collectAsState().value.detailForm!!.fields.size
 
     ModalBottomSheetLayout(
         sheetState = ModalBottomSheetState(ModalBottomSheetValue.Expanded),
@@ -312,16 +319,6 @@ fun FormSubmitted(
 fun PreviewFormComponent() {
     val viewModel: DetailFormViewModel = hiltViewModel()
     val cameraViewModel: CameraViewModel = hiltViewModel()
-    val list = listOf(
-//    Component("1",""),
-//    Component("2",""),
-//    Component("3",""),
-        Component("4", InputData("WorxDropDown")),
-        Component("5", InputData("Date")),
-        Component("6", InputData("Rating")),
-        Component("7", InputData("File")),
-        Component("8", InputData("Image"))
-    )
 
-    ValidFormBuilder(list, viewModel, cameraViewModel)
+    //ValidFormBuilder(list, viewModel, cameraViewModel)
 }

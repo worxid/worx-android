@@ -1,6 +1,8 @@
 package id.worx.device.client.screen.main
 
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.EnterTransition
+import androidx.compose.animation.ExitTransition
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
@@ -9,6 +11,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -28,7 +31,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import id.worx.device.client.R
-import id.worx.device.client.model.Form
+import id.worx.device.client.model.EmptyForm
 import id.worx.device.client.screen.FormScreen
 import id.worx.device.client.theme.PrimaryMain
 import id.worx.device.client.theme.Typography
@@ -45,9 +48,9 @@ sealed class BottomNavItem(var title: Int, var icon: Int, var screen_route: Stri
 @Composable
 fun NavigationGraph(
     navController: NavHostController,
-    formList: List<Form>,
-    draftList: List<Form>,
-    submissionList: List<Form>,
+    formList: List<EmptyForm>,
+    draftList: List<EmptyForm>,
+    submissionList: List<EmptyForm>,
     viewModel: HomeViewModel,
     detailVM: DetailFormViewModel
 ) {
@@ -56,19 +59,19 @@ fun NavigationGraph(
             FormScreen(formList, viewModel, detailVM)
         }
         composable(BottomNavItem.Draft.screen_route) {
-            FormScreen(draftList, viewModel, detailVM)
+            //FormScreen(draftList, viewModel, detailVM)
         }
         composable(BottomNavItem.Submission.screen_route) {
-            FormScreen(submissionList, viewModel, detailVM)
+            //FormScreen(submissionList, viewModel, detailVM)
         }
     }
 }
 
 @Composable
 fun HomeScreen(
-    formList: List<Form>,
-    draftList: List<Form>,
-    submissionList: List<Form>,
+    formList: List<EmptyForm>,
+    draftList: List<EmptyForm>,
+    submissionList: List<EmptyForm>,
     viewModel: HomeViewModel,
     detailVM: DetailFormViewModel
 ) {
@@ -88,7 +91,9 @@ fun HomeScreen(
             detailVM = detailVM
         )
         AnimatedVisibility(
-            visible = viewModel.uiState.isLoading
+            visible = viewModel.uiState.collectAsState().value.isLoading,
+            enter = EnterTransition.None,
+            exit = ExitTransition.None
         ) {
             Box(
                 modifier = Modifier
@@ -202,6 +207,6 @@ fun MainTopAppBar() {
 private fun BottomNavPreview(
     viewModel: HomeViewModel = hiltViewModel(),
     detailVM: DetailFormViewModel = hiltViewModel()) {
-    val list = arrayListOf<Form>()
+    val list = arrayListOf<EmptyForm>()
     HomeScreen(list, list, list, viewModel, detailVM)
 }

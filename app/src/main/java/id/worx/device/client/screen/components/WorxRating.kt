@@ -11,12 +11,15 @@ import androidx.compose.material.Divider
 import androidx.compose.material.Icon
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+import id.worx.device.client.model.RatingField
+import id.worx.device.client.model.RatingValue
 import id.worx.device.client.theme.GrayDivider
 import id.worx.device.client.theme.SecondaryMain
 import id.worx.device.client.theme.Typography
@@ -24,13 +27,18 @@ import id.worx.device.client.viewmodel.DetailFormViewModel
 
 @Composable
 fun WorxRating(indexForm: Int, viewModel: DetailFormViewModel) {
-    val form = viewModel.uiState.detailForm!!.componentList[indexForm]
-    val title = form.inputData.title
+    val form = viewModel.uiState.collectAsState().value.detailForm!!.fields[indexForm] as RatingField
+    val title = form.label ?: "Rating"
 
-    val rating = if (!form.Outputdata.isNullOrEmpty()){
-        remember{ mutableStateOf(Integer.parseInt(form.Outputdata))}
+    val ratingValue = viewModel.uiState.collectAsState().value.values[form.id] as RatingValue?
+    val rating = if (ratingValue == null){
+        remember {
+            mutableStateOf(0)
+        }
     } else {
-        remember{ mutableStateOf(0)}
+        remember {
+            mutableStateOf(ratingValue.value!!)
+        }
     }
 
     Column(modifier = Modifier.fillMaxWidth()) {
@@ -43,15 +51,15 @@ fun WorxRating(indexForm: Int, viewModel: DetailFormViewModel) {
             modifier = Modifier.padding(horizontal = 16.dp),
             horizontalArrangement = Arrangement.spacedBy(12.dp)
         ) {
-            items(5) { index ->
+            items(form.maxStars ?: 5) { index ->
                 Icon(
                     modifier = Modifier.clickable {
                         rating.value = index+1
-                        viewModel.setComponentData(indexForm, (index + 1).toString())
+                        viewModel.setComponentData(indexForm, RatingValue(value = index+1))
                     },
                     painter = painterResource(id = R.drawable.star_big_off),
                     contentDescription = "Star Icon",
-                    tint = if (index < rating.value) {
+                    tint = if (index < (rating.value ?: 0)) {
                         SecondaryMain
                     } else {
                         Color(0xFFE0E0E0)

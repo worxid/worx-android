@@ -13,17 +13,26 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import id.worx.device.client.model.DropDownField
+import id.worx.device.client.model.DropDownValue
 import id.worx.device.client.theme.GrayDivider
 import id.worx.device.client.theme.Typography
 import id.worx.device.client.viewmodel.DetailFormViewModel
 
 @Composable
 fun WorxDropdown(indexForm:Int, viewModel: DetailFormViewModel) {
-    val form = viewModel.uiState.detailForm!!.componentList[indexForm]
-    val title = form.inputData.title
-    val optionTitles = form.inputData.options
+    val form = viewModel.uiState.collectAsState().value.detailForm!!.fields[indexForm] as DropDownField
+    val title = form.label ?: "DropDown"
+    val optionTitles = form.options
 
-    val selected = remember{ mutableStateOf<String?>(form.Outputdata)}
+    val value = viewModel.uiState.collectAsState().value.values[form.id] as DropDownValue?
+    val selected = if (value != null) {
+        remember { mutableStateOf(value) }
+    } else {
+        remember {
+            mutableStateOf(DropDownValue())
+        }
+    }
 
     var expanded by remember { mutableStateOf(false) }
 
@@ -49,7 +58,7 @@ fun WorxDropdown(indexForm:Int, viewModel: DetailFormViewModel) {
                     .fillMaxWidth(),
                 enabled = false,
                 colors = TextFieldDefaults.textFieldColors(backgroundColor = GrayDivider),
-                textStyle = if (selected.value.isNullOrEmpty()) {
+                textStyle = if (selected.value.value == null) {
                     Typography.body2.copy(color = Color.Black.copy(0.54f))
                 } else {
                     Typography.body2
@@ -61,8 +70,8 @@ fun WorxDropdown(indexForm:Int, viewModel: DetailFormViewModel) {
                         contentDescription = "DropDown"
                     )
                 },
-                value = if (!selected.value.isNullOrEmpty()) {
-                    selected.value!!
+                value = if (selected.value.value != null) {
+                    optionTitles[selected.value.value!!].label ?: ""
                 } else {
                     "Answer"
                 },
@@ -75,11 +84,11 @@ fun WorxDropdown(indexForm:Int, viewModel: DetailFormViewModel) {
             ) {
                 optionTitles.forEachIndexed { index, item ->
                     DropdownMenuItem(onClick = {
-                        selected.value = item
-                        viewModel.setComponentData(indexForm, item)
+                        selected.value.value = index
+                        viewModel.setComponentData(indexForm, selected.value)
                         expanded = false
                     }) {
-                        Text(text = item.toString(), style = Typography.body1.copy(color = Color.Black))
+                        Text(text = item.label ?: "", style = Typography.body1.copy(color = Color.Black))
                     }
                 }
             }

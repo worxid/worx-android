@@ -91,12 +91,7 @@ fun SignaturePadScreen(
                     border = BorderStroke(1.5.dp, Color.Black),
                     shape = RoundedCornerShape(1),
                     onClick = {
-                        viewModel.saveSignature(
-                            getImageUri(
-                                context,
-                                signaturePadAdapter!!.getSignatureBitmap()
-                            )
-                        )
+                        viewModel.saveSignature(signaturePadAdapter!!.getSignatureBitmap())
                     }
                 ) {
                     Text(

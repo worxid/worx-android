@@ -19,6 +19,7 @@ import androidx.compose.material.Divider
 import androidx.compose.material.Icon
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -35,6 +36,9 @@ import com.sangcomz.fishbun.adapter.image.impl.CoilAdapter
 import com.sangcomz.fishbun.adapter.image.impl.GlideAdapter
 import com.sangcomz.fishbun.util.getRealPathFromURI
 import id.worx.device.client.R
+import id.worx.device.client.model.FileValue
+import id.worx.device.client.model.ImageField
+import id.worx.device.client.model.ImageValue
 import id.worx.device.client.screen.ActionRedButton
 import id.worx.device.client.theme.GrayDivider
 import id.worx.device.client.theme.PrimaryMain
@@ -44,10 +48,17 @@ import java.io.File
 
 @Composable
 fun WorxAttachImage(indexForm:Int, viewModel:DetailFormViewModel, setIndexData: () -> Unit, navigateToPhotoCamera: () -> Unit) {
-    val form = viewModel.uiState.detailForm!!.componentList[indexForm]
-    val title = form.inputData.title
+    val form = viewModel.uiState.collectAsState().value.detailForm!!.fields[indexForm] as ImageField
+    val title = form.label ?: ""
 
-    val filePath = remember{ mutableStateOf(form.Outputdata)}
+    val fileValue = viewModel.uiState.collectAsState().value.values[form.id] as ImageValue?
+    val filePath = if (fileValue != null){
+        remember { mutableStateOf(fileValue.filePath.toList())}
+    } else {
+        remember {
+            mutableStateOf(listOf())
+        }
+    }
 
     val context = LocalContext.current
 
@@ -58,8 +69,12 @@ fun WorxAttachImage(indexForm:Int, viewModel:DetailFormViewModel, setIndexData: 
             it.data?.getParcelableArrayListExtra<Uri>(FishBun.INTENT_PATH)?.forEach { uri ->
                 val fPath = getRealPathFromURI(context, uri)
                 Log.d("data", fPath)
-                viewModel.setComponentData(indexForm, uri.toString())
-                filePath.value = fPath
+                val newPathList = ArrayList(filePath.value)
+                newPathList.add(fPath)
+                filePath.value = newPathList.toList()
+                viewModel.setComponentData(indexForm,
+                    FileValue(value = ArrayList(newPathList.map { 1 }), filePath = newPathList)
+                )
             }
         }
 
@@ -71,12 +86,21 @@ fun WorxAttachImage(indexForm:Int, viewModel:DetailFormViewModel, setIndexData: 
                 .padding(horizontal = 16.dp)
                 .padding(bottom = 8.dp)
         )
-        if (!filePath.value.isNullOrEmpty()) {
-            val file = File(filePath.value ?: "")
-            val fileSize = (file.length() / 1024).toInt()
-            ImageDataView(filePath = filePath.value ?: "", fileSize = fileSize) {
-                viewModel.setComponentData(indexForm, null)
-                filePath.value = null
+        if (filePath.value.isNotEmpty()) {
+            Column {
+                filePath.value.forEachIndexed { index, item ->
+                    val file = File(item)
+                    val fileSize = (file.length() / 1024).toInt()
+                    ImageDataView(filePath = item, fileSize = fileSize) {
+                        val newList = ArrayList(filePath.value)
+                        newList.remove(item)
+                        filePath.value = newList
+                        viewModel.setComponentData(
+                            indexForm,
+                            ImageValue(value = ArrayList(newList.map { 1 }), filePath = newList)
+                        )
+                }
+            }
             }
         }
         Row(

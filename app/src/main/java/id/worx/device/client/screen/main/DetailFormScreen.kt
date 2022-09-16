@@ -4,6 +4,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
@@ -19,7 +20,7 @@ fun DetailFormScreen(
     cameraViewModel: CameraViewModel,
     onBackNavigation: () -> Unit
 ) {
-    val uistate = viewModel.uiState
+    val uistate = viewModel.uiState.collectAsState().value
 
     Scaffold(
         topBar = {
@@ -27,7 +28,7 @@ fun DetailFormScreen(
                 onBack = onBackNavigation,
                 progress = viewModel.formProgress.value,
                 title = if (uistate.detailForm != null) {
-                    uistate.detailForm!!.title
+                    uistate.detailForm!!.label ?: ""
                 } else {
                     "Loading.."
                 }
@@ -35,7 +36,7 @@ fun DetailFormScreen(
         }
     ) { padding ->
         if (uistate.detailForm != null) {
-            val componentList = uistate.detailForm!!.componentList
+            val componentList = uistate.detailForm!!.fields
             ValidFormBuilder(
                 componentList = componentList,
                 viewModel,

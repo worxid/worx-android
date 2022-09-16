@@ -1,5 +1,6 @@
 package id.worx.device.client.screen.components
 
+import android.graphics.Bitmap
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -7,7 +8,10 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Divider
 import androidx.compose.material.Icon
 import androidx.compose.material.Text
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -17,6 +21,8 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import id.worx.device.client.R
+import id.worx.device.client.model.SignatureField
+import id.worx.device.client.model.SignatureValue
 import id.worx.device.client.screen.ActionRedButton
 import id.worx.device.client.theme.GrayDivider
 import id.worx.device.client.theme.Typography
@@ -24,19 +30,27 @@ import id.worx.device.client.viewmodel.DetailFormViewModel
 
 @Composable
 fun WorxSignature(indexForm: Int, viewModel: DetailFormViewModel) {
-    val form = viewModel.uiState.detailForm!!.componentList[indexForm]
-    var filePath by remember { mutableStateOf(form.Outputdata) }
+    val form = viewModel.uiState.collectAsState().value.detailForm!!.fields[indexForm] as SignatureField
+
+    val value = viewModel.uiState.collectAsState().value.values[form.id] as SignatureValue?
+    var bitmap = if (value == null) {
+        remember {
+            mutableStateOf<Bitmap?>(null)
+        }
+    } else {
+        remember { mutableStateOf<Bitmap?>(value.bitmap) }
+    }
 
     Column(modifier = Modifier.fillMaxWidth()) {
         Text(
-            form.inputData.title,
+            form.label ?: "Signature",
             style = Typography.body2,
             modifier = Modifier.padding(start = 17.dp, bottom = 8.dp, end = 16.dp)
         )
-        if (!filePath.isNullOrEmpty()) {
-            SignatureView(filePath!!) {
+        if (bitmap.value != null) {
+            SignatureView(bitmap.value) {
                 viewModel.setComponentData(indexForm, null)
-                filePath = null
+                bitmap.value = null
             }
         } else {
             AttachSignatureButton {
@@ -61,7 +75,7 @@ private fun AttachSignatureButton(
 
 @Composable
 private fun SignatureView(
-    bitmapPath: String,
+    bitmap: Bitmap?,
     onClick: () -> Unit
 ) {
     Row(
@@ -80,7 +94,7 @@ private fun SignatureView(
         ) {
             AsyncImage(
                 contentScale = ContentScale.Fit,
-                model = bitmapPath,
+                model = bitmap,
                 contentDescription = "Signature"
             )
         }

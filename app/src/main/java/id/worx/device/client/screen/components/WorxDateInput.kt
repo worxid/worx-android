@@ -15,6 +15,8 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import id.worx.device.client.R
+import id.worx.device.client.model.DateField
+import id.worx.device.client.model.DateValue
 import id.worx.device.client.theme.GrayDivider
 import id.worx.device.client.theme.PrimaryMain
 import id.worx.device.client.theme.Typography
@@ -24,35 +26,48 @@ import java.util.*
 
 @Composable
 fun WorxDateInput(indexForm:Int, viewModel: DetailFormViewModel) {
-    val form = viewModel.uiState.detailForm?.componentList?.get(indexForm)!!
-    val selectedDate = remember { mutableStateOf(form.Outputdata) }
+    val form = viewModel.uiState.collectAsState().value.detailForm?.fields?.get(indexForm)!! as DateField
+    val dateValue = viewModel.uiState.collectAsState().value.values[form.id] as DateValue?
+    val value = if (dateValue != null){
+        remember { mutableStateOf(dateValue.value) }
+    } else {
+        remember { mutableStateOf<String?>(null) }
+    }
     var showDatePicker by remember { mutableStateOf(false) }
+    val context = LocalContext.current
 
     val c = Calendar.getInstance()
     var year = c.get(Calendar.YEAR)
     var month = c.get(Calendar.MONTH)
     var day = c.get(Calendar.DAY_OF_MONTH)
 
-    if (!selectedDate.value.isNullOrEmpty()){
-        val dateVM : Date = SimpleDateFormat("dd/MM/yy", Locale.getDefault()).parse(selectedDate.value!!) as Date
+    if (value.value != null){
+        val dateVM : Date = SimpleDateFormat("dd/MM/yy", Locale.getDefault()).parse(value.value!!) as Date
         year = dateVM.year
         month = dateVM.month
         day = dateVM.day
     }
 
+    val datePickerCallback = DatePickerDialog.OnDateSetListener { datePicker, yr, mo, date ->
+        val calendar = Calendar.getInstance()
+        calendar.set(yr, mo, date)
+        val newDate = calendar.time
+        val dateString = SimpleDateFormat("dd/MM/yy", Locale.getDefault()).format(newDate)
+        viewModel.setComponentData(indexForm, DateValue(value = dateString))
+        value.value = dateString
+        showDatePicker = false
+    }
+
     val mDatePickerDialog = DatePickerDialog(
-        LocalContext.current, R.style.CalenderViewCustom, { datePicker, yr, mo, date ->
-            val newDate = Date(yr, mo, date)
-            val dateString = SimpleDateFormat("dd/MM/yy", Locale.getDefault()).format(newDate)
-            viewModel.setComponentData(indexForm, dateString)
-            selectedDate.value = dateString
-            showDatePicker = false
-        }, year, month, day
+        context,
+        R.style.CalenderViewCustom,
+        datePickerCallback,
+        year, month, day
     )
 
     Column(modifier = Modifier.fillMaxWidth()) {
         Text(
-            viewModel.uiState.detailForm!!.componentList[indexForm].inputData.title,
+            form.label ?: "",
             style = Typography.body2,
             modifier = Modifier.padding(start = 17.dp, bottom = 8.dp)
         )
@@ -66,7 +81,7 @@ fun WorxDateInput(indexForm:Int, viewModel: DetailFormViewModel) {
                 modifier = Modifier.padding(end = 12.dp),
                 enabled = false,
                 colors = TextFieldDefaults.textFieldColors(backgroundColor = GrayDivider),
-                textStyle = if (selectedDate.value.isNullOrEmpty()) {
+                textStyle = if (value.value.isNullOrEmpty()) {
                     Typography.body2.copy(color = Color.Black.copy(0.54f))
                 } else {
                     Typography.body2
@@ -79,14 +94,14 @@ fun WorxDateInput(indexForm:Int, viewModel: DetailFormViewModel) {
                         modifier = Modifier
                             .clickable {
                                 viewModel.setComponentData(indexForm, null)
-                                selectedDate.value = null
+                                value.value = null
                             }
                     )
                 },
-                value = if (!selectedDate.value.isNullOrEmpty()) {
-                    selectedDate.value!!
-                } else {
+                value = if (value.value == null) {
                     "Answer"
+                } else {
+                    value.value ?: ""
                 },
                 onValueChange = {})
             Box(modifier = Modifier
