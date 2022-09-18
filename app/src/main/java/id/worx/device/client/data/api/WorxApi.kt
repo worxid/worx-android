@@ -37,7 +37,6 @@ interface WorxApi {
                 .build()
 
             val gson = GsonBuilder().registerTypeAdapter(Fields::class.java, FieldsDeserializer())
-                .registerTypeAdapter(Value::class.java, ValueSerializer())
                 .create()
 
             return Retrofit.Builder()
@@ -73,19 +72,5 @@ class FieldsDeserializer : JsonDeserializer<Fields?> {
             type.contains(Type.Signature.type) -> gson.fromJson(json, SignatureField::class.java)
             else -> throw IllegalArgumentException("Can't deserialize ${entry.key} ${entry.value}")
         }
-    }
-}
-
-class ValueSerializer: JsonSerializer<Value>{
-    override fun serialize(
-        src: Value?,
-        typeOfSrc: java.lang.reflect.Type?,
-        context: JsonSerializationContext?
-    ): JsonElement {
-        val gson = Gson()
-        if (src is SignatureValue){
-            gson.toJsonTree(src).asJsonObject.remove("bitmap")
-        }
-        return gson.toJsonTree(src)
     }
 }

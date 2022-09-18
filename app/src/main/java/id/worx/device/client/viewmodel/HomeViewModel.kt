@@ -5,6 +5,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import id.worx.device.client.Event
 import id.worx.device.client.MainScreen
 import id.worx.device.client.model.EmptyForm
+import id.worx.device.client.model.SubmitForm
 import id.worx.device.client.repository.HomeRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.update
@@ -14,6 +15,7 @@ import javax.inject.Inject
 
 data class HomeUiState(
     var list: List<EmptyForm> = emptyList(),
+    var drafts: List<SubmitForm> = emptyList(),
     var isLoading: Boolean = false,
     var errorMessages: String = "",
     var searchInput: String = ""
@@ -46,10 +48,20 @@ class HomeViewModel @Inject constructor(
         uiState.value.isLoading = true
 
         viewModelScope.launch {
+            repository.getAllDraftForm().collect { list ->
+                uiState.update {
+                    it.copy(drafts = list)
+                }
+            }
+        }
+
+        viewModelScope.launch {
             val result = repository.fetchAllListTemplate()
             uiState.update {
                 if (result.isSuccessful){
-                    it.copy(list = result.body()!!.list, isLoading = false)
+                    it.copy(
+                        list = result.body()!!.list,
+                        isLoading = false)
                 } else {
                     it.copy(isLoading = false, errorMessages = "Error ${result.code()}")
                 }

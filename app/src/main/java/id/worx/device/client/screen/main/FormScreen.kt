@@ -17,14 +17,14 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import id.worx.device.client.R
-import id.worx.device.client.model.EmptyForm
+import id.worx.device.client.model.BasicForm
 import id.worx.device.client.theme.Typography
 import id.worx.device.client.viewmodel.DetailFormViewModel
 import id.worx.device.client.viewmodel.HomeViewModel
 
 @Composable
 fun FormScreen(
-    data: List<EmptyForm>,
+    data: List<BasicForm>,
     viewModel: HomeViewModel,
     detailFormViewModel: DetailFormViewModel
 ) {
@@ -41,7 +41,7 @@ fun FormScreen(
 }
 
 @Composable
-fun ListItemValidForm(item: EmptyForm, viewModel: HomeViewModel, detailFormViewModel: DetailFormViewModel) {
+fun ListItemValidForm(item: BasicForm, viewModel: HomeViewModel, detailFormViewModel: DetailFormViewModel) {
     Row(
         modifier = Modifier
             .fillMaxWidth()

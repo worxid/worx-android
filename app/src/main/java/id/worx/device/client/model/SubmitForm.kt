@@ -1,9 +1,12 @@
 package id.worx.device.client.model
 
+import androidx.room.Entity
+import androidx.room.PrimaryKey
 import com.google.gson.annotations.SerializedName
 
-
+@Entity(tableName = "draft")
 data class SubmitForm(
+    @PrimaryKey(autoGenerate = false)
     @SerializedName("id") override var id: Int? = null,
     @SerializedName("label") override var label: String? = null,
     @SerializedName("description") override var description: String? = null,

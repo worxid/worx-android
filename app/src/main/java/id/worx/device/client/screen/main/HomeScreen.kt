@@ -32,6 +32,7 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import id.worx.device.client.R
 import id.worx.device.client.model.EmptyForm
+import id.worx.device.client.model.SubmitForm
 import id.worx.device.client.screen.FormScreen
 import id.worx.device.client.theme.PrimaryMain
 import id.worx.device.client.theme.Typography
@@ -49,7 +50,7 @@ sealed class BottomNavItem(var title: Int, var icon: Int, var screen_route: Stri
 fun NavigationGraph(
     navController: NavHostController,
     formList: List<EmptyForm>,
-    draftList: List<EmptyForm>,
+    draftList: List<SubmitForm>,
     submissionList: List<EmptyForm>,
     viewModel: HomeViewModel,
     detailVM: DetailFormViewModel
@@ -59,7 +60,7 @@ fun NavigationGraph(
             FormScreen(formList, viewModel, detailVM)
         }
         composable(BottomNavItem.Draft.screen_route) {
-            //FormScreen(draftList, viewModel, detailVM)
+            FormScreen(draftList, viewModel, detailVM)
         }
         composable(BottomNavItem.Submission.screen_route) {
             //FormScreen(submissionList, viewModel, detailVM)
@@ -70,7 +71,7 @@ fun NavigationGraph(
 @Composable
 fun HomeScreen(
     formList: List<EmptyForm>,
-    draftList: List<EmptyForm>,
+    draftList: List<SubmitForm>,
     submissionList: List<EmptyForm>,
     viewModel: HomeViewModel,
     detailVM: DetailFormViewModel
@@ -208,5 +209,5 @@ private fun BottomNavPreview(
     viewModel: HomeViewModel = hiltViewModel(),
     detailVM: DetailFormViewModel = hiltViewModel()) {
     val list = arrayListOf<EmptyForm>()
-    HomeScreen(list, list, list, viewModel, detailVM)
+    HomeScreen(list, arrayListOf(), list, viewModel, detailVM)
 }

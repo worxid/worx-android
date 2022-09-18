@@ -38,7 +38,7 @@ class HomeFragment: Fragment() {
                 WorxTheme {
                     HomeScreen(
                         formList = viewModel.uiState.collectAsState().value.list,
-                        draftList = viewModel.uiState.collectAsState().value.list,
+                        draftList = viewModel.uiState.collectAsState().value.drafts,
                         submissionList = viewModel.uiState.collectAsState().value.list,
                     viewModel = viewModel,
                     detailVM = detailViewModel)

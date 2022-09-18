@@ -7,7 +7,7 @@ import androidx.lifecycle.*
 import dagger.hilt.android.lifecycle.HiltViewModel
 import id.worx.device.client.Event
 import id.worx.device.client.MainScreen
-import id.worx.device.client.model.EmptyForm
+import id.worx.device.client.model.BasicForm
 import id.worx.device.client.model.SignatureValue
 import id.worx.device.client.model.SubmitForm
 import id.worx.device.client.model.Value
@@ -25,11 +25,11 @@ enum class EventStatus {
  * UI State to hold data
  */
 data class DetailUiState(
-    var detailForm: EmptyForm? = null,
+    var detailForm: BasicForm? = null,
     var values: MutableMap<String, Value> = mutableMapOf(),
     var currentComponent: Int = -1,
     val status: EventStatus = EventStatus.Loading,
-    var errorMessages: List<String> = emptyList(),
+    var errorMessages: String = "",
 )
 
 @HiltViewModel
@@ -46,9 +46,13 @@ class DetailFormViewModel @Inject constructor(
     private val _formProgress = mutableStateOf(0)
     val formProgress: State<Int> = _formProgress
 
-    fun navigateFromHomeScreen(form: EmptyForm) {
+    fun navigateFromHomeScreen(form: BasicForm) {
         uiState.update {
-            it.copy(detailForm = form, status = EventStatus.Filling)
+            if (form is SubmitForm){
+                it.copy(detailForm = form, values = form.values.toMutableMap(), status = EventStatus.Filling)
+            } else {
+                it.copy(detailForm = form, status = EventStatus.Filling)
+            }
         }
     }
 
@@ -96,26 +100,42 @@ class DetailFormViewModel @Inject constructor(
 
     fun submitForm() {
         viewModelScope.launch {
-            val result = repository.submitForm(
-                SubmitForm(
-                    id = uiState.value.detailForm!!.id,
-                    label = uiState.value.detailForm!!.label,
-                    description = uiState.value.detailForm!!.description,
-                    fields = uiState.value.detailForm!!.fields,
-                    values = uiState.value.values
-                )
-            )
+            val result = repository.submitForm(createSubmitForm())
             if (result.isSuccessful){
                 uiState.update {
-                    it.copy(status = EventStatus.Submitted)
+                    it.copy(detailForm = null, values= mutableMapOf(), currentComponent = -1, status = EventStatus.Submitted)
+                }
+                _navigateTo.value = Event(MainScreen.Home)
+            } else {
+                uiState.update {
+                    it.copy(errorMessages = "Error ${result.code()} ${result.errorBody().toString()}")
                 }
             }
         }
     }
 
     fun saveFormAsDraft() {
-        uiState.update {
-            it.copy(status = EventStatus.Saved)
+        viewModelScope.launch {
+            val result = repository.saveDraft(createSubmitForm())
+            uiState.update {
+                it.copy(
+                    detailForm = null,
+                    values = mutableMapOf(),
+                    currentComponent = -1,
+                    status = EventStatus.Saved
+                )
+            }
+            _navigateTo.value = Event(MainScreen.Home)
         }
+    }
+
+    private fun createSubmitForm(): SubmitForm{
+        return SubmitForm(
+            id = uiState.value.detailForm!!.id,
+            label = uiState.value.detailForm!!.label,
+            description = uiState.value.detailForm!!.description,
+            fields = uiState.value.detailForm!!.fields,
+            values = uiState.value.values
+        )
     }
 }
