@@ -31,4 +31,5 @@
     <string name="add_signature">Add Signature</string>
     <string name="erase">Hapus</string>
     <string name="save">Simpan</string>
+    <string name="draft_descr">Draft description</string>
 </resources>

@@ -32,7 +32,7 @@ sealed interface BasicForm {
     var submitInZone: Boolean?
 }
 
-open class Fields (
+abstract class Fields (
     @SerializedName("id"          ) open var id          : String?          = null,
     @SerializedName("label"       ) open var label       : String?          = null,
     @SerializedName("description" ) open var description : String?          = null,

@@ -13,6 +13,7 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
+// Const to view dialog/notification on the screen
 private val SUBMITTED = 1
 private val DRAFT = 2
 
@@ -47,7 +48,7 @@ class HomeViewModel @Inject constructor(
     }
 
     /**
-     * Refresh posts and update the UI state accordingly
+     * Refresh data and update the UI state accordingly
      */
     private fun refreshData() {
         // Ui state is refreshing
@@ -84,6 +85,10 @@ class HomeViewModel @Inject constructor(
         uiState.value.searchInput = searchInput
     }
 
+    /**
+     * Show dialog of notification on the screen
+     * Params : typeOfNotification that need to be shown
+     */
     fun showNotification(typeOfNotification: Int){
         _showNotification.value = typeOfNotification
     }

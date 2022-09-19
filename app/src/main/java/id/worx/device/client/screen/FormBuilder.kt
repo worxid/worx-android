@@ -1,6 +1,5 @@
 package id.worx.device.client.screen
 
-import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -16,6 +15,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -49,7 +49,6 @@ fun ValidFormBuilder(
 ) {
     var showSubmitDialog by remember { mutableStateOf(false) }
     val formSubmitted = viewModel.uiState.collectAsState().value.status
-    Log.d("TAG", "$formSubmitted")
     var showDraftDialog by remember { mutableStateOf(false) }
 
     Box(modifier = Modifier.fillMaxSize()) {
@@ -74,7 +73,6 @@ fun ValidFormBuilder(
                 { showDraftDialog = false })
         }
         if (formSubmitted == EventStatus.Submitted) {
-            Log.d("TAG", "$formSubmitted")
             homeViewModel.showNotification(1)
             }
         }
@@ -174,7 +172,7 @@ fun DialogSubmitForm(
     submitForm: () -> Unit,
     saveDraftForm: () -> Unit
 ) {
-    val progress = (viewModel.formProgress.value / 100).toFloat()
+    val progress = viewModel.formProgress.value
     val fieldsNo = viewModel.uiState.collectAsState().value.detailForm!!.fields.size
 
     ModalBottomSheetLayout(
@@ -199,7 +197,7 @@ fun DialogSubmitForm(
                         .wrapContentSize()
                 ) {
                     CircularProgressIndicator(
-                        progress = progress,
+                        progress = progress / 100.toFloat(),
                         modifier = Modifier
                             .width(102.dp)
                             .height(102.dp),
@@ -212,8 +210,9 @@ fun DialogSubmitForm(
                         contentDescription = "Image Warning"
                     )
                 }
+                val fieldFilled = progress.toDouble()/100*fieldsNo
                 Text(
-                    text = "${(fieldsNo * progress).toInt()} of $fieldsNo Fields Answered",
+                    text = "${fieldFilled.toInt()} of $fieldsNo Fields Answered",
                     style = Typography.body2.copy(Color.Black.copy(0.54f))
                 )
                 RedFullWidthButton(
@@ -247,7 +246,6 @@ fun DialogDraftForm(
                     .background(Color.White)
                     .border(1.5.dp, Color.Black)
                     .padding(20.dp),
-                horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.spacedBy(20.dp)
             ) {
                 Text(
@@ -260,7 +258,8 @@ fun DialogDraftForm(
                     style = Typography.body2.copy(Color.Black.copy(0.54f))
                 )
                 WorxTextField(
-                    label = "Draft description",
+                    label = "",
+                    hint = stringResource(R.string.draft_descr),
                     inputType = KeyboardOptions(keyboardType = KeyboardType.Text),
                     onValueChange = {})
                 Row(

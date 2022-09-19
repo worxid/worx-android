@@ -46,6 +46,10 @@ class DetailFormViewModel @Inject constructor(
     private val _formProgress = mutableStateOf(0)
     val formProgress: State<Int> = _formProgress
 
+    /**
+     * Pass data from Home ViewModel
+     * Params : form - EmptyForm / SubmitForm
+     */
     fun navigateFromHomeScreen(form: BasicForm) {
         uiState.update {
             if (form is SubmitForm){
@@ -56,6 +60,9 @@ class DetailFormViewModel @Inject constructor(
         }
     }
 
+    /**
+     * Update value on the UI State
+     */
     fun setComponentData(index: Int, value: Value?) {
         val fields = uiState.value.detailForm!!.fields
         val values = uiState.value.values
