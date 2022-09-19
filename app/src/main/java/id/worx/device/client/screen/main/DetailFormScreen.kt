@@ -1,14 +1,8 @@
 package id.worx.device.client.screen
 
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
 import id.worx.device.client.theme.WorxTheme
@@ -38,23 +32,13 @@ fun DetailFormScreen(
             )
         }
     ) { padding ->
-        if (uistate.detailForm != null) {
-            val componentList = uistate.detailForm!!.fields
-            ValidFormBuilder(
-                componentList = componentList,
-                viewModel,
-                cameraViewModel,
-                homeViewModel
-            )
-        } else {
-            Box(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(padding)
-            ) {
-                CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
-            }
-        }
+        val componentList = uistate.detailForm!!.fields
+        ValidFormBuilder(
+            componentList = componentList,
+            viewModel,
+            cameraViewModel,
+            homeViewModel
+        )
     }
 }
 

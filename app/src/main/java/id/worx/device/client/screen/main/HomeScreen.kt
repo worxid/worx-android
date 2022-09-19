@@ -52,19 +52,37 @@ fun NavigationGraph(
     navController: NavHostController,
     formList: List<EmptyForm>,
     draftList: List<SubmitForm>,
-    submissionList: List<EmptyForm>,
+    submissionList: List<SubmitForm>,
     viewModel: HomeViewModel,
     detailVM: DetailFormViewModel
 ) {
     NavHost(navController, startDestination = BottomNavItem.Form.screen_route) {
         composable(BottomNavItem.Form.screen_route) {
-            FormScreen(formList, viewModel, detailVM)
+            FormScreen(
+                formList,
+                viewModel,
+                detailVM,
+                stringResource(R.string.no_forms),
+                stringResource(R.string.empty_description_form)
+            )
         }
         composable(BottomNavItem.Draft.screen_route) {
-            FormScreen(draftList, viewModel, detailVM)
+            FormScreen(
+                draftList,
+                viewModel,
+                detailVM,
+                stringResource(R.string.no_drafts),
+                stringResource(R.string.empty_description_drafts)
+            )
         }
         composable(BottomNavItem.Submission.screen_route) {
-            //FormScreen(submissionList, viewModel, detailVM)
+            FormScreen(
+                submissionList,
+                viewModel,
+                detailVM,
+                stringResource(R.string.no_submission),
+                stringResource(R.string.empty_description_submission)
+            )
         }
     }
 }
@@ -73,7 +91,7 @@ fun NavigationGraph(
 fun HomeScreen(
     formList: List<EmptyForm>,
     draftList: List<SubmitForm>,
-    submissionList: List<EmptyForm>,
+    submissionList: List<SubmitForm>,
     viewModel: HomeViewModel,
     detailVM: DetailFormViewModel
 ) {
@@ -148,12 +166,16 @@ fun BottomNavigationView(navController: NavController) {
                     Text(
                         modifier = Modifier.padding(top = 8.dp),
                         text = stringResource(id = item.title),
-                        fontSize = 11.sp, fontFamily = FontFamily.Monospace
+                        fontSize = 11.sp, fontFamily = FontFamily.Monospace,
+                        color = if (currentRoute == item.screen_route){
+                            Color.White
+                        } else {
+                            Color.Black.copy(0.3f)
+                        }
                     )
                 },
                 selectedContentColor = Color.White,
                 unselectedContentColor = Color.Black.copy(alpha = 0.3f),
-                alwaysShowLabel = true,
                 selected = currentRoute == item.screen_route,
                 onClick = {
                     navController.navigate(item.screen_route) {
@@ -257,5 +279,5 @@ private fun BottomNavPreview(
     detailVM: DetailFormViewModel = hiltViewModel()
 ) {
     val list = arrayListOf<EmptyForm>()
-    HomeScreen(list, arrayListOf(), list, viewModel, detailVM)
+    HomeScreen(list, arrayListOf(), arrayListOf(), viewModel, detailVM)
 }

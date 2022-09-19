@@ -14,6 +14,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import id.worx.device.client.R
@@ -24,19 +25,25 @@ import id.worx.device.client.viewmodel.HomeViewModel
 
 @Composable
 fun FormScreen(
-    data: List<BasicForm>,
+    data: List<BasicForm>?,
     viewModel: HomeViewModel,
-    detailFormViewModel: DetailFormViewModel
+    detailFormViewModel: DetailFormViewModel,
+    titleForEmpty: String,
+    descriptionForEmpty: String
 ) {
-    LazyColumn(
-        modifier = Modifier
-            .fillMaxHeight()
-            .padding(horizontal = 16.dp, vertical = 12.dp),
-        verticalArrangement = Arrangement.spacedBy(12.dp)
-    ) {
-        items(items = data, itemContent = { item ->
-            ListItemValidForm(item, viewModel, detailFormViewModel)
-        })
+    if (data.isNullOrEmpty()){
+        EmptyList(titleForEmpty, descriptionForEmpty)
+    } else {
+        LazyColumn(
+            modifier = Modifier
+                .fillMaxHeight()
+                .padding(horizontal = 16.dp, vertical = 12.dp),
+            verticalArrangement = Arrangement.spacedBy(12.dp)
+        ) {
+            items(items = data, itemContent = { item ->
+                ListItemValidForm(item, viewModel, detailFormViewModel)
+            })
+        }
     }
 }
 
@@ -72,5 +79,29 @@ fun ListItemValidForm(item: BasicForm, viewModel: HomeViewModel, detailFormViewM
                 style = Typography.body1.copy(color = Color.Black.copy(alpha = 0.54f))
             )
         }
+    }
+}
+
+@Composable
+fun EmptyList(text : String, description:String){
+    Column(modifier = Modifier
+        .fillMaxSize()
+        .padding(48.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center
+    ) {
+        Image(
+            painter = painterResource(id = R.drawable.ic_empty_list_icon),
+            contentDescription = "Empty Icon"
+        )
+        Text(
+            modifier = Modifier.padding(top = 28.dp, bottom = 16.dp),
+            text = text,
+            style = Typography.subtitle1.copy(Color.Black)
+        )
+        Text(
+            text = description,
+            style = Typography.body2.copy(Color.Black.copy(0.54f),
+            textAlign = TextAlign.Center))
     }
 }
