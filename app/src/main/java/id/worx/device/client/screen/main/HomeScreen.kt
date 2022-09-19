@@ -3,6 +3,7 @@ package id.worx.device.client.screen.main
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.ExitTransition
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
@@ -10,9 +11,7 @@ import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Settings
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -23,6 +22,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.window.Dialog
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.NavHostController
@@ -34,6 +34,7 @@ import id.worx.device.client.R
 import id.worx.device.client.model.EmptyForm
 import id.worx.device.client.model.SubmitForm
 import id.worx.device.client.screen.FormScreen
+import id.worx.device.client.screen.RedFullWidthButton
 import id.worx.device.client.theme.PrimaryMain
 import id.worx.device.client.theme.Typography
 import id.worx.device.client.viewmodel.DetailFormViewModel
@@ -51,19 +52,37 @@ fun NavigationGraph(
     navController: NavHostController,
     formList: List<EmptyForm>,
     draftList: List<SubmitForm>,
-    submissionList: List<EmptyForm>,
+    submissionList: List<SubmitForm>,
     viewModel: HomeViewModel,
     detailVM: DetailFormViewModel
 ) {
     NavHost(navController, startDestination = BottomNavItem.Form.screen_route) {
         composable(BottomNavItem.Form.screen_route) {
-            FormScreen(formList, viewModel, detailVM)
+            FormScreen(
+                formList,
+                viewModel,
+                detailVM,
+                stringResource(R.string.no_forms),
+                stringResource(R.string.empty_description_form)
+            )
         }
         composable(BottomNavItem.Draft.screen_route) {
-            FormScreen(draftList, viewModel, detailVM)
+            FormScreen(
+                draftList,
+                viewModel,
+                detailVM,
+                stringResource(R.string.no_drafts),
+                stringResource(R.string.empty_description_drafts)
+            )
         }
         composable(BottomNavItem.Submission.screen_route) {
-            //FormScreen(submissionList, viewModel, detailVM)
+            FormScreen(
+                submissionList,
+                viewModel,
+                detailVM,
+                stringResource(R.string.no_submission),
+                stringResource(R.string.empty_description_submission)
+            )
         }
     }
 }
@@ -72,11 +91,14 @@ fun NavigationGraph(
 fun HomeScreen(
     formList: List<EmptyForm>,
     draftList: List<SubmitForm>,
-    submissionList: List<EmptyForm>,
+    submissionList: List<SubmitForm>,
     viewModel: HomeViewModel,
     detailVM: DetailFormViewModel
 ) {
     val navController = rememberNavController()
+    val notificationType = viewModel.showNotification.collectAsState().value
+    var showSubmittedStatus by remember{ mutableStateOf(notificationType == 1)}
+
     Scaffold(
         topBar = { MainTopAppBar() },
         bottomBar = {
@@ -102,6 +124,15 @@ fun HomeScreen(
                     .padding(padding)
             ) {
                 CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
+            }
+        }
+        AnimatedVisibility(
+            visible = showSubmittedStatus
+        )
+        {
+            FormSubmitted {
+                viewModel.showNotification(0)
+                showSubmittedStatus = false
             }
         }
     }
@@ -135,12 +166,16 @@ fun BottomNavigationView(navController: NavController) {
                     Text(
                         modifier = Modifier.padding(top = 8.dp),
                         text = stringResource(id = item.title),
-                        fontSize = 11.sp, fontFamily = FontFamily.Monospace
+                        fontSize = 11.sp, fontFamily = FontFamily.Monospace,
+                        color = if (currentRoute == item.screen_route){
+                            Color.White
+                        } else {
+                            Color.Black.copy(0.3f)
+                        }
                     )
                 },
                 selectedContentColor = Color.White,
                 unselectedContentColor = Color.Black.copy(alpha = 0.3f),
-                alwaysShowLabel = true,
                 selected = currentRoute == item.screen_route,
                 onClick = {
                     navController.navigate(item.screen_route) {
@@ -203,11 +238,46 @@ fun MainTopAppBar() {
     }
 }
 
+@Composable
+fun FormSubmitted(
+    closeNotification: () -> Unit
+) {
+    Dialog(
+        content = {
+            Column(
+                modifier = Modifier
+                    .wrapContentSize()
+                    .background(Color.White)
+                    .border(1.5.dp, Color.Black),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.spacedBy(20.dp)
+            ) {
+                Image(
+                    modifier = Modifier.padding(top = 20.dp),
+                    painter = painterResource(id = R.drawable.ic_tick_yellow),
+                    contentDescription = "Tick"
+                )
+                Text(
+                    text = "Successful submit form",
+                    style = Typography.body2
+                )
+                RedFullWidthButton(
+                    onClickCallback = { closeNotification() },
+                    label = "Oke",
+                    modifier = Modifier.padding(bottom = 20.dp)
+                )
+            }
+        },
+        onDismissRequest = {}
+    )
+}
+
 @Preview(showSystemUi = true)
 @Composable
 private fun BottomNavPreview(
     viewModel: HomeViewModel = hiltViewModel(),
-    detailVM: DetailFormViewModel = hiltViewModel()) {
+    detailVM: DetailFormViewModel = hiltViewModel()
+) {
     val list = arrayListOf<EmptyForm>()
-    HomeScreen(list, arrayListOf(), list, viewModel, detailVM)
+    HomeScreen(list, arrayListOf(), arrayListOf(), viewModel, detailVM)
 }

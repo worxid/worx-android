@@ -15,7 +15,7 @@ data class ImageField (
 ) : Fields()
 
 data class ImageValue(
-    @SerializedName("type") override var type: String? = Type.Checkbox.type,
+    @SerializedName("type") override var type: String? = Type.Photo.type,
     @SerializedName("file_ids") var value: ArrayList<Int> = arrayListOf(),
-    val filePath: ArrayList<String> = arrayListOf()
+    @Transient val filePath: ArrayList<String> = arrayListOf()
 ) : Value

@@ -36,7 +36,9 @@ interface WorxApi {
                 .addInterceptor(logger)
                 .build()
 
-            val gson = GsonBuilder().registerTypeAdapter(Fields::class.java, FieldsDeserializer())
+            val gson = GsonBuilder()
+                .registerTypeAdapter(Fields::class.java, FieldsDeserializer())
+                .registerTypeAdapter(Value::class.java, ValueSerialize())
                 .create()
 
             return Retrofit.Builder()
@@ -49,7 +51,7 @@ interface WorxApi {
     }
 }
 
-class FieldsDeserializer : JsonDeserializer<Fields?> {
+class FieldsDeserializer : JsonDeserializer<Fields?>, JsonSerializer<Fields?> {
     @Throws(JsonParseException::class)
     override fun deserialize(
         json: JsonElement?,
@@ -72,5 +74,47 @@ class FieldsDeserializer : JsonDeserializer<Fields?> {
             type.contains(Type.Signature.type) -> gson.fromJson(json, SignatureField::class.java)
             else -> throw IllegalArgumentException("Can't deserialize ${entry.key} ${entry.value}")
         }
+    }
+
+    override fun serialize(
+        src: Fields?,
+        typeOfSrc: java.lang.reflect.Type?,
+        context: JsonSerializationContext?
+    ): JsonElement {
+        return Gson().toJsonTree(src)
+    }
+}
+
+class ValueSerialize: JsonSerializer<Value> {
+    override fun serialize(
+        src: Value?,
+        typeOfSrc: java.lang.reflect.Type?,
+        context: JsonSerializationContext?
+    ): JsonElement {
+        val gson = Gson()
+        return gson.toJsonTree(src)
+    }
+}
+
+
+class SubmitLocationSerialize: JsonSerializer<SubmitLocation> {
+    override fun serialize(
+        src: SubmitLocation?,
+        typeOfSrc: java.lang.reflect.Type?,
+        context: JsonSerializationContext?
+    ): JsonElement {
+        val gson = Gson()
+        return gson.toJsonTree(src)
+    }
+}
+
+class OptionsSerialize: JsonSerializer<Options> {
+    override fun serialize(
+        src: Options?,
+        typeOfSrc: java.lang.reflect.Type?,
+        context: JsonSerializationContext?
+    ): JsonElement {
+        val gson = Gson()
+        return gson.toJsonTree(src)
     }
 }

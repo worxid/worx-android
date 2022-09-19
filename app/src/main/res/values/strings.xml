@@ -31,4 +31,11 @@
     <string name="add_signature">Add Signature</string>
     <string name="erase">Hapus</string>
     <string name="save">Simpan</string>
+    <string name="draft_descr">Draft description</string>
+    <string name="empty_description_form">You currently aren’t any forms. Please contact your admin too add forms to tour device</string>
+    <string name="no_forms">No Forms</string>
+    <string name="no_drafts">No Saved Drafts</string>
+    <string name="empty_description_drafts">You currently haven’t saved any drafts. You can save a draft after starting a new form</string>
+    <string name="empty_description_submission">You haven’t submitted any forms recently. Visit settings to change how long submissions are stored</string>
+    <string name="no_submission">No Recent Submission</string>
 </resources>

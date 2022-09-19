@@ -42,7 +42,7 @@ fun WorxDateInput(indexForm:Int, viewModel: DetailFormViewModel) {
     var day = c.get(Calendar.DAY_OF_MONTH)
 
     if (value.value != null){
-        val dateVM : Date = SimpleDateFormat("dd/MM/yy", Locale.getDefault()).parse(value.value!!) as Date
+        val dateVM : Date = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).parse(value.value!!) as Date
         year = dateVM.year
         month = dateVM.month
         day = dateVM.day
@@ -52,9 +52,9 @@ fun WorxDateInput(indexForm:Int, viewModel: DetailFormViewModel) {
         val calendar = Calendar.getInstance()
         calendar.set(yr, mo, date)
         val newDate = calendar.time
-        val dateString = SimpleDateFormat("dd/MM/yy", Locale.getDefault()).format(newDate)
+        val dateString = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(newDate)
         viewModel.setComponentData(indexForm, DateValue(value = dateString))
-        value.value = dateString
+        value.value = SimpleDateFormat("dd/MM/yy", Locale.getDefault()).format(newDate)
         showDatePicker = false
     }
 

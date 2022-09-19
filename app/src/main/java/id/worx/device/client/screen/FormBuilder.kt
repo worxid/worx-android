@@ -15,6 +15,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -22,6 +23,7 @@ import androidx.compose.ui.window.Dialog
 import androidx.hilt.navigation.compose.hiltViewModel
 import id.worx.device.client.R
 import id.worx.device.client.model.Fields
+import id.worx.device.client.model.SeparatorValue
 import id.worx.device.client.model.TextFieldValue
 import id.worx.device.client.model.Type
 import id.worx.device.client.screen.components.*
@@ -30,7 +32,7 @@ import id.worx.device.client.theme.Typography
 import id.worx.device.client.viewmodel.CameraViewModel
 import id.worx.device.client.viewmodel.DetailFormViewModel
 import id.worx.device.client.viewmodel.EventStatus
-import kotlinx.coroutines.flow.update
+import id.worx.device.client.viewmodel.HomeViewModel
 
 /*****************
  *  1 = TextField
@@ -42,7 +44,8 @@ import kotlinx.coroutines.flow.update
 fun ValidFormBuilder(
     componentList: List<Fields>,
     viewModel: DetailFormViewModel,
-    cameraViewModel: CameraViewModel
+    cameraViewModel: CameraViewModel,
+    homeViewModel:HomeViewModel
 ) {
     var showSubmitDialog by remember { mutableStateOf(false) }
     val formSubmitted = viewModel.uiState.collectAsState().value.status
@@ -59,7 +62,7 @@ fun ValidFormBuilder(
             DialogSubmitForm(
                 viewModel,
                 {
-                    viewModel.submitForm()
+                    viewModel.submitForm { homeViewModel.showNotification(1) }
                     showSubmitDialog = false
                 },
                 { showDraftDialog = true })
@@ -70,14 +73,10 @@ fun ValidFormBuilder(
                 { showDraftDialog = false })
         }
         if (formSubmitted == EventStatus.Submitted) {
-            FormSubmitted() {
-                viewModel.uiState.update {
-                    it.copy(status = EventStatus.Done)
-                }
+            homeViewModel.showNotification(1)
             }
         }
     }
-}
 
 @Composable
 fun DetailForm(
@@ -147,6 +146,7 @@ fun DetailForm(
                 }
                 Type.Separator.type -> {
                     WorxSeparator()
+                    viewModel.setComponentData(index, SeparatorValue())
                 }
                 else -> {
                     Text(
@@ -172,7 +172,7 @@ fun DialogSubmitForm(
     submitForm: () -> Unit,
     saveDraftForm: () -> Unit
 ) {
-    val progress = (viewModel.formProgress.value / 100).toFloat()
+    val progress = viewModel.formProgress.value
     val fieldsNo = viewModel.uiState.collectAsState().value.detailForm!!.fields.size
 
     ModalBottomSheetLayout(
@@ -197,7 +197,7 @@ fun DialogSubmitForm(
                         .wrapContentSize()
                 ) {
                     CircularProgressIndicator(
-                        progress = progress,
+                        progress = progress / 100.toFloat(),
                         modifier = Modifier
                             .width(102.dp)
                             .height(102.dp),
@@ -210,8 +210,9 @@ fun DialogSubmitForm(
                         contentDescription = "Image Warning"
                     )
                 }
+                val fieldFilled = progress.toDouble()/100*fieldsNo
                 Text(
-                    text = "${(fieldsNo * progress).toInt()} of ${fieldsNo} Fields Answered",
+                    text = "${fieldFilled.toInt()} of $fieldsNo Fields Answered",
                     style = Typography.body2.copy(Color.Black.copy(0.54f))
                 )
                 RedFullWidthButton(
@@ -245,7 +246,6 @@ fun DialogDraftForm(
                     .background(Color.White)
                     .border(1.5.dp, Color.Black)
                     .padding(20.dp),
-                horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.spacedBy(20.dp)
             ) {
                 Text(
@@ -258,7 +258,8 @@ fun DialogDraftForm(
                     style = Typography.body2.copy(Color.Black.copy(0.54f))
                 )
                 WorxTextField(
-                    label = "Draft description",
+                    label = "",
+                    hint = stringResource(R.string.draft_descr),
                     inputType = KeyboardOptions(keyboardType = KeyboardType.Text),
                     onValueChange = {})
                 Row(
@@ -274,40 +275,6 @@ fun DialogDraftForm(
                         style = Typography.button.copy(PrimaryMain),
                         modifier = Modifier.clickable { saveDraft() })
                 }
-            }
-        },
-        onDismissRequest = {}
-    )
-}
-
-@Composable
-fun FormSubmitted(
-    closeNotification: () -> Unit
-) {
-    Dialog(
-        content = {
-            Column(
-                modifier = Modifier
-                    .wrapContentSize()
-                    .background(Color.White)
-                    .border(1.5.dp, Color.Black),
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.spacedBy(20.dp)
-            ) {
-                Image(
-                    modifier = Modifier.padding(top = 20.dp),
-                    painter = painterResource(id = R.drawable.ic_tick_yellow),
-                    contentDescription = "Tick"
-                )
-                Text(
-                    text = "Successful submit form",
-                    style = Typography.body2
-                )
-                RedFullWidthButton(
-                    onClickCallback = { closeNotification() },
-                    label = "Oke",
-                    modifier = Modifier.padding(bottom = 20.dp)
-                )
             }
         },
         onDismissRequest = {}

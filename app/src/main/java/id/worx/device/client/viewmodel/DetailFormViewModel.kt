@@ -46,6 +46,10 @@ class DetailFormViewModel @Inject constructor(
     private val _formProgress = mutableStateOf(0)
     val formProgress: State<Int> = _formProgress
 
+    /**
+     * Pass data from Home ViewModel
+     * Params : form - EmptyForm / SubmitForm
+     */
     fun navigateFromHomeScreen(form: BasicForm) {
         uiState.update {
             if (form is SubmitForm){
@@ -56,6 +60,9 @@ class DetailFormViewModel @Inject constructor(
         }
     }
 
+    /**
+     * Update value on the UI State
+     */
     fun setComponentData(index: Int, value: Value?) {
         val fields = uiState.value.detailForm!!.fields
         val values = uiState.value.values
@@ -98,13 +105,16 @@ class DetailFormViewModel @Inject constructor(
         uiState.value.currentComponent = index
     }
 
-    fun submitForm() {
+    fun submitForm(actionAfterSubmitted: () -> Unit) {
         viewModelScope.launch {
-            val result = repository.submitForm(createSubmitForm())
+            val form = createSubmitForm()
+
+            val result = repository.submitForm(form)
             if (result.isSuccessful){
                 uiState.update {
                     it.copy(detailForm = null, values= mutableMapOf(), currentComponent = -1, status = EventStatus.Submitted)
                 }
+                actionAfterSubmitted()
                 _navigateTo.value = Event(MainScreen.Home)
             } else {
                 uiState.update {
@@ -135,7 +145,8 @@ class DetailFormViewModel @Inject constructor(
             label = uiState.value.detailForm!!.label,
             description = uiState.value.detailForm!!.description,
             fields = uiState.value.detailForm!!.fields,
-            values = uiState.value.values
+            values = uiState.value.values,
+            templateId = uiState.value.detailForm!!.id
         )
     }
 }
