@@ -1,9 +1,11 @@
 package id.worx.device.client.viewmodel
 
 import android.graphics.Bitmap
+import android.util.Log
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.*
+import com.google.gson.Gson
 import dagger.hilt.android.lifecycle.HiltViewModel
 import id.worx.device.client.Event
 import id.worx.device.client.MainScreen
@@ -100,7 +102,9 @@ class DetailFormViewModel @Inject constructor(
 
     fun submitForm() {
         viewModelScope.launch {
-            val result = repository.submitForm(createSubmitForm())
+            val form = createSubmitForm()
+            Log.d("TAG", Gson().toJson(form))
+            val result = repository.submitForm(form)
             if (result.isSuccessful){
                 uiState.update {
                     it.copy(detailForm = null, values= mutableMapOf(), currentComponent = -1, status = EventStatus.Submitted)

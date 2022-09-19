@@ -18,5 +18,5 @@ data class FileField (
 data class FileValue(
     @SerializedName("type") override var type: String? = Type.File.type,
     @SerializedName("file_ids") var value: ArrayList<Int> = arrayListOf(),
-    val filePath: ArrayList<String> = arrayListOf()
+    @Transient val filePath: ArrayList<String> = arrayListOf()
 ) : Value
