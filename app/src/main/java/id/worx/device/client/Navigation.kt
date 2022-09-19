@@ -1,7 +1,6 @@
 package id.worx.device.client
 
 import androidx.fragment.app.Fragment
-import androidx.navigation.NavOptions
 import androidx.navigation.fragment.findNavController
 import java.security.InvalidParameterException
 
@@ -50,22 +49,22 @@ fun Fragment.navigate(to: MainScreen, from: MainScreen) {
             findNavController().navigate(R.id.home_fragment)
         }
         MainScreen.Detail -> {
-            findNavController().navigate(R.id.detail_form_fragment)
+            when (from) {
+                MainScreen.SignaturePad ->
+                    findNavController().navigate(R.id.action_signaturepad_to_detail)
+                MainScreen.PhotoPreview ->
+                    findNavController().navigate(R.id.action_previewfragment_to_detailfragment)
+                else -> findNavController().navigate(R.id.detail_form_fragment)
+            }
         }
         MainScreen.CameraPhoto -> {
-            val navBuilder = NavOptions.Builder()
-            val navOptions = navBuilder.setPopUpTo(R.id.camera_photo_fragment, true).build()
-            findNavController().navigate(R.id.camera_photo_fragment, null, navOptions)
+            findNavController().navigate(R.id.camera_photo_fragment)
         }
         MainScreen.PhotoPreview -> {
-            val navBuilder = NavOptions.Builder()
-            val navOptions = navBuilder.setPopUpTo(R.id.photo_preview_fragment, true).build()
-            findNavController().navigate(R.id.photo_preview_fragment, null, navOptions)
+            findNavController().navigate(R.id.action_photofragment_to_previewfragment)
         }
         MainScreen.SignaturePad -> {
-            val navBuilder = NavOptions.Builder()
-            val navOptions = navBuilder.setPopUpTo(R.id.signature_pad_fragment, true).build()
-            findNavController().navigate(R.id.signature_pad_fragment, null, navOptions)
+            findNavController().navigate(R.id.signature_pad_fragment)
         }
         else -> {}
     }

@@ -15,13 +15,34 @@
     <fragment
         android:id="@+id/camera_photo_fragment"
         android:name="id.worx.device.client.view.CameraPhotoFragment"
-        android:label="CameraPhotoFragment" />
+        android:label="CameraPhotoFragment" >
+        <action
+            android:id="@+id/action_photofragment_to_previewfragment"
+            app:destination="@id/photo_preview_fragment"
+            app:launchSingleTop="true"
+            app:popUpTo="@+id/home_nav_graph"
+            app:popUpToInclusive="true" />
+    </fragment>
     <fragment
         android:id="@+id/photo_preview_fragment"
         android:name="id.worx.device.client.view.PhotoPreviewFragment"
-        android:label="PhotoPreviewFragment" />
+        android:label="PhotoPreviewFragment">
+        <action
+            android:id="@+id/action_previewfragment_to_detailfragment"
+            app:destination="@id/detail_form_fragment"
+            app:launchSingleTop="true"
+            app:popUpTo="@+id/home_nav_graph"
+            app:popUpToInclusive="true" />
+    </fragment>
     <fragment
         android:id="@+id/signature_pad_fragment"
         android:name="id.worx.device.client.view.SignaturePadFragment"
-        android:label="SignaturePadFragment" />
+        android:label="SignaturePadFragment">
+        <action
+            android:id="@+id/action_signaturepad_to_detail"
+            app:destination="@id/detail_form_fragment"
+            app:launchSingleTop="true"
+            app:popUpTo="@+id/home_nav_graph"
+            app:popUpToInclusive="true" />
+    </fragment>
 </navigation>

@@ -8,10 +8,13 @@ import id.worx.device.client.model.EmptyForm
 import id.worx.device.client.model.SubmitForm
 import id.worx.device.client.repository.HomeRepository
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
+private val SUBMITTED = 1
+private val DRAFT = 2
 
 data class HomeUiState(
     var list: List<EmptyForm> = emptyList(),
@@ -31,6 +34,9 @@ class HomeViewModel @Inject constructor(
 
     private val _navigateTo = MutableLiveData<Event<MainScreen>>()
     val navigateTo: LiveData<Event<MainScreen>> = _navigateTo
+
+    private val _showNotification = MutableStateFlow(0)
+    val showNotification: StateFlow<Int> = _showNotification
 
     init {
         refreshData()
@@ -76,5 +82,9 @@ class HomeViewModel @Inject constructor(
      */
     fun onSearchInputChanged(searchInput: String) {
         uiState.value.searchInput = searchInput
+    }
+
+    fun showNotification(typeOfNotification: Int){
+        _showNotification.value = typeOfNotification
     }
 }

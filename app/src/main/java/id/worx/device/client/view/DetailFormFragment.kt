@@ -14,12 +14,14 @@ import id.worx.device.client.screen.DetailFormScreen
 import id.worx.device.client.theme.WorxTheme
 import id.worx.device.client.viewmodel.CameraViewModel
 import id.worx.device.client.viewmodel.DetailFormViewModel
+import id.worx.device.client.viewmodel.HomeViewModel
 
 @AndroidEntryPoint
-class DetailFormFragment: Fragment() {
+class DetailFormFragment : Fragment() {
 
     private val viewModel by activityViewModels<DetailFormViewModel>()
     private val cameraViewModel by activityViewModels<CameraViewModel>()
+    private val homeViewModel by activityViewModels<HomeViewModel>()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -35,7 +37,12 @@ class DetailFormFragment: Fragment() {
         return ComposeView(requireContext()).apply {
             setContent {
                 WorxTheme {
-                    DetailFormScreen(viewModel, cameraViewModel) { activity?.onBackPressedDispatcher?.onBackPressed() }
+                    DetailFormScreen(
+                        viewModel,
+                        cameraViewModel,
+                        { activity?.onBackPressedDispatcher?.onBackPressed() },
+                        homeViewModel
+                    )
                 }
             }
         }
