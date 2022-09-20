@@ -7,9 +7,11 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
-import id.worx.device.client.data.DAO.DraftDAO
 import id.worx.device.client.data.api.WorxApi
+import id.worx.device.client.data.dao.DraftDAO
+import id.worx.device.client.data.dao.FormDAO
 import id.worx.device.client.data.database.DraftDB
+import id.worx.device.client.data.database.FormDB
 import javax.inject.Singleton
 
 @Module
@@ -32,6 +34,22 @@ object ApplicationModule {
             appContext,
             DraftDB::class.java,
             "draft.db"
+        ).fallbackToDestructiveMigration()
+            .build()
+    }
+
+    @Provides
+    @Singleton
+    fun provideFormDao(formDatabase: FormDB): FormDAO =
+        formDatabase.dao()
+
+    @Provides
+    @Singleton
+    fun provideFormDatabase(@ApplicationContext appContext: Context): FormDB {
+        return Room.databaseBuilder(
+            appContext,
+            FormDB::class.java,
+            "form.db"
         ).fallbackToDestructiveMigration()
             .build()
     }

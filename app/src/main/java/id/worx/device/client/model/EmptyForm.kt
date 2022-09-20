@@ -1,5 +1,7 @@
 package id.worx.device.client.model
 
+import androidx.room.Entity
+import androidx.room.PrimaryKey
 import com.google.gson.annotations.SerializedName
 
 enum class Type(val type: String){
@@ -15,7 +17,9 @@ enum class Type(val type: String){
     Separator("separator")
 }
 
+@Entity(tableName = "form")
 data class EmptyForm(
+    @PrimaryKey
     @SerializedName("id"             ) override var id           : Int?              = null,
     @SerializedName("label"          ) override var label        : String?           = null,
     @SerializedName("description"    ) override var description  : String?           = null,

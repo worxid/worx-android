@@ -1,4 +1,4 @@
-package id.worx.device.client.data.DAO
+package id.worx.device.client.data.dao
 
 import androidx.room.*
 import id.worx.device.client.model.SubmitForm

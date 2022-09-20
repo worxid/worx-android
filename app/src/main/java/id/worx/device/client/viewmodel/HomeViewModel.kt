@@ -1,12 +1,16 @@
 package id.worx.device.client.viewmodel
 
 import androidx.lifecycle.*
+import androidx.work.*
 import dagger.hilt.android.lifecycle.HiltViewModel
 import id.worx.device.client.Event
 import id.worx.device.client.MainScreen
+import id.worx.device.client.WorxApplication
+import id.worx.device.client.data.database.FormDownloadWorker
 import id.worx.device.client.model.EmptyForm
 import id.worx.device.client.model.SubmitForm
 import id.worx.device.client.repository.HomeRepository
+import id.worx.device.client.repository.SourceDataRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
@@ -28,7 +32,8 @@ data class HomeUiState(
 @HiltViewModel
 class HomeViewModel @Inject constructor(
     private val savedStateHandle: SavedStateHandle,
-    private val repository: HomeRepository
+    private val repository: SourceDataRepository,
+    private val homeRepository: HomeRepository
 ) : ViewModel() {
 
     val uiState = MutableStateFlow(HomeUiState())
@@ -63,14 +68,9 @@ class HomeViewModel @Inject constructor(
         }
 
         viewModelScope.launch {
-            val result = repository.fetchAllListTemplate()
-            uiState.update {
-                if (result.isSuccessful){
-                    it.copy(
-                        list = result.body()!!.list,
-                        isLoading = false)
-                } else {
-                    it.copy(isLoading = false, errorMessages = "Error ${result.code()}")
+            repository.getAllFormFromDB().collect { list ->
+                uiState.update {
+                    it.copy(list = list, isLoading = false)
                 }
             }
             uiState.value.isLoading = false
@@ -91,5 +91,30 @@ class HomeViewModel @Inject constructor(
      */
     fun showNotification(typeOfNotification: Int){
         _showNotification.value = typeOfNotification
+    }
+
+    private var workManager = WorkManager.getInstance(WorxApplication())
+    private val networkConstraints = Constraints.Builder()
+        .setRequiredNetworkType(NetworkType.CONNECTED)
+        .build()
+
+    private val formTemplateWorkInfoItems: LiveData<List<WorkInfo>> =
+        workManager.getWorkInfosByTagLiveData("form_template")
+
+    internal fun downloadFormTemplate(lifecycleOwner: LifecycleOwner, uiUpdate: () -> Unit) {
+        val syncTemplateDBRequest = OneTimeWorkRequestBuilder<FormDownloadWorker>()
+            .addTag("form_template")
+            .setConstraints(networkConstraints)
+            .build()
+
+        workManager.enqueue(syncTemplateDBRequest)
+
+        formTemplateWorkInfoItems.observe(lifecycleOwner, Observer { list ->
+            val workInfo = list[0]
+            if (list.isNotEmpty() && workInfo.state.isFinished) {
+                uiUpdate()
+                refreshData()
+            }
+        })
     }
 }
