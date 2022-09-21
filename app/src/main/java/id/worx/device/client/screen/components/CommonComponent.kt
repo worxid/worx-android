@@ -116,6 +116,7 @@ fun WorxTopAppBar(
 fun WhiteFullWidthButton(
     modifier: Modifier,
     label: String,
+    onClickEvent: () -> Unit = {},
     onClickCallback: (WelcomeEvent) -> Unit
 ){
     OutlinedButton(
@@ -128,6 +129,7 @@ fun WhiteFullWidthButton(
         contentPadding = PaddingValues(vertical = 14.dp),
         onClick = {
             onClickCallback(WelcomeEvent.JoinTeam)
+            onClickEvent()
         }) {
         Text(text = label, style = Typography.button)
     }
