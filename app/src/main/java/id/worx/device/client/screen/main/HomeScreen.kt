@@ -6,6 +6,7 @@ import androidx.compose.animation.ExitTransition
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
@@ -97,10 +98,16 @@ fun HomeScreen(
 ) {
     val navController = rememberNavController()
     val notificationType = viewModel.showNotification.collectAsState().value
-    var showSubmittedStatus by remember{ mutableStateOf(notificationType == 1)}
+    var showSubmittedStatus by remember { mutableStateOf(notificationType == 1) }
 
     Scaffold(
-        topBar = { MainTopAppBar() },
+        topBar = {
+            MainTopAppBar(
+                navController,
+                viewModel,
+                detailVM
+            )
+        },
         bottomBar = {
             BottomNavigationView(navController = navController)
         }
@@ -167,7 +174,7 @@ fun BottomNavigationView(navController: NavController) {
                         modifier = Modifier.padding(top = 8.dp),
                         text = stringResource(id = item.title),
                         fontSize = 11.sp, fontFamily = FontFamily.Monospace,
-                        color = if (currentRoute == item.screen_route){
+                        color = if (currentRoute == item.screen_route) {
                             Color.White
                         } else {
                             Color.Black.copy(0.3f)
@@ -200,7 +207,11 @@ fun BottomNavigationView(navController: NavController) {
 }
 
 @Composable
-fun MainTopAppBar() {
+fun MainTopAppBar(
+    navController: NavController,
+    viewModel: HomeViewModel,
+    detailVM: DetailFormViewModel
+) {
     TopAppBar(
         modifier = Modifier.fillMaxWidth(),
         backgroundColor = PrimaryMain,
@@ -230,7 +241,11 @@ fun MainTopAppBar() {
                 contentDescription = "Search"
             )
             Icon(
-                modifier = Modifier.padding(horizontal = 20.dp),
+                modifier = Modifier
+                    .padding(horizontal = 20.dp)
+                    .clickable {
+                        viewModel.goToSettingScreen()
+                    },
                 imageVector = Icons.Filled.Settings,
                 contentDescription = "Settings"
             )
