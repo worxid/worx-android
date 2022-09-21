@@ -4,9 +4,9 @@ import androidx.room.Entity
 import androidx.room.PrimaryKey
 import com.google.gson.annotations.SerializedName
 
-@Entity(tableName = "draft")
+@Entity(tableName = "submit_form")
 data class SubmitForm(
-    @PrimaryKey(autoGenerate = false)
+    @PrimaryKey(autoGenerate = true) var dbId: Int? = null,
     @SerializedName("id") override var id: Int? = null,
     @SerializedName("label") override var label: String? = null,
     @SerializedName("description") override var description: String? = null,
@@ -14,7 +14,8 @@ data class SubmitForm(
     @SerializedName("values") var values: Map<String, Value> = mapOf(),
     @SerializedName("template_id") var templateId: Int? = 0,
     @SerializedName("submit_in_zone") override var submitInZone: Boolean? = true,
-    @SerializedName("submit_location") var submitLocation: SubmitLocation? = SubmitLocation()
+    @SerializedName("submit_location") var submitLocation: SubmitLocation? = SubmitLocation(),
+    var status: Int = -1 //0 -> Draft, 1 -> Finish not submitted yet, 2 -> Submitted
 ) : BasicForm
 
 interface Value{

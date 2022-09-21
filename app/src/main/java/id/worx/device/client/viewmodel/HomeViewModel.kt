@@ -2,14 +2,15 @@ package id.worx.device.client.viewmodel
 
 import androidx.lifecycle.*
 import androidx.work.*
+import com.google.gson.Gson
 import dagger.hilt.android.lifecycle.HiltViewModel
 import id.worx.device.client.Event
 import id.worx.device.client.MainScreen
 import id.worx.device.client.WorxApplication
 import id.worx.device.client.data.database.FormDownloadWorker
+import id.worx.device.client.data.database.SubmissionUploadWorker
 import id.worx.device.client.model.EmptyForm
 import id.worx.device.client.model.SubmitForm
-import id.worx.device.client.repository.HomeRepository
 import id.worx.device.client.repository.SourceDataRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -24,6 +25,7 @@ private val DRAFT = 2
 data class HomeUiState(
     var list: List<EmptyForm> = emptyList(),
     var drafts: List<SubmitForm> = emptyList(),
+    var submission: List<SubmitForm> = emptyList(),
     var isLoading: Boolean = false,
     var errorMessages: String = "",
     var searchInput: String = ""
@@ -32,8 +34,7 @@ data class HomeUiState(
 @HiltViewModel
 class HomeViewModel @Inject constructor(
     private val savedStateHandle: SavedStateHandle,
-    private val repository: SourceDataRepository,
-    private val homeRepository: HomeRepository
+    private val repository: SourceDataRepository
 ) : ViewModel() {
 
     val uiState = MutableStateFlow(HomeUiState())
@@ -63,6 +64,14 @@ class HomeViewModel @Inject constructor(
             repository.getAllDraftForm().collect { list ->
                 uiState.update {
                     it.copy(drafts = list)
+                }
+            }
+        }
+
+        viewModelScope.launch {
+            repository.getAllSubmission().collect { list ->
+                uiState.update {
+                    it.copy( submission = list)
                 }
             }
         }
@@ -116,5 +125,22 @@ class HomeViewModel @Inject constructor(
                 refreshData()
             }
         })
+    }
+
+
+    internal fun uploadSubmissionWork() {
+        viewModelScope.launch {
+            repository.getAllUnsubmitted().collect{
+                val uploadData: Data = workDataOf("submit_form_list" to Gson().toJson(it))
+
+                val uploadSubmisison = OneTimeWorkRequestBuilder<SubmissionUploadWorker>()
+                    .setInputData(uploadData)
+                    .addTag("upload_submission")
+                    .setConstraints(networkConstraints)
+                    .build()
+
+                workManager.enqueue(uploadSubmisison)
+            }
+        }
     }
 }

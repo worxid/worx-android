@@ -5,18 +5,18 @@ import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
-import id.worx.device.client.data.dao.DraftDAO
+import id.worx.device.client.data.dao.SubmitFormDAO
 import id.worx.device.client.model.SubmitForm
 
 @Database(entities = [SubmitForm::class], version = 1, exportSchema = true)
 @TypeConverters(SubmitFormTypeConverter::class)
-abstract class DraftDB : RoomDatabase() {
+abstract class SubmitFormDB : RoomDatabase() {
 
-    abstract fun dao(): DraftDAO
+    abstract fun dao(): SubmitFormDAO
 
     companion object {
         @Volatile
-        private var instance: DraftDB? = null
+        private var instance: SubmitFormDB? = null
         private val LOCK = Any()
 
         operator fun invoke(context: Context) = instance ?: synchronized(LOCK) {
@@ -26,7 +26,7 @@ abstract class DraftDB : RoomDatabase() {
         private fun buildDatabase(context: Context) =
             Room.databaseBuilder(
                 context.applicationContext,
-                DraftDB::class.java,
+                SubmitFormDB::class.java,
                 "draft.db"
             ).fallbackToDestructiveMigration()
                 .build()

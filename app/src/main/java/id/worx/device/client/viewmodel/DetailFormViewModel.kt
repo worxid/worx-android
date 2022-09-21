@@ -7,11 +7,10 @@ import androidx.lifecycle.*
 import dagger.hilt.android.lifecycle.HiltViewModel
 import id.worx.device.client.Event
 import id.worx.device.client.MainScreen
-import id.worx.device.client.model.BasicForm
-import id.worx.device.client.model.SignatureValue
-import id.worx.device.client.model.SubmitForm
-import id.worx.device.client.model.Value
-import id.worx.device.client.repository.HomeRepository
+import id.worx.device.client.Util
+import id.worx.device.client.WorxApplication
+import id.worx.device.client.model.*
+import id.worx.device.client.repository.SourceDataRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -34,8 +33,9 @@ data class DetailUiState(
 
 @HiltViewModel
 class DetailFormViewModel @Inject constructor(
+    val application: WorxApplication,
     private val savedStateHandle: SavedStateHandle,
-    private val repository: HomeRepository
+    private val dataSourceRepo: SourceDataRepository
 ) : ViewModel() {
 
     var uiState = MutableStateFlow(DetailUiState())
@@ -47,12 +47,27 @@ class DetailFormViewModel @Inject constructor(
     val formProgress: State<Int> = _formProgress
 
     /**
+     * If the form is half filled, set the progress value
+     */
+    private fun initProgress(values: MutableMap<String, Value>, fields: ArrayList<Fields>){
+        val progressBit = 100 / fields.size
+        if (values.isNotEmpty()) {
+            _formProgress.value = progressBit * values.size
+        }
+    }
+
+
+    /**
      * Pass data from Home ViewModel
      * Params : form - EmptyForm / SubmitForm
      */
     fun navigateFromHomeScreen(form: BasicForm) {
         uiState.update {
             if (form is SubmitForm){
+                viewModelScope.launch {
+                    form.dbId?.let { dbId -> dataSourceRepo.deleteSubmitFormById(dbId) }
+                }
+                initProgress(form.values.toMutableMap(), form.fields)
                 it.copy(detailForm = form, values = form.values.toMutableMap(), status = EventStatus.Filling)
             } else {
                 it.copy(detailForm = form, status = EventStatus.Filling)
@@ -109,24 +124,34 @@ class DetailFormViewModel @Inject constructor(
         viewModelScope.launch {
             val form = createSubmitForm()
 
-            val result = repository.submitForm(form)
-            if (result.isSuccessful){
-                uiState.update {
-                    it.copy(detailForm = null, values= mutableMapOf(), currentComponent = -1, status = EventStatus.Submitted)
+            if (Util.isConnected(application.applicationContext)) {
+                val result = dataSourceRepo.submitForm(form)
+                if (result.isSuccessful) {
+                    form.status = 2
+                } else {
+                    form.status = 1
                 }
-                actionAfterSubmitted()
-                _navigateTo.value = Event(MainScreen.Home)
             } else {
-                uiState.update {
-                    it.copy(errorMessages = "Error ${result.code()} ${result.errorBody().toString()}")
-                }
+                form.status = 1
             }
+            dataSourceRepo.insertOrUpdateSubmitForm(form) //insertSubmission to db
+            uiState.update {
+                it.copy(
+                    detailForm = null,
+                    values = mutableMapOf(),
+                    currentComponent = -1,
+                    status = EventStatus.Submitted
+                )
+            }
+            actionAfterSubmitted()
+            _navigateTo.value = Event(MainScreen.Home)
         }
     }
 
     fun saveFormAsDraft() {
         viewModelScope.launch {
-            val result = repository.saveDraft(createSubmitForm())
+            val form = createSubmitForm()
+            dataSourceRepo.insertOrUpdateSubmitForm(form.copy(status = 0))
             uiState.update {
                 it.copy(
                     detailForm = null,
