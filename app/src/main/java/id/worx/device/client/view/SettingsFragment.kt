@@ -27,10 +27,18 @@ class SettingsFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
+        viewModel.navigateTo.observe(viewLifecycleOwner) { navigateToEvent ->
+            navigateToEvent.getContentIfNotHandled()?.let { navigateTo ->
+                navigate(navigateTo, MainScreen.Settings)
+            }
+        }
+
         return ComposeView(requireActivity()).apply {
             setContent {
                 WorxTheme() {
-                    SettingScreen(onBackNavigation = { activity?.onBackPressedDispatcher?.onBackPressed() })
+                    SettingScreen(
+                        viewModel,
+                        onBackNavigation = { activity?.onBackPressedDispatcher?.onBackPressed() })
                 }
             }
         }

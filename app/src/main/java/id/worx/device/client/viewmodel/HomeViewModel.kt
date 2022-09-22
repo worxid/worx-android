@@ -51,6 +51,10 @@ class HomeViewModel @Inject constructor(
         _navigateTo.value = Event(MainScreen.Settings)
     }
 
+    fun goToLicencesScreen(){
+        _navigateTo.value = Event(MainScreen.Licences)
+    }
+
     /**
      * Refresh data and update the UI state accordingly
      */

@@ -1,5 +1,6 @@
 package id.worx.device.client.screen.main
 
+import android.content.Intent
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -17,6 +18,7 @@ import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester.Companion.createRefs
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
@@ -28,13 +30,18 @@ import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
+import com.google.android.gms.oss.licenses.OssLicensesMenuActivity
+import id.worx.device.client.BuildConfig
 import id.worx.device.client.R
 import id.worx.device.client.screen.WhiteFullWidthButton
 import id.worx.device.client.screen.WorxTopAppBar
+import id.worx.device.client.screen.components.WorxDialog
 import id.worx.device.client.theme.*
+import id.worx.device.client.viewmodel.HomeViewModel
 
 @Composable
 fun SettingScreen(
+    viewModel: HomeViewModel,
     onBackNavigation: () -> Unit
 ) {
     val showDialogTheme = remember {
@@ -43,13 +50,18 @@ fun SettingScreen(
     val showDialogLeave = remember {
         mutableStateOf(false)
     }
+    val context = LocalContext.current
 
     if (showDialogTheme.value) {
-        ThemeDialog(setShowDialog = { showDialogTheme.value = it })
+        WorxDialog(
+            content = { ThemeDialog(setShowDialog = { showDialogTheme.value = it }) },
+            setShowDialog = { showDialogTheme.value = it })
     }
 
     if (showDialogLeave.value) {
-        LeaveOrganizationDialog(setShowDialog = { showDialogLeave.value = it })
+        WorxDialog(
+            content = { LeaveOrganizationDialog(setShowDialog = { showDialogLeave.value = it }) },
+            setShowDialog = { showDialogLeave.value = it })
     }
 
     Scaffold(
@@ -98,18 +110,20 @@ fun SettingScreen(
             HeaderTileSetting(title = stringResource(id = R.string.about_this_app))
             TileItemSetting(
                 title = stringResource(id = R.string.app_version),
-                subtitle = "1.8.0",
+                subtitle = BuildConfig.VERSION_NAME,
             )
             TileItemSetting(
                 title = stringResource(id = R.string.app_version_code),
-                subtitle = "1808",
+                subtitle = BuildConfig.VERSION_CODE.toString(),
             )
             TileItemSetting(
                 title = stringResource(id = R.string.app_package_name),
-                subtitle = "worx.id",
+                subtitle = BuildConfig.APPLICATION_ID,
             )
             HeaderTileSetting(title = stringResource(id = R.string.legal))
-            TileItemSetting(title = stringResource(id = R.string.open_source_licenses))
+            TileItemSetting(title = stringResource(id = R.string.open_source_licenses), onPress = {
+                viewModel.goToLicencesScreen()
+            })
             WhiteFullWidthButton(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -123,154 +137,120 @@ fun SettingScreen(
     }
 }
 
+@Preview
 @Composable
-fun Dialog(
-    setShowDialog: (Boolean) -> Unit = {}
-) {
-    Dialog(onDismissRequest = { setShowDialog(false) }, properties = DialogProperties()) {
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .background(Color.Black)
-                .padding(top = 2.dp, start = 2.dp, end = 3.dp, bottom = 3.dp)
-                .background(Color.White)
-                .padding(20.dp)
-                .background(Color.White)
-        ) {
-            ThemeDialog(setShowDialog)
-        }
+fun TestDialog() {
+    WorxTheme() {
+        WorxDialog(content = { LeaveOrganizationDialog(setShowDialog = {}) }, setShowDialog = {})
     }
 }
 
-@Preview
 @Composable
 fun LeaveOrganizationDialog(
     setShowDialog: (Boolean) -> Unit = {}
 ) {
-    Dialog(onDismissRequest = { setShowDialog(false) }, properties = DialogProperties()) {
-        ConstraintLayout(
-            modifier = Modifier
-                .fillMaxWidth()
-                .background(Color.Black)
-                .padding(top = 2.dp, start = 2.dp, end = 3.dp, bottom = 3.dp)
-                .background(Color.White)
-                .padding(20.dp)
-                .background(Color.White)
-        ) {
-            val (tvTitle, tvYes, tvCancel) = createRefs()
+    ConstraintLayout(
+        modifier = Modifier.fillMaxWidth()
+    ) {
+        val (tvTitle, tvYes, tvCancel) = createRefs()
 
-            Text(
-                text = "Are you sure you want to leave the organization?",
-                style = Typography.body2,
-                color = BlackFont,
-                modifier = Modifier.constrainAs(tvTitle) {
-                    top.linkTo(parent.top)
-                    start.linkTo(parent.start)
+        Text(
+            text = stringResource(id = R.string.leave_organization),
+            style = Typography.body2,
+            color = BlackFont,
+            modifier = Modifier.constrainAs(tvTitle) {
+                top.linkTo(parent.top)
+                start.linkTo(parent.start)
+                end.linkTo(parent.end)
+                width = Dimension.fillToConstraints
+            }
+        )
+        Text(
+            text = stringResource(id = R.string.yes),
+            style = Typography.body2,
+            color = RedDark,
+            modifier = Modifier
+                .constrainAs(tvYes) {
+                    top.linkTo(tvTitle.bottom, 32.dp)
+                    bottom.linkTo(parent.bottom)
                     end.linkTo(parent.end)
                     width = Dimension.fillToConstraints
                 }
-            )
-            Text(
-                text = "Yes",
-                style = Typography.body2,
-                color = RedDark,
-                modifier = Modifier
-                    .constrainAs(tvYes) {
-                        top.linkTo(tvTitle.bottom, 32.dp)
-                        bottom.linkTo(parent.bottom)
-                        end.linkTo(parent.end)
-                        width = Dimension.fillToConstraints
-                    }
-                    .clickable {
-                        setShowDialog(false)
-                    }
-            )
-            Text(
-                text = "Cancel",
-                style = Typography.body2,
-                color = BlackVariantFont,
-                modifier = Modifier
-                    .constrainAs(tvCancel) {
-                        top.linkTo(tvTitle.bottom, 32.dp)
-                        bottom.linkTo(parent.bottom)
-                        end.linkTo(tvYes.start, 38.dp)
-                        width = Dimension.fillToConstraints
-                    }
-                    .clickable {
-                        setShowDialog(false)
-                    }
-            )
-        }
+                .clickable {
+                    setShowDialog(false)
+                }
+        )
+        Text(
+            text = stringResource(id = R.string.cancel),
+            style = Typography.body2,
+            color = BlackVariantFont,
+            modifier = Modifier
+                .constrainAs(tvCancel) {
+                    top.linkTo(tvTitle.bottom, 32.dp)
+                    bottom.linkTo(parent.bottom)
+                    end.linkTo(tvYes.start, 38.dp)
+                    width = Dimension.fillToConstraints
+                }
+                .clickable {
+                    setShowDialog(false)
+                }
+        )
     }
 }
 
-
-@Preview
 @Composable
 fun ThemeDialog(
-    setShowDialog: (Boolean) -> Unit = {}
+    setShowDialog: (Boolean) -> Unit
 ) {
-    Dialog(onDismissRequest = { setShowDialog(false) }, properties = DialogProperties()) {
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .background(Color.Black)
-                .padding(top = 2.dp, start = 2.dp, end = 3.dp, bottom = 3.dp)
-                .background(Color.White)
-                .padding(20.dp)
-                .background(Color.White)
-        ) {
-            val rbOptions = arrayListOf("System", "Dark", "Green", "Blue")
-            val (selectedOption, onOptionSelected) = remember {
-                mutableStateOf(rbOptions[0])
-            }
-            Column(modifier = Modifier.selectableGroup()) {
-                Text(
-                    text = stringResource(id = R.string.theme),
-                    style = Typography.body2,
-                    color = BlackFont,
-                    fontWeight = FontWeight.W500
-                )
-                rbOptions.forEach { s ->
-                    ConstraintLayout(
-                        modifier = Modifier
-                            .selectableGroup()
-                            .selectable(
-                                selected = (s == selectedOption),
-                                onClick = {
-                                    onOptionSelected(s)
-                                    setShowDialog(false)
-                                },
-                                role = Role.RadioButton
-                            )
-                    ) {
-                        val (tvItem, rbItem) = createRefs()
+    val rbOptions = arrayListOf("System", "Dark", "Green", "Blue")
+    val (selectedOption, onOptionSelected) = remember {
+        mutableStateOf(rbOptions[0])
+    }
+    Column(modifier = Modifier.selectableGroup()) {
+        Text(
+            text = stringResource(id = R.string.theme),
+            style = Typography.body2,
+            color = BlackFont,
+            fontWeight = FontWeight.W500
+        )
+        rbOptions.forEach { s ->
+            ConstraintLayout(
+                modifier = Modifier
+                    .selectableGroup()
+                    .selectable(
+                        selected = (s == selectedOption),
+                        onClick = {
+                            onOptionSelected(s)
+                            setShowDialog(false)
+                        },
+                        role = Role.RadioButton
+                    )
+            ) {
+                val (tvItem, rbItem) = createRefs()
 
-                        RadioButton(
-                            selected = (s == selectedOption),
-                            onClick = {
-                                onOptionSelected(s)
-                                setShowDialog(false)
-                            },
-                            modifier = Modifier.constrainAs(rbItem) {
-                                top.linkTo(parent.top)
-                                bottom.linkTo(parent.bottom)
-                                start.linkTo(parent.start)
-                            },
-                            colors = RadioButtonDefaults.colors(PrimaryMain)
-                        )
-                        Text(
-                            text = s,
-                            style = Typography.body1,
-                            color = BlackFont,
-                            modifier = Modifier.constrainAs(tvItem) {
-                                top.linkTo(rbItem.top)
-                                bottom.linkTo(rbItem.bottom)
-                                start.linkTo(rbItem.end, 8.dp)
-                            }
-                        )
+                RadioButton(
+                    selected = (s == selectedOption),
+                    onClick = {
+                        onOptionSelected(s)
+                        setShowDialog(false)
+                    },
+                    modifier = Modifier.constrainAs(rbItem) {
+                        top.linkTo(parent.top)
+                        bottom.linkTo(parent.bottom)
+                        start.linkTo(parent.start)
+                    },
+                    colors = RadioButtonDefaults.colors(PrimaryMain)
+                )
+                Text(
+                    text = s,
+                    style = Typography.body1,
+                    color = BlackFont,
+                    modifier = Modifier.constrainAs(tvItem) {
+                        top.linkTo(rbItem.top)
+                        bottom.linkTo(rbItem.bottom)
+                        start.linkTo(rbItem.end, 8.dp)
                     }
-                }
+                )
             }
         }
     }
@@ -284,13 +264,15 @@ fun TileItemSetting(
     subtitle: String? = null,
     iconRes: Int? = null,
     toggleActive: Boolean = false,
-    onPressToggle: () -> Unit? = {}
+    onPressToggle: () -> Unit? = {},
+    onPress: () -> Unit = {}
 ) {
     val checkStateSwitch = remember { mutableStateOf(false) }
 
     ConstraintLayout(
         modifier = modifier
             .fillMaxWidth()
+            .clickable { onPress() }
             .padding(horizontal = 18.dp, vertical = 8.dp)
     ) {
         val (icon, tvTitle, tvSubtitle, button) = createRefs()
@@ -380,13 +362,5 @@ fun HeaderTileSetting(
             .padding(horizontal = 60.dp, vertical = 20.dp)
     ) {
         Text(text = title, style = Typography.body1, color = BlackVariantFont)
-    }
-}
-
-@Preview
-@Composable
-fun PreviewSettingScreen() {
-    WorxTheme {
-        SettingScreen({})
     }
 }

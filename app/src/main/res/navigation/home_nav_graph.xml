@@ -49,4 +49,8 @@
         android:id="@+id/settingsFragment"
         android:name="id.worx.device.client.view.SettingsFragment"
         android:label="SettingsFragment" />
+    <fragment
+        android:id="@+id/licencesFragment"
+        android:name="id.worx.device.client.view.LicencesFragment"
+        android:label="LicencesFragment" />
 </navigation>

@@ -9,7 +9,7 @@ enum class WelcomeScreen {
     JoinTeam, WaitingVerification, VerificationRejected }
 
 enum class MainScreen {
-    Home, Detail, CameraPhoto, PhotoPreview, SignaturePad, Settings
+    Home, Detail, CameraPhoto, PhotoPreview, SignaturePad, Settings, Licences
 }
 
 fun Fragment.navigate(to: WelcomeScreen, from: WelcomeScreen) {
@@ -68,6 +68,9 @@ fun Fragment.navigate(to: MainScreen, from: MainScreen) {
         }
         MainScreen.Settings -> {
             findNavController().navigate(R.id.settingsFragment)
+        }
+        MainScreen.Licences -> {
+            findNavController().navigate(R.id.licencesFragment)
         }
         else -> {}
     }
