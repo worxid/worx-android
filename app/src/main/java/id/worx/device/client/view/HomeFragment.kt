@@ -39,7 +39,7 @@ class HomeFragment: Fragment() {
                     HomeScreen(
                         formList = viewModel.uiState.collectAsState().value.list,
                         draftList = viewModel.uiState.collectAsState().value.drafts,
-                        submissionList = arrayListOf(),
+                        submissionList = viewModel.uiState.collectAsState().value.submission,
                     viewModel = viewModel,
                     detailVM = detailViewModel)
                 }

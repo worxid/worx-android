@@ -31,7 +31,6 @@ import id.worx.device.client.theme.PrimaryMain
 import id.worx.device.client.theme.Typography
 import id.worx.device.client.viewmodel.CameraViewModel
 import id.worx.device.client.viewmodel.DetailFormViewModel
-import id.worx.device.client.viewmodel.EventStatus
 import id.worx.device.client.viewmodel.HomeViewModel
 
 /*****************
@@ -45,7 +44,7 @@ fun ValidFormBuilder(
     componentList: List<Fields>,
     viewModel: DetailFormViewModel,
     cameraViewModel: CameraViewModel,
-    homeViewModel:HomeViewModel
+    homeViewModel: HomeViewModel
 ) {
     var showSubmitDialog by remember { mutableStateOf(false) }
     val formSubmitted = viewModel.uiState.collectAsState().value.status
@@ -62,21 +61,21 @@ fun ValidFormBuilder(
             DialogSubmitForm(
                 viewModel,
                 {
-                    viewModel.submitForm { homeViewModel.showNotification(1) }
+                    viewModel.submitForm {
+                        homeViewModel.showNotification(1)
+                        homeViewModel.showBadge(R.string.submission)
+                    }
                     showSubmitDialog = false
                 },
                 { showDraftDialog = true })
         }
         if (showDraftDialog) {
             DialogDraftForm(
-                { viewModel.saveFormAsDraft() },
+                { viewModel.saveFormAsDraft { homeViewModel.showBadge(R.string.draft) } },
                 { showDraftDialog = false })
         }
-        if (formSubmitted == EventStatus.Submitted) {
-            homeViewModel.showNotification(1)
-            }
-        }
     }
+}
 
 @Composable
 fun DetailForm(
@@ -210,7 +209,7 @@ fun DialogSubmitForm(
                         contentDescription = "Image Warning"
                     )
                 }
-                val fieldFilled = progress.toDouble()/100*fieldsNo
+                val fieldFilled = progress.toDouble() / 100 * fieldsNo
                 Text(
                     text = "${fieldFilled.toInt()} of $fieldsNo Fields Answered",
                     style = Typography.body2.copy(Color.Black.copy(0.54f))
