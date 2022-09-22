@@ -14,6 +14,7 @@ import androidx.compose.material.icons.filled.Settings
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -98,13 +99,17 @@ fun HomeScreen(
     detailVM: DetailFormViewModel
 ) {
     val navController = rememberNavController()
-    val notificationType = viewModel.showNotification.collectAsState().value
-    var showSubmittedStatus by remember{ mutableStateOf(notificationType == 1)}
+    val notificationType by viewModel.showNotification.collectAsState()
+    val showBadge by viewModel.showBadge.collectAsState()
+    var showSubmittedStatus by remember { mutableStateOf(notificationType == 1) }
 
     Scaffold(
         topBar = { MainTopAppBar() },
         bottomBar = {
-            BottomNavigationView(navController = navController)
+            BottomNavigationView(
+                navController = navController,
+                showBadge = showBadge
+            )
         }
     ) { padding ->
         NavigationGraph(
@@ -141,7 +146,7 @@ fun HomeScreen(
 }
 
 @Composable
-fun BottomNavigationView(navController: NavController) {
+fun BottomNavigationView(navController: NavController, showBadge: Int) {
     val items = listOf(
         BottomNavItem.Form,
         BottomNavItem.Draft,
@@ -159,17 +164,23 @@ fun BottomNavigationView(navController: NavController) {
 
             BottomNavigationItem(
                 icon = {
-                    Icon(
-                        painterResource(id = item.icon),
-                        contentDescription = stringResource(id = item.title)
-                    )
+                    BadgedBox(badge = {
+                        if (item.title == showBadge) {
+                            Badge(modifier = Modifier.scale(0.7f))
+                        }
+                    }) {
+                        Icon(
+                            painterResource(id = item.icon),
+                            contentDescription = stringResource(id = item.title)
+                        )
+                    }
                 },
                 label = {
                     Text(
                         modifier = Modifier.padding(top = 8.dp),
                         text = stringResource(id = item.title),
                         fontSize = 11.sp, fontFamily = FontFamily.Monospace,
-                        color = if (currentRoute == item.screen_route){
+                        color = if (currentRoute == item.screen_route) {
                             Color.White
                         } else {
                             Color.Black.copy(0.3f)

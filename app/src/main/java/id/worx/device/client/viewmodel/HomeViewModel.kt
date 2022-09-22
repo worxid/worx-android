@@ -45,6 +45,9 @@ class HomeViewModel @Inject constructor(
     private val _showNotification = MutableStateFlow(0)
     val showNotification: StateFlow<Int> = _showNotification
 
+    private val _showBadge = MutableStateFlow(0)
+    val showBadge: StateFlow<Int> = _showBadge
+
     init {
         refreshData()
     }
@@ -100,6 +103,14 @@ class HomeViewModel @Inject constructor(
      */
     fun showNotification(typeOfNotification: Int){
         _showNotification.value = typeOfNotification
+    }
+
+    /**
+     * Show badge if there is new draft or submission saved
+     * Params : string resources R.String.draft or R.string.submission
+     */
+    fun showBadge(typeOfBadge: Int){
+        _showBadge.value = typeOfBadge
     }
 
     private var workManager = WorkManager.getInstance(WorxApplication())

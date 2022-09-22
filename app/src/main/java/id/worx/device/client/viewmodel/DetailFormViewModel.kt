@@ -142,7 +142,7 @@ class DetailFormViewModel @Inject constructor(
         }
     }
 
-    fun saveFormAsDraft() {
+    fun saveFormAsDraft(actionAfterSaved: () -> Unit) {
         viewModelScope.launch {
             val form = createSubmitForm()
             dataSourceRepo.insertOrUpdateSubmitForm(form.copy(status = 0))
@@ -154,6 +154,7 @@ class DetailFormViewModel @Inject constructor(
                     status = EventStatus.Saved
                 )
             }
+            actionAfterSaved()
             _navigateTo.value = Event(MainScreen.Home)
         }
     }
