@@ -4,7 +4,6 @@ import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
-import android.graphics.Color
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
@@ -30,7 +29,6 @@ import com.sangcomz.fishbun.ui.picker.model.PickerListItem
 import com.sangcomz.fishbun.ui.picker.model.PickerRepositoryImpl
 import com.sangcomz.fishbun.ui.picker.model.PickerViewData
 import com.sangcomz.fishbun.util.MainUiHandler
-import com.sangcomz.fishbun.util.setStatusBarColor
 
 
 class PickerActivity : BaseActivity(),
@@ -150,7 +148,6 @@ class PickerActivity : BaseActivity(),
     override fun initToolBar(pickerViewData: PickerViewData) {
         val toolbar = findViewById<Toolbar>(R.id.toolbar_picker_bar)
         setSupportActionBar(toolbar)
-        setStatusBarColor(Color.parseColor("#121212"))
 
         val batal = findViewById<TextView>(R.id.button_batal)
         val kirim = findViewById<TextView>(R.id.button_kirim)

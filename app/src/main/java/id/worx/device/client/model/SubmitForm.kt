@@ -15,7 +15,8 @@ data class SubmitForm(
     @SerializedName("template_id") var templateId: Int? = 0,
     @SerializedName("submit_in_zone") override var submitInZone: Boolean? = true,
     @SerializedName("submit_location") var submitLocation: SubmitLocation? = SubmitLocation(),
-    var status: Int = -1 //0 -> Draft, 1 -> Finish not submitted yet, 2 -> Submitted
+    var status: Int = -1, //0 -> Draft, 1 -> Finish not submitted yet, 2 -> Submitted
+    var lastUpdated: String? = "null"
 ) : BasicForm
 
 interface Value{

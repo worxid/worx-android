@@ -6,7 +6,6 @@ import android.content.ContextWrapper
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
-import android.util.Log
 import android.widget.Toast
 import androidx.activity.compose.ManagedActivityResultLauncher
 import androidx.activity.compose.rememberLauncherForActivityResult
@@ -33,10 +32,7 @@ import androidx.core.content.ContextCompat
 import coil.compose.AsyncImage
 import com.sangcomz.fishbun.FishBun
 import com.sangcomz.fishbun.adapter.image.impl.CoilAdapter
-import com.sangcomz.fishbun.adapter.image.impl.GlideAdapter
-import com.sangcomz.fishbun.util.getRealPathFromURI
 import id.worx.device.client.R
-import id.worx.device.client.model.FileValue
 import id.worx.device.client.model.ImageField
 import id.worx.device.client.model.ImageValue
 import id.worx.device.client.screen.ActionRedButton
@@ -67,13 +63,13 @@ fun WorxAttachImage(indexForm:Int, viewModel:DetailFormViewModel, setIndexData: 
             ActivityResultContracts.StartActivityForResult()
         ) {
             it.data?.getParcelableArrayListExtra<Uri>(FishBun.INTENT_PATH)?.forEach { uri ->
-                val fPath = getRealPathFromURI(context, uri)
-                Log.d("data", fPath)
+                //val fPath = getRealPathFromURI(context, uri)
+                val fPath = uri.toString()
                 val newPathList = ArrayList(filePath.value)
                 newPathList.add(fPath)
                 filePath.value = newPathList.toList()
                 viewModel.setComponentData(indexForm,
-                    FileValue(value = ArrayList(newPathList.map { 1 }), filePath = newPathList)
+                    ImageValue(value = ArrayList(newPathList.map { 1 }), filePath = newPathList)
                 )
             }
         }
@@ -108,7 +104,7 @@ fun WorxAttachImage(indexForm:Int, viewModel:DetailFormViewModel, setIndexData: 
             horizontalArrangement = Arrangement.spacedBy(12.dp)
         ) {
             TakeImageButton(navigateToPhotoCamera, setIndexData)
-            GalleryImageButton(launcherGallery = launcherGallery)
+            GalleryImageButton(form.maxFiles ?: 1, launcherGallery = launcherGallery)
         }
         Divider(color = GrayDivider, modifier = Modifier.padding(top = 12.dp))
     }
@@ -200,6 +196,7 @@ fun Context.getActivity(): AppCompatActivity? = when (this) {
 
 @Composable
 private fun GalleryImageButton(
+    maxPhoto: Int,
     launcherGallery: ManagedActivityResultLauncher<Intent, ActivityResult>
 ) {
     val context = LocalContext.current
@@ -216,8 +213,8 @@ private fun GalleryImageButton(
             Toast.makeText(context, "Permission is denied", Toast.LENGTH_LONG).show()
         } else {
             FishBun.with(context.getActivity()!!)
-                .setImageAdapter(GlideAdapter())
-                .setMaxCount(1)
+                .setImageAdapter(CoilAdapter())
+                .setMaxCount(maxPhoto)
                 .setThemeColor(PrimaryMain.toArgb())
                 .startAlbumWithActivityResultCallback(launcherGallery)
         }
@@ -237,7 +234,7 @@ private fun GalleryImageButton(
                 }) {
                     FishBun.with(context.getActivity()!!)
                         .setImageAdapter(CoilAdapter())
-                        .setMaxCount(1)
+                        .setMaxCount(maxPhoto)
                         .setThemeColor(PrimaryMain.toArgb())
                         .startAlbumWithActivityResultCallback(launcherGallery)
             } else {

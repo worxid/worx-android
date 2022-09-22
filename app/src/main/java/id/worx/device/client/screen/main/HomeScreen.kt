@@ -33,7 +33,6 @@ import androidx.navigation.compose.rememberNavController
 import id.worx.device.client.R
 import id.worx.device.client.model.EmptyForm
 import id.worx.device.client.model.SubmitForm
-import id.worx.device.client.screen.FormScreen
 import id.worx.device.client.screen.RedFullWidthButton
 import id.worx.device.client.theme.PrimaryMain
 import id.worx.device.client.theme.Typography
@@ -60,6 +59,7 @@ fun NavigationGraph(
         composable(BottomNavItem.Form.screen_route) {
             FormScreen(
                 formList,
+                0,
                 viewModel,
                 detailVM,
                 stringResource(R.string.no_forms),
@@ -69,6 +69,7 @@ fun NavigationGraph(
         composable(BottomNavItem.Draft.screen_route) {
             FormScreen(
                 draftList,
+                1,
                 viewModel,
                 detailVM,
                 stringResource(R.string.no_drafts),
@@ -78,6 +79,7 @@ fun NavigationGraph(
         composable(BottomNavItem.Submission.screen_route) {
             FormScreen(
                 submissionList,
+                2,
                 viewModel,
                 detailVM,
                 stringResource(R.string.no_submission),

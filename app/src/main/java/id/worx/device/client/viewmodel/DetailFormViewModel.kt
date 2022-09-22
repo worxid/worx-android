@@ -8,8 +8,13 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import id.worx.device.client.Event
 import id.worx.device.client.MainScreen
 import id.worx.device.client.Util
+import id.worx.device.client.Util.getCurrentDate
+import id.worx.device.client.Util.initProgress
 import id.worx.device.client.WorxApplication
-import id.worx.device.client.model.*
+import id.worx.device.client.model.BasicForm
+import id.worx.device.client.model.SignatureValue
+import id.worx.device.client.model.SubmitForm
+import id.worx.device.client.model.Value
 import id.worx.device.client.repository.SourceDataRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.update
@@ -47,17 +52,6 @@ class DetailFormViewModel @Inject constructor(
     val formProgress: State<Int> = _formProgress
 
     /**
-     * If the form is half filled, set the progress value
-     */
-    private fun initProgress(values: MutableMap<String, Value>, fields: ArrayList<Fields>){
-        val progressBit = 100 / fields.size
-        if (values.isNotEmpty()) {
-            _formProgress.value = progressBit * values.size
-        }
-    }
-
-
-    /**
      * Pass data from Home ViewModel
      * Params : form - EmptyForm / SubmitForm
      */
@@ -67,7 +61,7 @@ class DetailFormViewModel @Inject constructor(
                 viewModelScope.launch {
                     form.dbId?.let { dbId -> dataSourceRepo.deleteSubmitFormById(dbId) }
                 }
-                initProgress(form.values.toMutableMap(), form.fields)
+                _formProgress.value = initProgress(form.values.toMutableMap(), form.fields)
                 it.copy(detailForm = form, values = form.values.toMutableMap(), status = EventStatus.Filling)
             } else {
                 it.copy(detailForm = form, status = EventStatus.Filling)
@@ -171,7 +165,8 @@ class DetailFormViewModel @Inject constructor(
             description = uiState.value.detailForm!!.description,
             fields = uiState.value.detailForm!!.fields,
             values = uiState.value.values,
-            templateId = uiState.value.detailForm!!.id
+            templateId = uiState.value.detailForm!!.id,
+            lastUpdated = getCurrentDate("dd/MM/yyyy hh:mm a")
         )
     }
 }
