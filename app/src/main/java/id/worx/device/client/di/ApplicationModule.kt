@@ -10,6 +10,7 @@ import dagger.hilt.components.SingletonComponent
 import id.worx.device.client.data.DAO.DraftDAO
 import id.worx.device.client.data.api.WorxApi
 import id.worx.device.client.data.database.DraftDB
+import id.worx.device.client.data.database.Session
 import javax.inject.Singleton
 
 @Module
@@ -34,5 +35,11 @@ object ApplicationModule {
             "draft.db"
         ).fallbackToDestructiveMigration()
             .build()
+    }
+
+    @Provides
+    @Singleton
+    fun provideSession(@ApplicationContext appContext: Context): Session{
+        return Session(appContext)
     }
 }

@@ -1,6 +1,9 @@
 package id.worx.device.client.screen.main
 
 import android.content.Intent
+import android.os.Build
+import android.provider.Settings
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -30,9 +33,9 @@ import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
-import com.google.android.gms.oss.licenses.OssLicensesMenuActivity
 import id.worx.device.client.BuildConfig
 import id.worx.device.client.R
+import id.worx.device.client.data.database.Session
 import id.worx.device.client.screen.WhiteFullWidthButton
 import id.worx.device.client.screen.WorxTopAppBar
 import id.worx.device.client.screen.components.WorxDialog
@@ -42,6 +45,7 @@ import id.worx.device.client.viewmodel.HomeViewModel
 @Composable
 fun SettingScreen(
     viewModel: HomeViewModel,
+    session: Session,
     onBackNavigation: () -> Unit
 ) {
     val showDialogTheme = remember {
@@ -54,7 +58,7 @@ fun SettingScreen(
 
     if (showDialogTheme.value) {
         WorxDialog(
-            content = { ThemeDialog(setShowDialog = { showDialogTheme.value = it }) },
+            content = { ThemeDialog(setShowDialog = { showDialogTheme.value = it }, session = session) },
             setShowDialog = { showDialogTheme.value = it })
     }
 
@@ -88,13 +92,13 @@ fun SettingScreen(
             )
             TileItemSetting(
                 title = stringResource(id = R.string.device_name),
-                subtitle = "Budiman",
+                subtitle = Settings.Secure.getString(context.contentResolver, "bluetooth_name"),
             )
             Divider(color = GrayDivider, modifier = Modifier.padding(top = 20.dp))
             HeaderTileSetting(title = stringResource(id = R.string.devices_settings))
             TileItemSetting(
                 title = stringResource(id = R.string.theme),
-                subtitle = "System default",
+                subtitle = session.theme,
                 iconRes = R.drawable.ic_baseline_color_lens_24,
                 modifier = Modifier.clickable {
                     showDialogTheme.value = !showDialogTheme.value
@@ -105,7 +109,8 @@ fun SettingScreen(
                 subtitle = stringResource(id = R.string.save_image_in_gallery_sub),
                 iconRes = R.drawable.ic_baseline_collections_24,
                 toggleActive = true,
-                onPressToggle = {}
+                onPressToggle = {},
+                session = session
             )
             HeaderTileSetting(title = stringResource(id = R.string.about_this_app))
             TileItemSetting(
@@ -200,11 +205,13 @@ fun LeaveOrganizationDialog(
 
 @Composable
 fun ThemeDialog(
-    setShowDialog: (Boolean) -> Unit
+    setShowDialog: (Boolean) -> Unit,
+    session: Session
 ) {
     val rbOptions = arrayListOf("System", "Dark", "Green", "Blue")
+    val selectedTheme = session.theme
     val (selectedOption, onOptionSelected) = remember {
-        mutableStateOf(rbOptions[0])
+        mutableStateOf(selectedTheme)
     }
     Column(modifier = Modifier.selectableGroup()) {
         Text(
@@ -221,6 +228,7 @@ fun ThemeDialog(
                         selected = (s == selectedOption),
                         onClick = {
                             onOptionSelected(s)
+                            session.setTheme(s)
                             setShowDialog(false)
                         },
                         role = Role.RadioButton
@@ -232,6 +240,7 @@ fun ThemeDialog(
                     selected = (s == selectedOption),
                     onClick = {
                         onOptionSelected(s)
+                        session.setTheme(s)
                         setShowDialog(false)
                     },
                     modifier = Modifier.constrainAs(rbItem) {
@@ -265,9 +274,11 @@ fun TileItemSetting(
     iconRes: Int? = null,
     toggleActive: Boolean = false,
     onPressToggle: () -> Unit? = {},
-    onPress: () -> Unit = {}
+    onPress: () -> Unit = {},
+    session: Session? = null
 ) {
-    val checkStateSwitch = remember { mutableStateOf(false) }
+    val toggleValue = if (session!=null) session.isSaveImageToGallery else false
+    val checkStateSwitch = remember { mutableStateOf(toggleValue) }
 
     ConstraintLayout(
         modifier = modifier
@@ -335,6 +346,7 @@ fun TileItemSetting(
                 onCheckedChange = {
                     onPressToggle
                     checkStateSwitch.value = it
+                    session?.isSaveImageToGallery(it)
                 },
                 modifier = modifier.constrainAs(button) {
                     top.linkTo(parent.top)
