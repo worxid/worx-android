@@ -59,8 +59,8 @@ class FieldsDeserializer : JsonDeserializer<Fields?>, JsonSerializer<Fields?> {
         context: JsonDeserializationContext?
     ): Fields? {
         val gson = Gson()
-        val entry = json!!.asJsonObject.entrySet().iterator().next()
-        val type = entry.value.toString()
+        val entry = json!!.asJsonObject
+        val type = entry.get("type").toString()
         return when  {
             type.contains(Type.TextField.type) -> gson.fromJson(json, TextField::class.java)
             type.contains(Type.Separator.type) -> gson.fromJson(json, Separator::class.java)
@@ -72,7 +72,7 @@ class FieldsDeserializer : JsonDeserializer<Fields?>, JsonSerializer<Fields?> {
             type.contains(Type.File.type) -> gson.fromJson(json, FileField::class.java)
             type.contains(Type.Photo.type) -> gson.fromJson(json, ImageField::class.java)
             type.contains(Type.Signature.type) -> gson.fromJson(json, SignatureField::class.java)
-            else -> throw IllegalArgumentException("Can't deserialize ${entry.key} ${entry.value}")
+            else -> throw IllegalArgumentException("Can't deserialize $entry ")
         }
     }
 
@@ -85,7 +85,7 @@ class FieldsDeserializer : JsonDeserializer<Fields?>, JsonSerializer<Fields?> {
     }
 }
 
-class ValueSerialize: JsonSerializer<Value> {
+class ValueSerialize: JsonSerializer<Value>, JsonDeserializer<Value> {
     override fun serialize(
         src: Value?,
         typeOfSrc: java.lang.reflect.Type?,
@@ -93,6 +93,39 @@ class ValueSerialize: JsonSerializer<Value> {
     ): JsonElement {
         val gson = Gson()
         return gson.toJsonTree(src)
+    }
+
+    override fun deserialize(
+        json: JsonElement?,
+        typeOfT: java.lang.reflect.Type?,
+        context: JsonDeserializationContext?
+    ): Value {
+        val gson = Gson()
+        val value = gson.fromJson(json!!.asJsonObject, SeparatorValue::class.java)
+        val type = value.type ?: ""
+        return when {
+            type.contains(Type.TextField.type) ->
+                gson.fromJson(json, TextFieldValue::class.java)
+            type.contains(Type.Separator.type) ->
+                gson.fromJson(json, SeparatorValue::class.java)
+            type.contains(Type.Checkbox.type) ->
+                gson.fromJson(json, CheckBoxValue::class.java)
+            type.contains(Type.RadioGroup.type) ->
+                gson.fromJson(json, RadioButtonValue::class.java)
+            type.contains(Type.Rating.type) ->
+                gson.fromJson(json, RatingValue::class.java)
+            type.contains(Type.Date.type) ->
+                gson.fromJson(json, DateValue::class.java)
+            type.contains(Type.Dropdown.type) ->
+                gson.fromJson(json, DropDownValue::class.java)
+            type.contains(Type.File.type) ->
+                gson.fromJson(json, FileValue::class.java)
+            type.contains(Type.Photo.type) ->
+                gson.fromJson(json, ImageValue::class.java)
+            type.contains(Type.Signature.type) ->
+                gson.fromJson(json, SignatureValue::class.java)
+            else -> throw IllegalArgumentException("Can't deserialize $value")
+        }
     }
 }
 

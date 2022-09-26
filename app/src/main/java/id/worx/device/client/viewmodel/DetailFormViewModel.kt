@@ -1,6 +1,9 @@
 package id.worx.device.client.viewmodel
 
 import android.graphics.Bitmap
+import android.location.Address
+import android.location.Geocoder
+import android.util.Log
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.*
@@ -11,14 +14,15 @@ import id.worx.device.client.Util
 import id.worx.device.client.Util.getCurrentDate
 import id.worx.device.client.Util.initProgress
 import id.worx.device.client.WorxApplication
-import id.worx.device.client.model.BasicForm
-import id.worx.device.client.model.SignatureValue
-import id.worx.device.client.model.SubmitForm
-import id.worx.device.client.model.Value
+import id.worx.device.client.data.DataStoreManager
+import id.worx.device.client.data.DataStoreManager.Companion.LATITUDE
+import id.worx.device.client.data.DataStoreManager.Companion.LONGITUDE
+import id.worx.device.client.model.*
 import id.worx.device.client.repository.SourceDataRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import java.util.*
 import javax.inject.Inject
 
 enum class EventStatus {
@@ -38,7 +42,8 @@ data class DetailUiState(
 
 @HiltViewModel
 class DetailFormViewModel @Inject constructor(
-    val application: WorxApplication,
+    private val application: WorxApplication,
+    private val dataStoreManager: DataStoreManager,
     private val savedStateHandle: SavedStateHandle,
     private val dataSourceRepo: SourceDataRepository
 ) : ViewModel() {
@@ -117,7 +122,7 @@ class DetailFormViewModel @Inject constructor(
     fun submitForm(actionAfterSubmitted: () -> Unit) {
         viewModelScope.launch {
             val form = createSubmitForm()
-
+            Log.d("tag", form.toString())
             if (Util.isConnected(application.applicationContext)) {
                 val result = dataSourceRepo.submitForm(form)
                 if (result.isSuccessful) {
@@ -159,15 +164,31 @@ class DetailFormViewModel @Inject constructor(
         }
     }
 
-    private fun createSubmitForm(): SubmitForm{
-        return SubmitForm(
+    private suspend fun createSubmitForm(): SubmitForm{
+        val submitForm = SubmitForm(
             id = uiState.value.detailForm!!.id,
             label = uiState.value.detailForm!!.label,
             description = uiState.value.detailForm!!.description,
             fields = uiState.value.detailForm!!.fields,
             values = uiState.value.values,
             templateId = uiState.value.detailForm!!.id,
-            lastUpdated = getCurrentDate("dd/MM/yyyy hh:mm a")
-        )
+            lastUpdated = getCurrentDate("dd/MM/yyyy hh:mm a"))
+
+        val latitude = dataStoreManager.read(LATITUDE) ?: "0.0010"
+        val longitude = dataStoreManager.read(LONGITUDE) ?: "-109.3222"
+        val geocoder = Geocoder(application.applicationContext, Locale.getDefault())
+        val address = geocoder.getFromLocation(
+            latitude.toDouble(),
+            longitude.toDouble(),
+            1
+        )?.get(0) ?: Address(Locale.getDefault())
+        val submitLocation = SubmitLocation(
+            "${address.getAddressLine(0)}, ${address.subLocality}, " +
+                    "${address.locality}, ${address.subAdminArea}, " +
+                    "${address.adminArea}, ${address.countryName}",
+            latitude.toDouble().toInt(),
+            longitude.toDouble().toInt())
+        submitForm.submitLocation = submitLocation
+        return submitForm
     }
 }

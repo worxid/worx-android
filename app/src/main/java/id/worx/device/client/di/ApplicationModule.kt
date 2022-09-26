@@ -8,6 +8,7 @@ import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import id.worx.device.client.WorxApplication
+import id.worx.device.client.data.DataStoreManager
 import id.worx.device.client.data.api.WorxApi
 import id.worx.device.client.data.dao.FormDAO
 import id.worx.device.client.data.dao.SubmitFormDAO
@@ -25,6 +26,10 @@ object ApplicationModule {
     @Provides
     fun provideAPIService(): WorxApi =
         WorxApi.create()
+
+    @Provides
+    fun provideDataStoreManager(@ApplicationContext context: Context): DataStoreManager =
+        DataStoreManager(context)
 
     @Provides
     @Singleton
