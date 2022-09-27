@@ -6,9 +6,14 @@ import androidx.compose.animation.ExitTransition
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.runtime.*
@@ -16,9 +21,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.input.TextFieldValue
+import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -39,6 +47,7 @@ import id.worx.device.client.theme.PrimaryMain
 import id.worx.device.client.theme.Typography
 import id.worx.device.client.viewmodel.DetailFormViewModel
 import id.worx.device.client.viewmodel.HomeViewModel
+import kotlinx.coroutines.flow.update
 
 sealed class BottomNavItem(var title: Int, var icon: Int, var screen_route: String) {
 
@@ -104,7 +113,13 @@ fun HomeScreen(
     var showSubmittedStatus by remember { mutableStateOf(notificationType == 1) }
 
     Scaffold(
-        topBar = { MainTopAppBar() },
+        topBar = {
+            MainTopAppBar { input ->
+                viewModel.uiState.update {
+                    it.copy(searchInput = input)
+                }
+            }
+        },
         bottomBar = {
             BottomNavigationView(
                 navController = navController,
@@ -213,41 +228,129 @@ fun BottomNavigationView(navController: NavController, showBadge: Int) {
 }
 
 @Composable
-fun MainTopAppBar() {
+fun MainTopAppBar(searchAction: (String) -> Unit) {
+    var searchMode by remember { mutableStateOf(false) }
+
     TopAppBar(
         modifier = Modifier.fillMaxWidth(),
         backgroundColor = PrimaryMain,
         contentColor = Color.White
     ) {
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Icon(
-                modifier = Modifier
-                    .padding(horizontal = 16.dp)
-                    .height(24.dp)
-                    .width(24.dp),
-                painter = painterResource(id = R.drawable.ic_symbol_worx_white),
-                contentDescription = "Logo Worx"
-            )
-            Text(
-                textAlign = TextAlign.Center,
-                text = "PT Virtue Digital Indonesia",
-                style = Typography.body1
-            )
-            Spacer(modifier = Modifier.weight(1f))
-            Icon(
-                imageVector = Icons.Filled.Search,
-                contentDescription = "Search"
-            )
-            Icon(
-                modifier = Modifier.padding(horizontal = 20.dp),
-                imageVector = Icons.Filled.Settings,
-                contentDescription = "Settings"
+        if (!searchMode) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Icon(
+                    modifier = Modifier
+                        .padding(horizontal = 16.dp)
+                        .height(24.dp)
+                        .width(24.dp),
+                    painter = painterResource(id = R.drawable.ic_symbol_worx_white),
+                    contentDescription = "Logo Worx"
+                )
+                Text(
+                    textAlign = TextAlign.Center,
+                    text = "PT Virtue Digital Indonesia",
+                    style = Typography.body1
+                )
+                Spacer(modifier = Modifier.weight(1f))
+                Icon(
+                    modifier = Modifier.clickable { searchMode = true },
+                    imageVector = Icons.Filled.Search,
+                    contentDescription = "Search"
+                )
+                Icon(
+                    modifier = Modifier.padding(horizontal = 20.dp),
+                    imageVector = Icons.Filled.Settings,
+                    contentDescription = "Settings"
+                )
+            }
+        } else {
+            SearchBar(
+                backButton = { searchMode = false },
+                inputSearch = searchAction
             )
         }
+
+    }
+}
+
+@OptIn(ExperimentalMaterialApi::class)
+@Composable
+fun SearchBar(
+    backButton: () -> Unit,
+    inputSearch: (String) -> Unit
+) {
+    var searchInput by remember { mutableStateOf(TextFieldValue("")) }
+
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        IconButton(onClick = backButton) {
+            Icon(
+                Icons.Default.ArrowBack,
+                contentDescription = "Back Button",
+                tint = Color.White
+            )
+        }
+        BasicTextField(
+            value = searchInput,
+            onValueChange = {
+                searchInput = it
+                inputSearch(it.text)
+            },
+            modifier = Modifier
+                .weight(1f)
+                .padding(top = 10.dp, bottom = 10.dp, end = 16.dp)
+                .background(
+                    Color.White.copy(
+                        0.1f
+                    ), RoundedCornerShape(4.dp)
+                ),
+            textStyle = Typography.body1,
+            cursorBrush = SolidColor(Color.White),
+            decorationBox = {
+                TextFieldDefaults.TextFieldDecorationBox(
+                    value = searchInput.text,
+                    innerTextField = it,
+                    enabled = true,
+                    singleLine = true,
+                    visualTransformation = VisualTransformation.None,
+                    interactionSource = remember { MutableInteractionSource() },
+                    placeholder = {
+                        Text(
+                            "Search",
+                            style = Typography.body1.copy(color = Color.White.copy(0.54f))
+                        )
+                    },
+                    leadingIcon = {
+                        Icon(
+                            Icons.Filled.Search,
+                            contentDescription = "",
+                            tint = Color.White
+                        )
+                    },
+                    trailingIcon = {
+                        if (searchInput.text != "") {
+                            Icon(
+                                painterResource(id = R.drawable.ic_delete_circle),
+                                contentDescription = "",
+                                tint = Color.White.copy(alpha = 0.8f),
+                                modifier = Modifier
+                                    .clickable {
+                                        searchInput = TextFieldValue("")
+                                    }
+                                    .padding(end = 4.dp)
+                                    .scale(0.8f)
+                            )
+                        }
+                    },
+                    contentPadding = PaddingValues(4.dp)
+                )
+            })
     }
 }
 
