@@ -8,7 +8,6 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
@@ -116,13 +115,12 @@ fun HomeScreen(
     Scaffold(
         topBar = {
             MainTopAppBar(
-                navController,
-                viewModel,
-                detailVM, { input ->
+                viewModel
+            ) { input ->
                 viewModel.uiState.update {
                     it.copy(searchInput = input)
                 }
-            })
+            }
         },
         bottomBar = {
             BottomNavigationView(
@@ -233,9 +231,7 @@ fun BottomNavigationView(navController: NavController, showBadge: Int) {
 
 @Composable
 fun MainTopAppBar(
-    navController: NavController,
     viewModel: HomeViewModel,
-    detailVM: DetailFormViewModel,
     searchAction: (String) -> Unit) {
     var searchMode by remember { mutableStateOf(false) }
 

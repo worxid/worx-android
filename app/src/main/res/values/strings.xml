@@ -54,6 +54,7 @@
     <string name="app_package_name">App package name</string>
     <string name="legal">Legal</string>
     <string name="open_source_licenses">Open source licenses</string>
+    <string name="open_source_licenses_cap">Open Source Licenses</string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>

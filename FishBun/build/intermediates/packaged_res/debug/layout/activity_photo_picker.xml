@@ -82,7 +82,7 @@
         android:layout_height="wrap_content"
         android:gravity="center"
         android:padding="12dp"
-        android:textColor="@color/black_main"
+        android:textColor="@color/main_text"
         android:textSize="12sp"
         app:layout_constraintBottom_toTopOf="@id/btm_bar" />
 
