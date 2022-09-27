@@ -8,6 +8,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
@@ -114,11 +115,14 @@ fun HomeScreen(
 
     Scaffold(
         topBar = {
-            MainTopAppBar { input ->
+            MainTopAppBar(
+                navController,
+                viewModel,
+                detailVM, { input ->
                 viewModel.uiState.update {
                     it.copy(searchInput = input)
                 }
-            }
+            })
         },
         bottomBar = {
             BottomNavigationView(
@@ -195,7 +199,7 @@ fun BottomNavigationView(navController: NavController, showBadge: Int) {
                         modifier = Modifier.padding(top = 8.dp),
                         text = stringResource(id = item.title),
                         fontSize = 11.sp, fontFamily = FontFamily.Monospace,
-                        color = if (currentRoute == item.screen_route) {
+                        color = if (currentRoute == item.screen_route){
                             Color.White
                         } else {
                             Color.Black.copy(0.3f)
@@ -228,7 +232,11 @@ fun BottomNavigationView(navController: NavController, showBadge: Int) {
 }
 
 @Composable
-fun MainTopAppBar(searchAction: (String) -> Unit) {
+fun MainTopAppBar(
+    navController: NavController,
+    viewModel: HomeViewModel,
+    detailVM: DetailFormViewModel,
+    searchAction: (String) -> Unit) {
     var searchMode by remember { mutableStateOf(false) }
 
     TopAppBar(
@@ -262,7 +270,10 @@ fun MainTopAppBar(searchAction: (String) -> Unit) {
                     contentDescription = "Search"
                 )
                 Icon(
-                    modifier = Modifier.padding(horizontal = 20.dp),
+                    modifier = Modifier.padding(horizontal = 20.dp)
+                        .clickable {
+                                   viewModel.goToSettingScreen()
+                        },
                     imageVector = Icons.Filled.Settings,
                     contentDescription = "Settings"
                 )
@@ -273,7 +284,6 @@ fun MainTopAppBar(searchAction: (String) -> Unit) {
                 inputSearch = searchAction
             )
         }
-
     }
 }
 

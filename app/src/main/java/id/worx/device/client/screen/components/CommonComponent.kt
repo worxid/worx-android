@@ -16,6 +16,7 @@ import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+import id.worx.device.client.screen.welcome.WelcomeEvent
 import id.worx.device.client.theme.PrimaryMain
 import id.worx.device.client.theme.RedDarkButton
 import id.worx.device.client.theme.Typography
@@ -108,5 +109,28 @@ fun WorxTopAppBar(
                 )
             }
         }
+    }
+}
+
+@Composable
+fun WhiteFullWidthButton(
+    modifier: Modifier,
+    label: String,
+    onClickEvent: () -> Unit = {},
+    onClickCallback: (WelcomeEvent) -> Unit
+){
+    OutlinedButton(
+        modifier = modifier,
+        colors = ButtonDefaults.buttonColors(
+            backgroundColor = RedDarkButton.copy(0.1f),
+            contentColor = RedDarkButton),
+        border = BorderStroke(1.5.dp, Color.Black),
+        shape = RoundedCornerShape(1),
+        contentPadding = PaddingValues(vertical = 14.dp),
+        onClick = {
+            onClickCallback(WelcomeEvent.JoinTeam)
+            onClickEvent()
+        }) {
+        Text(text = label, style = Typography.button)
     }
 }
