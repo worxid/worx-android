@@ -114,7 +114,9 @@ fun HomeScreen(
 
     Scaffold(
         topBar = {
-            MainTopAppBar { input ->
+            MainTopAppBar(
+                viewModel
+            ) { input ->
                 viewModel.uiState.update {
                     it.copy(searchInput = input)
                 }
@@ -195,7 +197,7 @@ fun BottomNavigationView(navController: NavController, showBadge: Int) {
                         modifier = Modifier.padding(top = 8.dp),
                         text = stringResource(id = item.title),
                         fontSize = 11.sp, fontFamily = FontFamily.Monospace,
-                        color = if (currentRoute == item.screen_route) {
+                        color = if (currentRoute == item.screen_route){
                             Color.White
                         } else {
                             Color.Black.copy(0.3f)
@@ -228,7 +230,9 @@ fun BottomNavigationView(navController: NavController, showBadge: Int) {
 }
 
 @Composable
-fun MainTopAppBar(searchAction: (String) -> Unit) {
+fun MainTopAppBar(
+    viewModel: HomeViewModel,
+    searchAction: (String) -> Unit) {
     var searchMode by remember { mutableStateOf(false) }
 
     TopAppBar(
@@ -262,7 +266,10 @@ fun MainTopAppBar(searchAction: (String) -> Unit) {
                     contentDescription = "Search"
                 )
                 Icon(
-                    modifier = Modifier.padding(horizontal = 20.dp),
+                    modifier = Modifier.padding(horizontal = 20.dp)
+                        .clickable {
+                                   viewModel.goToSettingScreen()
+                        },
                     imageVector = Icons.Filled.Settings,
                     contentDescription = "Settings"
                 )
@@ -273,7 +280,6 @@ fun MainTopAppBar(searchAction: (String) -> Unit) {
                 inputSearch = searchAction
             )
         }
-
     }
 }
 

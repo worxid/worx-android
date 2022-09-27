@@ -56,6 +56,10 @@ class HomeViewModel @Inject constructor(
         _navigateTo.value = Event(MainScreen.Detail)
     }
 
+    fun goToSettingScreen(){
+        _navigateTo.value = Event(MainScreen.Settings)
+    }
+
     /**
      * Refresh data and update the UI state accordingly
      */

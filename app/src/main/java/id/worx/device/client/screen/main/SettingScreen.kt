@@ -1,0 +1,406 @@
+package id.worx.device.client.screen.main
+
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.selection.selectable
+import androidx.compose.foundation.selection.selectableGroup
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.*
+import androidx.compose.runtime.*
+import androidx.compose.ui.ExperimentalComposeUiApi
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.window.Dialog
+import androidx.compose.ui.window.DialogProperties
+import androidx.constraintlayout.compose.ConstraintLayout
+import androidx.constraintlayout.compose.Dimension
+import id.worx.device.client.BuildConfig
+import id.worx.device.client.R
+import id.worx.device.client.screen.WhiteFullWidthButton
+import id.worx.device.client.screen.WorxTopAppBar
+import id.worx.device.client.theme.*
+
+@Composable
+fun SettingScreen(
+    onBackNavigation: () -> Unit
+) {
+    val showDialogTheme = remember {
+        mutableStateOf(false)
+    }
+    val showDialogLeave = remember {
+        mutableStateOf(false)
+    }
+
+    var showLicenses by remember {
+        mutableStateOf(false)
+    }
+
+    if (showDialogTheme.value) {
+        ThemeDialog(setShowDialog = { showDialogTheme.value = it })
+    }
+
+    if (showDialogLeave.value) {
+        LeaveOrganizationDialog(setShowDialog = { showDialogLeave.value = it })
+    }
+
+    if (showLicenses){
+        OpenSourceLicensesScreen {
+            showLicenses = false
+        }
+    } else {
+
+        Scaffold(
+            topBar = {
+                WorxTopAppBar(
+                    onBack = onBackNavigation,
+                    title = stringResource(id = R.string.settings)
+                )
+            }
+        ) { paddingValues ->
+            val verticalScroll = rememberScrollState()
+
+            Column(
+                modifier = Modifier.verticalScroll(verticalScroll)
+            ) {
+                HeaderTileSetting(title = stringResource(id = R.string.organization_details))
+                TileItemSetting(
+                    title = stringResource(id = R.string.organizations),
+                    subtitle = "Fields Service Mobile",
+                )
+                TileItemSetting(
+                    title = stringResource(id = R.string.organizations_key),
+                    subtitle = "AIT763",
+                )
+                TileItemSetting(
+                    title = stringResource(id = R.string.device_name),
+                    subtitle = "Budiman",
+                )
+                Divider(color = GrayDivider, modifier = Modifier.padding(top = 20.dp))
+                HeaderTileSetting(title = stringResource(id = R.string.devices_settings))
+                TileItemSetting(
+                    title = stringResource(id = R.string.theme),
+                    subtitle = "System default",
+                    iconRes = R.drawable.ic_baseline_color_lens_24,
+                    modifier = Modifier.clickable {
+                        showDialogTheme.value = !showDialogTheme.value
+                    }
+                )
+                TileItemSetting(
+                    title = stringResource(id = R.string.save_image_in_gallery),
+                    subtitle = stringResource(id = R.string.save_image_in_gallery_sub),
+                    iconRes = R.drawable.ic_baseline_collections_24,
+                    toggleActive = true,
+                    onPressToggle = {}
+                )
+                Divider(color = GrayDivider, modifier = Modifier.padding(top = 20.dp))
+                HeaderTileSetting(title = stringResource(id = R.string.about_this_app))
+                TileItemSetting(
+                    title = stringResource(id = R.string.app_version),
+                    subtitle = BuildConfig.VERSION_NAME,
+                )
+                TileItemSetting(
+                    title = stringResource(id = R.string.app_version_code),
+                    subtitle = BuildConfig.VERSION_CODE.toString(),
+                )
+                TileItemSetting(
+                    title = stringResource(id = R.string.app_package_name),
+                    subtitle = BuildConfig.APPLICATION_ID,
+                )
+                Divider(color = GrayDivider, modifier = Modifier.padding(top = 20.dp))
+                HeaderTileSetting(title = stringResource(id = R.string.legal))
+                TileItemSetting(
+                    modifier = Modifier.clickable { showLicenses = true },
+                    title = stringResource(id = R.string.open_source_licenses)
+                )
+                WhiteFullWidthButton(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(16.dp),
+                    label = "Leave Organization",
+                    onClickEvent = {
+                        showDialogLeave.value = !showDialogLeave.value
+                    },
+                    onClickCallback = {})
+            }
+        }
+    }
+}
+
+@Composable
+fun Dialog(
+    setShowDialog: (Boolean) -> Unit = {}
+) {
+    Dialog(onDismissRequest = { setShowDialog(false) }, properties = DialogProperties()) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .background(Color.Black)
+                .padding(top = 2.dp, start = 2.dp, end = 3.dp, bottom = 3.dp)
+                .background(Color.White)
+                .padding(20.dp)
+                .background(Color.White)
+        ) {
+            ThemeDialog(setShowDialog)
+        }
+    }
+}
+
+@Preview
+@Composable
+fun LeaveOrganizationDialog(
+    setShowDialog: (Boolean) -> Unit = {}
+) {
+    Dialog(onDismissRequest = { setShowDialog(false) }, properties = DialogProperties()) {
+        ConstraintLayout(
+            modifier = Modifier
+                .fillMaxWidth()
+                .background(Color.Black)
+                .padding(top = 2.dp, start = 2.dp, end = 3.dp, bottom = 3.dp)
+                .background(Color.White)
+                .padding(20.dp)
+                .background(Color.White)
+        ) {
+            val (tvTitle, tvYes, tvCancel) = createRefs()
+
+            Text(
+                text = "Are you sure you want to leave the organization?",
+                style = Typography.body2,
+                color = BlackFont,
+                modifier = Modifier.constrainAs(tvTitle) {
+                    top.linkTo(parent.top)
+                    start.linkTo(parent.start)
+                    end.linkTo(parent.end)
+                    width = Dimension.fillToConstraints
+                }
+            )
+            Text(
+                text = "Yes",
+                style = Typography.body2,
+                color = RedDark,
+                modifier = Modifier
+                    .constrainAs(tvYes) {
+                        top.linkTo(tvTitle.bottom, 32.dp)
+                        bottom.linkTo(parent.bottom)
+                        end.linkTo(parent.end)
+                        width = Dimension.fillToConstraints
+                    }
+                    .clickable {
+                        setShowDialog(false)
+                    }
+            )
+            Text(
+                text = "Cancel",
+                style = Typography.body2,
+                color = BlackVariantFont,
+                modifier = Modifier
+                    .constrainAs(tvCancel) {
+                        top.linkTo(tvTitle.bottom, 32.dp)
+                        bottom.linkTo(parent.bottom)
+                        end.linkTo(tvYes.start, 38.dp)
+                        width = Dimension.fillToConstraints
+                    }
+                    .clickable {
+                        setShowDialog(false)
+                    }
+            )
+        }
+    }
+}
+
+
+@Preview
+@Composable
+fun ThemeDialog(
+    setShowDialog: (Boolean) -> Unit = {}
+) {
+    Dialog(onDismissRequest = { setShowDialog(false) }, properties = DialogProperties()) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .background(Color.Black)
+                .padding(top = 2.dp, start = 2.dp, end = 3.dp, bottom = 3.dp)
+                .background(Color.White)
+                .padding(20.dp)
+                .background(Color.White)
+        ) {
+            val rbOptions = arrayListOf("System", "Dark", "Green", "Blue")
+            val (selectedOption, onOptionSelected) = remember {
+                mutableStateOf(rbOptions[0])
+            }
+            Column(modifier = Modifier.selectableGroup()) {
+                Text(
+                    text = stringResource(id = R.string.theme),
+                    style = Typography.body2,
+                    color = BlackFont,
+                    fontWeight = FontWeight.W500
+                )
+                rbOptions.forEach { s ->
+                    ConstraintLayout(
+                        modifier = Modifier
+                            .selectableGroup()
+                            .selectable(
+                                selected = (s == selectedOption),
+                                onClick = {
+                                    onOptionSelected(s)
+                                    setShowDialog(false)
+                                },
+                                role = Role.RadioButton
+                            )
+                    ) {
+                        val (tvItem, rbItem) = createRefs()
+
+                        RadioButton(
+                            selected = (s == selectedOption),
+                            onClick = {
+                                onOptionSelected(s)
+                                setShowDialog(false)
+                            },
+                            modifier = Modifier.constrainAs(rbItem) {
+                                top.linkTo(parent.top)
+                                bottom.linkTo(parent.bottom)
+                                start.linkTo(parent.start)
+                            },
+                            colors = RadioButtonDefaults.colors(PrimaryMain)
+                        )
+                        Text(
+                            text = s,
+                            style = Typography.body1,
+                            color = BlackFont,
+                            modifier = Modifier.constrainAs(tvItem) {
+                                top.linkTo(rbItem.top)
+                                bottom.linkTo(rbItem.bottom)
+                                start.linkTo(rbItem.end, 8.dp)
+                            }
+                        )
+                    }
+                }
+            }
+        }
+    }
+}
+
+@OptIn(ExperimentalComposeUiApi::class)
+@Composable
+fun TileItemSetting(
+    modifier: Modifier = Modifier,
+    title: String,
+    subtitle: String? = null,
+    iconRes: Int? = null,
+    toggleActive: Boolean = false,
+    onPressToggle: () -> Unit? = {}
+) {
+    val checkStateSwitch = remember { mutableStateOf(false) }
+
+    ConstraintLayout(
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(horizontal = 18.dp, vertical = 8.dp)
+    ) {
+        val (icon, tvTitle, tvSubtitle, button) = createRefs()
+        if (iconRes != null) {
+            Icon(
+                painter = painterResource(id = iconRes),
+                contentDescription = "Icon",
+                modifier = modifier.constrainAs(icon) {
+                    top.linkTo(parent.top)
+                    bottom.linkTo(parent.bottom)
+                    start.linkTo(parent.start)
+                }
+            )
+        }
+        Text(
+            text = title,
+            modifier = modifier
+                .constrainAs(tvTitle) {
+                    top.linkTo(parent.top)
+                    if (iconRes == null) {
+                        start.linkTo(parent.start, 40.dp)
+                    } else {
+                        start.linkTo(
+                            icon.end,
+                            18.dp
+                        )
+                    }
+                    if (toggleActive) {
+                        end.linkTo(button.start)
+                    } else {
+                        end.linkTo(parent.end)
+                    }
+                    if (subtitle == null) {
+                        bottom.linkTo(parent.bottom)
+                    }
+                    width = Dimension.fillToConstraints
+                },
+            style = Typography.body2,
+            color = BlackFont,
+        )
+        if (subtitle != null) {
+            Text(
+                text = subtitle,
+                modifier = modifier.constrainAs(tvSubtitle) {
+                    top.linkTo(tvTitle.bottom, 5.dp)
+                    start.linkTo(tvTitle.start)
+                    bottom.linkTo(parent.bottom)
+                    end.linkTo(tvTitle.end)
+                    width = Dimension.fillToConstraints
+                },
+                style = Typography.body1,
+                color = BlackVariantFont,
+                maxLines = 2,
+                overflow = TextOverflow.Ellipsis
+            )
+        }
+        if (toggleActive) {
+            Switch(
+                checked = checkStateSwitch.value,
+                onCheckedChange = {
+                    onPressToggle
+                    checkStateSwitch.value = it
+                },
+                modifier = modifier.constrainAs(button) {
+                    top.linkTo(parent.top)
+                    end.linkTo(parent.end)
+                    bottom.linkTo(parent.bottom)
+                },
+                colors = SwitchDefaults.colors(
+                    checkedThumbColor = RedDarkButton,
+                    uncheckedThumbColor = RedDarkButton,
+                    checkedTrackColor = RedDarkButton,
+                    uncheckedTrackColor = RedDarkButton,
+                )
+            )
+        }
+    }
+}
+
+@Composable
+fun HeaderTileSetting(
+    title: String
+) {
+    ConstraintLayout(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 60.dp, vertical = 20.dp)
+    ) {
+        Text(text = title, style = Typography.body1, color = BlackVariantFont)
+    }
+}
+
+@Preview
+@Composable
+fun PreviewSettingScreen() {
+    WorxTheme {
+        SettingScreen({})
+    }
+}

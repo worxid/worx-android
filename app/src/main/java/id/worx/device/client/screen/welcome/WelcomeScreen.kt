@@ -17,6 +17,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import id.worx.device.client.R
 import id.worx.device.client.screen.RedFullWidthButton
+import id.worx.device.client.screen.WhiteFullWidthButton
 import id.worx.device.client.theme.PrimaryMain
 import id.worx.device.client.theme.RedDarkButton
 import id.worx.device.client.theme.Typography
@@ -107,27 +108,20 @@ private fun CreateTeamButton(onEvent: (WelcomeEvent) -> Unit) {
         onClickCallback = {
             onEvent(WelcomeEvent.CreateTeam)
         },
-        label = "Create New Team")
-    }
+        label = "Create New Team"
+    )
+}
 
 
 @Composable
 private fun JoinTeamButton(onEvent: (WelcomeEvent) -> Unit) {
-    OutlinedButton(
+    WhiteFullWidthButton(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = 16.dp),
-        colors = ButtonDefaults.buttonColors(
-            backgroundColor = RedDarkButton.copy(0.1f),
-            contentColor = RedDarkButton),
-        border = BorderStroke(1.5.dp, Color.Black),
-        shape = RoundedCornerShape(1),
-        contentPadding = PaddingValues(vertical = 14.dp),
-        onClick = {
-            onEvent(WelcomeEvent.JoinTeam)
-        }) {
-        Text(text = "Join Existing Team", style = Typography.button)
-    }
+            .padding(16.dp),
+        label = "Join Existing Team",
+        onClickCallback = onEvent
+    )
 }
 
 
