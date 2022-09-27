@@ -21,9 +21,7 @@ class LicencesFragment : Fragment() {
         return ComposeView(requireActivity()).apply {
             setContent {
                 WorxTheme() {
-                    LicencesScreen {
-                        activity?.onBackPressedDispatcher?.onBackPressed()
-                    }
+                    LicencesScreen(onBackNavigation = { activity?.onBackPressedDispatcher?.onBackPressed() })
                 }
             }
         }

@@ -58,7 +58,12 @@ fun SettingScreen(
 
     if (showDialogTheme.value) {
         WorxDialog(
-            content = { ThemeDialog(setShowDialog = { showDialogTheme.value = it }, session = session) },
+            content = {
+                ThemeDialog(
+                    setShowDialog = { showDialogTheme.value = it },
+                    session = session
+                )
+            },
             setShowDialog = { showDialogTheme.value = it })
     }
 
@@ -277,7 +282,7 @@ fun TileItemSetting(
     onPress: () -> Unit = {},
     session: Session? = null
 ) {
-    val toggleValue = if (session!=null) session.isSaveImageToGallery else false
+    val toggleValue = if (session != null) session.isSaveImageToGallery else false
     val checkStateSwitch = remember { mutableStateOf(toggleValue) }
 
     ConstraintLayout(
