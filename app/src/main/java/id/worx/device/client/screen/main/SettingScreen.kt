@@ -25,15 +25,19 @@ import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
+import androidx.hilt.navigation.compose.hiltViewModel
 import id.worx.device.client.BuildConfig
 import id.worx.device.client.R
 import id.worx.device.client.screen.WhiteFullWidthButton
 import id.worx.device.client.screen.WorxTopAppBar
 import id.worx.device.client.theme.*
+import id.worx.device.client.viewmodel.HomeViewModel
 
 @Composable
 fun SettingScreen(
-    onBackNavigation: () -> Unit
+    viewModel: HomeViewModel,
+    onBackNavigation: () -> Unit,
+    initialToggleValue: Boolean
 ) {
     val showDialogTheme = remember {
         mutableStateOf(false)
@@ -101,7 +105,10 @@ fun SettingScreen(
                     subtitle = stringResource(id = R.string.save_image_in_gallery_sub),
                     iconRes = R.drawable.ic_baseline_collections_24,
                     toggleActive = true,
-                    onPressToggle = {}
+                    onPressToggle = {
+                        viewModel.toggleSavePhotoSettings(it)
+                    },
+                    initialToggleValue = initialToggleValue
                 )
                 Divider(color = GrayDivider, modifier = Modifier.padding(top = 20.dp))
                 HeaderTileSetting(title = stringResource(id = R.string.about_this_app))
@@ -298,9 +305,10 @@ fun TileItemSetting(
     subtitle: String? = null,
     iconRes: Int? = null,
     toggleActive: Boolean = false,
-    onPressToggle: () -> Unit? = {}
+    onPressToggle: (Boolean) -> Unit? = {},
+    initialToggleValue: Boolean = false
 ) {
-    val checkStateSwitch = remember { mutableStateOf(false) }
+    val checkStateSwitch = remember { mutableStateOf(initialToggleValue) }
 
     ConstraintLayout(
         modifier = modifier
@@ -365,7 +373,7 @@ fun TileItemSetting(
             Switch(
                 checked = checkStateSwitch.value,
                 onCheckedChange = {
-                    onPressToggle
+                    onPressToggle(it)
                     checkStateSwitch.value = it
                 },
                 modifier = modifier.constrainAs(button) {
@@ -401,6 +409,7 @@ fun HeaderTileSetting(
 @Composable
 fun PreviewSettingScreen() {
     WorxTheme {
-        SettingScreen({})
+        val viewModel:HomeViewModel = hiltViewModel()
+        SettingScreen(viewModel, {},true)
     }
 }

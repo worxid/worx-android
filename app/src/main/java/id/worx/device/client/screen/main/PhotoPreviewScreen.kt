@@ -1,4 +1,4 @@
-package id.worx.device.client.screen
+package id.worx.device.client.screen.main
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -20,57 +20,66 @@ import id.worx.device.client.viewmodel.DetailFormViewModel
 import java.io.File
 
 @Composable
-fun PhotoPreviewScreen(viewModel: CameraViewModel, detailViewModel:DetailFormViewModel){
-     Box(modifier = Modifier.fillMaxSize()){
-         AsyncImage(
-             model = viewModel.photoPath.value?.let { File(it) },
-             contentDescription = "Image",
-             modifier = Modifier
-                 .fillMaxSize()
-         )
-         Row(modifier = Modifier
-             .fillMaxWidth()
-             .height(110.dp)
-             .background(Color.Black.copy(0.54f))
-             .align(Alignment.BottomCenter),
-         verticalAlignment = Alignment.CenterVertically,
-         horizontalArrangement = Arrangement.SpaceBetween) {
-             Text(
-                 text = "x",
-                 fontSize = 36.sp,
-                 color = Color.White,
-                 modifier = Modifier
-                     .padding(horizontal = 36.dp, vertical = 20.dp)
-                     .clickable { viewModel.rejectPhoto() }
-                 )
-             Text(
-                 text = "\u2713",
-                 fontSize = 36.sp,
-                 color = Color.White,
-                 modifier = Modifier
-                     .padding(horizontal = 36.dp, vertical = 20.dp)
-                     .clickable {
-                         val path = viewModel.photoPath.value!!
-                         val index = viewModel.indexForm.value!!
-                         val id = detailViewModel.uiState.value.detailForm!!.fields[index].id
-                         val value = detailViewModel.uiState.value.values[id] as ImageValue?
-                         val filePath = value?.filePath ?: arrayListOf()
-                         filePath.add(path)
-                         detailViewModel.setComponentData(index,
-                             ImageValue(value = ArrayList(filePath.map { 1 }), filePath = filePath))
-                         viewModel.navigateToDetail()
-                     }
-             )
-         }
-     }
+fun PhotoPreviewScreen(
+    viewModel: CameraViewModel,
+    detailViewModel: DetailFormViewModel,
+    addPhotoToGallery: (String) -> Unit
+) {
+    Box(modifier = Modifier.fillMaxSize()) {
+        AsyncImage(
+            model = viewModel.photoPath.value?.let { File(it) },
+            contentDescription = "Image",
+            modifier = Modifier
+                .fillMaxSize()
+        )
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(110.dp)
+                .background(Color.Black.copy(0.54f))
+                .align(Alignment.BottomCenter),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+            Text(
+                text = "x",
+                fontSize = 36.sp,
+                color = Color.White,
+                modifier = Modifier
+                    .padding(horizontal = 36.dp, vertical = 20.dp)
+                    .clickable { viewModel.rejectPhoto() }
+            )
+            Text(
+                text = "\u2713",
+                fontSize = 36.sp,
+                color = Color.White,
+                modifier = Modifier
+                    .padding(horizontal = 36.dp, vertical = 20.dp)
+                    .clickable {
+                        val path = viewModel.photoPath.value!!
+                        val index = viewModel.indexForm.value!!
+                        val id = detailViewModel.uiState.value.detailForm!!.fields[index].id
+                        val value = detailViewModel.uiState.value.values[id] as ImageValue?
+                        val filePath = value?.filePath ?: arrayListOf()
+                        filePath.add(path)
+                        detailViewModel.setComponentData(
+                            index,
+                            ImageValue(value = ArrayList(filePath.map { 1 }), filePath = filePath)
+                        )
+                        addPhotoToGallery(path)
+                        viewModel.navigateToDetail()
+                    }
+            )
+        }
+    }
 }
 
 @Preview
 @Composable
-private fun PreviewPhotoScreen(){
-    val viewModel : CameraViewModel = hiltViewModel()
+private fun PreviewPhotoScreen() {
+    val viewModel: CameraViewModel = hiltViewModel()
     val detailViewModel: DetailFormViewModel = hiltViewModel()
     WorxTheme() {
-        PhotoPreviewScreen(viewModel = viewModel, detailViewModel)
+        PhotoPreviewScreen(viewModel = viewModel, detailViewModel) {}
     }
 }

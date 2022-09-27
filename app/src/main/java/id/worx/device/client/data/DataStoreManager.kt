@@ -17,6 +17,9 @@ class DataStoreManager(context: Context) {
         //String
         val LATITUDE = stringPreferencesKey("LOCATION_LATITUDE")
         val LONGITUDE = stringPreferencesKey("LOCATION_LONGITUDE")
+
+        //Boolean
+        val SAVE_PHOTO_TO_GALLERY = booleanPreferencesKey("SAVE_PHOTO_TO_GALLERY")
     }
 
     suspend fun clearAll() {
