@@ -2,20 +2,17 @@ package id.worx.device.client.screen.main
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.selection.selectableGroup
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.*
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.KeyboardArrowLeft
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.*
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.focus.FocusRequester.Companion.createRefs
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -28,6 +25,7 @@ import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
+import id.worx.device.client.BuildConfig
 import id.worx.device.client.R
 import id.worx.device.client.screen.WhiteFullWidthButton
 import id.worx.device.client.screen.WorxTopAppBar
@@ -44,6 +42,10 @@ fun SettingScreen(
         mutableStateOf(false)
     }
 
+    var showLicenses by remember {
+        mutableStateOf(false)
+    }
+
     if (showDialogTheme.value) {
         ThemeDialog(setShowDialog = { showDialogTheme.value = it })
     }
@@ -52,73 +54,85 @@ fun SettingScreen(
         LeaveOrganizationDialog(setShowDialog = { showDialogLeave.value = it })
     }
 
-    Scaffold(
-        topBar = {
-            WorxTopAppBar(
-                onBack = onBackNavigation,
-                title = stringResource(id = R.string.settings)
-            )
+    if (showLicenses){
+        OpenSourceLicensesScreen {
+            showLicenses = false
         }
-    ) { paddingValues ->
-        val verticalScroll = rememberScrollState()
+    } else {
 
-        Column(
-            modifier = Modifier.verticalScroll(verticalScroll)
-        ) {
-            HeaderTileSetting(title = stringResource(id = R.string.organization_details))
-            TileItemSetting(
-                title = stringResource(id = R.string.organizations),
-                subtitle = "Fields Service Mobile",
-            )
-            TileItemSetting(
-                title = stringResource(id = R.string.organizations_key),
-                subtitle = "AIT763",
-            )
-            TileItemSetting(
-                title = stringResource(id = R.string.device_name),
-                subtitle = "Budiman",
-            )
-            Divider(color = GrayDivider, modifier = Modifier.padding(top = 20.dp))
-            HeaderTileSetting(title = stringResource(id = R.string.devices_settings))
-            TileItemSetting(
-                title = stringResource(id = R.string.theme),
-                subtitle = "System default",
-                iconRes = R.drawable.ic_baseline_color_lens_24,
-                modifier = Modifier.clickable {
-                    showDialogTheme.value = !showDialogTheme.value
-                }
-            )
-            TileItemSetting(
-                title = stringResource(id = R.string.save_image_in_gallery),
-                subtitle = stringResource(id = R.string.save_image_in_gallery_sub),
-                iconRes = R.drawable.ic_baseline_collections_24,
-                toggleActive = true,
-                onPressToggle = {}
-            )
-            HeaderTileSetting(title = stringResource(id = R.string.about_this_app))
-            TileItemSetting(
-                title = stringResource(id = R.string.app_version),
-                subtitle = "1.8.0",
-            )
-            TileItemSetting(
-                title = stringResource(id = R.string.app_version_code),
-                subtitle = "1808",
-            )
-            TileItemSetting(
-                title = stringResource(id = R.string.app_package_name),
-                subtitle = "worx.id",
-            )
-            HeaderTileSetting(title = stringResource(id = R.string.legal))
-            TileItemSetting(title = stringResource(id = R.string.open_source_licenses))
-            WhiteFullWidthButton(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(16.dp),
-                label = "Leave Organization",
-                onClickEvent = {
-                    showDialogLeave.value = !showDialogLeave.value
-                },
-                onClickCallback = {})
+        Scaffold(
+            topBar = {
+                WorxTopAppBar(
+                    onBack = onBackNavigation,
+                    title = stringResource(id = R.string.settings)
+                )
+            }
+        ) { paddingValues ->
+            val verticalScroll = rememberScrollState()
+
+            Column(
+                modifier = Modifier.verticalScroll(verticalScroll)
+            ) {
+                HeaderTileSetting(title = stringResource(id = R.string.organization_details))
+                TileItemSetting(
+                    title = stringResource(id = R.string.organizations),
+                    subtitle = "Fields Service Mobile",
+                )
+                TileItemSetting(
+                    title = stringResource(id = R.string.organizations_key),
+                    subtitle = "AIT763",
+                )
+                TileItemSetting(
+                    title = stringResource(id = R.string.device_name),
+                    subtitle = "Budiman",
+                )
+                Divider(color = GrayDivider, modifier = Modifier.padding(top = 20.dp))
+                HeaderTileSetting(title = stringResource(id = R.string.devices_settings))
+                TileItemSetting(
+                    title = stringResource(id = R.string.theme),
+                    subtitle = "System default",
+                    iconRes = R.drawable.ic_baseline_color_lens_24,
+                    modifier = Modifier.clickable {
+                        showDialogTheme.value = !showDialogTheme.value
+                    }
+                )
+                TileItemSetting(
+                    title = stringResource(id = R.string.save_image_in_gallery),
+                    subtitle = stringResource(id = R.string.save_image_in_gallery_sub),
+                    iconRes = R.drawable.ic_baseline_collections_24,
+                    toggleActive = true,
+                    onPressToggle = {}
+                )
+                Divider(color = GrayDivider, modifier = Modifier.padding(top = 20.dp))
+                HeaderTileSetting(title = stringResource(id = R.string.about_this_app))
+                TileItemSetting(
+                    title = stringResource(id = R.string.app_version),
+                    subtitle = BuildConfig.VERSION_NAME,
+                )
+                TileItemSetting(
+                    title = stringResource(id = R.string.app_version_code),
+                    subtitle = BuildConfig.VERSION_CODE.toString(),
+                )
+                TileItemSetting(
+                    title = stringResource(id = R.string.app_package_name),
+                    subtitle = BuildConfig.APPLICATION_ID,
+                )
+                Divider(color = GrayDivider, modifier = Modifier.padding(top = 20.dp))
+                HeaderTileSetting(title = stringResource(id = R.string.legal))
+                TileItemSetting(
+                    modifier = Modifier.clickable { showLicenses = true },
+                    title = stringResource(id = R.string.open_source_licenses)
+                )
+                WhiteFullWidthButton(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(16.dp),
+                    label = "Leave Organization",
+                    onClickEvent = {
+                        showDialogLeave.value = !showDialogLeave.value
+                    },
+                    onClickCallback = {})
+            }
         }
     }
 }
