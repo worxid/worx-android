@@ -121,7 +121,7 @@ fun HomeScreen(
         topBar = {
             MainTopAppBar(
                 onSearchMode = { showBotNav = it },
-                onSearchClick = { }
+                viewModel = viewModel
             ) { input ->
                 viewModel.uiState.update {
                     it.copy(searchInput = input)
@@ -252,7 +252,7 @@ fun BottomNavigationView(navController: NavController, showBadge: Int, showBotNa
 @Composable
 fun MainTopAppBar(
     onSearchMode: (Boolean) -> Unit,
-    onSearchClick: () -> Unit,
+    viewModel: HomeViewModel,
     searchAction: (String) -> Unit,
 ) {
     var searchMode by remember { mutableStateOf(false) }
@@ -286,7 +286,6 @@ fun MainTopAppBar(
                 Icon(
                     modifier = Modifier.clickable {
                         searchMode = true
-                        onSearchClick()
                     },
                     imageVector = Icons.Filled.Search,
                     contentDescription = "Search"
@@ -300,7 +299,8 @@ fun MainTopAppBar(
         } else {
             SearchBar(
                 backButton = { searchMode = false },
-                inputSearch = searchAction
+                inputSearch = searchAction,
+                viewModel = viewModel
             )
         }
     }
@@ -310,9 +310,11 @@ fun MainTopAppBar(
 @Composable
 fun SearchBar(
     backButton: () -> Unit,
-    inputSearch: (String) -> Unit
+    inputSearch: (String) -> Unit,
+    viewModel: HomeViewModel
 ) {
-    var searchInput by remember { mutableStateOf(TextFieldValue("")) }
+    val searchData = viewModel.uiState.collectAsState().value.searchInput
+    var searchInput by remember { mutableStateOf(TextFieldValue(searchData)) }
     val focusRequest = FocusRequester()
     LaunchedEffect(Unit) {
         focusRequest.requestFocus()
