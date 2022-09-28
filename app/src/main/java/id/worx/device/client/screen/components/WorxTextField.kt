@@ -26,11 +26,12 @@ fun WorxTextField(
     label: String,
     hint: String? = null,
     inputType: KeyboardOptions,
+    initialValue: TextFieldValue = TextFieldValue(),
     onValueChange: (String) -> Unit,
     isPassword: Boolean = false,
     isDeleteTrail: Boolean = false
 ) {
-    var textValue by remember { mutableStateOf(TextFieldValue("")) }
+    var textValue by remember { mutableStateOf(initialValue) }
 
     Column(
         modifier = Modifier

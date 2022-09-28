@@ -101,10 +101,15 @@ fun DetailForm(
             viewModel.currentComponentIndex(index)
             when (item.type) {
                 Type.TextField.type -> {
+                    val id = viewModel.uiState.collectAsState().value.detailForm?.fields?.get(index)?.id
+                        ?: 0
+                    val value = viewModel.uiState.collectAsState().value.values[id]
+                            as TextFieldValue? ?: TextFieldValue()
                     WorxTextField(
                         label = item.label ?: "Free Text",
                         hint = "Answer",
                         inputType = KeyboardOptions(keyboardType = KeyboardType.Text),
+                        initialValue = androidx.compose.ui.text.input.TextFieldValue(value.values ?: ""),
                         onValueChange = {
                             data[index].value = it
                             viewModel.setComponentData(index, TextFieldValue(values = it))
