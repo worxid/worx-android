@@ -1,5 +1,7 @@
 package id.worx.device.client.screen.main
 
+import android.annotation.SuppressLint
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -9,6 +11,8 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -48,6 +52,11 @@ fun SearchScreen(
     viewModel: HomeViewModel,
     detailVM: DetailFormViewModel
 ) {
+    val searchInput = viewModel.uiState.collectAsState().value.searchInput
+    val formData = formList.filter { data -> data.label?.contains(searchInput, true) ?: false}
+    val draftData = draftList.filter { data -> data.label?.contains(searchInput, true) ?: false}
+    val submissionData = submissionList.filter { data -> data.label?.contains(searchInput, true) ?: false}
+
     Scaffold() { padding ->
         ConstraintLayout(
             modifier = Modifier.padding(padding)
@@ -90,7 +99,7 @@ fun SearchScreen(
             }) { page ->
                 when (page) {
                     0 -> FormScreen(
-                        formList,
+                        formData,
                         0,
                         viewModel,
                         detailVM,
@@ -98,7 +107,7 @@ fun SearchScreen(
                         stringResource(R.string.empty_description_form)
                     )
                     1 -> FormScreen(
-                        draftList,
+                        draftData,
                         1,
                         viewModel,
                         detailVM,
@@ -106,7 +115,7 @@ fun SearchScreen(
                         stringResource(R.string.empty_description_drafts)
                     )
                     2 -> FormScreen(
-                        submissionList,
+                        submissionData,
                         2,
                         viewModel,
                         detailVM,
