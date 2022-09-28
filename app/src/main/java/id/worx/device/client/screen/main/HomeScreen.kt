@@ -20,6 +20,8 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.res.painterResource
@@ -57,9 +59,6 @@ sealed class BottomNavItem(var title: Int, var icon: Int, var screen_route: Stri
     object Submission : BottomNavItem(R.string.submission, R.drawable.ic_tick, "submission")
 }
 
-interface onSearchModeListener {
-    fun onSearchMode():Boolean
-}
 
 @Composable
 fun NavigationGraph(
@@ -116,13 +115,14 @@ fun HomeScreen(
     val notificationType by viewModel.showNotification.collectAsState()
     val showBadge by viewModel.showBadge.collectAsState()
     var showSubmittedStatus by remember { mutableStateOf(notificationType == 1) }
-    var showBotNav by remember { mutableStateOf(false)}
+    var showBotNav by remember { mutableStateOf(false) }
 
     Scaffold(
         topBar = {
-            MainTopAppBar(onSearchMode = {
-                showBotNav = it
-            }) { input ->
+            MainTopAppBar(
+                onSearchMode = { showBotNav = it },
+                onSearchClick = { }
+            ) { input ->
                 viewModel.uiState.update {
                     it.copy(searchInput = input)
                 }
@@ -136,14 +136,22 @@ fun HomeScreen(
             )
         }
     ) { padding ->
-        NavigationGraph(
-            navController = navController,
-            formList = formList,
-            draftList = draftList,
-            submissionList = submissionList,
-            viewModel = viewModel,
-            detailVM = detailVM
-        )
+        if (showBotNav) {
+            NavigationGraph(
+                navController = navController,
+                formList = formList,
+                draftList = draftList,
+                submissionList = submissionList,
+                viewModel = viewModel,
+                detailVM = detailVM
+            )
+        } else {
+            SearchScreen(
+                formList = formList,
+                draftList = draftList,
+                submissionList = submissionList
+            )
+        }
         AnimatedVisibility(
             visible = viewModel.uiState.collectAsState().value.isLoading,
             enter = EnterTransition.None,
@@ -240,10 +248,14 @@ fun BottomNavigationView(navController: NavController, showBadge: Int, showBotNa
 }
 
 @Composable
-fun MainTopAppBar(onSearchMode: (Boolean) -> Unit, searchAction: (String) -> Unit) {
+fun MainTopAppBar(
+    onSearchMode: (Boolean) -> Unit,
+    onSearchClick: () -> Unit,
+    searchAction: (String) -> Unit,
+) {
     var searchMode by remember { mutableStateOf(false) }
-
     onSearchMode(!searchMode)
+
     TopAppBar(
         modifier = Modifier.fillMaxWidth(),
         backgroundColor = PrimaryMain,
@@ -272,6 +284,7 @@ fun MainTopAppBar(onSearchMode: (Boolean) -> Unit, searchAction: (String) -> Uni
                 Icon(
                     modifier = Modifier.clickable {
                         searchMode = true
+                        onSearchClick()
                     },
                     imageVector = Icons.Filled.Search,
                     contentDescription = "Search"
@@ -298,6 +311,10 @@ fun SearchBar(
     inputSearch: (String) -> Unit
 ) {
     var searchInput by remember { mutableStateOf(TextFieldValue("")) }
+    val focusRequest = FocusRequester()
+    LaunchedEffect(Unit) {
+        focusRequest.requestFocus()
+    }
 
     Row(
         modifier = Modifier.fillMaxWidth(),
@@ -323,7 +340,8 @@ fun SearchBar(
                     Color.White.copy(
                         0.1f
                     ), RoundedCornerShape(4.dp)
-                ),
+                )
+                .focusRequester(focusRequest),
             textStyle = Typography.body1,
             cursorBrush = SolidColor(Color.White),
             decorationBox = {
