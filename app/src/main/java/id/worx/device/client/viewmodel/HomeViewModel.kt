@@ -7,8 +7,6 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import id.worx.device.client.Event
 import id.worx.device.client.MainScreen
 import id.worx.device.client.WorxApplication
-import id.worx.device.client.data.DataStoreManager
-import id.worx.device.client.data.DataStoreManager.Companion.SAVE_PHOTO_TO_GALLERY
 import id.worx.device.client.data.database.FormDownloadWorker
 import id.worx.device.client.data.database.SubmissionUploadWorker
 import id.worx.device.client.model.EmptyForm
@@ -36,8 +34,7 @@ data class HomeUiState(
 @HiltViewModel
 class HomeViewModel @Inject constructor(
     private val savedStateHandle: SavedStateHandle,
-    private val repository: SourceDataRepository,
-    private val dataStoreManager: DataStoreManager
+    private val repository: SourceDataRepository
 ) : ViewModel() {
 
     val uiState = MutableStateFlow(HomeUiState())
@@ -61,6 +58,10 @@ class HomeViewModel @Inject constructor(
 
     fun goToSettingScreen(){
         _navigateTo.value = Event(MainScreen.Settings)
+    }
+
+    fun goToLicencesScreen(){
+        _navigateTo.value = Event(MainScreen.Licences)
     }
 
     /**
@@ -159,12 +160,6 @@ class HomeViewModel @Inject constructor(
 
                 workManager.enqueue(uploadSubmisison)
             }
-        }
-    }
-
-    fun toggleSavePhotoSettings(toggleValue:Boolean){
-        viewModelScope.launch {
-            dataStoreManager.saveBool(SAVE_PHOTO_TO_GALLERY.name, toggleValue)
         }
     }
 }

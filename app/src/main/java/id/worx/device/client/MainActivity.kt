@@ -19,9 +19,7 @@ import androidx.navigation.ui.setupWithNavController
 import com.google.android.gms.location.*
 import com.google.android.material.navigation.NavigationView
 import dagger.hilt.android.AndroidEntryPoint
-import id.worx.device.client.data.DataStoreManager
-import id.worx.device.client.data.DataStoreManager.Companion.LATITUDE
-import id.worx.device.client.data.DataStoreManager.Companion.LONGITUDE
+import id.worx.device.client.data.database.Session
 import id.worx.device.client.viewmodel.HomeViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -31,7 +29,7 @@ import javax.inject.Inject
 
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
-    @Inject lateinit var dataStoreManager: DataStoreManager
+    @Inject lateinit var session: Session
 
     // Location
     private lateinit var fusedLocationClient: FusedLocationProviderClient
@@ -117,10 +115,8 @@ class MainActivity : AppCompatActivity() {
         }
 
     fun parseLocation(location: Location){
-        CoroutineScope(Dispatchers.IO).launch {
-            dataStoreManager.save(LATITUDE.name, String.format("%.4f", location.latitude))
-            dataStoreManager.save(LONGITUDE.name, String.format("%.4f", location.longitude))
-        }
+        session.saveLatitude(String.format("%.4f", location.latitude))
+        session.saveLongitude(String.format("%.4f", location.longitude))
     }
 
     @SuppressLint("MissingPermission")

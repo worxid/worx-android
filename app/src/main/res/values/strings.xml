@@ -39,6 +39,7 @@
     <string name="empty_description_submission">You haven’t submitted any forms recently. Visit settings to change how long submissions are stored</string>
     <string name="no_submission">No Recent Submission</string>
     <string name="settings">Settings</string>
+    <string name="open_source_licences_cap">Open Source Licences</string>
     <string name="organization_details">Organization details</string>
     <string name="organizations">Organizations</string>
     <string name="organizations_sub">Fields Service Mobile</string>
@@ -54,7 +55,7 @@
     <string name="app_package_name">App package name</string>
     <string name="legal">Legal</string>
     <string name="open_source_licenses">Open source licenses</string>
-    <string name="open_source_licenses_cap">Open Source Licenses</string>
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="yes">Yes</string>
+    <string name="cancel">Cancel</string>
+    <string name="leave_organization">Are you sure you want to leave the organization?</string>
 </resources>

@@ -14,9 +14,7 @@ import id.worx.device.client.Util
 import id.worx.device.client.Util.getCurrentDate
 import id.worx.device.client.Util.initProgress
 import id.worx.device.client.WorxApplication
-import id.worx.device.client.data.DataStoreManager
-import id.worx.device.client.data.DataStoreManager.Companion.LATITUDE
-import id.worx.device.client.data.DataStoreManager.Companion.LONGITUDE
+import id.worx.device.client.data.database.Session
 import id.worx.device.client.model.*
 import id.worx.device.client.repository.SourceDataRepository
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -43,7 +41,7 @@ data class DetailUiState(
 @HiltViewModel
 class DetailFormViewModel @Inject constructor(
     private val application: WorxApplication,
-    private val dataStoreManager: DataStoreManager,
+    private val session: Session,
     private val savedStateHandle: SavedStateHandle,
     private val dataSourceRepo: SourceDataRepository
 ) : ViewModel() {
@@ -174,8 +172,8 @@ class DetailFormViewModel @Inject constructor(
             templateId = uiState.value.detailForm!!.id,
             lastUpdated = getCurrentDate("dd/MM/yyyy hh:mm a"))
 
-        val latitude = dataStoreManager.read(LATITUDE) ?: "0.0010"
-        val longitude = dataStoreManager.read(LONGITUDE) ?: "-109.3222"
+        val latitude = session.latitude ?: "0.0010"
+        val longitude = session.longitude ?: "-109.3222"
         val geocoder = Geocoder(application.applicationContext, Locale.getDefault())
         val address = geocoder.getFromLocation(
             latitude.toDouble(),

@@ -8,39 +8,40 @@ import androidx.compose.ui.platform.ComposeView
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import dagger.hilt.android.AndroidEntryPoint
-import id.worx.device.client.data.DataStoreManager
-import id.worx.device.client.data.DataStoreManager.Companion.SAVE_PHOTO_TO_GALLERY
+import id.worx.device.client.MainScreen
+import id.worx.device.client.data.database.Session
+import id.worx.device.client.navigate
 import id.worx.device.client.screen.main.SettingScreen
 import id.worx.device.client.theme.WorxTheme
-import id.worx.device.client.viewmodel.DetailFormViewModel
 import id.worx.device.client.viewmodel.HomeViewModel
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @AndroidEntryPoint
 class SettingsFragment : Fragment() {
 
     private val viewModel by activityViewModels<HomeViewModel>()
-    private val detailViewModel by activityViewModels<DetailFormViewModel>()
 
     @Inject
-    lateinit var dataStoreManager: DataStoreManager
-    private var savePhoto = false
+    lateinit var session: Session
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        CoroutineScope(Dispatchers.Main).launch {
-            savePhoto = dataStoreManager.readBool(SAVE_PHOTO_TO_GALLERY) ?: false
+        viewModel.navigateTo.observe(viewLifecycleOwner) { navigateToEvent ->
+            navigateToEvent.getContentIfNotHandled()?.let { navigateTo ->
+                navigate(navigateTo, MainScreen.Settings)
+            }
         }
 
         return ComposeView(requireActivity()).apply {
             setContent {
                 WorxTheme() {
-                    SettingScreen(viewModel, onBackNavigation = { activity?.onBackPressedDispatcher?.onBackPressed() } , savePhoto)
+                    SettingScreen(
+                        viewModel,
+                        onBackNavigation = { activity?.onBackPressedDispatcher?.onBackPressed() },
+                        session = session
+                    )
                 }
             }
         }

@@ -16,15 +16,12 @@ import androidx.fragment.app.activityViewModels
 import dagger.hilt.android.AndroidEntryPoint
 import id.worx.device.client.MainScreen
 import id.worx.device.client.R
-import id.worx.device.client.data.DataStoreManager
+import id.worx.device.client.data.database.Session
 import id.worx.device.client.navigate
 import id.worx.device.client.screen.main.PhotoPreviewScreen
 import id.worx.device.client.theme.WorxTheme
 import id.worx.device.client.viewmodel.CameraViewModel
 import id.worx.device.client.viewmodel.DetailFormViewModel
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 import java.io.File
 import javax.inject.Inject
 
@@ -35,7 +32,7 @@ class PhotoPreviewFragment: Fragment() {
     private val detailViewModel by activityViewModels<DetailFormViewModel>()
 
     @Inject
-    lateinit var dataStoreManager: DataStoreManager
+    lateinit var session: Session
     private var saveToGallery = false
 
     override fun onResume() {
@@ -55,9 +52,8 @@ class PhotoPreviewFragment: Fragment() {
             }
         }
 
-        CoroutineScope(Dispatchers.Main).launch {
-            saveToGallery = dataStoreManager.readBool(DataStoreManager.SAVE_PHOTO_TO_GALLERY) ?: false
-        }
+        saveToGallery = session.isSaveImageToGallery
+
 
         return ComposeView(requireContext()).apply {
             setContent {
