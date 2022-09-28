@@ -89,7 +89,7 @@ fun SearchScreen(
                 top.linkTo(tablayout.bottom)
             }) { page ->
                 when (page) {
-                    0 -> TabContent(
+                    0 -> FormScreen(
                         formList,
                         0,
                         viewModel,
@@ -97,7 +97,7 @@ fun SearchScreen(
                         stringResource(R.string.no_forms),
                         stringResource(R.string.empty_description_form)
                     )
-                    1 -> TabContent(
+                    1 -> FormScreen(
                         draftList,
                         1,
                         viewModel,
@@ -105,7 +105,7 @@ fun SearchScreen(
                         stringResource(R.string.no_drafts),
                         stringResource(R.string.empty_description_drafts)
                     )
-                    2 -> TabContent(
+                    2 -> FormScreen(
                         submissionList,
                         2,
                         viewModel,
@@ -115,40 +115,6 @@ fun SearchScreen(
                     )
                 }
             }
-        }
-    }
-}
-
-@Composable
-fun TabContent(
-    data: List<BasicForm>?,
-    type: Int,
-    viewModel: HomeViewModel,
-    detailFormViewModel: DetailFormViewModel,
-    titleForEmpty: String,
-    descriptionForEmpty: String
-) {
-    if (data.isNullOrEmpty()) {
-        EmptyList(titleForEmpty, descriptionForEmpty)
-    } else {
-        LazyColumn(
-            modifier = Modifier
-                .fillMaxHeight()
-                .padding(horizontal = 16.dp, vertical = 12.dp),
-            verticalArrangement = Arrangement.spacedBy(12.dp)
-        ) {
-            when (type) {
-                0 -> items(items = data, itemContent = { item ->
-                    ListItemValidForm(item, viewModel, detailFormViewModel)
-                })
-                1 -> items(items = data, itemContent = { item ->
-                    DraftItemForm(item as SubmitForm, viewModel, detailFormViewModel)
-                })
-                2 -> items(items = data, itemContent = { item ->
-                    SubmissionItemForm(item as SubmitForm, viewModel, detailFormViewModel)
-                })
-            }
-
         }
     }
 }
