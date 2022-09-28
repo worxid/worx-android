@@ -149,7 +149,9 @@ fun HomeScreen(
             SearchScreen(
                 formList = formList,
                 draftList = draftList,
-                submissionList = submissionList
+                submissionList = submissionList,
+                viewModel = viewModel,
+                detailVM = detailVM
             )
         }
         AnimatedVisibility(
