@@ -20,6 +20,8 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.res.painterResource
@@ -105,17 +107,19 @@ fun HomeScreen(
     draftList: List<SubmitForm>,
     submissionList: List<SubmitForm>,
     viewModel: HomeViewModel,
-    detailVM: DetailFormViewModel
+    detailVM: DetailFormViewModel,
 ) {
     val navController = rememberNavController()
     val notificationType by viewModel.showNotification.collectAsState()
     val showBadge by viewModel.showBadge.collectAsState()
     var showSubmittedStatus by remember { mutableStateOf(notificationType == 1) }
+    var showBotNav by remember { mutableStateOf(false) }
 
     Scaffold(
         topBar = {
             MainTopAppBar(
-                viewModel
+                onSearchMode = { showBotNav = it },
+                viewModel = viewModel
             ) { input ->
                 viewModel.uiState.update {
                     it.copy(searchInput = input)
@@ -125,18 +129,29 @@ fun HomeScreen(
         bottomBar = {
             BottomNavigationView(
                 navController = navController,
-                showBadge = showBadge
+                showBadge = showBadge,
+                showBotNav = showBotNav
             )
         }
     ) { padding ->
-        NavigationGraph(
-            navController = navController,
-            formList = formList,
-            draftList = draftList,
-            submissionList = submissionList,
-            viewModel = viewModel,
-            detailVM = detailVM
-        )
+        if (showBotNav) {
+            NavigationGraph(
+                navController = navController,
+                formList = formList,
+                draftList = draftList,
+                submissionList = submissionList,
+                viewModel = viewModel,
+                detailVM = detailVM
+            )
+        } else {
+            SearchScreen(
+                formList = formList,
+                draftList = draftList,
+                submissionList = submissionList,
+                viewModel = viewModel,
+                detailVM = detailVM
+            )
+        }
         AnimatedVisibility(
             visible = viewModel.uiState.collectAsState().value.isLoading,
             enter = EnterTransition.None,
@@ -163,77 +178,83 @@ fun HomeScreen(
 }
 
 @Composable
-fun BottomNavigationView(navController: NavController, showBadge: Int) {
+fun BottomNavigationView(navController: NavController, showBadge: Int, showBotNav: Boolean) {
     val items = listOf(
         BottomNavItem.Form,
         BottomNavItem.Draft,
         BottomNavItem.Submission,
     )
-    BottomNavigation(
-        backgroundColor = Color.White,
-        modifier = Modifier.border(1.5.dp, Color.Black)
-    ) {
-        val navBackStackEntry by navController.currentBackStackEntryAsState()
-        val currentRoute = navBackStackEntry?.destination?.route
-        items.forEach { item ->
-            var modifierBorder = Modifier.border(0.dp, Color.Black)
-            if (item.title == R.string.draft) modifierBorder = Modifier.border(1.5.dp, Color.Black)
+    if (showBotNav) {
+        BottomNavigation(
+            backgroundColor = Color.White,
+            modifier = Modifier.border(1.5.dp, Color.Black)
+        ) {
+            val navBackStackEntry by navController.currentBackStackEntryAsState()
+            val currentRoute = navBackStackEntry?.destination?.route
+            items.forEach { item ->
+                var modifierBorder = Modifier.border(0.dp, Color.Black)
+                if (item.title == R.string.draft) modifierBorder =
+                    Modifier.border(1.5.dp, Color.Black)
 
-            BottomNavigationItem(
-                icon = {
-                    BadgedBox(badge = {
-                        if (item.title == showBadge) {
-                            Badge(modifier = Modifier.scale(0.7f))
-                        }
-                    }) {
-                        Icon(
-                            painterResource(id = item.icon),
-                            contentDescription = stringResource(id = item.title)
-                        )
-                    }
-                },
-                label = {
-                    Text(
-                        modifier = Modifier.padding(top = 8.dp),
-                        text = stringResource(id = item.title),
-                        fontSize = 11.sp, fontFamily = FontFamily.Monospace,
-                        color = if (currentRoute == item.screen_route){
-                            Color.White
-                        } else {
-                            Color.Black.copy(0.3f)
-                        }
-                    )
-                },
-                selectedContentColor = Color.White,
-                unselectedContentColor = Color.Black.copy(alpha = 0.3f),
-                selected = currentRoute == item.screen_route,
-                onClick = {
-                    navController.navigate(item.screen_route) {
-
-                        navController.graph.startDestinationRoute?.let { screen_route ->
-                            popUpTo(screen_route) {
-                                saveState = true
+                BottomNavigationItem(
+                    icon = {
+                        BadgedBox(badge = {
+                            if (item.title == showBadge) {
+                                Badge(modifier = Modifier.scale(0.7f))
                             }
+                        }) {
+                            Icon(
+                                painterResource(id = item.icon),
+                                contentDescription = stringResource(id = item.title)
+                            )
                         }
-                        launchSingleTop = true
-                        restoreState = true
-                    }
-                },
-                modifier = if (currentRoute == item.screen_route) {
-                    modifierBorder.background(PrimaryMain)
-                } else {
-                    modifierBorder.background(color = Color.White)
-                },
-            )
+                    },
+                    label = {
+                        Text(
+                            modifier = Modifier.padding(top = 8.dp),
+                            text = stringResource(id = item.title),
+                            fontSize = 11.sp, fontFamily = FontFamily.Monospace,
+                            color = if (currentRoute == item.screen_route) {
+                                Color.White
+                            } else {
+                                Color.Black.copy(0.3f)
+                            }
+                        )
+                    },
+                    selectedContentColor = Color.White,
+                    unselectedContentColor = Color.Black.copy(alpha = 0.3f),
+                    selected = currentRoute == item.screen_route,
+                    onClick = {
+                        navController.navigate(item.screen_route) {
+
+                            navController.graph.startDestinationRoute?.let { screen_route ->
+                                popUpTo(screen_route) {
+                                    saveState = true
+                                }
+                            }
+                            launchSingleTop = true
+                            restoreState = true
+                        }
+                    },
+                    modifier = if (currentRoute == item.screen_route) {
+                        modifierBorder.background(PrimaryMain)
+                    } else {
+                        modifierBorder.background(color = Color.White)
+                    },
+                )
+            }
         }
     }
 }
 
 @Composable
 fun MainTopAppBar(
+    onSearchMode: (Boolean) -> Unit,
     viewModel: HomeViewModel,
-    searchAction: (String) -> Unit) {
+    searchAction: (String) -> Unit,
+) {
     var searchMode by remember { mutableStateOf(false) }
+    onSearchMode(!searchMode)
 
     TopAppBar(
         modifier = Modifier.fillMaxWidth(),
@@ -261,7 +282,9 @@ fun MainTopAppBar(
                 )
                 Spacer(modifier = Modifier.weight(1f))
                 Icon(
-                    modifier = Modifier.clickable { searchMode = true },
+                    modifier = Modifier.clickable {
+                        searchMode = true
+                    },
                     imageVector = Icons.Filled.Search,
                     contentDescription = "Search"
                 )
@@ -277,7 +300,8 @@ fun MainTopAppBar(
         } else {
             SearchBar(
                 backButton = { searchMode = false },
-                inputSearch = searchAction
+                inputSearch = searchAction,
+                viewModel = viewModel
             )
         }
     }
@@ -287,9 +311,15 @@ fun MainTopAppBar(
 @Composable
 fun SearchBar(
     backButton: () -> Unit,
-    inputSearch: (String) -> Unit
+    inputSearch: (String) -> Unit,
+    viewModel: HomeViewModel
 ) {
-    var searchInput by remember { mutableStateOf(TextFieldValue("")) }
+    val searchData = viewModel.uiState.collectAsState().value.searchInput
+    var searchInput by remember { mutableStateOf(TextFieldValue(searchData)) }
+    val focusRequest = FocusRequester()
+    LaunchedEffect(Unit) {
+        focusRequest.requestFocus()
+    }
 
     Row(
         modifier = Modifier.fillMaxWidth(),
@@ -315,7 +345,8 @@ fun SearchBar(
                     Color.White.copy(
                         0.1f
                     ), RoundedCornerShape(4.dp)
-                ),
+                )
+                .focusRequester(focusRequest),
             textStyle = Typography.body1,
             cursorBrush = SolidColor(Color.White),
             decorationBox = {
