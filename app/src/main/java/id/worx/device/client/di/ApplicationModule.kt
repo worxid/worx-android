@@ -7,6 +7,7 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
+import id.worx.device.client.Util
 import id.worx.device.client.WorxApplication
 import id.worx.device.client.data.api.WorxApi
 import id.worx.device.client.data.dao.FormDAO
@@ -24,8 +25,10 @@ object ApplicationModule {
         context as WorxApplication
 
     @Provides
-    fun provideAPIService(): WorxApi =
-        WorxApi.create()
+    fun provideAPIService(@ApplicationContext context: Context): WorxApi {
+    val deviceCode = Util.getDeviceCode(context)
+     return WorxApi.create(deviceCode)
+}
 
     @Provides
     @Singleton

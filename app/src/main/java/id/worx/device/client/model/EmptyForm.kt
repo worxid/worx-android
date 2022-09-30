@@ -25,7 +25,10 @@ data class EmptyForm(
     @SerializedName("description"    ) override var description  : String?           = null,
     @SerializedName("fields"         ) override var fields       : ArrayList<Fields> = arrayListOf(),
     @SerializedName("submit_in_zone" ) override var submitInZone : Boolean?          = null,
-    @SerializedName("default"        ) var default      : Boolean?          = null
+    @SerializedName("default"        ) var default               : Boolean?          = null,
+    @SerializedName("created_on"     ) override var created      : String?           = null,
+    @SerializedName("modified_on"    ) override var lastUpdated    : String?           = null,
+    @SerializedName("fields_size"    ) var fieldsSize            : Int?              = null,
 ): BasicForm
 
 sealed interface BasicForm {
@@ -34,6 +37,8 @@ sealed interface BasicForm {
     var description: String?
     var fields: ArrayList<Fields>
     var submitInZone: Boolean?
+    var created: String?
+    var lastUpdated: String?
 }
 
 abstract class Fields (
