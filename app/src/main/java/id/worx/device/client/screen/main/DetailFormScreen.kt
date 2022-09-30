@@ -8,21 +8,26 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import id.worx.device.client.theme.WorxTheme
 import id.worx.device.client.viewmodel.CameraViewModel
 import id.worx.device.client.viewmodel.DetailFormViewModel
-import id.worx.device.client.viewmodel.HomeViewModel
+
+sealed class DetailFormEvent {
+    object SubmitForm: DetailFormEvent()
+    object SaveDraft: DetailFormEvent()
+    object BackPressed: DetailFormEvent()
+    object NavigateToCameraFragment: DetailFormEvent()
+}
 
 @Composable
 fun DetailFormScreen(
     viewModel: DetailFormViewModel,
     cameraViewModel: CameraViewModel,
-    onBackNavigation: () -> Unit,
-    homeViewModel: HomeViewModel
+    onEvent: (DetailFormEvent) -> Unit
 ) {
     val uistate = viewModel.uiState.collectAsState().value
 
     Scaffold(
         topBar = {
             WorxTopAppBar(
-                onBack = onBackNavigation,
+                onBack = { onEvent(DetailFormEvent.BackPressed) },
                 progress = viewModel.formProgress.value,
                 title = if (uistate.detailForm != null) {
                     uistate.detailForm!!.label ?: ""
@@ -37,7 +42,7 @@ fun DetailFormScreen(
             componentList = componentList,
             viewModel,
             cameraViewModel,
-            homeViewModel
+            onEvent
         )
     }
 }
@@ -47,13 +52,11 @@ fun DetailFormScreen(
 fun PreviewDetail() {
     val viewModel: DetailFormViewModel = hiltViewModel()
     val cameraViewModel: CameraViewModel = hiltViewModel()
-    val homeViewModel: HomeViewModel = hiltViewModel()
     WorxTheme() {
         DetailFormScreen(
             viewModel = viewModel,
             cameraViewModel,
-            {},
-            homeViewModel
+            {}
         )
     }
 }

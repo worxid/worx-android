@@ -31,14 +31,13 @@ import id.worx.device.client.theme.PrimaryMain
 import id.worx.device.client.theme.Typography
 import id.worx.device.client.viewmodel.CameraViewModel
 import id.worx.device.client.viewmodel.DetailFormViewModel
-import id.worx.device.client.viewmodel.HomeViewModel
 
 @Composable
 fun ValidFormBuilder(
     componentList: List<Fields>,
     viewModel: DetailFormViewModel,
     cameraViewModel: CameraViewModel,
-    homeViewModel: HomeViewModel
+    onEvent: (DetailFormEvent) -> Unit
 ) {
     var showSubmitDialog by remember { mutableStateOf(false) }
     var showDraftDialog by remember { mutableStateOf(false) }
@@ -54,17 +53,14 @@ fun ValidFormBuilder(
             DialogSubmitForm(
                 viewModel,
                 {
-                    viewModel.submitForm {
-                        homeViewModel.showNotification(1)
-                        homeViewModel.showBadge(R.string.submission)
-                    }
+                    onEvent(DetailFormEvent.SubmitForm)
                     showSubmitDialog = false
                 },
                 { showDraftDialog = true })
         }
         if (showDraftDialog) {
             DialogDraftForm(
-                { viewModel.saveFormAsDraft { homeViewModel.showBadge(R.string.draft) } },
+                { onEvent(DetailFormEvent.SaveDraft) },
                 { showDraftDialog = false })
         }
     }
@@ -133,9 +129,7 @@ fun DetailForm(
                         index,
                         viewModel,
                         { cameraViewModel.navigateFromDetailScreen(index) }) {
-                        viewModel.goToCameraPhoto(
-                            index
-                        )
+                        viewModel.goToCameraPhoto(index)
                     }
                 }
                 Type.Signature.type -> {
