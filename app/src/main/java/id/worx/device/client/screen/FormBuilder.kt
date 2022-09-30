@@ -33,12 +33,6 @@ import id.worx.device.client.viewmodel.CameraViewModel
 import id.worx.device.client.viewmodel.DetailFormViewModel
 import id.worx.device.client.viewmodel.HomeViewModel
 
-/*****************
- *  1 = TextField
- *  2 = Checkbox
- *  3 = Radiobutton
- *  4 = Dropdown
- ******************/
 @Composable
 fun ValidFormBuilder(
     componentList: List<Fields>,
@@ -47,7 +41,6 @@ fun ValidFormBuilder(
     homeViewModel: HomeViewModel
 ) {
     var showSubmitDialog by remember { mutableStateOf(false) }
-    val formSubmitted = viewModel.uiState.collectAsState().value.status
     var showDraftDialog by remember { mutableStateOf(false) }
 
     Box(modifier = Modifier.fillMaxSize()) {

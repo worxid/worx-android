@@ -1,12 +1,12 @@
 package id.worx.device.client.screen.welcome
 
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.*
+import androidx.compose.material.Divider
+import androidx.compose.material.Surface
+import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -19,13 +19,13 @@ import id.worx.device.client.R
 import id.worx.device.client.screen.RedFullWidthButton
 import id.worx.device.client.screen.WhiteFullWidthButton
 import id.worx.device.client.theme.PrimaryMain
-import id.worx.device.client.theme.RedDarkButton
 import id.worx.device.client.theme.Typography
 import id.worx.device.client.theme.WorxTheme
 
 sealed class WelcomeEvent {
     object CreateTeam : WelcomeEvent()
     object JoinTeam : WelcomeEvent()
+    object MainScreen : WelcomeEvent()
 }
 
 @Composable
@@ -40,6 +40,7 @@ fun WelcomeScreen(onEvent: (WelcomeEvent) -> Unit) {
             WelcomeHeader()
             CreateTeamButton(onEvent = onEvent)
             JoinTeamButton(onEvent)
+            GoToMainScreen(onEvent)
         }
     }
 }
@@ -120,7 +121,18 @@ private fun JoinTeamButton(onEvent: (WelcomeEvent) -> Unit) {
             .fillMaxWidth()
             .padding(16.dp),
         label = "Join Existing Team",
-        onClickCallback = onEvent
+        onClickCallback = {onEvent(WelcomeEvent.JoinTeam)}
+    )
+}
+
+@Composable
+private fun GoToMainScreen(onEvent: (WelcomeEvent) -> Unit) {
+    WhiteFullWidthButton(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(16.dp),
+        label = "Temporary Main Screen Button",
+        onClickCallback = {onEvent(WelcomeEvent.MainScreen)}
     )
 }
 

@@ -12,6 +12,8 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import dagger.hilt.android.AndroidEntryPoint
+import id.worx.device.client.WelcomeScreen
+import id.worx.device.client.navigate
 import id.worx.device.client.screen.welcome.VerificationEvent
 import id.worx.device.client.screen.welcome.WaitingVerificationScreen
 import id.worx.device.client.theme.WorxTheme
@@ -27,6 +29,12 @@ class WaitingVerificationFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
+        viewModel.navigateTo.observe(viewLifecycleOwner) { navigateToEvent ->
+            navigateToEvent.getContentIfNotHandled()?.let { navigateTo ->
+                navigate(navigateTo, WelcomeScreen.WaitingVerification)
+            }
+        }
+
         return ComposeView(requireContext()).apply {
             setContent {
 

@@ -1,5 +1,6 @@
 package id.worx.device.client.view
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -8,6 +9,7 @@ import androidx.compose.ui.platform.ComposeView
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import dagger.hilt.android.AndroidEntryPoint
+import id.worx.device.client.MainActivity
 import id.worx.device.client.WelcomeScreen
 import id.worx.device.client.navigate
 import id.worx.device.client.screen.welcome.WelcomeEvent
@@ -38,12 +40,18 @@ class WelcomeFragment : Fragment() {
                         onEvent = { event ->
                             when (event) {
                                 is WelcomeEvent.CreateTeam -> viewModel.createNewTeam()
-                                WelcomeEvent.JoinTeam -> viewModel.joinExistingTeam()
+                                is WelcomeEvent.JoinTeam -> viewModel.joinExistingTeam()
+                                WelcomeEvent.MainScreen -> gotoMainScreen()
                             }
                         }
                     )
                 }
             }
         }
+    }
+
+    private fun gotoMainScreen (){
+        val intent  = Intent(requireContext(), MainActivity::class.java)
+        startActivity(intent)
     }
 }
