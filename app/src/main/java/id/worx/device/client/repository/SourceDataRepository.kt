@@ -5,6 +5,7 @@ import id.worx.device.client.data.dao.FormDAO
 import id.worx.device.client.data.dao.SubmitFormDAO
 import id.worx.device.client.model.EmptyForm
 import id.worx.device.client.model.ListFormResponse
+import id.worx.device.client.model.ListSubmissionResponse
 import id.worx.device.client.model.SubmitForm
 import kotlinx.coroutines.flow.Flow
 import retrofit2.Response
@@ -47,4 +48,11 @@ class SourceDataRepository @Inject constructor(
 
     suspend fun deleteSubmitFormById(id: Int) =
         submitFormDAO.deleteSubmitForm(id)
+
+    suspend fun fetchAllSubmission(): Response<ListSubmissionResponse> =
+        retrofitService.fetchAllSubmission()
+
+    suspend fun addSubmissionFromApiToDb(list: List<SubmitForm>) =
+        submitFormDAO.addSubmissionFromApi(list)
+
 }
