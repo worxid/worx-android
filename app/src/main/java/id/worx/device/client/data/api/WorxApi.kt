@@ -19,21 +19,30 @@ import retrofit2.http.POST
  */
 interface WorxApi {
 
-    @GET("/form/template")
+    @GET("/mobile/forms")
     suspend fun fetchAllTemplate(): Response<ListFormResponse>
 
-    @POST("/form/submit")
+    @POST("/mobile/forms/submit")
     suspend fun submitForm(@Body formFilled: SubmitForm): Response<ResponseBody>
+
+    @GET("/mobile/forms/submission")
+    suspend fun fetchAllSubmission(): Response<ListSubmissionResponse>
 
     companion object {
         private const val BASE_URL = "https://api.dev.worx.id"
 
-        fun create(): WorxApi {
+        fun create(deviceCode: String): WorxApi {
             val logger = HttpLoggingInterceptor { Log.d("API", it) }
             logger.level = HttpLoggingInterceptor.Level.BODY
 
             val client = OkHttpClient.Builder()
                 .addInterceptor(logger)
+                .addInterceptor { chain ->
+                    val newRequest = chain.request().newBuilder()
+                        .addHeader("device-code", deviceCode)
+                        .build()
+                    chain.proceed(newRequest)
+                }
                 .build()
 
             val gson = GsonBuilder()

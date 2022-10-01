@@ -5,7 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.compose.material.MaterialTheme
-import androidx.compose.runtime.SideEffect
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.ComposeView
 import androidx.fragment.app.Fragment
@@ -14,6 +14,7 @@ import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import dagger.hilt.android.AndroidEntryPoint
 import id.worx.device.client.screen.welcome.VerificationEvent
 import id.worx.device.client.screen.welcome.VerificationRejectedScreen
+import id.worx.device.client.theme.LightThemeColors
 import id.worx.device.client.theme.WorxTheme
 import id.worx.device.client.viewmodel.WelcomeViewModel
 
@@ -32,11 +33,12 @@ class VerificationRejectedFragment : Fragment() {
 
                 val systemUiController = rememberSystemUiController()
                 val useDarkIcons = MaterialTheme.colors.isLight
-                SideEffect {
-                    systemUiController.setSystemBarsColor(
-                        Color.Black.copy(0.2f),
-                        darkIcons = useDarkIcons
-                    )
+                val statusBarColor = LightThemeColors.primaryVariant
+                DisposableEffect(systemUiController, useDarkIcons) {
+                    systemUiController.setStatusBarColor(Color.Black.copy(0.2f), darkIcons = useDarkIcons)
+                    onDispose {
+                        systemUiController.setStatusBarColor(statusBarColor)
+                    }
                 }
 
                 WorxTheme {

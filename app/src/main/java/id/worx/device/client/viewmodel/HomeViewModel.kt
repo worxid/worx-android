@@ -8,6 +8,7 @@ import id.worx.device.client.Event
 import id.worx.device.client.MainScreen
 import id.worx.device.client.WorxApplication
 import id.worx.device.client.data.database.FormDownloadWorker
+import id.worx.device.client.data.database.SubmissionDownloadWorker
 import id.worx.device.client.data.database.SubmissionUploadWorker
 import id.worx.device.client.model.EmptyForm
 import id.worx.device.client.model.SubmitForm
@@ -161,5 +162,25 @@ class HomeViewModel @Inject constructor(
                 workManager.enqueue(uploadSubmisison)
             }
         }
+    }
+
+    private val downloadSubmissionWorkInfoItems: LiveData<List<WorkInfo>> =
+        workManager.getWorkInfosByTagLiveData("submission_list")
+
+    internal fun downloadSubmissionList(lifecycleOwner: LifecycleOwner, uiUpdate: () -> Unit) {
+        val syncSubmitFormDBRequest = OneTimeWorkRequestBuilder<SubmissionDownloadWorker>()
+            .addTag("submission_list")
+            .setConstraints(networkConstraints)
+            .build()
+
+        workManager.enqueue(syncSubmitFormDBRequest)
+
+        formTemplateWorkInfoItems.observe(lifecycleOwner, Observer { list ->
+            val workInfo = list[0]
+            if (list.isNotEmpty() && workInfo.state.isFinished) {
+                uiUpdate()
+                refreshData()
+            }
+        })
     }
 }

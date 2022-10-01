@@ -3,12 +3,14 @@ package id.worx.device.client
 import android.content.Context
 import android.net.ConnectivityManager
 import android.os.Build
+import android.provider.Settings
 import id.worx.device.client.model.Fields
 import id.worx.device.client.model.Value
 import java.text.SimpleDateFormat
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import java.util.*
+
 
 object Util {
     fun isConnected(context: Context): Boolean {
@@ -35,5 +37,10 @@ object Util {
             return progressBit * values.size
         }
         return 0
+    }
+
+    fun getDeviceCode(context: Context): String {
+        return Settings.Secure.getString(context.contentResolver,
+        Settings.Secure.ANDROID_ID)
     }
 }

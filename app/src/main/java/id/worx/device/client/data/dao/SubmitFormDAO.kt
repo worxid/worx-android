@@ -27,4 +27,16 @@ interface SubmitFormDAO {
     @Update
     suspend fun updateForm(form: SubmitForm)
 
+    @Query("DELETE FROM submit_form WHERE status = 2")
+    suspend fun deleteExistingApiSubmission()
+
+    @Insert
+    fun insertAll(submissionList: List<SubmitForm>)
+
+    @Transaction
+    suspend fun addSubmissionFromApi(list: List<SubmitForm>) {
+        deleteExistingApiSubmission()
+        insertAll(list)
+    }
+
 }
