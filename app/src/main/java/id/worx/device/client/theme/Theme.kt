@@ -1,5 +1,6 @@
 package id.worx.device.client.theme
 
+import android.util.Log
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.darkColors
@@ -43,6 +44,38 @@ fun WorxTheme(darkTheme: Boolean = isSystemInDarkTheme(), content: @Composable()
     } else {
         LightThemeColors
     }
+    MaterialTheme(
+        colors = colors,
+        typography = Typography,
+        shapes = Shapes,
+        content = content
+    )
+}
+
+
+@Composable
+fun WorxTheme(
+    darkTheme: Boolean = isSystemInDarkTheme(),
+    theme: String = "System default",
+    content: @Composable() () -> Unit
+) {
+    val colors = when (theme) {
+        "System default" -> {
+            val color = if (darkTheme) {
+                DarkThemeColors
+            } else {
+                LightThemeColors
+            }
+            color
+        }
+        "Dark" -> LightThemeColors
+        "Green" -> DarkThemeColors
+        "Blue" -> LightThemeColors
+        else -> DarkThemeColors
+    }
+
+    Log.d("TAG", "WorxTheme: ${theme}")
+
     MaterialTheme(
         colors = colors,
         typography = Typography,
