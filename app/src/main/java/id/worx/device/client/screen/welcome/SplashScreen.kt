@@ -1,6 +1,8 @@
 package id.worx.device.client.screen
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.Surface
@@ -18,13 +20,19 @@ import id.worx.device.client.theme.WorxTheme
 fun SplashScreen() {
     Surface(
         modifier = Modifier.fillMaxSize(),
-        color = PrimaryMain
     ) {
-        Image(
-            modifier = Modifier.padding(horizontal = 98.dp),
-            alignment = Alignment.Center,
-            painter = painterResource(R.drawable.worx_logo),
-            contentDescription = "Worx Logo")
+        Box() {
+            Image(
+                modifier = Modifier.fillMaxSize()
+                    .background(color = PrimaryMain),
+                painter = painterResource(R.drawable.grid_bg),
+                contentDescription = "Background")
+            Image(
+                modifier = Modifier.padding(horizontal = 98.dp)
+                    .align(Alignment.Center),
+                painter = painterResource(R.drawable.worx_logo),
+                contentDescription = "Worx Logo")
+        }
     }
 }
 

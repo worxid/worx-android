@@ -12,6 +12,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -48,56 +49,63 @@ fun WelcomeScreen(onEvent: (WelcomeEvent) -> Unit) {
 @Composable
 private fun WelcomeHeader() {
     Surface(
-        modifier = Modifier.fillMaxSize(),
+        modifier = Modifier.wrapContentSize(),
         color = PrimaryMain
     ) {
-        Column(
-            modifier = Modifier.padding(vertical = 26.dp, horizontal = 48.dp),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center,
-        ) {
+        Box() {
             Image(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .align(Alignment.End),
-                painter = painterResource(id = R.drawable.ic_star),
-                alignment = Alignment.CenterEnd,
-                contentDescription = "Decoration"
+                modifier = Modifier.height(260.dp),
+                contentScale = ContentScale.Crop,
+                painter = painterResource(id = R.drawable.grid_bg),
+                contentDescription = "Grid Background"
             )
-            Image(
-                painter = painterResource(id = R.drawable.worx_logo),
-                contentDescription = "Worx Logo"
-            )
-            Image(
-                modifier = Modifier
-                    .padding(top = 12.dp)
-                    .scale(scaleX = -1f, scaleY = 1f)
-                    .align(Alignment.Start),
-                painter = painterResource(id = R.drawable.ic_star),
-                alignment = Alignment.CenterStart,
-                contentDescription = "Decoration"
-            )
-            Text(
-                modifier = Modifier.padding(12.dp),
-                text = "Hi, Welcome!",
-                style = Typography.subtitle1
-            )
-            Text(
-                text = "Enjoy All The Features Of The App",
-                style = Typography.body1
-            )
-            Text(
-                text = "Easily & Interactively",
-                style = Typography.body1
-            )
-            Divider(
-                modifier = Modifier
-                    .align(Alignment.End)
-                    .padding(top = 16.dp, end = 24.dp),
-                color = Color.White,
-                thickness = 1.5.dp,
-                startIndent = 240.dp
-            )
+            Column(
+                modifier = Modifier.padding(vertical = 26.dp, horizontal = 48.dp),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center,
+            ) {
+                Image(
+                    modifier = Modifier
+                        .fillMaxWidth(),
+                    painter = painterResource(id = R.drawable.ic_star),
+                    alignment = Alignment.CenterEnd,
+                    contentDescription = "Decoration"
+                )
+                Image(
+                    painter = painterResource(id = R.drawable.worx_logo),
+                    contentDescription = "Worx Logo"
+                )
+                Image(
+                    modifier = Modifier
+                        .padding(top = 12.dp)
+                        .scale(scaleX = -1f, scaleY = 1f)
+                        .fillMaxWidth(),
+                    painter = painterResource(id = R.drawable.ic_star),
+                    alignment = Alignment.CenterEnd,
+                    contentDescription = "Decoration"
+                )
+                Text(
+                    modifier = Modifier.padding(12.dp),
+                    text = "Hi, Welcome!",
+                    style = Typography.subtitle1
+                )
+                Text(
+                    text = "Enjoy All The Features Of The App",
+                    style = Typography.body1
+                )
+                Text(
+                    text = "Easily & Interactively",
+                    style = Typography.body1
+                )
+                Divider(
+                    modifier = Modifier
+                        .align(Alignment.End)
+                        .padding(top = 16.dp, end = 24.dp),
+                    color = Color.White,
+                    thickness = 1.5.dp,
+                    startIndent = 240.dp
+                )
+            }
         }
     }
 }
