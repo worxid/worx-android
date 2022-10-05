@@ -11,11 +11,13 @@ import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import id.worx.device.client.R
+import id.worx.device.client.data.database.Session
 import id.worx.device.client.screen.RedFullWidthButton
 import id.worx.device.client.screen.WorxTopAppBar
 import id.worx.device.client.screen.components.WorxTextField
@@ -33,10 +35,12 @@ sealed class JoinTeamEvent {
 
 @Composable
 fun JoinTeamScreen(
+    session : Session,
     onEvent: (JoinTeamEvent) -> Unit
 ) {
     var namePr by remember { mutableStateOf(0) }
     var orgPr by remember { mutableStateOf(0) }
+    val theme = session.theme
 
     Scaffold(
         topBar = {
@@ -97,7 +101,8 @@ fun JoinTeamScreen(
                     )
                 },
                 label = stringResource(R.string.send_request),
-                modifier = Modifier.padding(vertical = 20.dp)
+                modifier = Modifier.padding(vertical = 20.dp),
+                theme = theme
             )
         }
     }
@@ -108,6 +113,6 @@ fun JoinTeamScreen(
 @Composable
 fun JoinTeamScreenPreview() {
     WorxTheme {
-        JoinTeamScreen({})
+        JoinTeamScreen(Session(LocalContext.current),{})
     }
 }

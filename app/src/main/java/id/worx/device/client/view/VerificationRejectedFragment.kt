@@ -12,16 +12,21 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import dagger.hilt.android.AndroidEntryPoint
+import id.worx.device.client.data.database.Session
 import id.worx.device.client.screen.welcome.VerificationEvent
 import id.worx.device.client.screen.welcome.VerificationRejectedScreen
-import id.worx.device.client.theme.LightThemeColors
+import id.worx.device.client.theme.LightThemeColorsSystem
 import id.worx.device.client.theme.WorxTheme
+import id.worx.device.client.viewmodel.ThemeViewModel
 import id.worx.device.client.viewmodel.WelcomeViewModel
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class VerificationRejectedFragment : Fragment() {
 
     private val viewModel by viewModels<WelcomeViewModel>()
+    private val themeViewModel by viewModels<ThemeViewModel>()
+    @Inject lateinit var session: Session
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -33,16 +38,17 @@ class VerificationRejectedFragment : Fragment() {
 
                 val systemUiController = rememberSystemUiController()
                 val useDarkIcons = MaterialTheme.colors.isLight
-                val statusBarColor = LightThemeColors.primaryVariant
+                val statusBarColor = LightThemeColorsSystem.primaryVariant
                 DisposableEffect(systemUiController, useDarkIcons) {
                     systemUiController.setStatusBarColor(Color.Black.copy(0.2f), darkIcons = useDarkIcons)
                     onDispose {
                         systemUiController.setStatusBarColor(statusBarColor)
                     }
                 }
-
-                WorxTheme {
+                val theme = themeViewModel.theme.value
+                WorxTheme(theme = theme) {
                     VerificationRejectedScreen(
+                        session,
                         onEvent = { event ->
                             when (event) {
                                 is VerificationEvent.MakeNewRequest -> {

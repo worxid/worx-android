@@ -13,17 +13,20 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import id.worx.device.client.R
+import id.worx.device.client.data.database.Session
 import id.worx.device.client.screen.RedFullWidthButton
 import id.worx.device.client.theme.Typography
 import id.worx.device.client.theme.WorxTheme
 
 @Composable
-fun VerificationRejectedScreen(onEvent: (VerificationEvent) -> Unit) {
+fun VerificationRejectedScreen(session: Session,onEvent: (VerificationEvent) -> Unit) {
+    val theme = session.theme
     Surface(
         modifier = Modifier.fillMaxSize(),
     ) {
@@ -49,7 +52,8 @@ fun VerificationRejectedScreen(onEvent: (VerificationEvent) -> Unit) {
             RedFullWidthButton(
                 onClickCallback = { onEvent(VerificationEvent.MakeNewRequest) },
                 label = stringResource(R.string.make_new_request),
-                modifier = Modifier.padding(vertical = 20.dp)
+                modifier = Modifier.padding(vertical = 20.dp),
+                theme = theme
             )
             Spacer(modifier = Modifier.weight(1.5f))
         }
@@ -61,6 +65,6 @@ fun VerificationRejectedScreen(onEvent: (VerificationEvent) -> Unit) {
 @Composable
 fun RejectedScreenPreview() {
     WorxTheme {
-        VerificationRejectedScreen(onEvent = {})
+        VerificationRejectedScreen(session = Session(LocalContext.current), onEvent = {})
     }
 }

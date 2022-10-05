@@ -13,22 +13,27 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import id.worx.device.client.R
+import id.worx.device.client.data.database.Session
 import id.worx.device.client.screen.RedFullWidthButton
 import id.worx.device.client.theme.Typography
 import id.worx.device.client.theme.WorxTheme
 
 sealed class VerificationEvent {
     object MakeNewRequest : VerificationEvent()
-    object BackToJoinRequest: VerificationEvent()
+    object BackToJoinRequest : VerificationEvent()
 }
 
 @Composable
-fun WaitingVerificationScreen(onEvent: (VerificationEvent) -> Unit) {
+fun WaitingVerificationScreen(
+    session: Session, onEvent: (VerificationEvent) -> Unit
+) {
+    val theme = session.theme
     Surface(
         modifier = Modifier.fillMaxSize(),
     ) {
@@ -48,13 +53,14 @@ fun WaitingVerificationScreen(onEvent: (VerificationEvent) -> Unit) {
             )
             Text(
                 stringResource(R.string.waiting_for_verification),
-                style = Typography.body1.copy(color= Color.Black),
+                style = Typography.body1.copy(color = Color.Black),
                 modifier = Modifier.padding(top = 25.dp, bottom = 20.dp)
             )
             RedFullWidthButton(
                 onClickCallback = { onEvent(VerificationEvent.BackToJoinRequest) },
                 label = stringResource(R.string.back_to_join_request),
-                modifier = Modifier.padding(vertical = 20.dp)
+                modifier = Modifier.padding(vertical = 20.dp),
+                theme = theme
             )
             Spacer(modifier = Modifier.weight(1.5f))
         }
@@ -66,6 +72,6 @@ fun WaitingVerificationScreen(onEvent: (VerificationEvent) -> Unit) {
 @Composable
 fun VerificationScreenPreview() {
     WorxTheme {
-        WaitingVerificationScreen({})
+        WaitingVerificationScreen(session = Session(LocalContext.current), {})
     }
 }

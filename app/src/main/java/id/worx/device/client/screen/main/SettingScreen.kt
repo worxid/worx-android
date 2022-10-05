@@ -33,11 +33,20 @@ import id.worx.device.client.screen.WorxTopAppBar
 import id.worx.device.client.screen.components.WorxDialog
 import id.worx.device.client.theme.*
 import id.worx.device.client.viewmodel.HomeViewModel
+import id.worx.device.client.viewmodel.ThemeViewModel
+
+object SettingTheme {
+    val System = "System default"
+    val Dark = "Dark"
+    val Green = "Green"
+    val Blue = "Blue"
+}
 
 @Composable
 fun SettingScreen(
     viewModel: HomeViewModel,
     session: Session,
+    themeViewModel: ThemeViewModel,
     onBackNavigation: () -> Unit
 ) {
     val showDialogTheme = remember {
@@ -53,6 +62,7 @@ fun SettingScreen(
             content = {
                 ThemeDialog(
                     setShowDialog = { showDialogTheme.value = it },
+                    themeViewModel = themeViewModel,
                     session = session
                 )
             },
@@ -202,9 +212,11 @@ fun LeaveOrganizationDialog(
 @Composable
 fun ThemeDialog(
     setShowDialog: (Boolean) -> Unit,
+    themeViewModel: ThemeViewModel,
     session: Session
 ) {
-    val rbOptions = arrayListOf("System", "Dark", "Green", "Blue")
+    val rbOptions =
+        arrayListOf(SettingTheme.System, SettingTheme.Dark, SettingTheme.Green, SettingTheme.Blue)
     val selectedTheme = session.theme
     val (selectedOption, onOptionSelected) = remember {
         mutableStateOf(selectedTheme)
@@ -223,6 +235,7 @@ fun ThemeDialog(
                     .selectable(
                         selected = (s == selectedOption),
                         onClick = {
+                            themeViewModel.onThemeChanged(s)
                             onOptionSelected(s)
                             session.setTheme(s)
                             setShowDialog(false)
@@ -235,6 +248,7 @@ fun ThemeDialog(
                 RadioButton(
                     selected = (s == selectedOption),
                     onClick = {
+                        themeViewModel.onThemeChanged(s)
                         onOptionSelected(s)
                         session.setTheme(s)
                         setShowDialog(false)

@@ -24,6 +24,7 @@ import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontFamily
@@ -42,6 +43,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import id.worx.device.client.R
+import id.worx.device.client.data.database.Session
 import id.worx.device.client.model.EmptyForm
 import id.worx.device.client.model.SubmitForm
 import id.worx.device.client.screen.RedFullWidthButton
@@ -108,6 +110,7 @@ fun HomeScreen(
     submissionList: List<SubmitForm>,
     viewModel: HomeViewModel,
     detailVM: DetailFormViewModel,
+    session: Session
 ) {
     val navController = rememberNavController()
     val notificationType by viewModel.showNotification.collectAsState()
@@ -169,7 +172,7 @@ fun HomeScreen(
             visible = showSubmittedStatus
         )
         {
-            FormSubmitted {
+            FormSubmitted(session = session) {
                 viewModel.showNotification(0)
                 showSubmittedStatus = false
             }
@@ -393,8 +396,10 @@ fun SearchBar(
 
 @Composable
 fun FormSubmitted(
+    session: Session,
     closeNotification: () -> Unit
 ) {
+    val theme = session.theme
     Dialog(
         content = {
             Column(
@@ -417,7 +422,8 @@ fun FormSubmitted(
                 RedFullWidthButton(
                     onClickCallback = { closeNotification() },
                     label = "Oke",
-                    modifier = Modifier.padding(bottom = 20.dp)
+                    modifier = Modifier.padding(bottom = 20.dp),
+                    theme = theme
                 )
             }
         },
@@ -429,8 +435,9 @@ fun FormSubmitted(
 @Composable
 private fun BottomNavPreview(
     viewModel: HomeViewModel = hiltViewModel(),
-    detailVM: DetailFormViewModel = hiltViewModel()
+    detailVM: DetailFormViewModel = hiltViewModel(),
+    session: Session = Session(LocalContext.current)
 ) {
     val list = arrayListOf<EmptyForm>()
-    HomeScreen(list, arrayListOf(), arrayListOf(), viewModel, detailVM)
+    HomeScreen(list, arrayListOf(), arrayListOf(), viewModel, detailVM,session)
 }

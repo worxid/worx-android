@@ -11,6 +11,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
@@ -18,6 +19,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import id.worx.device.client.R
+import id.worx.device.client.data.database.Session
 import id.worx.device.client.screen.RedFullWidthButton
 import id.worx.device.client.theme.PrimaryMain
 import id.worx.device.client.theme.Typography
@@ -30,7 +32,8 @@ sealed class CreateTeamSubmittedEvent {
 }
 
 @Composable
-fun CreateTeamSubmittedScreen(onEvent: (CreateTeamSubmittedEvent) -> Unit) {
+fun CreateTeamSubmittedScreen(session: Session,onEvent: (CreateTeamSubmittedEvent) -> Unit) {
+    val theme = session.theme
     Surface(
         modifier = Modifier.fillMaxSize(),
     ) {
@@ -66,7 +69,8 @@ fun CreateTeamSubmittedScreen(onEvent: (CreateTeamSubmittedEvent) -> Unit) {
             RedFullWidthButton(
                 onClickCallback = { onEvent(CreateTeamSubmittedEvent.OpenEmailApp) },
                 label = "Open Email App",
-                modifier = Modifier.padding(vertical = 20.dp)
+                modifier = Modifier.padding(vertical = 20.dp),
+                theme = theme
             )
             Row(modifier = Modifier.padding(top = 20.dp)) {
                 Text(
@@ -89,6 +93,6 @@ fun CreateTeamSubmittedScreen(onEvent: (CreateTeamSubmittedEvent) -> Unit) {
 @Composable
 fun SubmittedScreenPreview() {
     WorxTheme {
-        CreateTeamSubmittedScreen({})
+        CreateTeamSubmittedScreen(Session(LocalContext.current),{})
     }
 }

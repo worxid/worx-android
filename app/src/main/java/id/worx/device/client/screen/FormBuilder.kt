@@ -22,6 +22,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.hilt.navigation.compose.hiltViewModel
 import id.worx.device.client.R
+import id.worx.device.client.data.database.Session
 import id.worx.device.client.model.Fields
 import id.worx.device.client.model.SeparatorValue
 import id.worx.device.client.model.TextFieldValue
@@ -37,6 +38,7 @@ fun ValidFormBuilder(
     componentList: List<Fields>,
     viewModel: DetailFormViewModel,
     cameraViewModel: CameraViewModel,
+    session: Session,
     onEvent: (DetailFormEvent) -> Unit
 ) {
     var showSubmitDialog by remember { mutableStateOf(false) }
@@ -46,12 +48,14 @@ fun ValidFormBuilder(
         DetailForm(
             componentList,
             viewModel,
-            cameraViewModel
+            cameraViewModel,
+            session
         )
         { showSubmitDialog = true }
         if (showSubmitDialog) {
             DialogSubmitForm(
                 viewModel,
+                session,
                 {
                     onEvent(DetailFormEvent.SubmitForm)
                     showSubmitDialog = false
@@ -71,9 +75,10 @@ fun DetailForm(
     componentList: List<Fields>,
     viewModel: DetailFormViewModel,
     cameraViewModel: CameraViewModel,
+    session: Session,
     showSubmitDialog: () -> Unit
 ) {
-
+    val theme = session.theme
     val data = componentList.map { component ->
         remember { mutableStateOf("") }
     }.toMutableList()
@@ -150,7 +155,8 @@ fun DetailForm(
         item {
             RedFullWidthButton(
                 onClickCallback = { showSubmitDialog() },
-                label = "Submit", modifier = Modifier.padding(vertical = 16.dp)
+                label = "Submit", modifier = Modifier.padding(vertical = 16.dp),
+                theme = theme
             )
         }
     }
@@ -160,11 +166,13 @@ fun DetailForm(
 @Composable
 fun DialogSubmitForm(
     viewModel: DetailFormViewModel,
+    session: Session,
     submitForm: () -> Unit,
     saveDraftForm: () -> Unit
 ) {
     val progress = viewModel.formProgress.value
     val fieldsNo = viewModel.uiState.collectAsState().value.detailForm!!.fields.size
+    val theme = session.theme
 
     ModalBottomSheetLayout(
         sheetState = ModalBottomSheetState(ModalBottomSheetValue.Expanded),
@@ -209,7 +217,8 @@ fun DialogSubmitForm(
                 RedFullWidthButton(
                     onClickCallback = { submitForm() },
                     label = "Submit Form",
-                    modifier = Modifier.padding()
+                    modifier = Modifier.padding(),
+                    theme = theme
                 )
                 Text(
                     modifier = Modifier

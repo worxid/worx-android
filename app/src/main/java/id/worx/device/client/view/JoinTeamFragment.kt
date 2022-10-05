@@ -9,16 +9,21 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import dagger.hilt.android.AndroidEntryPoint
 import id.worx.device.client.WelcomeScreen
+import id.worx.device.client.data.database.Session
 import id.worx.device.client.navigate
 import id.worx.device.client.screen.welcome.JoinTeamEvent
 import id.worx.device.client.screen.welcome.JoinTeamScreen
 import id.worx.device.client.theme.WorxTheme
+import id.worx.device.client.viewmodel.ThemeViewModel
 import id.worx.device.client.viewmodel.WelcomeViewModel
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class JoinTeamFragment : Fragment() {
 
     private val viewModel by viewModels<WelcomeViewModel>()
+    private val themeViewModel by viewModels<ThemeViewModel>()
+    @Inject lateinit var session: Session
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -33,8 +38,10 @@ class JoinTeamFragment : Fragment() {
 
         return ComposeView(requireContext()).apply {
             setContent {
-                WorxTheme {
+                val theme = themeViewModel.theme.value
+                WorxTheme(theme = theme) {
                     JoinTeamScreen(
+                        session = session,
                         onEvent = { event ->
                             when (event) {
                                 is JoinTeamEvent.JoinTeam -> {

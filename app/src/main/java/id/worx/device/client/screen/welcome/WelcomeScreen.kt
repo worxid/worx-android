@@ -1,10 +1,13 @@
 package id.worx.device.client.screen.welcome
 
+import android.content.res.Configuration
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Divider
+import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
@@ -12,15 +15,20 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import id.worx.device.client.R
+import id.worx.device.client.data.database.Session
 import id.worx.device.client.screen.RedFullWidthButton
 import id.worx.device.client.screen.WhiteFullWidthButton
+import id.worx.device.client.screen.main.SettingTheme
+import id.worx.device.client.theme.DarkBackground
 import id.worx.device.client.theme.PrimaryMain
 import id.worx.device.client.theme.Typography
 import id.worx.device.client.theme.WorxTheme
+import javax.inject.Inject
 
 sealed class WelcomeEvent {
     object CreateTeam : WelcomeEvent()
@@ -29,16 +37,20 @@ sealed class WelcomeEvent {
 }
 
 @Composable
-fun WelcomeScreen(onEvent: (WelcomeEvent) -> Unit) {
-
-    Surface(modifier = Modifier.fillMaxSize()) {
+fun WelcomeScreen(onEvent: (WelcomeEvent) -> Unit, session: Session) {
+    val theme = session.theme
+    Surface(
+        modifier = Modifier
+            .fillMaxSize()
+    ) {
         Column(
             modifier = Modifier
                 .fillMaxWidth()
+                .background(if (theme == SettingTheme.Dark) DarkBackground else MaterialTheme.colors.secondary)
                 .verticalScroll(rememberScrollState())
         ) {
-            WelcomeHeader()
-            CreateTeamButton(onEvent = onEvent)
+            WelcomeHeader(session)
+            CreateTeamButton(session,onEvent = onEvent)
             JoinTeamButton(onEvent)
             GoToMainScreen(onEvent)
         }
@@ -46,10 +58,11 @@ fun WelcomeScreen(onEvent: (WelcomeEvent) -> Unit) {
 }
 
 @Composable
-private fun WelcomeHeader() {
+private fun WelcomeHeader(session: Session) {
+    val theme = session.theme
     Surface(
         modifier = Modifier.fillMaxSize(),
-        color = PrimaryMain
+        color = if (theme == SettingTheme.Dark) DarkBackground else MaterialTheme.colors.primary
     ) {
         Column(
             modifier = Modifier.padding(vertical = 26.dp, horizontal = 48.dp),
@@ -80,7 +93,8 @@ private fun WelcomeHeader() {
             Text(
                 modifier = Modifier.padding(12.dp),
                 text = "Hi, Welcome!",
-                style = Typography.subtitle1
+                style = Typography.subtitle1,
+                color = Color.White
             )
             Text(
                 text = "Enjoy All The Features Of The App",
@@ -103,13 +117,15 @@ private fun WelcomeHeader() {
 }
 
 @Composable
-private fun CreateTeamButton(onEvent: (WelcomeEvent) -> Unit) {
+private fun CreateTeamButton(session: Session,onEvent: (WelcomeEvent) -> Unit) {
+    val theme = session.theme
     RedFullWidthButton(
         modifier = Modifier.padding(top = 60.dp, bottom = 16.dp),
         onClickCallback = {
             onEvent(WelcomeEvent.CreateTeam)
         },
-        label = "Create New Team"
+        label = "Create New Team",
+        theme = theme
     )
 }
 
@@ -121,7 +137,7 @@ private fun JoinTeamButton(onEvent: (WelcomeEvent) -> Unit) {
             .fillMaxWidth()
             .padding(16.dp),
         label = "Join Existing Team",
-        onClickCallback = {onEvent(WelcomeEvent.JoinTeam)}
+        onClickCallback = { onEvent(WelcomeEvent.JoinTeam) }
     )
 }
 
@@ -132,15 +148,23 @@ private fun GoToMainScreen(onEvent: (WelcomeEvent) -> Unit) {
             .fillMaxWidth()
             .padding(16.dp),
         label = "Temporary Main Screen Button",
-        onClickCallback = {onEvent(WelcomeEvent.MainScreen)}
+        onClickCallback = { onEvent(WelcomeEvent.MainScreen) }
     )
 }
 
 
-@Preview(name = "Welcome light theme", showSystemUi = true)
+@Preview(name = "Welcome light theme", showSystemUi = true, uiMode = Configuration.UI_MODE_NIGHT_NO)
 @Composable
 fun WelcomeScreenPreview() {
     WorxTheme {
-        WelcomeScreen({})
+        WelcomeScreen({}, Session(LocalContext.current))
+    }
+}
+
+@Preview(name = "Welcome Dark theme", showSystemUi = true, uiMode = Configuration.UI_MODE_NIGHT_YES)
+@Composable
+fun WelcomeScreenPreviewDark() {
+    WorxTheme(theme = SettingTheme.Dark) {
+        WelcomeScreen({}, Session(LocalContext.current))
     }
 }

@@ -16,6 +16,8 @@ import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+import id.worx.device.client.data.database.Session
+import id.worx.device.client.screen.main.SettingTheme
 import id.worx.device.client.screen.welcome.WelcomeEvent
 import id.worx.device.client.theme.PrimaryMain
 import id.worx.device.client.theme.RedDarkButton
@@ -25,14 +27,15 @@ import id.worx.device.client.theme.Typography
 fun RedFullWidthButton(
     onClickCallback: () -> Unit,
     label: String,
-    modifier: Modifier
+    modifier: Modifier,
+    theme: String?
 ) {
     OutlinedButton(
         modifier = modifier
             .fillMaxWidth()
             .padding(horizontal = 16.dp),
         colors = ButtonDefaults.buttonColors(
-            backgroundColor = RedDarkButton,
+            backgroundColor = if (theme == SettingTheme.Dark || theme == SettingTheme.System) RedDarkButton else MaterialTheme.colors.primary,
             contentColor = Color.White
         ),
         border = BorderStroke(1.5.dp, Color.Black),
@@ -80,8 +83,8 @@ fun WorxTopAppBar(
 ) {
     TopAppBar(
         modifier = Modifier.fillMaxWidth(),
-        backgroundColor = PrimaryMain,
-        contentColor = Color.White
+        backgroundColor = MaterialTheme.colors.primary,
+        contentColor = MaterialTheme.colors.onPrimary
     ) {
         Box(
             modifier = Modifier.fillMaxWidth(),

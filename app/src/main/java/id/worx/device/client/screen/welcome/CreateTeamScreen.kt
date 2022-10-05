@@ -10,9 +10,11 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Scaffold
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import id.worx.device.client.data.database.Session
 import id.worx.device.client.screen.RedFullWidthButton
 import id.worx.device.client.screen.WorxTopAppBar
 import id.worx.device.client.screen.components.WorxTextField
@@ -32,6 +34,7 @@ sealed class CreateTeamEvent {
 
 @Composable
 fun CreateTeamScreen(
+    session: Session,
     onNavigationEvent: (CreateTeamEvent) -> Unit
 ) {
     var namePr by remember { mutableStateOf(0) }
@@ -39,6 +42,7 @@ fun CreateTeamScreen(
     var passwordPr by remember { mutableStateOf(0) }
     var phonePr by remember { mutableStateOf(0) }
     var orgPr by remember { mutableStateOf(0) }
+    val theme = session.theme
 
     Scaffold(
         topBar = {
@@ -134,7 +138,8 @@ fun CreateTeamScreen(
                     )
                 },
                 label = "Create New Team",
-                modifier = Modifier.padding(vertical = 20.dp)
+                modifier = Modifier.padding(vertical = 20.dp),
+                theme = theme
             )
         }
     }
@@ -144,6 +149,6 @@ fun CreateTeamScreen(
 @Composable
 fun CreateTeamScreenPreview() {
     WorxTheme {
-        CreateTeamScreen({})
+        CreateTeamScreen(session = Session(LocalContext.current),{})
     }
 }
