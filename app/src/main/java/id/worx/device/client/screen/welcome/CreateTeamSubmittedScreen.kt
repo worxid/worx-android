@@ -1,8 +1,10 @@
 package id.worx.device.client.screen.welcome
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
@@ -21,6 +23,8 @@ import androidx.compose.ui.unit.sp
 import id.worx.device.client.R
 import id.worx.device.client.data.database.Session
 import id.worx.device.client.screen.RedFullWidthButton
+import id.worx.device.client.screen.main.SettingTheme
+import id.worx.device.client.theme.DarkBackground
 import id.worx.device.client.theme.PrimaryMain
 import id.worx.device.client.theme.Typography
 import id.worx.device.client.theme.WorxTheme
@@ -32,22 +36,32 @@ sealed class CreateTeamSubmittedEvent {
 }
 
 @Composable
-fun CreateTeamSubmittedScreen(session: Session,onEvent: (CreateTeamSubmittedEvent) -> Unit) {
+fun CreateTeamSubmittedScreen(session: Session, onEvent: (CreateTeamSubmittedEvent) -> Unit) {
     val theme = session.theme
     Surface(
         modifier = Modifier.fillMaxSize(),
     ) {
-        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            modifier = Modifier.background(color = if (theme == SettingTheme.Dark) DarkBackground else Color.White)
+        ) {
             Image(
-                modifier = Modifier.padding(vertical = 45.dp)
+                modifier = Modifier
+                    .padding(vertical = 45.dp)
                     .scale(0.75f),
                 painter = painterResource(R.drawable.worx_logo),
                 contentDescription = "Worx Logo",
-                colorFilter = ColorFilter.tint(color = Color.Black)
+                colorFilter = ColorFilter.tint(
+                    color = when (theme) {
+                        SettingTheme.Dark -> Color.White
+                        SettingTheme.System -> Color.Black
+                        else -> MaterialTheme.colors.primary
+                    }
+                )
             )
             Spacer(modifier = Modifier.weight(1f))
             Image(
-                painter = painterResource(id = R.drawable.ic_email_cartoon),
+                painter = painterResource(id = if (theme == SettingTheme.Dark) R.drawable.ic_email_cartoon_yellow else R.drawable.ic_email_cartoon),
                 contentDescription = " Email Logo"
             )
             Text(
@@ -55,16 +69,16 @@ fun CreateTeamSubmittedScreen(session: Session,onEvent: (CreateTeamSubmittedEven
                 fontSize = 16.sp,
                 fontWeight = FontWeight.W700,
                 fontFamily = FontFamily.Monospace,
-                color = Color.Black,
+                color = if (theme == SettingTheme.Dark) Color.White else Color.Black,
                 modifier = Modifier.padding(top = 24.dp, bottom = 8.dp)
             )
             Text(
                 "Click the link in your email to",
-                style = Typography.body1.copy(Color.Black)
+                style = Typography.body1.copy(if (theme == SettingTheme.Dark) Color.White else Color.Black)
             )
             Text(
                 "activate your account",
-                style = Typography.body1.copy(Color.Black)
+                style = Typography.body1.copy(if (theme == SettingTheme.Dark) Color.White else Color.Black)
             )
             RedFullWidthButton(
                 onClickCallback = { onEvent(CreateTeamSubmittedEvent.OpenEmailApp) },
@@ -75,10 +89,10 @@ fun CreateTeamSubmittedScreen(session: Session,onEvent: (CreateTeamSubmittedEven
             Row(modifier = Modifier.padding(top = 20.dp)) {
                 Text(
                     "Didn't receive the link? ",
-                    style = Typography.body1.copy(Color.Black)
+                    style = Typography.body1.copy(if (theme == SettingTheme.Dark) Color.White else Color.Black)
                 )
                 Text("Resend",
-                    style = Typography.body1.copy(color = PrimaryMain),
+                    style = Typography.body1.copy(color = if (theme == SettingTheme.Dark) PrimaryMain else MaterialTheme.colors.primary),
                     modifier = Modifier.clickable {
                         onEvent(CreateTeamSubmittedEvent.Resend)
                     })
@@ -93,6 +107,6 @@ fun CreateTeamSubmittedScreen(session: Session,onEvent: (CreateTeamSubmittedEven
 @Composable
 fun SubmittedScreenPreview() {
     WorxTheme {
-        CreateTeamSubmittedScreen(Session(LocalContext.current),{})
+        CreateTeamSubmittedScreen(Session(LocalContext.current), {})
     }
 }

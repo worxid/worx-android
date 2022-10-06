@@ -43,7 +43,7 @@ class WelcomeFragment : Fragment() {
             setContent {
                 val theme = themeViewModel.theme.value
                 WorxTheme(theme = theme) {
-                    WorxThemeStatusBar()
+                    WorxThemeStatusBar(true)
                     WelcomeScreen(
                         onEvent = { event ->
                             when (event) {

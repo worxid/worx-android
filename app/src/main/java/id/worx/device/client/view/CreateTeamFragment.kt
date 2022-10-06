@@ -42,6 +42,7 @@ class CreateTeamFragment : Fragment() {
             setContent {
                 val theme = themeViewModel.theme.value
                 WorxTheme(theme = theme) {
+                    WorxThemeStatusBar()
                     CreateTeamScreen(
                         session = session,
                         onNavigationEvent = { event ->

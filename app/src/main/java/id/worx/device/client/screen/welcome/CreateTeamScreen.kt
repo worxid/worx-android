@@ -1,5 +1,6 @@
 package id.worx.device.client.screen.welcome
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -10,6 +11,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Scaffold
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
@@ -18,6 +20,8 @@ import id.worx.device.client.data.database.Session
 import id.worx.device.client.screen.RedFullWidthButton
 import id.worx.device.client.screen.WorxTopAppBar
 import id.worx.device.client.screen.components.WorxTextField
+import id.worx.device.client.screen.main.SettingTheme
+import id.worx.device.client.theme.DarkBackground
 import id.worx.device.client.theme.WorxTheme
 
 sealed class CreateTeamEvent {
@@ -55,6 +59,7 @@ fun CreateTeamScreen(
             modifier = Modifier
                 .padding(padding)
                 .fillMaxSize()
+                .background(if (theme == SettingTheme.Dark) DarkBackground else Color.White)
                 .verticalScroll(rememberScrollState())
         ) {
             var name by remember { mutableStateOf("") }
@@ -64,6 +69,7 @@ fun CreateTeamScreen(
             var organization by remember { mutableStateOf("") }
 
             WorxTextField(
+                theme = theme,
                 label = "Full Name",
                 inputType = KeyboardOptions(keyboardType = KeyboardType.Text),
                 onValueChange = {
@@ -76,6 +82,7 @@ fun CreateTeamScreen(
                 }
             )
             WorxTextField(
+                theme = theme,
                 label = "Email",
                 inputType = KeyboardOptions(keyboardType = KeyboardType.Email),
                 onValueChange = {
@@ -88,6 +95,7 @@ fun CreateTeamScreen(
                 }
             )
             WorxTextField(
+                theme = theme,
                 label = "Password",
                 inputType = KeyboardOptions(keyboardType = KeyboardType.Password),
                 onValueChange = {
@@ -101,6 +109,7 @@ fun CreateTeamScreen(
                 isPassword = true
             )
             WorxTextField(
+                theme = theme,
                 label = "Work Phone",
                 inputType = KeyboardOptions(keyboardType = KeyboardType.Phone),
                 onValueChange = {
@@ -113,6 +122,7 @@ fun CreateTeamScreen(
                 }
             )
             WorxTextField(
+                theme = theme,
                 label = "Organization Name",
                 inputType = KeyboardOptions(keyboardType = KeyboardType.Phone),
                 onValueChange = {
@@ -149,6 +159,6 @@ fun CreateTeamScreen(
 @Composable
 fun CreateTeamScreenPreview() {
     WorxTheme {
-        CreateTeamScreen(session = Session(LocalContext.current),{})
+        CreateTeamScreen(session = Session(LocalContext.current), {})
     }
 }

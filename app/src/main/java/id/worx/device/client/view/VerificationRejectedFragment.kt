@@ -37,15 +37,6 @@ class VerificationRejectedFragment : Fragment() {
         return ComposeView(requireContext()).apply {
             setContent {
 
-                val systemUiController = rememberSystemUiController()
-                val useDarkIcons = MaterialTheme.colors.isLight
-                val statusBarColor = LightThemeColorsSystem.primaryVariant
-                DisposableEffect(systemUiController, useDarkIcons) {
-                    systemUiController.setStatusBarColor(Color.Black.copy(0.2f), darkIcons = useDarkIcons)
-                    onDispose {
-                        systemUiController.setStatusBarColor(statusBarColor)
-                    }
-                }
                 val theme = themeViewModel.theme.value
                 WorxTheme(theme = theme) {
                     WorxThemeStatusBar()

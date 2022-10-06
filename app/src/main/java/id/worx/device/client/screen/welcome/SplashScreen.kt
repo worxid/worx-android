@@ -8,18 +8,23 @@ import androidx.compose.material.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import id.worx.device.client.R
+import id.worx.device.client.data.database.Session
+import id.worx.device.client.screen.main.SettingTheme
+import id.worx.device.client.theme.DarkBackground
 import id.worx.device.client.theme.PrimaryMain
 import id.worx.device.client.theme.WorxTheme
 
 @Composable
-fun SplashScreen() {
+fun SplashScreen(session: Session) {
+    val theme = session.theme
     Surface(
         modifier = Modifier.fillMaxSize(),
-        color = MaterialTheme.colors.primary
+        color = if (theme == SettingTheme.Dark) DarkBackground else MaterialTheme.colors.primary
     ) {
         Image(
             modifier = Modifier.padding(horizontal = 98.dp),
@@ -34,6 +39,6 @@ fun SplashScreen() {
 @Composable
 fun SplashScreenPreview() {
     WorxTheme {
-        SplashScreen()
+        SplashScreen(Session(LocalContext.current))
     }
 }

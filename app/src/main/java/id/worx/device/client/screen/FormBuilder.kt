@@ -43,6 +43,7 @@ fun ValidFormBuilder(
 ) {
     var showSubmitDialog by remember { mutableStateOf(false) }
     var showDraftDialog by remember { mutableStateOf(false) }
+    val theme = session.theme
 
     Box(modifier = Modifier.fillMaxSize()) {
         DetailForm(
@@ -64,6 +65,7 @@ fun ValidFormBuilder(
         }
         if (showDraftDialog) {
             DialogDraftForm(
+                theme = theme,
                 { onEvent(DetailFormEvent.SaveDraft) },
                 { showDraftDialog = false })
         }
@@ -100,6 +102,7 @@ fun DetailForm(
                     val value = viewModel.uiState.collectAsState().value.values[id]
                             as TextFieldValue? ?: TextFieldValue()
                     WorxTextField(
+                        theme = theme,
                         label = item.label ?: "Free Text",
                         hint = "Answer",
                         inputType = KeyboardOptions(keyboardType = KeyboardType.Text),
@@ -235,6 +238,7 @@ fun DialogSubmitForm(
 
 @Composable
 fun DialogDraftForm(
+    theme: String?,
     saveDraft: () -> Unit,
     closeDialog: () -> Unit
 ) {
@@ -258,6 +262,7 @@ fun DialogDraftForm(
                     style = Typography.body2.copy(Color.Black.copy(0.54f))
                 )
                 WorxTextField(
+                    theme = theme,
                     label = "",
                     hint = stringResource(R.string.draft_descr),
                     inputType = KeyboardOptions(keyboardType = KeyboardType.Text),

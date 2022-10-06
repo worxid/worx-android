@@ -146,10 +146,12 @@ fun WhiteFullWidthButton(
 }
 
 @Composable
-fun WorxThemeStatusBar() {
+fun WorxThemeStatusBar(
+    isExtraDark : Boolean = false
+) {
     val systemUiController = rememberSystemUiController()
     val useDarkIcons = MaterialTheme.colors.isLight
-    val statusBarColor = MaterialTheme.colors.primaryVariant
+    val statusBarColor = if (isExtraDark) DarkBackground else MaterialTheme.colors.primaryVariant
 
     LaunchedEffect(systemUiController, useDarkIcons) {
         systemUiController.setStatusBarColor(statusBarColor)
