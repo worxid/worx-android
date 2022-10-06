@@ -37,7 +37,7 @@ class SplashFragment : Fragment() {
             setContent {
                 val theme = themeViewModel.theme.value
                 WorxTheme(theme = theme) {
-                    WorxThemeStatusBar(true)
+                    WorxThemeStatusBar(theme)
                     SplashScreen(session)
                 }
             }

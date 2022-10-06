@@ -43,7 +43,7 @@ fun WaitingVerificationScreen(
     ) {
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
-            modifier = Modifier.background(if (theme == SettingTheme.Dark) DarkBackground else Color.White)
+            modifier = Modifier.background(MaterialTheme.colors.secondary)
         ) {
             Image(
                 modifier = Modifier
@@ -51,7 +51,7 @@ fun WaitingVerificationScreen(
                     .scale(0.75f),
                 painter = painterResource(R.drawable.worx_logo),
                 contentDescription = "Worx Logo",
-                colorFilter = ColorFilter.tint(color = if (theme == SettingTheme.Dark) Color.White else MaterialTheme.colors.primary)
+                colorFilter = ColorFilter.tint(color = MaterialTheme.colors.onSecondary)
             )
             Spacer(modifier = Modifier.weight(1f))
             Image(
@@ -60,7 +60,7 @@ fun WaitingVerificationScreen(
             )
             Text(
                 stringResource(R.string.waiting_for_verification),
-                style = Typography.body1.copy(color = if (theme == SettingTheme.Dark) Color.White else Color.Black),
+                style = Typography.body1.copy(color = MaterialTheme.colors.onSecondary),
                 modifier = Modifier.padding(top = 25.dp, bottom = 20.dp)
             )
             RedFullWidthButton(

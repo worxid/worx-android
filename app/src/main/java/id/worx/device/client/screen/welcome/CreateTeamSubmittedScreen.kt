@@ -24,7 +24,6 @@ import id.worx.device.client.R
 import id.worx.device.client.data.database.Session
 import id.worx.device.client.screen.RedFullWidthButton
 import id.worx.device.client.screen.main.SettingTheme
-import id.worx.device.client.theme.DarkBackground
 import id.worx.device.client.theme.PrimaryMain
 import id.worx.device.client.theme.Typography
 import id.worx.device.client.theme.WorxTheme
@@ -43,7 +42,7 @@ fun CreateTeamSubmittedScreen(session: Session, onEvent: (CreateTeamSubmittedEve
     ) {
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
-            modifier = Modifier.background(color = if (theme == SettingTheme.Dark) DarkBackground else Color.White)
+            modifier = Modifier.background(color = MaterialTheme.colors.secondary)
         ) {
             Image(
                 modifier = Modifier
@@ -52,11 +51,7 @@ fun CreateTeamSubmittedScreen(session: Session, onEvent: (CreateTeamSubmittedEve
                 painter = painterResource(R.drawable.worx_logo),
                 contentDescription = "Worx Logo",
                 colorFilter = ColorFilter.tint(
-                    color = when (theme) {
-                        SettingTheme.Dark -> Color.White
-                        SettingTheme.System -> Color.Black
-                        else -> MaterialTheme.colors.primary
-                    }
+                    color = MaterialTheme.colors.onSecondary
                 )
             )
             Spacer(modifier = Modifier.weight(1f))
@@ -69,16 +64,16 @@ fun CreateTeamSubmittedScreen(session: Session, onEvent: (CreateTeamSubmittedEve
                 fontSize = 16.sp,
                 fontWeight = FontWeight.W700,
                 fontFamily = FontFamily.Monospace,
-                color = if (theme == SettingTheme.Dark) Color.White else Color.Black,
+                color = MaterialTheme.colors.onSecondary,
                 modifier = Modifier.padding(top = 24.dp, bottom = 8.dp)
             )
             Text(
                 "Click the link in your email to",
-                style = Typography.body1.copy(if (theme == SettingTheme.Dark) Color.White else Color.Black)
+                style = Typography.body1.copy(MaterialTheme.colors.onSecondary)
             )
             Text(
                 "activate your account",
-                style = Typography.body1.copy(if (theme == SettingTheme.Dark) Color.White else Color.Black)
+                style = Typography.body1.copy(MaterialTheme.colors.onSecondary)
             )
             RedFullWidthButton(
                 onClickCallback = { onEvent(CreateTeamSubmittedEvent.OpenEmailApp) },
@@ -89,7 +84,7 @@ fun CreateTeamSubmittedScreen(session: Session, onEvent: (CreateTeamSubmittedEve
             Row(modifier = Modifier.padding(top = 20.dp)) {
                 Text(
                     "Didn't receive the link? ",
-                    style = Typography.body1.copy(if (theme == SettingTheme.Dark) Color.White else Color.Black)
+                    style = Typography.body1.copy(MaterialTheme.colors.onSecondary)
                 )
                 Text("Resend",
                     style = Typography.body1.copy(color = if (theme == SettingTheme.Dark) PrimaryMain else MaterialTheme.colors.primary),

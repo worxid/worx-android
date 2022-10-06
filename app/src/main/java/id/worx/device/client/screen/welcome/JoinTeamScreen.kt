@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
 import androidx.compose.runtime.*
@@ -24,6 +25,7 @@ import id.worx.device.client.screen.RedFullWidthButton
 import id.worx.device.client.screen.WorxTopAppBar
 import id.worx.device.client.screen.components.WorxTextField
 import id.worx.device.client.screen.main.SettingTheme
+import id.worx.device.client.screen.textLogoColor
 import id.worx.device.client.theme.DarkBackground
 import id.worx.device.client.theme.Typography
 import id.worx.device.client.theme.WorxTheme
@@ -57,7 +59,7 @@ fun JoinTeamScreen(
             modifier = Modifier
                 .padding(padding)
                 .fillMaxSize()
-                .background(if (theme == SettingTheme.Dark) DarkBackground else Color.White)
+                .background(MaterialTheme.colors.secondary)
                 .verticalScroll(rememberScrollState())
         ) {
             var name by remember { mutableStateOf("") }
@@ -65,12 +67,12 @@ fun JoinTeamScreen(
 
             Text(
                 text = stringResource(R.string.ready_to_join),
-                style = Typography.h6.copy(if (theme == SettingTheme.Dark) Color.White else Color.Black),
+                style = Typography.h6.copy(MaterialTheme.colors.onSecondary),
                 modifier = Modifier.padding(start = 16.dp, top = 40.dp)
             )
             Text(
                 text = stringResource(R.string.admin_will_approve),
-                style = Typography.body1.copy(if (theme == SettingTheme.Dark) Color.White else Color.Black),
+                style = Typography.body1.copy(MaterialTheme.colors.onSecondary),
                 modifier = Modifier.padding(start = 16.dp, top = 8.dp, end = 16.dp, bottom = 40.dp)
             )
             WorxTextField(

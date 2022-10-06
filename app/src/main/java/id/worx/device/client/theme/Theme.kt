@@ -20,7 +20,7 @@ val LightThemeColorsSystem = lightColors(
     onSecondary = Color.Black,
     background = Color.White,
     onBackground = Color.Black,
-    surface = Color.White,
+    surface = SurfaceSystem,
     onSurface = Color.Black,
     error = RedDark,
     onError = Color.White
@@ -45,11 +45,11 @@ val LightThemeColorsDark = lightColors(
     primary = PrimaryMainDark,
     primaryVariant = BlackDark,
     onPrimary = Color.White,
-    secondary = Color.Black,
-    onSecondary = Color.Black,
+    secondary = DarkBackground,
+    onSecondary = Color.White,
     background = Color.White,
     onBackground = Color.Black,
-    surface = Color.White,
+    surface = SurfaceMainDark,
     onSurface = Color.Black,
     error = BlackDark,
     onError = Color.White
@@ -79,13 +79,42 @@ val LightThemeColorsGreen = lightColors(
     onSecondary = Color.Black,
     background = Color.White,
     onBackground = Color.Black,
-    surface = Color.White,
+    surface = SurfaceSystem,
     onSurface = Color.Black,
     error = GreenDark,
     onError = Color.White
 )
 
 val DarkThemeColorsGreen = darkColors(
+    primary = PrimaryMain,
+    primaryVariant = RedDark,
+    onPrimary = Color.Blue,
+    secondary = Color.Black,
+    onSecondary = Color.Yellow,
+    background = Color.DarkGray,
+    onBackground = Color.Green,
+    surface = Color.Magenta,
+    onSurface = Color.White,
+    error = RedDark,
+    onError = Color.Blue
+)
+
+//Blue
+val LightThemeColorsBlue = lightColors(
+    primary = PrimaryMainBlue,
+    primaryVariant = BlueDark,
+    onPrimary = Color.White,
+    secondary = Color.White,
+    onSecondary = Color.Black,
+    background = Color.White,
+    onBackground = Color.Black,
+    surface = SurfaceSystem,
+    onSurface = Color.Black,
+    error = BlueDark,
+    onError = Color.White
+)
+
+val DarkThemeColorsBlue = darkColors(
     primary = PrimaryMain,
     primaryVariant = RedDark,
     onPrimary = Color.Blue,
@@ -109,7 +138,7 @@ fun WorxTheme(
             SettingTheme.System -> DarkThemeColorsSystem
             SettingTheme.Dark -> DarkThemeColorsDark
             SettingTheme.Green -> DarkThemeColorsGreen
-            SettingTheme.Blue -> DarkThemeColorsSystem
+            SettingTheme.Blue -> DarkThemeColorsBlue
             else -> DarkThemeColorsSystem
         }
     } else {
@@ -117,7 +146,7 @@ fun WorxTheme(
             SettingTheme.System -> LightThemeColorsSystem
             SettingTheme.Dark -> LightThemeColorsDark
             SettingTheme.Green -> LightThemeColorsGreen
-            SettingTheme.Blue -> LightThemeColorsSystem
+            SettingTheme.Blue -> LightThemeColorsBlue
             else -> LightThemeColorsSystem
         }
     }

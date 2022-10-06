@@ -1,6 +1,7 @@
 package id.worx.device.client.screen.main
 
 import android.provider.Settings
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -88,20 +89,25 @@ fun SettingScreen(
         val verticalScroll = rememberScrollState()
 
         Column(
-            modifier = Modifier.verticalScroll(verticalScroll)
+            modifier = Modifier
+                .verticalScroll(verticalScroll)
+                .background(MaterialTheme.colors.secondary)
         ) {
             HeaderTileSetting(title = stringResource(id = R.string.organization_details))
             TileItemSetting(
                 title = stringResource(id = R.string.organizations),
                 subtitle = "Fields Service Mobile",
+                session = session
             )
             TileItemSetting(
                 title = stringResource(id = R.string.organizations_key),
                 subtitle = "AIT763",
+                session = session
             )
             TileItemSetting(
                 title = stringResource(id = R.string.device_name),
                 subtitle = Settings.Secure.getString(context.contentResolver, "bluetooth_name"),
+                session = session
             )
             Divider(color = GrayDivider, modifier = Modifier.padding(top = 20.dp))
             HeaderTileSetting(title = stringResource(id = R.string.devices_settings))
@@ -111,7 +117,8 @@ fun SettingScreen(
                 iconRes = R.drawable.ic_baseline_color_lens_24,
                 modifier = Modifier.clickable {
                     showDialogTheme.value = !showDialogTheme.value
-                }
+                },
+                session = session
             )
             TileItemSetting(
                 title = stringResource(id = R.string.save_image_in_gallery),
@@ -124,19 +131,25 @@ fun SettingScreen(
             TileItemSetting(
                 title = stringResource(id = R.string.app_version),
                 subtitle = BuildConfig.VERSION_NAME,
+                session = session
             )
             TileItemSetting(
                 title = stringResource(id = R.string.app_version_code),
                 subtitle = BuildConfig.VERSION_CODE.toString(),
+                session = session
             )
             TileItemSetting(
                 title = stringResource(id = R.string.app_package_name),
                 subtitle = BuildConfig.APPLICATION_ID,
+                session = session
             )
             HeaderTileSetting(title = stringResource(id = R.string.legal))
-            TileItemSetting(title = stringResource(id = R.string.open_source_licenses), onPress = {
-                viewModel.goToLicencesScreen()
-            })
+            TileItemSetting(
+                title = stringResource(id = R.string.open_source_licenses), onPress = {
+                    viewModel.goToLicencesScreen()
+                },
+                session = session
+            )
             WhiteFullWidthButton(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -287,11 +300,11 @@ fun TileItemSetting(
     iconRes: Int? = null,
     toggleActive: Boolean = false,
     onPress: () -> Unit = {},
-    session: Session? = null
+    session: Session?
 ) {
     val toggleValue = session?.isSaveImageToGallery ?: false
     val checkStateSwitch = remember { mutableStateOf(toggleValue) }
-
+    val theme = session?.theme
     ConstraintLayout(
         modifier = modifier
             .fillMaxWidth()
@@ -307,7 +320,8 @@ fun TileItemSetting(
                     top.linkTo(parent.top)
                     bottom.linkTo(parent.bottom)
                     start.linkTo(parent.start)
-                }
+                },
+                tint = MaterialTheme.colors.onSecondary
             )
         }
         Text(
@@ -334,7 +348,7 @@ fun TileItemSetting(
                     width = Dimension.fillToConstraints
                 },
             style = Typography.body2,
-            color = BlackFont,
+            color = MaterialTheme.colors.onSecondary,
         )
         if (subtitle != null) {
             Text(
@@ -347,7 +361,7 @@ fun TileItemSetting(
                     width = Dimension.fillToConstraints
                 },
                 style = Typography.body1,
-                color = BlackVariantFont,
+                color = MaterialTheme.colors.onSecondary.copy(0.54f),
                 maxLines = 2,
                 overflow = TextOverflow.Ellipsis
             )
@@ -365,10 +379,10 @@ fun TileItemSetting(
                     bottom.linkTo(parent.bottom)
                 },
                 colors = SwitchDefaults.colors(
-                    checkedThumbColor = RedDarkButton,
-                    uncheckedThumbColor = RedDarkButton,
-                    checkedTrackColor = RedDarkButton,
-                    uncheckedTrackColor = RedDarkButton,
+                    checkedThumbColor = MaterialTheme.colors.primary,
+                    uncheckedThumbColor = MaterialTheme.colors.surface,
+                    checkedTrackColor = MaterialTheme.colors.primary,
+                    uncheckedTrackColor = MaterialTheme.colors.surface,
                 )
             )
         }
@@ -377,13 +391,13 @@ fun TileItemSetting(
 
 @Composable
 fun HeaderTileSetting(
-    title: String
+    title: String,
 ) {
     ConstraintLayout(
         modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = 60.dp, vertical = 20.dp)
     ) {
-        Text(text = title, style = Typography.body1, color = BlackVariantFont)
+        Text(text = title, style = Typography.body1, color = MaterialTheme.colors.onSecondary)
     }
 }

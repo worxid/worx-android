@@ -46,7 +46,7 @@ fun WelcomeScreen(onEvent: (WelcomeEvent) -> Unit, session: Session) {
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .background(if (theme == SettingTheme.Dark) DarkBackground else MaterialTheme.colors.secondary)
+                .background(MaterialTheme.colors.secondary)
                 .verticalScroll(rememberScrollState())
         ) {
             WelcomeHeader(session)
@@ -62,7 +62,7 @@ private fun WelcomeHeader(session: Session) {
     val theme = session.theme
     Surface(
         modifier = Modifier.fillMaxSize(),
-        color = if (theme == SettingTheme.Dark) DarkBackground else MaterialTheme.colors.primary
+        color = if (theme == SettingTheme.Dark) MaterialTheme.colors.secondary else MaterialTheme.colors.primary
     ) {
         Column(
             modifier = Modifier.padding(vertical = 26.dp, horizontal = 48.dp),

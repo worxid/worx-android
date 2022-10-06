@@ -42,7 +42,7 @@ fun RedFullWidthButton(
         ),
         border = BorderStroke(
             1.5.dp,
-            color = if (theme == SettingTheme.Dark) Color.White else Color.Black
+            color = MaterialTheme.colors.onSecondary
         ),
         shape = RoundedCornerShape(1),
         contentPadding = PaddingValues(vertical = 14.dp),
@@ -134,7 +134,7 @@ fun WhiteFullWidthButton(
             backgroundColor = MaterialTheme.colors.primary.copy(0.2f),
             contentColor = if (theme == SettingTheme.Dark) Color.White else MaterialTheme.colors.primary
         ),
-        border = BorderStroke(1.5.dp, if (theme == SettingTheme.Dark) Color.White else Color.Black),
+        border = BorderStroke(1.5.dp, MaterialTheme.colors.onSecondary),
         shape = RoundedCornerShape(1),
         contentPadding = PaddingValues(vertical = 14.dp),
         onClick = {
@@ -147,11 +147,11 @@ fun WhiteFullWidthButton(
 
 @Composable
 fun WorxThemeStatusBar(
-    isExtraDark : Boolean = false
+    theme : String? = null
 ) {
     val systemUiController = rememberSystemUiController()
     val useDarkIcons = MaterialTheme.colors.isLight
-    val statusBarColor = if (isExtraDark) DarkBackground else MaterialTheme.colors.primaryVariant
+    val statusBarColor = if (theme == SettingTheme.Dark) MaterialTheme.colors.secondary else MaterialTheme.colors.primaryVariant
 
     LaunchedEffect(systemUiController, useDarkIcons) {
         systemUiController.setStatusBarColor(statusBarColor)

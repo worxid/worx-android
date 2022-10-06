@@ -42,7 +42,7 @@ fun WorxTextField(
         Text(
             modifier = Modifier.padding(bottom = 8.dp, start = 17.dp),
             text = label,
-            style = Typography.body2.copy(if (theme == SettingTheme.Dark) Color.White else Color.Black)
+            style = Typography.body2.copy(MaterialTheme.colors.onSecondary)
         )
         TextField(
             colors = TextFieldDefaults.textFieldColors(
@@ -69,7 +69,7 @@ fun WorxTextField(
                     color = if (theme == SettingTheme.Dark) textUnfocusColorDark else textUnfocusColorSystem
                 )
             },
-            textStyle = Typography.body1.copy(color = if (theme == SettingTheme.Dark) Color.White else Color.Black),
+            textStyle = Typography.body1.copy(color = MaterialTheme.colors.onSecondary),
             keyboardOptions = inputType,
             visualTransformation = if (isPassword && passwordVisible) PasswordVisualTransformation() else VisualTransformation.None,
             trailingIcon = {
