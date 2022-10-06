@@ -13,9 +13,10 @@ val BlackVariantFont = Color(0f, 0f, 0f, 0.54f)
 
 //Dark
 val DarkBackground = Color(0xFF121212)
-val PrimaryMainDark = Color(0xFF46474A)
+val DarkBackgroundStatusBar = Color(0xCC000000)
+val PrimaryMainDark = Color(0xFF3E3A3A)
 val SecondaryMainDark = Color(0xFFF8CA45)
-val BlackDark = Color(0x33000000)
+val BlackDark = Color(0xCC000000)
 val BlackDarkButtonDark = Color(0xFFDA3630)
 
 //Green

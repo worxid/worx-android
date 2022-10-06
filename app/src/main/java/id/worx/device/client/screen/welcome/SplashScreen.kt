@@ -3,6 +3,7 @@ package id.worx.device.client.screen
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -18,7 +19,7 @@ import id.worx.device.client.theme.WorxTheme
 fun SplashScreen() {
     Surface(
         modifier = Modifier.fillMaxSize(),
-        color = PrimaryMain
+        color = MaterialTheme.colors.primary
     ) {
         Image(
             modifier = Modifier.padding(horizontal = 98.dp),

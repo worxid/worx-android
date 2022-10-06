@@ -11,6 +11,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import id.worx.device.client.WelcomeScreen
 import id.worx.device.client.data.database.Session
 import id.worx.device.client.navigate
+import id.worx.device.client.screen.WorxThemeStatusBar
 import id.worx.device.client.screen.welcome.JoinTeamEvent
 import id.worx.device.client.screen.welcome.JoinTeamScreen
 import id.worx.device.client.theme.WorxTheme
@@ -40,6 +41,7 @@ class JoinTeamFragment : Fragment() {
             setContent {
                 val theme = themeViewModel.theme.value
                 WorxTheme(theme = theme) {
+                    WorxThemeStatusBar()
                     JoinTeamScreen(
                         session = session,
                         onEvent = { event ->

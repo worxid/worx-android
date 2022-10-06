@@ -8,6 +8,7 @@ import androidx.compose.material.darkColors
 import androidx.compose.material.lightColors
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
+import id.worx.device.client.screen.WorxThemeStatusBar
 import id.worx.device.client.screen.main.SettingTheme
 
 //System default

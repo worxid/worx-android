@@ -13,6 +13,7 @@ import id.worx.device.client.MainActivity
 import id.worx.device.client.WelcomeScreen
 import id.worx.device.client.data.database.Session
 import id.worx.device.client.navigate
+import id.worx.device.client.screen.WorxThemeStatusBar
 import id.worx.device.client.screen.welcome.WelcomeEvent
 import id.worx.device.client.screen.welcome.WelcomeScreen
 import id.worx.device.client.theme.WorxTheme
@@ -42,6 +43,7 @@ class WelcomeFragment : Fragment() {
             setContent {
                 val theme = themeViewModel.theme.value
                 WorxTheme(theme = theme) {
+                    WorxThemeStatusBar()
                     WelcomeScreen(
                         onEvent = { event ->
                             when (event) {

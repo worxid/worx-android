@@ -14,6 +14,7 @@ import id.worx.device.client.data.database.Session
 import id.worx.device.client.navigate
 import id.worx.device.client.screen.DetailFormEvent
 import id.worx.device.client.screen.DetailFormScreen
+import id.worx.device.client.screen.WorxThemeStatusBar
 import id.worx.device.client.theme.WorxTheme
 import id.worx.device.client.viewmodel.CameraViewModel
 import id.worx.device.client.viewmodel.DetailFormViewModel
@@ -45,6 +46,7 @@ class DetailFormFragment : Fragment() {
             setContent {
                 val theme = themeViewModel.theme.value
                 WorxTheme(theme = theme) {
+                    WorxThemeStatusBar()
                     DetailFormScreen(
                         viewModel,
                         cameraViewModel,

@@ -14,6 +14,7 @@ import androidx.fragment.app.viewModels
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import dagger.hilt.android.AndroidEntryPoint
 import id.worx.device.client.data.database.Session
+import id.worx.device.client.screen.WorxThemeStatusBar
 import id.worx.device.client.screen.welcome.CreateTeamSubmittedEvent
 import id.worx.device.client.screen.welcome.CreateTeamSubmittedScreen
 import id.worx.device.client.theme.LightThemeColorsSystem
@@ -37,17 +38,9 @@ class CreateTeamSubmittedFragment : Fragment() {
         return ComposeView(requireContext()).apply {
             setContent {
 
-                val systemUiController = rememberSystemUiController()
-                val useDarkIcons = MaterialTheme.colors.isLight
-                val statusBarColor = LightThemeColorsSystem.primaryVariant
-                DisposableEffect(systemUiController, useDarkIcons) {
-                    systemUiController.setStatusBarColor(Color.Black.copy(0.2f), darkIcons = useDarkIcons)
-                    onDispose {
-                        systemUiController.setStatusBarColor(statusBarColor)
-                    }
-                }
                 val theme = themeViewModel.theme.value
                 WorxTheme(theme = theme) {
+                    WorxThemeStatusBar()
                     CreateTeamSubmittedScreen(
                         session = session,
                         onEvent = { event ->

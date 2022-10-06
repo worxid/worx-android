@@ -13,6 +13,7 @@ import androidx.fragment.app.viewModels
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import dagger.hilt.android.AndroidEntryPoint
 import id.worx.device.client.data.database.Session
+import id.worx.device.client.screen.WorxThemeStatusBar
 import id.worx.device.client.screen.welcome.VerificationEvent
 import id.worx.device.client.screen.welcome.VerificationRejectedScreen
 import id.worx.device.client.theme.LightThemeColorsSystem
@@ -47,6 +48,7 @@ class VerificationRejectedFragment : Fragment() {
                 }
                 val theme = themeViewModel.theme.value
                 WorxTheme(theme = theme) {
+                    WorxThemeStatusBar()
                     VerificationRejectedScreen(
                         session,
                         onEvent = { event ->

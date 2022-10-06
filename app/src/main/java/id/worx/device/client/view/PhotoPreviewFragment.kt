@@ -18,6 +18,7 @@ import id.worx.device.client.MainScreen
 import id.worx.device.client.R
 import id.worx.device.client.data.database.Session
 import id.worx.device.client.navigate
+import id.worx.device.client.screen.WorxThemeStatusBar
 import id.worx.device.client.screen.main.PhotoPreviewScreen
 import id.worx.device.client.theme.WorxTheme
 import id.worx.device.client.viewmodel.CameraViewModel
@@ -56,11 +57,11 @@ class PhotoPreviewFragment: Fragment() {
 
         saveToGallery = session.isSaveImageToGallery
 
-
         return ComposeView(requireContext()).apply {
             setContent {
                 val theme = themeViewModel.theme.value
                 WorxTheme(theme = theme) {
+                    WorxThemeStatusBar()
                     PhotoPreviewScreen(viewModel, detailViewModel) { path: String ->
                         galleryAddPic(
                             saveToGallery,

@@ -10,6 +10,7 @@ import androidx.fragment.app.activityViewModels
 import dagger.hilt.android.AndroidEntryPoint
 import id.worx.device.client.MainScreen
 import id.worx.device.client.navigate
+import id.worx.device.client.screen.WorxThemeStatusBar
 import id.worx.device.client.screen.main.SignaturePadScreen
 import id.worx.device.client.theme.WorxTheme
 import id.worx.device.client.viewmodel.DetailFormViewModel
@@ -35,6 +36,7 @@ class SignaturePadFragment : Fragment() {
             setContent {
                 val theme = themeViewModel.theme.value
                 WorxTheme(theme = theme) {
+                    WorxThemeStatusBar()
                     SignaturePadScreen(
                         viewModel
                     ) { activity?.onBackPressedDispatcher?.onBackPressed() }

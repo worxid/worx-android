@@ -50,9 +50,9 @@ fun WelcomeScreen(onEvent: (WelcomeEvent) -> Unit, session: Session) {
                 .verticalScroll(rememberScrollState())
         ) {
             WelcomeHeader(session)
-            CreateTeamButton(session,onEvent = onEvent)
-            JoinTeamButton(onEvent)
-            GoToMainScreen(onEvent)
+            CreateTeamButton(session, onEvent = onEvent)
+            JoinTeamButton(session, onEvent)
+            GoToMainScreen(session, onEvent)
         }
     }
 }
@@ -117,7 +117,7 @@ private fun WelcomeHeader(session: Session) {
 }
 
 @Composable
-private fun CreateTeamButton(session: Session,onEvent: (WelcomeEvent) -> Unit) {
+private fun CreateTeamButton(session: Session, onEvent: (WelcomeEvent) -> Unit) {
     val theme = session.theme
     RedFullWidthButton(
         modifier = Modifier.padding(top = 60.dp, bottom = 16.dp),
@@ -131,23 +131,27 @@ private fun CreateTeamButton(session: Session,onEvent: (WelcomeEvent) -> Unit) {
 
 
 @Composable
-private fun JoinTeamButton(onEvent: (WelcomeEvent) -> Unit) {
+private fun JoinTeamButton(session: Session, onEvent: (WelcomeEvent) -> Unit) {
+    val theme = session.theme
     WhiteFullWidthButton(
         modifier = Modifier
             .fillMaxWidth()
             .padding(16.dp),
         label = "Join Existing Team",
+        theme = theme,
         onClickCallback = { onEvent(WelcomeEvent.JoinTeam) }
     )
 }
 
 @Composable
-private fun GoToMainScreen(onEvent: (WelcomeEvent) -> Unit) {
+private fun GoToMainScreen(session: Session, onEvent: (WelcomeEvent) -> Unit) {
+    val theme = session.theme
     WhiteFullWidthButton(
         modifier = Modifier
             .fillMaxWidth()
             .padding(16.dp),
         label = "Temporary Main Screen Button",
+        theme = theme,
         onClickCallback = { onEvent(WelcomeEvent.MainScreen) }
     )
 }

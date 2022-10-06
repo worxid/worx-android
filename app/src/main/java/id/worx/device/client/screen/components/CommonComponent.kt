@@ -3,12 +3,14 @@ package id.worx.device.client.screen
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.runtime.Composable
+import androidx.compose.runtime.*
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -16,12 +18,12 @@ import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import id.worx.device.client.data.database.Session
 import id.worx.device.client.screen.main.SettingTheme
 import id.worx.device.client.screen.welcome.WelcomeEvent
-import id.worx.device.client.theme.PrimaryMain
-import id.worx.device.client.theme.RedDarkButton
-import id.worx.device.client.theme.Typography
+import id.worx.device.client.theme.*
+import id.worx.device.client.viewmodel.ThemeViewModel
 
 @Composable
 fun RedFullWidthButton(
@@ -38,7 +40,10 @@ fun RedFullWidthButton(
             backgroundColor = if (theme == SettingTheme.Dark || theme == SettingTheme.System) RedDarkButton else MaterialTheme.colors.primary,
             contentColor = Color.White
         ),
-        border = BorderStroke(1.5.dp, Color.Black),
+        border = BorderStroke(
+            1.5.dp,
+            color = if (theme == SettingTheme.Dark) Color.White else Color.Black
+        ),
         shape = RoundedCornerShape(1),
         contentPadding = PaddingValues(vertical = 14.dp),
         onClick = onClickCallback
@@ -120,14 +125,16 @@ fun WhiteFullWidthButton(
     modifier: Modifier,
     label: String,
     onClickEvent: () -> Unit = {},
+    theme: String?,
     onClickCallback: (WelcomeEvent) -> Unit
-){
+) {
     OutlinedButton(
         modifier = modifier,
         colors = ButtonDefaults.buttonColors(
-            backgroundColor = RedDarkButton.copy(0.1f),
-            contentColor = RedDarkButton),
-        border = BorderStroke(1.5.dp, Color.Black),
+            backgroundColor = MaterialTheme.colors.primary.copy(0.2f),
+            contentColor = if (theme == SettingTheme.Dark) Color.White else MaterialTheme.colors.primary
+        ),
+        border = BorderStroke(1.5.dp, if (theme == SettingTheme.Dark) Color.White else Color.Black),
         shape = RoundedCornerShape(1),
         contentPadding = PaddingValues(vertical = 14.dp),
         onClick = {
@@ -135,5 +142,16 @@ fun WhiteFullWidthButton(
             onClickEvent()
         }) {
         Text(text = label, style = Typography.button)
+    }
+}
+
+@Composable
+fun WorxThemeStatusBar() {
+    val systemUiController = rememberSystemUiController()
+    val useDarkIcons = MaterialTheme.colors.isLight
+    val statusBarColor = MaterialTheme.colors.primaryVariant
+
+    LaunchedEffect(systemUiController, useDarkIcons) {
+        systemUiController.setStatusBarColor(statusBarColor)
     }
 }

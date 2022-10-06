@@ -11,6 +11,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import id.worx.device.client.WelcomeScreen
 import id.worx.device.client.data.database.Session
 import id.worx.device.client.navigate
+import id.worx.device.client.screen.WorxThemeStatusBar
 import id.worx.device.client.screen.welcome.CreateTeamEvent
 import id.worx.device.client.screen.welcome.CreateTeamScreen
 import id.worx.device.client.theme.WorxTheme
@@ -23,7 +24,8 @@ class CreateTeamFragment : Fragment() {
 
     private val viewModel by viewModels<WelcomeViewModel>()
     private val themeViewModel by viewModels<ThemeViewModel>()
-    @Inject lateinit var session: Session
+    @Inject
+    lateinit var session: Session
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -39,7 +41,7 @@ class CreateTeamFragment : Fragment() {
         return ComposeView(requireContext()).apply {
             setContent {
                 val theme = themeViewModel.theme.value
-                WorxTheme (theme = theme) {
+                WorxTheme(theme = theme) {
                     CreateTeamScreen(
                         session = session,
                         onNavigationEvent = { event ->

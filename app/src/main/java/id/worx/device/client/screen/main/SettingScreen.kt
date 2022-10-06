@@ -29,6 +29,7 @@ import id.worx.device.client.BuildConfig
 import id.worx.device.client.R
 import id.worx.device.client.data.database.Session
 import id.worx.device.client.screen.WhiteFullWidthButton
+import id.worx.device.client.screen.WorxThemeStatusBar
 import id.worx.device.client.screen.WorxTopAppBar
 import id.worx.device.client.screen.components.WorxDialog
 import id.worx.device.client.theme.*
@@ -49,6 +50,7 @@ fun SettingScreen(
     themeViewModel: ThemeViewModel,
     onBackNavigation: () -> Unit
 ) {
+    val theme = session.theme
     val showDialogTheme = remember {
         mutableStateOf(false)
     }
@@ -143,6 +145,7 @@ fun SettingScreen(
                 onClickEvent = {
                     showDialogLeave.value = !showDialogLeave.value
                 },
+                theme = theme,
                 onClickCallback = {})
         }
     }
