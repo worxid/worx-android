@@ -15,8 +15,10 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import id.worx.device.client.R
+import id.worx.device.client.data.database.Session
 import id.worx.device.client.model.DateField
 import id.worx.device.client.model.DateValue
+import id.worx.device.client.screen.main.SettingTheme
 import id.worx.device.client.theme.GrayDivider
 import id.worx.device.client.theme.PrimaryMain
 import id.worx.device.client.theme.Typography
@@ -25,10 +27,12 @@ import java.text.SimpleDateFormat
 import java.util.*
 
 @Composable
-fun WorxDateInput(indexForm:Int, viewModel: DetailFormViewModel) {
-    val form = viewModel.uiState.collectAsState().value.detailForm?.fields?.get(indexForm)!! as DateField
+fun WorxDateInput(indexForm: Int, viewModel: DetailFormViewModel, session: Session) {
+    val theme = session.theme
+    val form =
+        viewModel.uiState.collectAsState().value.detailForm?.fields?.get(indexForm)!! as DateField
     val dateValue = viewModel.uiState.collectAsState().value.values[form.id] as DateValue?
-    val value = if (dateValue != null){
+    val value = if (dateValue != null) {
         remember { mutableStateOf(dateValue.value) }
     } else {
         remember { mutableStateOf<String?>(null) }
@@ -41,8 +45,9 @@ fun WorxDateInput(indexForm:Int, viewModel: DetailFormViewModel) {
     var month = c.get(Calendar.MONTH)
     var day = c.get(Calendar.DAY_OF_MONTH)
 
-    if (value.value != null){
-        val dateVM : Date = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).parse(value.value!!) as Date
+    if (value.value != null) {
+        val dateVM: Date =
+            SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).parse(value.value!!) as Date
         year = dateVM.year
         month = dateVM.month
         day = dateVM.day
@@ -68,7 +73,7 @@ fun WorxDateInput(indexForm:Int, viewModel: DetailFormViewModel) {
     Column(modifier = Modifier.fillMaxWidth()) {
         Text(
             form.label ?: "",
-            style = Typography.body2,
+            style = Typography.body2.copy(MaterialTheme.colors.onSecondary),
             modifier = Modifier.padding(start = 17.dp, bottom = 8.dp)
         )
         Row(
@@ -80,11 +85,17 @@ fun WorxDateInput(indexForm:Int, viewModel: DetailFormViewModel) {
             TextField(
                 modifier = Modifier.padding(end = 12.dp),
                 enabled = false,
-                colors = TextFieldDefaults.textFieldColors(backgroundColor = GrayDivider),
+                colors = TextFieldDefaults.textFieldColors(
+                    backgroundColor = if (theme == SettingTheme.Dark) MaterialTheme.colors.background.copy(
+                        0.3f
+                    ) else MaterialTheme.colors.background.copy(
+                        0.1f
+                    )
+                ),
                 textStyle = if (value.value.isNullOrEmpty()) {
-                    Typography.body2.copy(color = Color.Black.copy(0.54f))
+                    Typography.body2.copy(color = MaterialTheme.colors.onSecondary.copy(0.54f))
                 } else {
-                    Typography.body2
+                    Typography.body2.copy(MaterialTheme.colors.onSecondary)
                 },
                 shape = RoundedCornerShape(4.dp),
                 trailingIcon = {
@@ -95,7 +106,8 @@ fun WorxDateInput(indexForm:Int, viewModel: DetailFormViewModel) {
                             .clickable {
                                 viewModel.setComponentData(indexForm, null)
                                 value.value = null
-                            }
+                            },
+                        tint = MaterialTheme.colors.onSecondary
                     )
                 },
                 value = if (value.value == null) {
@@ -106,7 +118,11 @@ fun WorxDateInput(indexForm:Int, viewModel: DetailFormViewModel) {
                 onValueChange = {})
             Box(modifier = Modifier
                 .clip(RoundedCornerShape(4.dp))
-                .background(PrimaryMain.copy(0.10f))
+                .background(
+                    if (theme == SettingTheme.Dark) MaterialTheme.colors.background.copy(
+                        0.9f
+                    ) else MaterialTheme.colors.background.copy(0.10f)
+                )
                 .clickable { showDatePicker = true }
                 .fillMaxSize()
                 .height(TextFieldDefaults.MinHeight)) {
@@ -115,7 +131,7 @@ fun WorxDateInput(indexForm:Int, viewModel: DetailFormViewModel) {
                     contentDescription = "Date Picker",
                     modifier = Modifier
                         .align(Alignment.Center),
-                    tint = PrimaryMain
+                    tint = MaterialTheme.colors.onBackground
                 )
             }
         }

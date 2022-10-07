@@ -91,7 +91,8 @@ fun WorxTextField(
                         modifier = Modifier
                             .clickable {
                                 textValue = TextFieldValue("")
-                            }
+                            },
+                        tint = MaterialTheme.colors.onSecondary
                     )
                 }
             }

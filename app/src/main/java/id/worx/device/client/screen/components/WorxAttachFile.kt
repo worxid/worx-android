@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.Divider
 import androidx.compose.material.Icon
+import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -28,6 +29,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
 import id.worx.device.client.R
+import id.worx.device.client.data.database.Session
 import id.worx.device.client.model.FileField
 import id.worx.device.client.model.FileValue
 import id.worx.device.client.screen.ActionRedButton
@@ -37,11 +39,12 @@ import id.worx.device.client.viewmodel.DetailFormViewModel
 import java.io.File
 
 @Composable
-fun WorxAttachFile(indexForm: Int, viewModel: DetailFormViewModel) {
+fun WorxAttachFile(indexForm: Int, viewModel: DetailFormViewModel, session: Session) {
+    val theme = session.theme
     val form = viewModel.uiState.collectAsState().value.detailForm!!.fields[indexForm] as FileField
     val fileValue = viewModel.uiState.collectAsState().value.values[form.id] as FileValue?
-    val filePath = if (fileValue != null){
-        remember { mutableStateOf(fileValue.filePath.toList())}
+    val filePath = if (fileValue != null) {
+        remember { mutableStateOf(fileValue.filePath.toList()) }
     } else {
         remember {
             mutableStateOf(listOf())
@@ -57,14 +60,15 @@ fun WorxAttachFile(indexForm: Int, viewModel: DetailFormViewModel) {
                 newPathList.add(path)
                 filePath.value = newPathList.toList()
                 viewModel.setComponentData(indexForm,
-                    FileValue(value = ArrayList(newPathList.map { 1 }), filePath = newPathList))
+                    FileValue(value = ArrayList(newPathList.map { 1 }), filePath = newPathList)
+                )
             }
         }
 
     Column(modifier = Modifier.fillMaxWidth()) {
         Text(
             form.label ?: "",
-            style = Typography.body2,
+            style = Typography.body2.copy(MaterialTheme.colors.onSecondary),
             modifier = Modifier.padding(start = 17.dp, bottom = 8.dp, end = 16.dp)
         )
         if (filePath.value.isNotEmpty()) {
@@ -80,18 +84,19 @@ fun WorxAttachFile(indexForm: Int, viewModel: DetailFormViewModel) {
                             indexForm,
                             FileValue(value = ArrayList(newList.map { 1 }), filePath = newList)
                         )
+                    }
                 }
             }
-            }
         }
-        AttachFileButton(launcherFile)
+        AttachFileButton(launcherFile, theme = theme)
         Divider(color = GrayDivider, modifier = Modifier.padding(top = 12.dp))
     }
 }
 
 @Composable
 private fun AttachFileButton(
-    launcherFile: ManagedActivityResultLauncher<Intent, ActivityResult>
+    launcherFile: ManagedActivityResultLauncher<Intent, ActivityResult>,
+    theme: String?
 ) {
     val intent = Intent(Intent.ACTION_GET_CONTENT)
         .apply { type = "file/*" }
@@ -124,7 +129,8 @@ private fun AttachFileButton(
                     launcherPermission.launch(Manifest.permission.READ_EXTERNAL_STORAGE)
                 }
             }
-        })
+        }, theme = theme
+    )
 }
 
 @Composable

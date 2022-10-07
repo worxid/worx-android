@@ -177,14 +177,15 @@ fun LeaveOrganizationDialog(
     setShowDialog: (Boolean) -> Unit = {}
 ) {
     ConstraintLayout(
-        modifier = Modifier.fillMaxWidth()
+        modifier = Modifier
+            .fillMaxWidth()
+            .background(MaterialTheme.colors.secondary)
     ) {
         val (tvTitle, tvYes, tvCancel) = createRefs()
 
         Text(
             text = stringResource(id = R.string.leave_organization),
-            style = Typography.body2,
-            color = BlackFont,
+            style = Typography.body2.copy(MaterialTheme.colors.onSecondary),
             modifier = Modifier.constrainAs(tvTitle) {
                 top.linkTo(parent.top)
                 start.linkTo(parent.start)
@@ -194,8 +195,7 @@ fun LeaveOrganizationDialog(
         )
         Text(
             text = stringResource(id = R.string.yes),
-            style = Typography.body2,
-            color = RedDark,
+            style = Typography.body2.copy(MaterialTheme.colors.onBackground),
             modifier = Modifier
                 .constrainAs(tvYes) {
                     top.linkTo(tvTitle.bottom, 32.dp)
@@ -209,8 +209,7 @@ fun LeaveOrganizationDialog(
         )
         Text(
             text = stringResource(id = R.string.cancel),
-            style = Typography.body2,
-            color = BlackVariantFont,
+            style = Typography.body2.copy(MaterialTheme.colors.onSecondary),
             modifier = Modifier
                 .constrainAs(tvCancel) {
                     top.linkTo(tvTitle.bottom, 32.dp)
@@ -237,11 +236,12 @@ fun ThemeDialog(
     val (selectedOption, onOptionSelected) = remember {
         mutableStateOf(selectedTheme)
     }
-    Column(modifier = Modifier.selectableGroup()) {
+    Column(modifier = Modifier
+        .selectableGroup()
+        .background(MaterialTheme.colors.secondary)) {
         Text(
             text = stringResource(id = R.string.theme),
-            style = Typography.body2,
-            color = BlackFont,
+            style = Typography.body2.copy(MaterialTheme.colors.onSecondary),
             fontWeight = FontWeight.W500
         )
         rbOptions.forEach { s ->
@@ -274,12 +274,14 @@ fun ThemeDialog(
                         bottom.linkTo(parent.bottom)
                         start.linkTo(parent.start)
                     },
-                    colors = RadioButtonDefaults.colors(PrimaryMain)
+                    colors = RadioButtonDefaults.colors(
+                        selectedColor = MaterialTheme.colors.onBackground,
+                        unselectedColor = MaterialTheme.colors.onSecondary
+                    )
                 )
                 Text(
                     text = s,
-                    style = Typography.body1,
-                    color = BlackFont,
+                    style = Typography.body1.copy(MaterialTheme.colors.onSecondary),
                     modifier = Modifier.constrainAs(tvItem) {
                         top.linkTo(rbItem.top)
                         bottom.linkTo(rbItem.bottom)

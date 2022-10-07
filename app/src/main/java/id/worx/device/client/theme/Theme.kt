@@ -1,5 +1,6 @@
 package id.worx.device.client.theme
 
+import android.annotation.SuppressLint
 import android.util.Log
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material.Colors
@@ -12,14 +13,15 @@ import id.worx.device.client.screen.WorxThemeStatusBar
 import id.worx.device.client.screen.main.SettingTheme
 
 //System default
+@SuppressLint("ConflictingOnColor")
 val LightThemeColorsSystem = lightColors(
     primary = PrimaryMain,
     primaryVariant = RedDark,
     onPrimary = Color.White,
     secondary = Color.White,
     onSecondary = Color.Black,
-    background = Color.White,
-    onBackground = Color.Black,
+    background = PrimaryMain,
+    onBackground = PrimaryMain,
     surface = SurfaceSystem,
     onSurface = Color.Black,
     error = RedDark,
@@ -48,7 +50,7 @@ val LightThemeColorsDark = lightColors(
     secondary = DarkBackground,
     onSecondary = Color.White,
     background = Color.White,
-    onBackground = Color.Black,
+    onBackground = PrimaryMain,
     surface = SurfaceMainDark,
     onSurface = Color.Black,
     error = BlackDark,
@@ -71,14 +73,15 @@ val DarkThemeColorsDark = darkColors(
 
 
 //Green
+@SuppressLint("ConflictingOnColor")
 val LightThemeColorsGreen = lightColors(
     primary = PrimaryMainGreen,
     primaryVariant = GreenDark,
     onPrimary = Color.White,
     secondary = Color.White,
     onSecondary = Color.Black,
-    background = Color.White,
-    onBackground = Color.Black,
+    background = PrimaryMainGreen,
+    onBackground = PrimaryMainGreen,
     surface = SurfaceSystem,
     onSurface = Color.Black,
     error = GreenDark,
@@ -100,14 +103,15 @@ val DarkThemeColorsGreen = darkColors(
 )
 
 //Blue
+@SuppressLint("ConflictingOnColor")
 val LightThemeColorsBlue = lightColors(
     primary = PrimaryMainBlue,
     primaryVariant = BlueDark,
     onPrimary = Color.White,
     secondary = Color.White,
     onSecondary = Color.Black,
-    background = Color.White,
-    onBackground = Color.Black,
+    background = PrimaryMainBlue,
+    onBackground = PrimaryMainBlue,
     surface = SurfaceSystem,
     onSurface = Color.Black,
     error = BlueDark,

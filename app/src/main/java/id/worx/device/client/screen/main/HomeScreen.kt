@@ -119,7 +119,7 @@ fun HomeScreen(
     val navController = rememberNavController()
     val notificationType by viewModel.showNotification.collectAsState()
     val showBadge by viewModel.showBadge.collectAsState()
-    var showSubmittedStatus by remember { mutableStateOf(notificationType == 1) }
+    var showSubmittedStatus by remember { mutableStateOf(true) }
     var showBotNav by remember { mutableStateOf(false) }
 
     Scaffold(
@@ -412,19 +412,19 @@ fun FormSubmitted(
             Column(
                 modifier = Modifier
                     .wrapContentSize()
-                    .background(Color.White)
+                    .background(MaterialTheme.colors.secondary)
                     .border(1.5.dp, Color.Black),
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.spacedBy(20.dp)
             ) {
                 Image(
                     modifier = Modifier.padding(top = 20.dp),
-                    painter = painterResource(id = R.drawable.ic_tick_yellow),
+                    painter = painterResource(id = if (theme == SettingTheme.Dark) R.drawable.ic_check_dark else R.drawable.ic_tick_yellow),
                     contentDescription = "Tick"
                 )
                 Text(
                     text = "Successful submit form",
-                    style = Typography.body2
+                    style = Typography.body2.copy(MaterialTheme.colors.onSecondary)
                 )
                 RedFullWidthButton(
                     onClickCallback = { closeNotification() },

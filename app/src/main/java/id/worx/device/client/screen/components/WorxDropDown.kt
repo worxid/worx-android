@@ -1,5 +1,6 @@
 package id.worx.device.client.screen.components
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -13,15 +14,19 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import id.worx.device.client.data.database.Session
 import id.worx.device.client.model.DropDownField
 import id.worx.device.client.model.DropDownValue
+import id.worx.device.client.screen.main.SettingTheme
 import id.worx.device.client.theme.GrayDivider
 import id.worx.device.client.theme.Typography
 import id.worx.device.client.viewmodel.DetailFormViewModel
 
 @Composable
-fun WorxDropdown(indexForm:Int, viewModel: DetailFormViewModel) {
-    val form = viewModel.uiState.collectAsState().value.detailForm!!.fields[indexForm] as DropDownField
+fun WorxDropdown(indexForm: Int, viewModel: DetailFormViewModel, session: Session) {
+    val theme = session.theme
+    val form =
+        viewModel.uiState.collectAsState().value.detailForm!!.fields[indexForm] as DropDownField
     val title = form.label ?: "DropDown"
     val optionTitles = form.options
 
@@ -43,7 +48,7 @@ fun WorxDropdown(indexForm:Int, viewModel: DetailFormViewModel) {
     ) {
         Text(
             title,
-            style = Typography.body2,
+            style = Typography.body2.copy(MaterialTheme.colors.onSecondary),
             modifier = Modifier.padding(start = 17.dp, bottom = 8.dp)
         )
         Box(
@@ -57,17 +62,24 @@ fun WorxDropdown(indexForm:Int, viewModel: DetailFormViewModel) {
                     .clickable { expanded = true }
                     .fillMaxWidth(),
                 enabled = false,
-                colors = TextFieldDefaults.textFieldColors(backgroundColor = GrayDivider),
+                colors = TextFieldDefaults.textFieldColors(
+                    backgroundColor = if (theme == SettingTheme.Dark) MaterialTheme.colors.background.copy(
+                        0.3f
+                    ) else MaterialTheme.colors.background.copy(
+                        0.1f
+                    )
+                ),
                 textStyle = if (selected.value.value == null) {
-                    Typography.body2.copy(color = Color.Black.copy(0.54f))
+                    Typography.body2.copy(color = MaterialTheme.colors.onSecondary.copy(0.54f))
                 } else {
-                    Typography.body2
+                    Typography.body2.copy(color = MaterialTheme.colors.onSecondary)
                 },
                 shape = RoundedCornerShape(4.dp),
                 trailingIcon = {
                     Icon(
                         Icons.Default.KeyboardArrowDown,
-                        contentDescription = "DropDown"
+                        contentDescription = "DropDown",
+                        tint = MaterialTheme.colors.onSecondary
                     )
                 },
                 value = if (selected.value.value != null) {
@@ -80,15 +92,22 @@ fun WorxDropdown(indexForm:Int, viewModel: DetailFormViewModel) {
                 expanded = expanded,
                 onDismissRequest = { expanded = false },
                 modifier = Modifier
-                    .fillMaxWidth(0.94f),
+                    .fillMaxWidth(0.94f)
+                    .background(Color.White),
             ) {
                 optionTitles.forEachIndexed { index, item ->
-                    DropdownMenuItem(onClick = {
-                        selected.value.value = index
-                        viewModel.setComponentData(indexForm, selected.value)
-                        expanded = false
-                    }) {
-                        Text(text = item.label ?: "", style = Typography.body1.copy(color = Color.Black))
+                    DropdownMenuItem(
+                        onClick = {
+                            selected.value.value = index
+                            viewModel.setComponentData(indexForm, selected.value)
+                            expanded = false
+                        },
+                        modifier = Modifier.background(Color.White)
+                    ) {
+                        Text(
+                            text = item.label ?: "",
+                            style = Typography.body1.copy(color = Color.Black)
+                        )
                     }
                 }
             }

@@ -75,7 +75,7 @@ fun SearchScreen(
                         Modifier
                             .fillMaxWidth()
                             .height(2.dp)
-                            .background(color = Color.LightGray)
+                            .background(color = MaterialTheme.colors.onSecondary)
                     )
                 }
             ) {

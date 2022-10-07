@@ -57,12 +57,18 @@ fun ActionRedButton(
     modifier: Modifier,
     iconRes: Int,
     title: String,
+    theme: String?,
     actionClick: () -> Unit
 ) {
     Row(
         modifier = modifier
             .clip(shape = RoundedCornerShape(4.dp))
-            .background(PrimaryMain.copy(alpha = 0.1f))
+            .background(
+                if (theme == SettingTheme.Dark)
+                    MaterialTheme.colors.background.copy(alpha = 0.9f) else MaterialTheme.colors.background.copy(
+                    alpha = 0.1f
+                )
+            )
             .clickable { actionClick() },
         verticalAlignment = Alignment.CenterVertically
     ) {
@@ -70,12 +76,12 @@ fun ActionRedButton(
             modifier = Modifier.padding(horizontal = 15.dp, vertical = 9.dp),
             painter = painterResource(id = iconRes),
             contentDescription = "Icon",
-            tint = PrimaryMain
+            tint = MaterialTheme.colors.onBackground
         )
         Text(
             modifier = Modifier.padding(end = 8.dp),
             text = title,
-            style = Typography.body2.copy(PrimaryMain),
+            style = Typography.body2.copy(MaterialTheme.colors.onBackground),
         )
     }
 }
@@ -147,11 +153,12 @@ fun WhiteFullWidthButton(
 
 @Composable
 fun WorxThemeStatusBar(
-    theme : String? = null
+    theme: String? = null
 ) {
     val systemUiController = rememberSystemUiController()
     val useDarkIcons = MaterialTheme.colors.isLight
-    val statusBarColor = if (theme == SettingTheme.Dark) MaterialTheme.colors.secondary else MaterialTheme.colors.primaryVariant
+    val statusBarColor =
+        if (theme == SettingTheme.Dark) MaterialTheme.colors.secondary else MaterialTheme.colors.primaryVariant
 
     LaunchedEffect(systemUiController, useDarkIcons) {
         systemUiController.setStatusBarColor(statusBarColor)
