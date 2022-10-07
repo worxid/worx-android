@@ -119,7 +119,7 @@ fun HomeScreen(
     val navController = rememberNavController()
     val notificationType by viewModel.showNotification.collectAsState()
     val showBadge by viewModel.showBadge.collectAsState()
-    var showSubmittedStatus by remember { mutableStateOf(true) }
+    var showSubmittedStatus by remember { mutableStateOf(notificationType == 1) }
     var showBotNav by remember { mutableStateOf(false) }
 
     Scaffold(
