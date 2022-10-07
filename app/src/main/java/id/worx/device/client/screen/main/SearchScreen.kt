@@ -11,6 +11,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -20,6 +21,7 @@ import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.rememberPagerState
 import id.worx.device.client.R
+import id.worx.device.client.data.database.Session
 import id.worx.device.client.model.EmptyForm
 import id.worx.device.client.model.SubmitForm
 import id.worx.device.client.theme.PrimaryMain
@@ -42,12 +44,14 @@ fun SearchScreen(
     draftList: List<SubmitForm>,
     submissionList: List<SubmitForm>,
     viewModel: HomeViewModel,
-    detailVM: DetailFormViewModel
+    detailVM: DetailFormViewModel,
+    session: Session
 ) {
     val searchInput = viewModel.uiState.collectAsState().value.searchInput
     val formData = formList.filter { data -> data.label?.contains(searchInput, true) ?: false}
     val draftData = draftList.filter { data -> data.label?.contains(searchInput, true) ?: false}
     val submissionData = submissionList.filter { data -> data.label?.contains(searchInput, true) ?: false}
+    val theme = session.theme
 
     Scaffold() { padding ->
         ConstraintLayout(
@@ -63,8 +67,8 @@ fun SearchScreen(
                     .constrainAs(tablayout) {
                         top.linkTo(parent.top)
                     },
-                backgroundColor = Color.White,
-                contentColor = PrimaryMain,
+                backgroundColor = MaterialTheme.colors.secondary,
+                contentColor = if (theme == SettingTheme.Dark) PrimaryMain else MaterialTheme.colors.primary,
                 divider = {
                     Box(
                         modifier =
@@ -90,9 +94,9 @@ fun SearchScreen(
                                 text = stringResource(id = tabItems[index].first),
                                 style = Typography.body1,
                                 color = if (pagerState.currentPage == index) {
-                                    PrimaryMain
+                                    if (theme == SettingTheme.Dark) PrimaryMain else MaterialTheme.colors.primary
                                 } else {
-                                    Color.Black.copy(0.54f)
+                                    MaterialTheme.colors.onSecondary.copy(0.54f)
                                 }
                             )
                         },
@@ -112,7 +116,8 @@ fun SearchScreen(
                         viewModel,
                         detailVM,
                         stringResource(R.string.no_forms),
-                        stringResource(R.string.empty_description_form)
+                        stringResource(R.string.empty_description_form),
+                        session = session
                     )
                     1 -> FormScreen(
                         draftData,
@@ -120,7 +125,8 @@ fun SearchScreen(
                         viewModel,
                         detailVM,
                         stringResource(R.string.no_drafts),
-                        stringResource(R.string.empty_description_drafts)
+                        stringResource(R.string.empty_description_drafts),
+                        session = session
                     )
                     2 -> FormScreen(
                         submissionData,
@@ -128,7 +134,8 @@ fun SearchScreen(
                         viewModel,
                         detailVM,
                         stringResource(R.string.no_submission),
-                        stringResource(R.string.empty_description_submission)
+                        stringResource(R.string.empty_description_submission),
+                        session = session
                     )
                 }
             }
@@ -145,7 +152,8 @@ fun PreviewSearchScreen() {
             draftList = arrayListOf(),
             submissionList = arrayListOf(),
             viewModel = hiltViewModel(),
-            detailVM = hiltViewModel()
+            detailVM = hiltViewModel(),
+            session = Session(LocalContext.current)
         )
     }
 }

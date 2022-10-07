@@ -25,7 +25,6 @@ import id.worx.device.client.screen.RedFullWidthButton
 import id.worx.device.client.screen.WorxTopAppBar
 import id.worx.device.client.screen.components.WorxTextField
 import id.worx.device.client.screen.main.SettingTheme
-import id.worx.device.client.screen.textLogoColor
 import id.worx.device.client.theme.DarkBackground
 import id.worx.device.client.theme.Typography
 import id.worx.device.client.theme.WorxTheme

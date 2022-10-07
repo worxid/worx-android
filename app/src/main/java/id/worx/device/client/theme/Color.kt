@@ -16,7 +16,7 @@ val textUnfocusColorSystem = Color(0xB3000000)
 //Dark
 val DarkBackground = Color(0xFF121212)
 val DarkBackgroundStatusBar = Color(0xCC000000)
-val PrimaryMainDark = Color(0xFF3E3A3A)
+val PrimaryMainDark = Color(0xFF3C3D40)
 val SurfaceMainDark = Color(0xFF222222)
 val SecondaryMainDark = Color(0xFFF8CA45)
 val BlackDark = Color(0xCC000000)

@@ -67,7 +67,8 @@ fun NavigationGraph(
     draftList: List<SubmitForm>,
     submissionList: List<SubmitForm>,
     viewModel: HomeViewModel,
-    detailVM: DetailFormViewModel
+    detailVM: DetailFormViewModel,
+    session: Session
 ) {
     NavHost(navController, startDestination = BottomNavItem.Form.screen_route) {
         composable(BottomNavItem.Form.screen_route) {
@@ -77,7 +78,8 @@ fun NavigationGraph(
                 viewModel,
                 detailVM,
                 stringResource(R.string.no_forms),
-                stringResource(R.string.empty_description_form)
+                stringResource(R.string.empty_description_form),
+                session
             )
         }
         composable(BottomNavItem.Draft.screen_route) {
@@ -87,7 +89,8 @@ fun NavigationGraph(
                 viewModel,
                 detailVM,
                 stringResource(R.string.no_drafts),
-                stringResource(R.string.empty_description_drafts)
+                stringResource(R.string.empty_description_drafts),
+                session
             )
         }
         composable(BottomNavItem.Submission.screen_route) {
@@ -97,7 +100,8 @@ fun NavigationGraph(
                 viewModel,
                 detailVM,
                 stringResource(R.string.no_submission),
-                stringResource(R.string.empty_description_submission)
+                stringResource(R.string.empty_description_submission),
+                session
             )
         }
     }
@@ -133,7 +137,8 @@ fun HomeScreen(
             BottomNavigationView(
                 navController = navController,
                 showBadge = showBadge,
-                showBotNav = showBotNav
+                showBotNav = showBotNav,
+                theme = session.theme
             )
         }
     ) { padding ->
@@ -144,7 +149,8 @@ fun HomeScreen(
                 draftList = draftList,
                 submissionList = submissionList,
                 viewModel = viewModel,
-                detailVM = detailVM
+                detailVM = detailVM,
+                session = session
             )
         } else {
             SearchScreen(
@@ -152,7 +158,8 @@ fun HomeScreen(
                 draftList = draftList,
                 submissionList = submissionList,
                 viewModel = viewModel,
-                detailVM = detailVM
+                detailVM = detailVM,
+                session = session
             )
         }
         AnimatedVisibility(
@@ -181,7 +188,7 @@ fun HomeScreen(
 }
 
 @Composable
-fun BottomNavigationView(navController: NavController, showBadge: Int, showBotNav: Boolean) {
+fun BottomNavigationView(navController: NavController, showBadge: Int, showBotNav: Boolean, theme:String?) {
     val items = listOf(
         BottomNavItem.Form,
         BottomNavItem.Draft,
@@ -190,14 +197,14 @@ fun BottomNavigationView(navController: NavController, showBadge: Int, showBotNa
     if (showBotNav) {
         BottomNavigation(
             backgroundColor = Color.White,
-            modifier = Modifier.border(1.5.dp, Color.Black)
+            modifier = Modifier.border(1.5.dp, MaterialTheme.colors.onSecondary.copy(0.54f))
         ) {
             val navBackStackEntry by navController.currentBackStackEntryAsState()
             val currentRoute = navBackStackEntry?.destination?.route
             items.forEach { item ->
-                var modifierBorder = Modifier.border(0.dp, Color.Black)
+                var modifierBorder = Modifier.border(0.dp, MaterialTheme.colors.onSecondary.copy(0.54f))
                 if (item.title == R.string.draft) modifierBorder =
-                    Modifier.border(1.5.dp, Color.Black)
+                    Modifier.border(1.5.dp, MaterialTheme.colors.onSecondary.copy(0.54f))
 
                 BottomNavigationItem(
                     icon = {
@@ -220,12 +227,12 @@ fun BottomNavigationView(navController: NavController, showBadge: Int, showBotNa
                             color = if (currentRoute == item.screen_route) {
                                 Color.White
                             } else {
-                                Color.Black.copy(0.3f)
+                                MaterialTheme.colors.onSecondary.copy(0.3f)
                             }
                         )
                     },
                     selectedContentColor = Color.White,
-                    unselectedContentColor = Color.Black.copy(alpha = 0.3f),
+                    unselectedContentColor = MaterialTheme.colors.onSecondary.copy(alpha = 0.3f),
                     selected = currentRoute == item.screen_route,
                     onClick = {
                         navController.navigate(item.screen_route) {
@@ -240,9 +247,9 @@ fun BottomNavigationView(navController: NavController, showBadge: Int, showBotNa
                         }
                     },
                     modifier = if (currentRoute == item.screen_route) {
-                        modifierBorder.background(PrimaryMain)
+                        modifierBorder.background(if (theme == SettingTheme.Dark) PrimaryMain else MaterialTheme.colors.primary)
                     } else {
-                        modifierBorder.background(color = Color.White)
+                        modifierBorder.background(color = MaterialTheme.colors.secondary)
                     },
                 )
             }
@@ -261,7 +268,7 @@ fun MainTopAppBar(
 
     TopAppBar(
         modifier = Modifier.fillMaxWidth(),
-        backgroundColor = PrimaryMain,
+        backgroundColor = MaterialTheme.colors.primary,
         contentColor = Color.White
     ) {
         if (!searchMode) {
