@@ -19,7 +19,10 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import id.worx.device.client.R
 import id.worx.device.client.screen.main.SettingTheme
-import id.worx.device.client.theme.*
+import id.worx.device.client.theme.GrayDivider
+import id.worx.device.client.theme.Typography
+import id.worx.device.client.theme.textUnfocusColorDark
+import id.worx.device.client.theme.textUnfocusColorSystem
 
 @Composable
 fun WorxTextField(
@@ -46,9 +49,7 @@ fun WorxTextField(
         )
         TextField(
             colors = TextFieldDefaults.textFieldColors(
-                backgroundColor = if (theme == SettingTheme.Dark) Color.White.copy(0.06f) else MaterialTheme.colors.primary.copy(
-                    0.06f
-                ),
+                backgroundColor = Color.Black.copy(0.06f),
 //                focusedLabelColor = if (theme == SettingTheme.Dark || theme == SettingTheme.System) PrimaryMain else MaterialTheme.colors.primary,
 //                unfocusedLabelColor = if (theme == SettingTheme.Dark) textUnfocusColorDark else textUnfocusColorSystem
             ),
@@ -81,7 +82,7 @@ fun WorxTextField(
                     val description = if (passwordVisible) "Hide password" else "Show password"
 
                     IconButton(onClick = { passwordVisible = !passwordVisible }) {
-                        Icon(painter = image, description)
+                        Icon(painter = image, description, tint = MaterialTheme.colors.onSecondary.copy(0.54f))
                     }
                 }
                 if (isDeleteTrail) {

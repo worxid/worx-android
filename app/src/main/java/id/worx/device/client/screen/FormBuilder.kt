@@ -1,6 +1,5 @@
 package id.worx.device.client.screen
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -28,7 +27,6 @@ import id.worx.device.client.model.SeparatorValue
 import id.worx.device.client.model.TextFieldValue
 import id.worx.device.client.model.Type
 import id.worx.device.client.screen.components.*
-import id.worx.device.client.theme.PrimaryMain
 import id.worx.device.client.theme.Typography
 import id.worx.device.client.viewmodel.CameraViewModel
 import id.worx.device.client.viewmodel.DetailFormViewModel
@@ -206,6 +204,14 @@ fun DialogSubmitForm(
                         .align(Alignment.CenterHorizontally)
                         .wrapContentSize()
                 ) {
+                    CircularProgressIndicator(
+                        progress = 1f,
+                        modifier = Modifier
+                            .width(102.dp)
+                            .height(102.dp),
+                        color = Color(0xFFEAEAEA),
+                        strokeWidth = 3.5.dp
+                    )
                     CircularProgressIndicator(
                         progress = progress / 100.toFloat(),
                         modifier = Modifier

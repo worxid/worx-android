@@ -140,6 +140,7 @@ class DetailFormViewModel @Inject constructor(
                     status = EventStatus.Submitted
                 )
             }
+            _formProgress.value = 0
             actionAfterSubmitted()
             _navigateTo.value = Event(MainScreen.Home)
         }
@@ -154,9 +155,10 @@ class DetailFormViewModel @Inject constructor(
                     detailForm = null,
                     values = mutableMapOf(),
                     currentComponent = -1,
-                    status = EventStatus.Saved
+                    status = EventStatus.Saved,
                 )
             }
+            _formProgress.value = 0
             actionAfterSaved()
             _navigateTo.value = Event(MainScreen.Home)
         }

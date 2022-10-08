@@ -30,10 +30,11 @@ import id.worx.device.client.BuildConfig
 import id.worx.device.client.R
 import id.worx.device.client.data.database.Session
 import id.worx.device.client.screen.WhiteFullWidthButton
-import id.worx.device.client.screen.WorxThemeStatusBar
 import id.worx.device.client.screen.WorxTopAppBar
 import id.worx.device.client.screen.components.WorxDialog
-import id.worx.device.client.theme.*
+import id.worx.device.client.theme.GrayDivider
+import id.worx.device.client.theme.Typography
+import id.worx.device.client.theme.WorxTheme
 import id.worx.device.client.viewmodel.HomeViewModel
 import id.worx.device.client.viewmodel.ThemeViewModel
 
@@ -82,7 +83,8 @@ fun SettingScreen(
         topBar = {
             WorxTopAppBar(
                 onBack = onBackNavigation,
-                title = stringResource(id = R.string.settings)
+                title = stringResource(id = R.string.settings),
+                useProgressBar = false
             )
         }
     ) { paddingValues ->

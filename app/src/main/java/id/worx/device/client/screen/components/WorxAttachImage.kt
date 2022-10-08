@@ -28,8 +28,10 @@ import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
+import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.AsyncImage
 import com.sangcomz.fishbun.FishBun
 import com.sangcomz.fishbun.adapter.image.impl.CoilAdapter
@@ -41,6 +43,7 @@ import id.worx.device.client.screen.ActionRedButton
 import id.worx.device.client.theme.GrayDivider
 import id.worx.device.client.theme.PrimaryMain
 import id.worx.device.client.theme.Typography
+import id.worx.device.client.theme.WorxTheme
 import id.worx.device.client.viewmodel.DetailFormViewModel
 import java.io.File
 
@@ -256,4 +259,18 @@ private fun GalleryImageButton(
             }
         }, theme = theme
     )
+}
+
+@Preview
+@Composable
+fun PreviewImageWorx(){
+    val viewModel: DetailFormViewModel = hiltViewModel()
+    WorxTheme() {
+        WorxAttachImage(
+            indexForm = 0 ,
+            viewModel = viewModel,
+            session = Session(LocalContext.current),
+            setIndexData = {}) {
+        }
+    }
 }

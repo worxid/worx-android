@@ -20,7 +20,6 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import id.worx.device.client.R
 import id.worx.device.client.screen.WorxTopAppBar
-import id.worx.device.client.theme.RedDarkButton
 import id.worx.device.client.theme.Typography
 import id.worx.device.client.theme.WorxTheme
 import id.worx.device.client.viewmodel.DetailFormViewModel
@@ -41,7 +40,8 @@ fun SignaturePadScreen(
         topBar = {
             WorxTopAppBar(
                 onBack = onBackNavigation,
-                title = "Signature"
+                title = "Signature",
+                useProgressBar = false
             )
         }
     ) { padding ->

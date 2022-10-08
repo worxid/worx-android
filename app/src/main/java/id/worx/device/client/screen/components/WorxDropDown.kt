@@ -17,7 +17,6 @@ import androidx.compose.ui.unit.dp
 import id.worx.device.client.data.database.Session
 import id.worx.device.client.model.DropDownField
 import id.worx.device.client.model.DropDownValue
-import id.worx.device.client.screen.main.SettingTheme
 import id.worx.device.client.theme.GrayDivider
 import id.worx.device.client.theme.Typography
 import id.worx.device.client.viewmodel.DetailFormViewModel
@@ -63,11 +62,7 @@ fun WorxDropdown(indexForm: Int, viewModel: DetailFormViewModel, session: Sessio
                     .fillMaxWidth(),
                 enabled = false,
                 colors = TextFieldDefaults.textFieldColors(
-                    backgroundColor = if (theme == SettingTheme.Dark) MaterialTheme.colors.background.copy(
-                        0.3f
-                    ) else MaterialTheme.colors.background.copy(
-                        0.1f
-                    )
+                    backgroundColor = Color.Black.copy(0.06f)
                 ),
                 textStyle = if (selected.value.value == null) {
                     Typography.body2.copy(color = MaterialTheme.colors.onSecondary.copy(0.54f))

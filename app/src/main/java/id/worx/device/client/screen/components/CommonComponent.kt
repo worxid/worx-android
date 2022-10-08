@@ -3,14 +3,13 @@ package id.worx.device.client.screen
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.runtime.*
-import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -19,11 +18,10 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
-import id.worx.device.client.data.database.Session
 import id.worx.device.client.screen.main.SettingTheme
 import id.worx.device.client.screen.welcome.WelcomeEvent
-import id.worx.device.client.theme.*
-import id.worx.device.client.viewmodel.ThemeViewModel
+import id.worx.device.client.theme.RedDarkButton
+import id.worx.device.client.theme.Typography
 
 @Composable
 fun RedFullWidthButton(
@@ -65,7 +63,7 @@ fun ActionRedButton(
             .clip(shape = RoundedCornerShape(4.dp))
             .background(
                 if (theme == SettingTheme.Dark)
-                    MaterialTheme.colors.background.copy(alpha = 0.9f) else MaterialTheme.colors.background.copy(
+                    Color.White else MaterialTheme.colors.background.copy(
                     alpha = 0.1f
                 )
             )
@@ -90,7 +88,8 @@ fun ActionRedButton(
 fun WorxTopAppBar(
     onBack: () -> Unit,
     progress: Int? = null,
-    title: String
+    title: String,
+    useProgressBar: Boolean = true
 ) {
     TopAppBar(
         modifier = Modifier.fillMaxWidth(),
@@ -114,6 +113,17 @@ fun WorxTopAppBar(
             if (progress != null) {
                 CircularProgressIndicator(
                     progress = progress / 100.toFloat(),
+                    modifier = Modifier
+                        .padding(horizontal = 16.dp)
+                        .align(Alignment.CenterEnd)
+                        .scale(0.75f),
+                    color = Color.White,
+                    strokeWidth = 3.dp,
+                )
+            }
+            if (useProgressBar) {
+                CircularProgressIndicator(
+                    progress = 1f,
                     modifier = Modifier
                         .padding(horizontal = 16.dp)
                         .align(Alignment.CenterEnd)

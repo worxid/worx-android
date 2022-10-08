@@ -13,7 +13,6 @@ import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
@@ -24,8 +23,6 @@ import id.worx.device.client.data.database.Session
 import id.worx.device.client.screen.RedFullWidthButton
 import id.worx.device.client.screen.WorxTopAppBar
 import id.worx.device.client.screen.components.WorxTextField
-import id.worx.device.client.screen.main.SettingTheme
-import id.worx.device.client.theme.DarkBackground
 import id.worx.device.client.theme.Typography
 import id.worx.device.client.theme.WorxTheme
 
@@ -90,7 +87,7 @@ fun JoinTeamScreen(
             WorxTextField(
                 theme = theme,
                 label = stringResource(R.string.organization_code),
-                inputType = KeyboardOptions(keyboardType = KeyboardType.Phone),
+                inputType = KeyboardOptions(keyboardType = KeyboardType.Text),
                 onValueChange = {
                     orgPr = if (it == "" || it.isEmpty()) {
                         0

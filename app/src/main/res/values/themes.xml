@@ -16,7 +16,28 @@
     <style name="Theme.Worx.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
 
     <style name="CalenderViewCustom" parent="ThemeOverlay.MaterialComponents.MaterialCalendar">
+        <!--Header Background Color and selected Day Background Color-->
         <item name="colorAccent">#DA3630</item>
+        <!-- Buttons Color-->
+        <item name="colorPrimary">#DA3630</item>
+        <item name="colorOnPrimary">#000000</item>
+        <item name="colorSurface">#FFFFFF</item>
+    </style>
+
+    <style name="BlueCalenderViewCustom" parent="ThemeOverlay.MaterialComponents.MaterialCalendar">
+        <!--Header Background Color and selected Day Background Color-->
+        <item name="colorAccent">#39A0FF</item>
+        <!-- Buttons Color-->
+        <item name="colorPrimary">#39A0FF</item>
+        <item name="colorOnPrimary">#39A0FF</item>
+        <item name="colorSurface">#FFFFFF</item>
+    </style>
+
+    <style name="GreenCalenderViewCustom" parent="ThemeOverlay.MaterialComponents.MaterialCalendar">
+        <!--Header Background Color and selected Day Background Color-->
+        <item name="colorAccent">#4CAF50</item>
+        <!-- Buttons Color-->
+        <item name="colorPrimary">#4CAF50</item>
         <item name="colorOnPrimary">#000000</item>
         <item name="colorSurface">#FFFFFF</item>
     </style>

@@ -210,7 +210,10 @@ fun BottomNavigationView(navController: NavController, showBadge: Int, showBotNa
                     icon = {
                         BadgedBox(badge = {
                             if (item.title == showBadge) {
-                                Badge(modifier = Modifier.scale(0.7f))
+                                Badge(
+                                    modifier = Modifier.scale(0.7f),
+                                    backgroundColor = if (theme == SettingTheme.Dark) PrimaryMain else MaterialTheme.colors.primary
+                                )
                             }
                         }) {
                             Icon(
@@ -299,9 +302,10 @@ fun MainTopAppBar(
                     contentDescription = "Search"
                 )
                 Icon(
-                    modifier = Modifier.padding(horizontal = 20.dp)
+                    modifier = Modifier
+                        .padding(horizontal = 20.dp)
                         .clickable {
-                                   viewModel.goToSettingScreen()
+                            viewModel.goToSettingScreen()
                         },
                     imageVector = Icons.Filled.Settings,
                     contentDescription = "Settings"
