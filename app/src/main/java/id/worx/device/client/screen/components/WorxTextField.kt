@@ -18,11 +18,15 @@ import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import id.worx.device.client.R
+import id.worx.device.client.screen.main.SettingTheme
 import id.worx.device.client.theme.GrayDivider
 import id.worx.device.client.theme.Typography
+import id.worx.device.client.theme.textUnfocusColorDark
+import id.worx.device.client.theme.textUnfocusColorSystem
 
 @Composable
 fun WorxTextField(
+    theme: String?,
     label: String,
     hint: String? = null,
     inputType: KeyboardOptions,
@@ -41,10 +45,14 @@ fun WorxTextField(
         Text(
             modifier = Modifier.padding(bottom = 8.dp, start = 17.dp),
             text = label,
-            style = Typography.body2
+            style = Typography.body2.copy(MaterialTheme.colors.onSecondary)
         )
         TextField(
-            colors = TextFieldDefaults.textFieldColors(backgroundColor = Color.Black.copy(0.06f)),
+            colors = TextFieldDefaults.textFieldColors(
+                backgroundColor = Color.Black.copy(0.06f),
+//                focusedLabelColor = if (theme == SettingTheme.Dark || theme == SettingTheme.System) PrimaryMain else MaterialTheme.colors.primary,
+//                unfocusedLabelColor = if (theme == SettingTheme.Dark) textUnfocusColorDark else textUnfocusColorSystem
+            ),
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = 16.dp)
@@ -58,11 +66,11 @@ fun WorxTextField(
             label = {
                 Text(
                     text = hint ?: "Enter $label",
-                    color = Color.Black.copy(0.54f),
-                    fontFamily = FontFamily.Monospace
+                    fontFamily = FontFamily.Monospace,
+                    color = if (theme == SettingTheme.Dark) textUnfocusColorDark else textUnfocusColorSystem
                 )
             },
-            textStyle = Typography.body1.copy(color = Color.Black),
+            textStyle = Typography.body1.copy(color = MaterialTheme.colors.onSecondary),
             keyboardOptions = inputType,
             visualTransformation = if (isPassword && passwordVisible) PasswordVisualTransformation() else VisualTransformation.None,
             trailingIcon = {
@@ -74,7 +82,7 @@ fun WorxTextField(
                     val description = if (passwordVisible) "Hide password" else "Show password"
 
                     IconButton(onClick = { passwordVisible = !passwordVisible }) {
-                        Icon(painter = image, description)
+                        Icon(painter = image, description, tint = MaterialTheme.colors.onSecondary.copy(0.54f))
                     }
                 }
                 if (isDeleteTrail) {
@@ -84,7 +92,8 @@ fun WorxTextField(
                         modifier = Modifier
                             .clickable {
                                 textValue = TextFieldValue("")
-                            }
+                            },
+                        tint = MaterialTheme.colors.onSecondary
                     )
                 }
             }

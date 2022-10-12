@@ -1,6 +1,5 @@
 package id.worx.device.client.screen
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -22,12 +21,12 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.hilt.navigation.compose.hiltViewModel
 import id.worx.device.client.R
+import id.worx.device.client.data.database.Session
 import id.worx.device.client.model.Fields
 import id.worx.device.client.model.SeparatorValue
 import id.worx.device.client.model.TextFieldValue
 import id.worx.device.client.model.Type
 import id.worx.device.client.screen.components.*
-import id.worx.device.client.theme.PrimaryMain
 import id.worx.device.client.theme.Typography
 import id.worx.device.client.viewmodel.CameraViewModel
 import id.worx.device.client.viewmodel.DetailFormViewModel
@@ -37,21 +36,29 @@ fun ValidFormBuilder(
     componentList: List<Fields>,
     viewModel: DetailFormViewModel,
     cameraViewModel: CameraViewModel,
+    session: Session,
     onEvent: (DetailFormEvent) -> Unit
 ) {
     var showSubmitDialog by remember { mutableStateOf(false) }
     var showDraftDialog by remember { mutableStateOf(false) }
+    val theme = session.theme
 
-    Box(modifier = Modifier.fillMaxSize()) {
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(MaterialTheme.colors.secondary)
+    ) {
         DetailForm(
             componentList,
             viewModel,
-            cameraViewModel
+            cameraViewModel,
+            session
         )
         { showSubmitDialog = true }
         if (showSubmitDialog) {
             DialogSubmitForm(
                 viewModel,
+                session,
                 {
                     onEvent(DetailFormEvent.SubmitForm)
                     showSubmitDialog = false
@@ -60,6 +67,7 @@ fun ValidFormBuilder(
         }
         if (showDraftDialog) {
             DialogDraftForm(
+                theme = theme,
                 { onEvent(DetailFormEvent.SaveDraft) },
                 { showDraftDialog = false })
         }
@@ -71,9 +79,10 @@ fun DetailForm(
     componentList: List<Fields>,
     viewModel: DetailFormViewModel,
     cameraViewModel: CameraViewModel,
+    session: Session,
     showSubmitDialog: () -> Unit
 ) {
-
+    val theme = session.theme
     val data = componentList.map { component ->
         remember { mutableStateOf("") }
     }.toMutableList()
@@ -90,15 +99,19 @@ fun DetailForm(
             viewModel.currentComponentIndex(index)
             when (item.type) {
                 Type.TextField.type -> {
-                    val id = viewModel.uiState.collectAsState().value.detailForm?.fields?.get(index)?.id
-                        ?: 0
+                    val id =
+                        viewModel.uiState.collectAsState().value.detailForm?.fields?.get(index)?.id
+                            ?: 0
                     val value = viewModel.uiState.collectAsState().value.values[id]
                             as TextFieldValue? ?: TextFieldValue()
                     WorxTextField(
+                        theme = theme,
                         label = item.label ?: "Free Text",
                         hint = "Answer",
                         inputType = KeyboardOptions(keyboardType = KeyboardType.Text),
-                        initialValue = androidx.compose.ui.text.input.TextFieldValue(value.values ?: ""),
+                        initialValue = androidx.compose.ui.text.input.TextFieldValue(
+                            value.values ?: ""
+                        ),
                         onValueChange = {
                             data[index].value = it
                             viewModel.setComponentData(index, TextFieldValue(values = it))
@@ -113,27 +126,28 @@ fun DetailForm(
                     WorxRadiobutton(index, viewModel)
                 }
                 Type.Dropdown.type -> {
-                    WorxDropdown(index, viewModel)
+                    WorxDropdown(index, viewModel, session)
                 }
                 Type.Date.type -> {
-                    WorxDateInput(index, viewModel)
+                    WorxDateInput(index, viewModel, session)
                 }
                 Type.Rating.type -> {
                     WorxRating(index, viewModel)
                 }
                 Type.File.type -> {
-                    WorxAttachFile(index, viewModel)
+                    WorxAttachFile(index, viewModel, session)
                 }
                 Type.Photo.type -> {
                     WorxAttachImage(
                         index,
                         viewModel,
+                        session,
                         { cameraViewModel.navigateFromDetailScreen(index) }) {
                         viewModel.goToCameraPhoto(index)
                     }
                 }
                 Type.Signature.type -> {
-                    WorxSignature(index, viewModel)
+                    WorxSignature(index, viewModel, session)
                 }
                 Type.Separator.type -> {
                     WorxSeparator()
@@ -150,7 +164,8 @@ fun DetailForm(
         item {
             RedFullWidthButton(
                 onClickCallback = { showSubmitDialog() },
-                label = "Submit", modifier = Modifier.padding(vertical = 16.dp)
+                label = "Submit", modifier = Modifier.padding(vertical = 16.dp),
+                theme = theme
             )
         }
     }
@@ -160,11 +175,13 @@ fun DetailForm(
 @Composable
 fun DialogSubmitForm(
     viewModel: DetailFormViewModel,
+    session: Session,
     submitForm: () -> Unit,
     saveDraftForm: () -> Unit
 ) {
     val progress = viewModel.formProgress.value
     val fieldsNo = viewModel.uiState.collectAsState().value.detailForm!!.fields.size
+    val theme = session.theme
 
     ModalBottomSheetLayout(
         sheetState = ModalBottomSheetState(ModalBottomSheetValue.Expanded),
@@ -173,14 +190,14 @@ fun DialogSubmitForm(
                 modifier = Modifier
                     .fillMaxWidth()
                     .wrapContentHeight()
-                    .background(Color.White),
+                    .background(MaterialTheme.colors.secondary),
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.spacedBy(20.dp)
             ) {
                 Text(
                     modifier = Modifier.padding(top = 24.dp),
                     text = "Submit",
-                    style = Typography.subtitle1.copy(Color.Black)
+                    style = Typography.subtitle1.copy(MaterialTheme.colors.onSecondary)
                 )
                 Box(
                     modifier = Modifier
@@ -188,35 +205,45 @@ fun DialogSubmitForm(
                         .wrapContentSize()
                 ) {
                     CircularProgressIndicator(
+                        progress = 1f,
+                        modifier = Modifier
+                            .width(102.dp)
+                            .height(102.dp),
+                        color = Color(0xFFEAEAEA),
+                        strokeWidth = 3.5.dp
+                    )
+                    CircularProgressIndicator(
                         progress = progress / 100.toFloat(),
                         modifier = Modifier
                             .width(102.dp)
                             .height(102.dp),
-                        color = PrimaryMain,
+                        color = MaterialTheme.colors.onBackground,
                         strokeWidth = 3.5.dp
                     )
-                    Image(
+                    Icon(
                         modifier = Modifier.align(Alignment.Center),
                         painter = painterResource(R.drawable.ic_red_triangle_warning),
-                        contentDescription = "Image Warning"
+                        contentDescription = "Image Warning",
+                        tint = MaterialTheme.colors.onBackground
                     )
                 }
                 val fieldFilled = progress.toDouble() / 100 * fieldsNo
                 Text(
                     text = "${fieldFilled.toInt()} of $fieldsNo Fields Answered",
-                    style = Typography.body2.copy(Color.Black.copy(0.54f))
+                    style = Typography.body2.copy(MaterialTheme.colors.onSecondary.copy(0.54f))
                 )
                 RedFullWidthButton(
                     onClickCallback = { submitForm() },
                     label = "Submit Form",
-                    modifier = Modifier.padding()
+                    modifier = Modifier.padding(),
+                    theme = theme
                 )
                 Text(
                     modifier = Modifier
                         .clickable { saveDraftForm() }
                         .padding(bottom = 24.dp),
                     text = "Save Draft",
-                    style = Typography.button.copy(PrimaryMain)
+                    style = Typography.button.copy(MaterialTheme.colors.onBackground)
                 )
             }
         },
@@ -226,6 +253,7 @@ fun DialogSubmitForm(
 
 @Composable
 fun DialogDraftForm(
+    theme: String?,
     saveDraft: () -> Unit,
     closeDialog: () -> Unit
 ) {
@@ -234,7 +262,7 @@ fun DialogDraftForm(
             Column(
                 modifier = Modifier
                     .wrapContentSize()
-                    .background(Color.White)
+                    .background(MaterialTheme.colors.secondary)
                     .border(1.5.dp, Color.Black)
                     .padding(20.dp),
                 verticalArrangement = Arrangement.spacedBy(20.dp)
@@ -242,13 +270,14 @@ fun DialogDraftForm(
                 Text(
                     modifier = Modifier.padding(top = 20.dp),
                     text = "Save draft?",
-                    style = Typography.button.copy(Color.Black)
+                    style = Typography.button.copy(MaterialTheme.colors.onSecondary)
                 )
                 Text(
                     text = "You can optionally add a description to the saved draft",
-                    style = Typography.body2.copy(Color.Black.copy(0.54f))
+                    style = Typography.body2.copy(MaterialTheme.colors.onSecondary.copy(0.54f))
                 )
                 WorxTextField(
+                    theme = theme,
                     label = "",
                     hint = stringResource(R.string.draft_descr),
                     inputType = KeyboardOptions(keyboardType = KeyboardType.Text),
@@ -260,10 +289,10 @@ fun DialogDraftForm(
                     horizontalArrangement = Arrangement.spacedBy(20.dp)
                 ) {
                     Text(text = "Cancel",
-                        style = Typography.button.copy(Color.Black.copy(0.54f)),
+                        style = Typography.button.copy(MaterialTheme.colors.onSecondary.copy(0.54f)),
                         modifier = Modifier.clickable { closeDialog() })
                     Text(text = "Save",
-                        style = Typography.button.copy(PrimaryMain),
+                        style = Typography.button.copy(MaterialTheme.colors.onBackground),
                         modifier = Modifier.clickable { saveDraft() })
                 }
             }

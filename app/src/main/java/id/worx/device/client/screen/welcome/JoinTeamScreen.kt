@@ -1,5 +1,6 @@
 package id.worx.device.client.screen.welcome
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -7,15 +8,18 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import id.worx.device.client.R
+import id.worx.device.client.data.database.Session
 import id.worx.device.client.screen.RedFullWidthButton
 import id.worx.device.client.screen.WorxTopAppBar
 import id.worx.device.client.screen.components.WorxTextField
@@ -33,10 +37,12 @@ sealed class JoinTeamEvent {
 
 @Composable
 fun JoinTeamScreen(
+    session: Session,
     onEvent: (JoinTeamEvent) -> Unit
 ) {
     var namePr by remember { mutableStateOf(0) }
     var orgPr by remember { mutableStateOf(0) }
+    val theme = session.theme
 
     Scaffold(
         topBar = {
@@ -49,6 +55,7 @@ fun JoinTeamScreen(
             modifier = Modifier
                 .padding(padding)
                 .fillMaxSize()
+                .background(MaterialTheme.colors.secondary)
                 .verticalScroll(rememberScrollState())
         ) {
             var name by remember { mutableStateOf("") }
@@ -56,13 +63,16 @@ fun JoinTeamScreen(
 
             Text(
                 text = stringResource(R.string.ready_to_join),
-                style = Typography.h6,
-            modifier = Modifier.padding(start = 16.dp, top=40.dp))
+                style = Typography.h6.copy(MaterialTheme.colors.onSecondary),
+                modifier = Modifier.padding(start = 16.dp, top = 40.dp)
+            )
             Text(
                 text = stringResource(R.string.admin_will_approve),
-                style = Typography.body1,
-                modifier = Modifier.padding(start = 16.dp, top=8.dp, end = 16.dp, bottom = 40.dp))
+                style = Typography.body1.copy(MaterialTheme.colors.onSecondary),
+                modifier = Modifier.padding(start = 16.dp, top = 8.dp, end = 16.dp, bottom = 40.dp)
+            )
             WorxTextField(
+                theme = theme,
                 label = stringResource(R.string.name),
                 inputType = KeyboardOptions(keyboardType = KeyboardType.Text),
                 onValueChange = {
@@ -75,8 +85,9 @@ fun JoinTeamScreen(
                 }
             )
             WorxTextField(
+                theme = theme,
                 label = stringResource(R.string.organization_code),
-                inputType = KeyboardOptions(keyboardType = KeyboardType.Phone),
+                inputType = KeyboardOptions(keyboardType = KeyboardType.Text),
                 onValueChange = {
                     orgPr = if (it == "" || it.isEmpty()) {
                         0
@@ -97,7 +108,8 @@ fun JoinTeamScreen(
                     )
                 },
                 label = stringResource(R.string.send_request),
-                modifier = Modifier.padding(vertical = 20.dp)
+                modifier = Modifier.padding(vertical = 20.dp),
+                theme = theme
             )
         }
     }
@@ -108,6 +120,6 @@ fun JoinTeamScreen(
 @Composable
 fun JoinTeamScreenPreview() {
     WorxTheme {
-        JoinTeamScreen({})
+        JoinTeamScreen(Session(LocalContext.current), {})
     }
 }

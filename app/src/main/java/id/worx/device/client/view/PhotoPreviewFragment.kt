@@ -18,10 +18,12 @@ import id.worx.device.client.MainScreen
 import id.worx.device.client.R
 import id.worx.device.client.data.database.Session
 import id.worx.device.client.navigate
+import id.worx.device.client.screen.WorxThemeStatusBar
 import id.worx.device.client.screen.main.PhotoPreviewScreen
 import id.worx.device.client.theme.WorxTheme
 import id.worx.device.client.viewmodel.CameraViewModel
 import id.worx.device.client.viewmodel.DetailFormViewModel
+import id.worx.device.client.viewmodel.ThemeViewModel
 import java.io.File
 import javax.inject.Inject
 
@@ -30,6 +32,7 @@ class PhotoPreviewFragment: Fragment() {
 
     private val viewModel by activityViewModels<CameraViewModel>()
     private val detailViewModel by activityViewModels<DetailFormViewModel>()
+    private val themeViewModel by activityViewModels<ThemeViewModel>()
 
     @Inject
     lateinit var session: Session
@@ -54,10 +57,11 @@ class PhotoPreviewFragment: Fragment() {
 
         saveToGallery = session.isSaveImageToGallery
 
-
         return ComposeView(requireContext()).apply {
             setContent {
-                WorxTheme {
+                val theme = themeViewModel.theme.value
+                WorxTheme(theme = theme) {
+                    WorxThemeStatusBar()
                     PhotoPreviewScreen(viewModel, detailViewModel) { path: String ->
                         galleryAddPic(
                             saveToGallery,

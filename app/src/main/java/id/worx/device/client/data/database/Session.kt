@@ -2,12 +2,13 @@ package id.worx.device.client.data.database
 
 import android.content.Context
 import android.content.SharedPreferences
+import id.worx.device.client.screen.main.SettingTheme
 
 class Session(context: Context) {
     var pref : SharedPreferences
     var editor : SharedPreferences.Editor
 
-    val theme get() = pref.getString(SETTING_THEME, "")
+    val theme get() = pref.getString(SETTING_THEME, SettingTheme.System)
     val isSaveImageToGallery get() = pref.getBoolean(SETTING_SAVE_IMAGE, false)
     val latitude get() = pref.getString(LATITUDE, "0.0010")
     val longitude get() = pref.getString(LONGITUDE, "-109.3222")

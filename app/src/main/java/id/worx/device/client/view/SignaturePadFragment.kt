@@ -10,13 +10,16 @@ import androidx.fragment.app.activityViewModels
 import dagger.hilt.android.AndroidEntryPoint
 import id.worx.device.client.MainScreen
 import id.worx.device.client.navigate
+import id.worx.device.client.screen.WorxThemeStatusBar
 import id.worx.device.client.screen.main.SignaturePadScreen
 import id.worx.device.client.theme.WorxTheme
 import id.worx.device.client.viewmodel.DetailFormViewModel
+import id.worx.device.client.viewmodel.ThemeViewModel
 
 @AndroidEntryPoint
 class SignaturePadFragment : Fragment() {
     private val viewModel by activityViewModels<DetailFormViewModel>()
+    private val themeViewModel by activityViewModels<ThemeViewModel>()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -31,7 +34,9 @@ class SignaturePadFragment : Fragment() {
 
         return ComposeView(requireContext()).apply {
             setContent {
-                WorxTheme {
+                val theme = themeViewModel.theme.value
+                WorxTheme(theme = theme) {
+                    WorxThemeStatusBar()
                     SignaturePadScreen(
                         viewModel
                     ) { activity?.onBackPressedDispatcher?.onBackPressed() }

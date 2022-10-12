@@ -11,15 +11,18 @@ import dagger.hilt.android.AndroidEntryPoint
 import id.worx.device.client.MainScreen
 import id.worx.device.client.data.database.Session
 import id.worx.device.client.navigate
+import id.worx.device.client.screen.WorxThemeStatusBar
 import id.worx.device.client.screen.main.SettingScreen
 import id.worx.device.client.theme.WorxTheme
 import id.worx.device.client.viewmodel.HomeViewModel
+import id.worx.device.client.viewmodel.ThemeViewModel
 import javax.inject.Inject
 
 @AndroidEntryPoint
 class SettingsFragment : Fragment() {
 
     private val viewModel by activityViewModels<HomeViewModel>()
+    private val themeViewModel by activityViewModels<ThemeViewModel>()
 
     @Inject
     lateinit var session: Session
@@ -36,11 +39,14 @@ class SettingsFragment : Fragment() {
 
         return ComposeView(requireActivity()).apply {
             setContent {
-                WorxTheme() {
+                val theme = themeViewModel.theme.value
+                WorxTheme(theme = theme) {
+                    WorxThemeStatusBar()
                     SettingScreen(
                         viewModel,
                         onBackNavigation = { activity?.onBackPressedDispatcher?.onBackPressed() },
-                        session = session
+                        session = session,
+                        themeViewModel = themeViewModel
                     )
                 }
             }

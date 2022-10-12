@@ -39,7 +39,8 @@ fun LicencesScreen(
         topBar = {
             WorxTopAppBar(
                 onBack = onBackNavigation,
-                title = stringResource(id = R.string.open_source_licences_cap)
+                title = stringResource(id = R.string.open_source_licences_cap),
+                useProgressBar = false
             )
         }
     ) { padding ->

@@ -9,6 +9,7 @@ import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -16,8 +17,9 @@ import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+import com.google.accompanist.systemuicontroller.rememberSystemUiController
+import id.worx.device.client.screen.main.SettingTheme
 import id.worx.device.client.screen.welcome.WelcomeEvent
-import id.worx.device.client.theme.PrimaryMain
 import id.worx.device.client.theme.RedDarkButton
 import id.worx.device.client.theme.Typography
 
@@ -25,17 +27,21 @@ import id.worx.device.client.theme.Typography
 fun RedFullWidthButton(
     onClickCallback: () -> Unit,
     label: String,
-    modifier: Modifier
+    modifier: Modifier,
+    theme: String?
 ) {
     OutlinedButton(
         modifier = modifier
             .fillMaxWidth()
             .padding(horizontal = 16.dp),
         colors = ButtonDefaults.buttonColors(
-            backgroundColor = RedDarkButton,
+            backgroundColor = if (theme == SettingTheme.Dark || theme == SettingTheme.System) RedDarkButton else MaterialTheme.colors.primary,
             contentColor = Color.White
         ),
-        border = BorderStroke(1.5.dp, Color.Black),
+        border = BorderStroke(
+            1.5.dp,
+            color = MaterialTheme.colors.onSecondary
+        ),
         shape = RoundedCornerShape(1),
         contentPadding = PaddingValues(vertical = 14.dp),
         onClick = onClickCallback
@@ -49,12 +55,18 @@ fun ActionRedButton(
     modifier: Modifier,
     iconRes: Int,
     title: String,
+    theme: String?,
     actionClick: () -> Unit
 ) {
     Row(
         modifier = modifier
             .clip(shape = RoundedCornerShape(4.dp))
-            .background(PrimaryMain.copy(alpha = 0.1f))
+            .background(
+                if (theme == SettingTheme.Dark)
+                    Color.White else MaterialTheme.colors.background.copy(
+                    alpha = 0.1f
+                )
+            )
             .clickable { actionClick() },
         verticalAlignment = Alignment.CenterVertically
     ) {
@@ -62,12 +74,12 @@ fun ActionRedButton(
             modifier = Modifier.padding(horizontal = 15.dp, vertical = 9.dp),
             painter = painterResource(id = iconRes),
             contentDescription = "Icon",
-            tint = PrimaryMain
+            tint = MaterialTheme.colors.onBackground
         )
         Text(
             modifier = Modifier.padding(end = 8.dp),
             text = title,
-            style = Typography.body2.copy(PrimaryMain),
+            style = Typography.body2.copy(MaterialTheme.colors.onBackground),
         )
     }
 }
@@ -76,12 +88,13 @@ fun ActionRedButton(
 fun WorxTopAppBar(
     onBack: () -> Unit,
     progress: Int? = null,
-    title: String
+    title: String,
+    useProgressBar: Boolean = true
 ) {
     TopAppBar(
         modifier = Modifier.fillMaxWidth(),
-        backgroundColor = PrimaryMain,
-        contentColor = Color.White
+        backgroundColor = MaterialTheme.colors.primary,
+        contentColor = MaterialTheme.colors.onPrimary
     ) {
         Box(
             modifier = Modifier.fillMaxWidth(),
@@ -104,6 +117,17 @@ fun WorxTopAppBar(
                         .padding(horizontal = 16.dp)
                         .align(Alignment.CenterEnd)
                         .scale(0.75f),
+                    color = Color.White,
+                    strokeWidth = 3.dp,
+                )
+            }
+            if (useProgressBar) {
+                CircularProgressIndicator(
+                    progress = 1f,
+                    modifier = Modifier
+                        .padding(horizontal = 16.dp)
+                        .align(Alignment.CenterEnd)
+                        .scale(0.75f),
                     color = Color.White.copy(0.3f),
                     strokeWidth = 3.dp,
                 )
@@ -117,14 +141,16 @@ fun WhiteFullWidthButton(
     modifier: Modifier,
     label: String,
     onClickEvent: () -> Unit = {},
+    theme: String?,
     onClickCallback: (WelcomeEvent) -> Unit
-){
+) {
     OutlinedButton(
         modifier = modifier,
         colors = ButtonDefaults.buttonColors(
-            backgroundColor = RedDarkButton.copy(0.1f),
-            contentColor = RedDarkButton),
-        border = BorderStroke(1.5.dp, Color.Black),
+            backgroundColor = MaterialTheme.colors.primary.copy(0.2f),
+            contentColor = if (theme == SettingTheme.Dark) Color.White else MaterialTheme.colors.primary
+        ),
+        border = BorderStroke(1.5.dp, MaterialTheme.colors.onSecondary),
         shape = RoundedCornerShape(1),
         contentPadding = PaddingValues(vertical = 14.dp),
         onClick = {
@@ -132,5 +158,19 @@ fun WhiteFullWidthButton(
             onClickEvent()
         }) {
         Text(text = label, style = Typography.button)
+    }
+}
+
+@Composable
+fun WorxThemeStatusBar(
+    theme: String? = null
+) {
+    val systemUiController = rememberSystemUiController()
+    val useDarkIcons = MaterialTheme.colors.isLight
+    val statusBarColor =
+        if (theme == SettingTheme.Dark) MaterialTheme.colors.secondary else MaterialTheme.colors.primaryVariant
+
+    LaunchedEffect(systemUiController, useDarkIcons) {
+        systemUiController.setStatusBarColor(statusBarColor)
     }
 }

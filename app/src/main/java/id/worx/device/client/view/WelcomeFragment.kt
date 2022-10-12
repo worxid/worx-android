@@ -11,16 +11,22 @@ import androidx.fragment.app.viewModels
 import dagger.hilt.android.AndroidEntryPoint
 import id.worx.device.client.MainActivity
 import id.worx.device.client.WelcomeScreen
+import id.worx.device.client.data.database.Session
 import id.worx.device.client.navigate
+import id.worx.device.client.screen.WorxThemeStatusBar
 import id.worx.device.client.screen.welcome.WelcomeEvent
 import id.worx.device.client.screen.welcome.WelcomeScreen
 import id.worx.device.client.theme.WorxTheme
+import id.worx.device.client.viewmodel.ThemeViewModel
 import id.worx.device.client.viewmodel.WelcomeViewModel
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class WelcomeFragment : Fragment() {
 
     private val viewModel by viewModels<WelcomeViewModel>()
+    private val themeViewModel by viewModels<ThemeViewModel>()
+    @Inject lateinit var session: Session
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -35,7 +41,9 @@ class WelcomeFragment : Fragment() {
 
         return ComposeView(requireContext()).apply {
             setContent {
-                WorxTheme {
+                val theme = themeViewModel.theme.value
+                WorxTheme(theme = theme) {
+                    WorxThemeStatusBar(theme)
                     WelcomeScreen(
                         onEvent = { event ->
                             when (event) {
@@ -43,15 +51,16 @@ class WelcomeFragment : Fragment() {
                                 is WelcomeEvent.JoinTeam -> viewModel.joinExistingTeam()
                                 WelcomeEvent.MainScreen -> gotoMainScreen()
                             }
-                        }
+                        },
+                        session
                     )
                 }
             }
         }
     }
 
-    private fun gotoMainScreen (){
-        val intent  = Intent(requireContext(), MainActivity::class.java)
+    private fun gotoMainScreen() {
+        val intent = Intent(requireContext(), MainActivity::class.java)
         startActivity(intent)
     }
 }

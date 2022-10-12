@@ -3,8 +3,10 @@ package id.worx.device.client.screen
 import androidx.compose.material.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
+import id.worx.device.client.data.database.Session
 import id.worx.device.client.theme.WorxTheme
 import id.worx.device.client.viewmodel.CameraViewModel
 import id.worx.device.client.viewmodel.DetailFormViewModel
@@ -20,6 +22,7 @@ sealed class DetailFormEvent {
 fun DetailFormScreen(
     viewModel: DetailFormViewModel,
     cameraViewModel: CameraViewModel,
+    session: Session,
     onEvent: (DetailFormEvent) -> Unit
 ) {
     val uistate = viewModel.uiState.collectAsState().value
@@ -42,7 +45,8 @@ fun DetailFormScreen(
             componentList = componentList,
             viewModel,
             cameraViewModel,
-            onEvent
+            session,
+            onEvent,
         )
     }
 }
@@ -56,6 +60,7 @@ fun PreviewDetail() {
         DetailFormScreen(
             viewModel = viewModel,
             cameraViewModel,
+            Session(LocalContext.current),
             {}
         )
     }
