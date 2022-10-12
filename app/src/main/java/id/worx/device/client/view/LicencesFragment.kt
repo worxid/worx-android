@@ -8,7 +8,7 @@ import androidx.compose.ui.platform.ComposeView
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import dagger.hilt.android.AndroidEntryPoint
-import id.worx.device.client.screen.WorxThemeStatusBar
+import id.worx.device.client.screen.components.WorxThemeStatusBar
 import id.worx.device.client.screen.main.LicencesScreen
 import id.worx.device.client.theme.WorxTheme
 import id.worx.device.client.viewmodel.ThemeViewModel

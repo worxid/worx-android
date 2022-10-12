@@ -1,15 +1,12 @@
 package id.worx.device.client.theme
 
 import android.annotation.SuppressLint
-import android.util.Log
 import androidx.compose.foundation.isSystemInDarkTheme
-import androidx.compose.material.Colors
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.darkColors
 import androidx.compose.material.lightColors
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
-import id.worx.device.client.screen.WorxThemeStatusBar
 import id.worx.device.client.screen.main.SettingTheme
 
 //System default

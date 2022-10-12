@@ -14,7 +14,7 @@ import id.worx.device.client.WelcomeScreen
 import id.worx.device.client.data.database.Session
 import id.worx.device.client.navigate
 import id.worx.device.client.screen.SplashScreen
-import id.worx.device.client.screen.WorxThemeStatusBar
+import id.worx.device.client.screen.components.WorxThemeStatusBar
 import id.worx.device.client.theme.WorxTheme
 import id.worx.device.client.viewmodel.ThemeViewModel
 import javax.inject.Inject

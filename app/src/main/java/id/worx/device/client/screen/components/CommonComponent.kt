@@ -1,4 +1,4 @@
-package id.worx.device.client.screen
+package id.worx.device.client.screen.components
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background

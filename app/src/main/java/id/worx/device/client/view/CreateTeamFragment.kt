@@ -11,7 +11,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import id.worx.device.client.WelcomeScreen
 import id.worx.device.client.data.database.Session
 import id.worx.device.client.navigate
-import id.worx.device.client.screen.WorxThemeStatusBar
+import id.worx.device.client.screen.components.WorxThemeStatusBar
 import id.worx.device.client.screen.welcome.CreateTeamEvent
 import id.worx.device.client.screen.welcome.CreateTeamScreen
 import id.worx.device.client.theme.WorxTheme

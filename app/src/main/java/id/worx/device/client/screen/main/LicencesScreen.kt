@@ -22,7 +22,7 @@ import com.mikepenz.aboutlibraries.Libs
 import com.mikepenz.aboutlibraries.entity.Library
 import com.mikepenz.aboutlibraries.util.withContext
 import id.worx.device.client.R
-import id.worx.device.client.screen.WorxTopAppBar
+import id.worx.device.client.screen.components.WorxTopAppBar
 import id.worx.device.client.theme.BlackFont
 import id.worx.device.client.theme.Typography
 import id.worx.device.client.theme.WorxTheme

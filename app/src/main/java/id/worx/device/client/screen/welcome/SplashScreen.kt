@@ -19,20 +19,20 @@ import id.worx.device.client.R
 import id.worx.device.client.data.database.Session
 import id.worx.device.client.screen.main.SettingTheme
 import id.worx.device.client.theme.DarkBackground
-import id.worx.device.client.theme.PrimaryMain
 import id.worx.device.client.theme.WorxTheme
 
 @Composable
 fun SplashScreen(session: Session) {
     val theme = session.theme
+    val bgcolor  = if (theme == SettingTheme.Dark) DarkBackground else MaterialTheme.colors.primary
     Surface(
         modifier = Modifier.fillMaxSize(),
-        color = if (theme == SettingTheme.Dark) DarkBackground else MaterialTheme.colors.primary
+        color = bgcolor
     ) {
         Box() {
             Image(
                 modifier = Modifier.fillMaxSize()
-                    .background(color = PrimaryMain),
+                    .background(color = bgcolor),
                 contentScale = ContentScale.Crop,
                 painter = painterResource(R.drawable.grid_bg),
                 contentDescription = "Background")

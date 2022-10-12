@@ -46,7 +46,7 @@ import id.worx.device.client.R
 import id.worx.device.client.data.database.Session
 import id.worx.device.client.model.EmptyForm
 import id.worx.device.client.model.SubmitForm
-import id.worx.device.client.screen.RedFullWidthButton
+import id.worx.device.client.screen.components.RedFullWidthButton
 import id.worx.device.client.theme.PrimaryMain
 import id.worx.device.client.theme.Typography
 import id.worx.device.client.viewmodel.DetailFormViewModel

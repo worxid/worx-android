@@ -18,7 +18,7 @@ import id.worx.device.client.MainScreen
 import id.worx.device.client.R
 import id.worx.device.client.data.database.Session
 import id.worx.device.client.navigate
-import id.worx.device.client.screen.WorxThemeStatusBar
+import id.worx.device.client.screen.components.WorxThemeStatusBar
 import id.worx.device.client.screen.main.PhotoPreviewScreen
 import id.worx.device.client.theme.WorxTheme
 import id.worx.device.client.viewmodel.CameraViewModel
