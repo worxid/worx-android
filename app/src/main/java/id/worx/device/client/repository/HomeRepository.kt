@@ -2,6 +2,7 @@ package id.worx.device.client.repository
 
 import id.worx.device.client.data.api.WorxApi
 import id.worx.device.client.data.dao.SubmitFormDAO
+import id.worx.device.client.model.JoinTeamForm
 import id.worx.device.client.model.SubmitForm
 import javax.inject.Inject
 

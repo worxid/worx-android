@@ -1,5 +1,6 @@
 package id.worx.device.client.screen.main
 
+import android.annotation.SuppressLint
 import android.provider.Settings
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -37,6 +38,7 @@ import id.worx.device.client.theme.Typography
 import id.worx.device.client.theme.WorxTheme
 import id.worx.device.client.viewmodel.HomeViewModel
 import id.worx.device.client.viewmodel.ThemeViewModel
+import id.worx.device.client.viewmodel.WelcomeViewModel
 
 object SettingTheme {
     val System = "System default"
@@ -45,6 +47,7 @@ object SettingTheme {
     val Blue = "Blue"
 }
 
+@SuppressLint("HardwareIds")
 @Composable
 fun SettingScreen(
     viewModel: HomeViewModel,
@@ -75,7 +78,22 @@ fun SettingScreen(
 
     if (showDialogLeave.value) {
         WorxDialog(
-            content = { LeaveOrganizationDialog(setShowDialog = { showDialogLeave.value = it }) },
+            content = {
+                LeaveOrganizationDialog(setShowDialog = {
+                    showDialogLeave.value = it
+                },
+                    onPositiveButton = {
+                        val code = Settings.Secure.getString(
+                            context.contentResolver,
+                            Settings.Secure.ANDROID_ID
+                        )
+                        viewModel.leaveTeam(
+                            onSuccess = {},
+                            onError = {},
+                            code
+                        )
+                    })
+            },
             setShowDialog = { showDialogLeave.value = it })
     }
 
@@ -176,7 +194,8 @@ fun TestDialog() {
 
 @Composable
 fun LeaveOrganizationDialog(
-    setShowDialog: (Boolean) -> Unit = {}
+    setShowDialog: (Boolean) -> Unit = {},
+    onPositiveButton: () -> Unit = {}
 ) {
     ConstraintLayout(
         modifier = Modifier
@@ -207,6 +226,7 @@ fun LeaveOrganizationDialog(
                 }
                 .clickable {
                     setShowDialog(false)
+                    onPositiveButton()
                 }
         )
         Text(
@@ -238,9 +258,11 @@ fun ThemeDialog(
     val (selectedOption, onOptionSelected) = remember {
         mutableStateOf(selectedTheme)
     }
-    Column(modifier = Modifier
-        .selectableGroup()
-        .background(MaterialTheme.colors.secondary)) {
+    Column(
+        modifier = Modifier
+            .selectableGroup()
+            .background(MaterialTheme.colors.secondary)
+    ) {
         Text(
             text = stringResource(id = R.string.theme),
             style = Typography.body2.copy(MaterialTheme.colors.onSecondary),

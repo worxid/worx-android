@@ -12,6 +12,7 @@ import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.http.Body
 import retrofit2.http.GET
 import retrofit2.http.POST
+import retrofit2.http.PUT
 
 
 /**
@@ -27,6 +28,12 @@ interface WorxApi {
 
     @GET("/mobile/forms/submission")
     suspend fun fetchAllSubmission(): Response<ListSubmissionResponse>
+
+    @POST("/mobile/devices/register")
+    suspend fun joinTeam(@Body joinTeamForm: JoinTeamForm) : Response<ResponseBody>
+
+    @PUT("/mobile/devices/leave")
+    suspend fun leaveTeam(@Body deviceCode: String) : Response<ResponseBody>
 
     companion object {
         private const val BASE_URL = "https://api.dev.worx.id"

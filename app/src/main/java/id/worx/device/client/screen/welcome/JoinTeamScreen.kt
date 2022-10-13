@@ -1,5 +1,12 @@
 package id.worx.device.client.screen.welcome
 
+import android.annotation.SuppressLint
+import android.content.Context
+import android.net.wifi.WifiManager
+import android.os.Build
+import android.provider.Settings
+import android.text.format.Formatter
+import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -18,13 +25,18 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
+import id.worx.device.client.BuildConfig
 import id.worx.device.client.R
 import id.worx.device.client.data.database.Session
+import id.worx.device.client.model.JoinTeamForm
 import id.worx.device.client.screen.components.RedFullWidthButton
 import id.worx.device.client.screen.components.WorxTextField
 import id.worx.device.client.screen.components.WorxTopAppBar
 import id.worx.device.client.theme.Typography
 import id.worx.device.client.theme.WorxTheme
+import id.worx.device.client.viewmodel.HomeViewModel
+import java.util.*
 
 sealed class JoinTeamEvent {
     data class JoinTeam(
@@ -38,11 +50,13 @@ sealed class JoinTeamEvent {
 @Composable
 fun JoinTeamScreen(
     session: Session,
+    homeViewModel: HomeViewModel,
     onEvent: (JoinTeamEvent) -> Unit
 ) {
     var namePr by remember { mutableStateOf(0) }
     var orgPr by remember { mutableStateOf(0) }
     val theme = session.theme
+    val context = LocalContext.current
 
     Scaffold(
         topBar = {
@@ -100,11 +114,19 @@ fun JoinTeamScreen(
             Spacer(modifier = Modifier.weight(1f))
             RedFullWidthButton(
                 onClickCallback = {
-                    onEvent(
-                        JoinTeamEvent.JoinTeam(
-                            name,
-                            organization
-                        )
+                    homeViewModel.joinTeam(
+                        onSuccess = {
+                            onEvent(
+                                JoinTeamEvent.JoinTeam(
+                                    name,
+                                    organization
+                                )
+                            )
+                        },
+                        onError = {
+                            Toast.makeText(context, it, Toast.LENGTH_SHORT).show()
+                        },
+                        joinTeamForm = provideJoinForm(context, name, organization)
                     )
                 },
                 label = stringResource(R.string.send_request),
@@ -115,11 +137,31 @@ fun JoinTeamScreen(
     }
 }
 
+@SuppressLint("HardwareIds")
+private fun provideJoinForm(context: Context, name: String, organization: String) : JoinTeamForm{
+    val code = Settings.Secure.getString(context.contentResolver, Settings.Secure.ANDROID_ID)
+    val wifiManager = context.getSystemService(Context.WIFI_SERVICE)  as WifiManager
+    val ipAddress = Formatter.formatIpAddress(wifiManager.connectionInfo.ipAddress)
+    return JoinTeamForm(
+        device_app_version = BuildConfig.VERSION_CODE.toString(),
+        device_code = code,
+        device_language = Locale.getDefault().language,
+        device_model = Build.MANUFACTURER,
+        device_os_version = Build.VERSION.SDK_INT.toString(),
+        ip = "api.dev.worx.id",
+        label = name,
+        organization_code = organization,
+        port = 443,
+    )
+    //ip dan port sementara gunakan api.dev.worx.id dan 443
+    //org code semenatara WXLK94C
+}
+
 
 @Preview(name = "JoinTeam Screen", showSystemUi = true)
 @Composable
 fun JoinTeamScreenPreview() {
     WorxTheme {
-        JoinTeamScreen(Session(LocalContext.current), {})
+        JoinTeamScreen(Session(LocalContext.current), hiltViewModel(),{})
     }
 }
