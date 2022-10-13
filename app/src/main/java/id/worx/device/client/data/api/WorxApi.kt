@@ -26,6 +26,9 @@ interface WorxApi {
     @GET("/mobile/forms/submission")
     suspend fun fetchAllSubmission(): Response<ListSubmissionResponse>
 
+    @GET("/mobile/devices/get-info-device")
+    suspend fun getDeviceInfo(): Response<ResponseDeviceInfo>
+
     @POST("/mobile/devices/register")
     suspend fun joinTeam(@Body joinTeamForm: JoinTeamForm) : Response<ResponseBody>
 
@@ -43,6 +46,7 @@ interface WorxApi {
                 .addInterceptor(logger)
                 .addInterceptor { chain ->
                     val newRequest = chain.request().newBuilder()
+                        .addHeader("deviceCode", deviceCode)
                         .addHeader("device-code", deviceCode)
                         .build()
                     chain.proceed(newRequest)

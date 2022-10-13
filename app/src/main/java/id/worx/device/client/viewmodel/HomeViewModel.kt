@@ -12,11 +12,9 @@ import id.worx.device.client.data.database.FormDownloadWorker
 import id.worx.device.client.data.database.SubmissionDownloadWorker
 import id.worx.device.client.data.database.SubmissionUploadWorker
 import id.worx.device.client.model.EmptyForm
-import id.worx.device.client.model.JoinTeamForm
 import id.worx.device.client.model.SubmitForm
+import id.worx.device.client.repository.DeviceInfoRepository
 import id.worx.device.client.repository.SourceDataRepository
-import id.worx.device.client.repository.WelcomeRepository
-import id.worx.device.client.util.GlobalWrapper
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -24,7 +22,6 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import org.json.JSONObject
 import javax.inject.Inject
 
 // Const to view dialog/notification on the screen
@@ -43,8 +40,8 @@ data class HomeUiState(
 @HiltViewModel
 class HomeViewModel @Inject constructor(
     private val savedStateHandle: SavedStateHandle,
-    private val repository: SourceDataRepository,
-    private val welcomeRepository: WelcomeRepository,
+    private val deviceInfoRepository: DeviceInfoRepository,
+    private val repository: SourceDataRepository
 ) : ViewModel() {
 
     val uiState = MutableStateFlow(HomeUiState())
@@ -193,30 +190,13 @@ class HomeViewModel @Inject constructor(
         })
     }
 
-    fun joinTeam(
-        onSuccess: () -> Unit,
-        onError: (String) -> Unit,
-        joinTeamForm: JoinTeamForm
-    ) {
-        CoroutineScope(Dispatchers.IO).launch {
-            val response = welcomeRepository.joinTeam(joinTeamForm)
-            withContext(Dispatchers.Main) {
-                if (response.isSuccessful) {
-                    onSuccess()
-                } else {
-                    onError("Something Error")
-                }
-            }
-        }
-    }
-
     fun leaveTeam(
         onSuccess: () -> Unit,
         onError: () -> Unit,
         deviceCode: String
     ) {
         CoroutineScope(Dispatchers.IO).launch {
-            val response = welcomeRepository.leaveTeam(deviceCode)
+            val response = deviceInfoRepository.leaveTeam(deviceCode)
             withContext(Dispatchers.Main) {
                 if (response.isSuccessful) {
                     onSuccess()

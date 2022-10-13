@@ -6,12 +6,10 @@ import androidx.lifecycle.ViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import id.worx.device.client.Event
 import id.worx.device.client.MainScreen
-import id.worx.device.client.repository.HomeRepository
 import javax.inject.Inject
 
 @HiltViewModel
 class CameraViewModel @Inject constructor(
-    private val repository: HomeRepository
 ) : ViewModel() {
 
     private val _navigateTo = MutableLiveData<Event<MainScreen>>()
