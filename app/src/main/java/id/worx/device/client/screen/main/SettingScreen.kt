@@ -2,6 +2,7 @@ package id.worx.device.client.screen.main
 
 import android.annotation.SuppressLint
 import android.provider.Settings
+import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
@@ -29,6 +30,7 @@ import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
 import id.worx.device.client.BuildConfig
 import id.worx.device.client.R
+import id.worx.device.client.Util
 import id.worx.device.client.data.database.Session
 import id.worx.device.client.screen.components.WhiteFullWidthButton
 import id.worx.device.client.screen.components.WorxDialog
@@ -83,14 +85,16 @@ fun SettingScreen(
                     showDialogLeave.value = it
                 },
                     onPositiveButton = {
-                        val code = Settings.Secure.getString(
-                            context.contentResolver,
-                            Settings.Secure.ANDROID_ID
-                        )
                         viewModel.leaveTeam(
-                            onSuccess = {},
-                            onError = {},
-                            code
+                            onSuccess = {
+                                Toast.makeText(context, "SUCCESS LEAVE ORG", Toast.LENGTH_SHORT)
+                                    .show()
+                            },
+                            onError = {
+                                Toast.makeText(context, "Something Error", Toast.LENGTH_SHORT)
+                                    .show()
+                            },
+                            deviceCode = Util.getDeviceCode(context)
                         )
                     })
             },

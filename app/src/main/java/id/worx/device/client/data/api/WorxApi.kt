@@ -9,10 +9,7 @@ import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
-import retrofit2.http.Body
-import retrofit2.http.GET
-import retrofit2.http.POST
-import retrofit2.http.PUT
+import retrofit2.http.*
 
 
 /**
@@ -33,7 +30,7 @@ interface WorxApi {
     suspend fun joinTeam(@Body joinTeamForm: JoinTeamForm) : Response<ResponseBody>
 
     @PUT("/mobile/devices/leave")
-    suspend fun leaveTeam(@Body deviceCode: String) : Response<ResponseBody>
+    suspend fun leaveTeam(@Header("deviceCode") deviceCode: String) : Response<ResponseBody>
 
     companion object {
         private const val BASE_URL = "https://api.dev.worx.id"

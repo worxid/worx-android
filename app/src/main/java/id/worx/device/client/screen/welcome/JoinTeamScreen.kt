@@ -28,6 +28,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import id.worx.device.client.BuildConfig
 import id.worx.device.client.R
+import id.worx.device.client.Util
 import id.worx.device.client.data.database.Session
 import id.worx.device.client.model.JoinTeamForm
 import id.worx.device.client.screen.components.RedFullWidthButton
@@ -139,12 +140,11 @@ fun JoinTeamScreen(
 
 @SuppressLint("HardwareIds")
 private fun provideJoinForm(context: Context, name: String, organization: String) : JoinTeamForm{
-    val code = Settings.Secure.getString(context.contentResolver, Settings.Secure.ANDROID_ID)
     val wifiManager = context.getSystemService(Context.WIFI_SERVICE)  as WifiManager
     val ipAddress = Formatter.formatIpAddress(wifiManager.connectionInfo.ipAddress)
     return JoinTeamForm(
         device_app_version = BuildConfig.VERSION_CODE.toString(),
-        device_code = code,
+        device_code = Util.getDeviceCode(context),
         device_language = Locale.getDefault().language,
         device_model = Build.MANUFACTURER,
         device_os_version = Build.VERSION.SDK_INT.toString(),
