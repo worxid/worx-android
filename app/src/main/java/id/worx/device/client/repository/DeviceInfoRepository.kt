@@ -15,5 +15,5 @@ class DeviceInfoRepository @Inject constructor(
         retrofitService.joinTeam(joinTeamForm)
 
     suspend fun leaveTeam(deviceCode : String) =
-        retrofitService.leaveTeam(deviceCode)
+        retrofitService.leaveTeam()
 }
