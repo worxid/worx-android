@@ -7,7 +7,7 @@ import android.view.ViewGroup
 import androidx.compose.ui.platform.ComposeView
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
-import androidx.fragment.app.viewModels
+import androidx.navigation.findNavController
 import dagger.hilt.android.AndroidEntryPoint
 import id.worx.device.client.MainScreen
 import id.worx.device.client.data.database.Session
@@ -17,7 +17,6 @@ import id.worx.device.client.screen.main.SettingScreen
 import id.worx.device.client.theme.WorxTheme
 import id.worx.device.client.viewmodel.HomeViewModel
 import id.worx.device.client.viewmodel.ThemeViewModel
-import id.worx.device.client.viewmodel.WelcomeViewModel
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -46,7 +45,7 @@ class SettingsFragment : Fragment() {
                     WorxThemeStatusBar()
                     SettingScreen(
                         viewModel,
-                        onBackNavigation = { activity?.onBackPressedDispatcher?.onBackPressed() },
+                        onBackNavigation = { findNavController().navigateUp() },
                         session = session,
                         themeViewModel = themeViewModel
                     )

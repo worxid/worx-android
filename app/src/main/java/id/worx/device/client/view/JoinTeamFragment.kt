@@ -13,6 +13,7 @@ import android.widget.Toast
 import androidx.compose.ui.platform.ComposeView
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.navigation.findNavController
 import dagger.hilt.android.AndroidEntryPoint
 import id.worx.device.client.BuildConfig
 import id.worx.device.client.Util
@@ -63,7 +64,7 @@ class JoinTeamFragment : Fragment() {
                                     )
                                 }
                                 JoinTeamEvent.NavigateBack -> {
-                                    activity?.onBackPressedDispatcher?.onBackPressed()
+                                    findNavController().navigateUp()
                                 }
                             }
                         }
