@@ -26,7 +26,7 @@ interface WorxApi {
     @POST("/mobile/forms/submit")
     suspend fun submitForm(@Body formFilled: SubmitForm): Response<ResponseBody>
 
-    @GET("/mobile/forms/submission")
+    @GET("/mobile/forms/submissions")
     suspend fun fetchAllSubmission(): Response<ListSubmissionResponse>
 
     @GET("/mobile/devices/get-info-device")
