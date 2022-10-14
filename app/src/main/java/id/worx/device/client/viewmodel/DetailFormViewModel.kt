@@ -150,6 +150,8 @@ class DetailFormViewModel @Inject constructor(
         viewModelScope.launch {
             val form = createSubmitForm()
             dataSourceRepo.insertOrUpdateSubmitForm(form.copy(status = 0))
+            actionAfterSaved()
+            _navigateTo.value = Event(MainScreen.Home)
             uiState.update {
                 it.copy(
                     detailForm = null,
@@ -159,12 +161,10 @@ class DetailFormViewModel @Inject constructor(
                 )
             }
             _formProgress.value = 0
-            actionAfterSaved()
-            _navigateTo.value = Event(MainScreen.Home)
         }
     }
 
-    private suspend fun createSubmitForm(): SubmitForm{
+    private fun createSubmitForm(): SubmitForm{
         val submitForm = SubmitForm(
             id = uiState.value.detailForm!!.id,
             label = uiState.value.detailForm!!.label,
