@@ -3,7 +3,6 @@ package id.worx.device.client.viewmodel
 import android.graphics.Bitmap
 import android.location.Address
 import android.location.Geocoder
-import android.util.Log
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.*
@@ -61,11 +60,12 @@ class DetailFormViewModel @Inject constructor(
     fun navigateFromHomeScreen(form: BasicForm) {
         uiState.update {
             if (form is SubmitForm){
-                viewModelScope.launch {
-                    form.dbId?.let { dbId -> dataSourceRepo.deleteSubmitFormById(dbId) }
-                }
                 _formProgress.value = initProgress(form.values.toMutableMap(), form.fields)
-                it.copy(detailForm = form, values = form.values.toMutableMap(), status = EventStatus.Filling)
+                var status = EventStatus.Filling
+                if (form.status == 2 || form.status == 1){
+                    status = EventStatus.Done
+                }
+                it.copy(detailForm = form, values = form.values.toMutableMap(), status = status)
             } else {
                 it.copy(detailForm = form, status = EventStatus.Filling)
             }
@@ -120,7 +120,6 @@ class DetailFormViewModel @Inject constructor(
     fun submitForm(actionAfterSubmitted: () -> Unit) {
         viewModelScope.launch {
             val form = createSubmitForm()
-            Log.d("tag", form.toString())
             if (Util.isConnected(application.applicationContext)) {
                 val result = dataSourceRepo.submitForm(form)
                 if (result.isSuccessful) {
@@ -131,6 +130,7 @@ class DetailFormViewModel @Inject constructor(
             } else {
                 form.status = 1
             }
+            form.dbId?.let { dbId -> dataSourceRepo.deleteSubmitFormById(dbId) } // if it is draft delete from DB
             dataSourceRepo.insertOrUpdateSubmitForm(form) //insertSubmission to db
             uiState.update {
                 it.copy(
