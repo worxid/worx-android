@@ -7,6 +7,7 @@ import android.view.ViewGroup
 import androidx.compose.ui.platform.ComposeView
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.navigation.findNavController
 import dagger.hilt.android.AndroidEntryPoint
 import id.worx.device.client.MainScreen
 import id.worx.device.client.R
@@ -54,7 +55,7 @@ class DetailFormFragment : Fragment() {
                     ) { event ->
                         when (event) {
                             is DetailFormEvent.BackPressed -> {
-                                activity?.onBackPressedDispatcher?.onBackPressed()
+                                findNavController().navigateUp()
                             }
                             is DetailFormEvent.SubmitForm -> {
                                 viewModel.submitForm {
