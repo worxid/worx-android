@@ -31,7 +31,7 @@ class SplashViewModel @Inject constructor(
             withContext(Dispatchers.Main){
                 if (response.isSuccessful){
                     val deviceStatus = response.body()?.value?.deviceStatus
-                    _deviceStatus.postValue("ONLINE")
+                    _deviceStatus.postValue(deviceStatus)
                 } else if (response.code() == 404 ){
                     val jsonString = response.errorBody()!!.charStream()
                     val errorResponse = Gson().fromJson(jsonString, ResponseDeviceInfo::class.java)

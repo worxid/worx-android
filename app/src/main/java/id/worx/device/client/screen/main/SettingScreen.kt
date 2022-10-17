@@ -35,12 +35,12 @@ import id.worx.device.client.data.database.Session
 import id.worx.device.client.screen.components.WhiteFullWidthButton
 import id.worx.device.client.screen.components.WorxDialog
 import id.worx.device.client.screen.components.WorxTopAppBar
+import id.worx.device.client.screen.components.getActivity
 import id.worx.device.client.theme.GrayDivider
 import id.worx.device.client.theme.Typography
 import id.worx.device.client.theme.WorxTheme
 import id.worx.device.client.viewmodel.HomeViewModel
 import id.worx.device.client.viewmodel.ThemeViewModel
-import id.worx.device.client.viewmodel.WelcomeViewModel
 
 object SettingTheme {
     val System = "System default"
@@ -89,6 +89,7 @@ fun SettingScreen(
                             onSuccess = {
                                 Toast.makeText(context, "SUCCESS LEAVE ORG", Toast.LENGTH_SHORT)
                                     .show()
+                                context.getActivity()?.finishAffinity()
                             },
                             onError = {
                                 Toast.makeText(context, "Something Error", Toast.LENGTH_SHORT)

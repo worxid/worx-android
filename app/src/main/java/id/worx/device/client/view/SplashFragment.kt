@@ -59,8 +59,10 @@ class SplashFragment : Fragment(), SplashViewModel.UIHandler {
         }
 
         splashViewModel.deviceStatus.observe(viewLifecycleOwner){
-            if (it == "ONLINE"){
+            if (it == "APPROVED"){
                 gotToHome()
+            } else if (it == "PENDING"){
+                goToWaitingScreen()
             } else {
                 goToWelcomeScreen()
             }
@@ -71,6 +73,10 @@ class SplashFragment : Fragment(), SplashViewModel.UIHandler {
         navigate(WelcomeScreen.Welcome, WelcomeScreen.Splash)
     }
 
+    private fun goToWaitingScreen(){
+        navigate(WelcomeScreen.WaitingVerification, WelcomeScreen.Splash)
+    }
+
     private fun gotToHome(){
         val intent = Intent(requireContext(), MainActivity::class.java)
         intent.flags = Intent.FLAG_ACTIVITY_NO_HISTORY
@@ -78,6 +84,6 @@ class SplashFragment : Fragment(), SplashViewModel.UIHandler {
     }
 
     override fun showToast(text: String) {
-        Toast.makeText(requireContext(), text, Toast.LENGTH_LONG)
+        Toast.makeText(requireContext(), text, Toast.LENGTH_LONG).show()
     }
 }

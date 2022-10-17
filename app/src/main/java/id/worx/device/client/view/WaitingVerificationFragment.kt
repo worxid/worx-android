@@ -1,13 +1,18 @@
 package id.worx.device.client.view
 
+import android.content.Intent
 import android.os.Bundle
+import android.os.Handler
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.compose.ui.platform.ComposeView
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import dagger.hilt.android.AndroidEntryPoint
+import id.worx.device.client.MainActivity
+import id.worx.device.client.Util
 import id.worx.device.client.WelcomeScreen
 import id.worx.device.client.data.database.Session
 import id.worx.device.client.navigate
@@ -20,12 +25,21 @@ import id.worx.device.client.viewmodel.WelcomeViewModel
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class WaitingVerificationFragment : Fragment() {
+class WaitingVerificationFragment : Fragment(), WelcomeViewModel.UIHandler {
 
     private val viewModel by viewModels<WelcomeViewModel>()
     private val themeViewModel by viewModels<ThemeViewModel>()
     @Inject
     lateinit var session: Session
+
+    private var mHandler: Handler? = Handler()
+
+    var mHandlerTask: Runnable = object : Runnable {
+        override fun run() {
+            viewModel.getDeviceStatus()
+            mHandler!!.postDelayed(this, 60*1000)
+        }
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -35,6 +49,17 @@ class WaitingVerificationFragment : Fragment() {
         viewModel.navigateTo.observe(viewLifecycleOwner) { navigateToEvent ->
             navigateToEvent.getContentIfNotHandled()?.let { navigateTo ->
                 navigate(navigateTo, WelcomeScreen.WaitingVerification)
+            }
+        }
+
+        viewModel.uiHandler = this
+        if (Util.isConnected(requireContext())) { mHandlerTask.run() }
+
+        viewModel.deviceStatus.observe(viewLifecycleOwner){
+            if (it == "APPROVED"){
+                gotToHome()
+            } else {
+                goToRejectedScreen()
             }
         }
 
@@ -57,5 +82,25 @@ class WaitingVerificationFragment : Fragment() {
                 }
             }
         }
+    }
+
+    override fun showToast(text: String) {
+        Toast.makeText(requireContext(), text, Toast.LENGTH_LONG).show()
+    }
+
+    private fun goToRejectedScreen(){
+        navigate(WelcomeScreen.VerificationRejected, WelcomeScreen.WaitingVerification)
+    }
+
+    private fun gotToHome(){
+        val intent = Intent(requireContext(), MainActivity::class.java)
+        intent.flags = Intent.FLAG_ACTIVITY_NO_HISTORY
+        startActivity(intent)
+    }
+
+    override fun onDestroy() {
+        mHandler?.removeCallbacks(mHandlerTask)
+        mHandler = null
+        super.onDestroy()
     }
 }
