@@ -58,7 +58,7 @@ class WaitingVerificationFragment : Fragment(), WelcomeViewModel.UIHandler {
         viewModel.deviceStatus.observe(viewLifecycleOwner){
             if (it == "APPROVED"){
                 gotToHome()
-            } else {
+            } else if (it == "REJECTED"){
                 goToRejectedScreen()
             }
         }
