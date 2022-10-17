@@ -10,13 +10,17 @@ import androidx.fragment.app.activityViewModels
 import dagger.hilt.android.AndroidEntryPoint
 import id.worx.device.client.MainScreen
 import id.worx.device.client.R
+import id.worx.device.client.data.database.Session
 import id.worx.device.client.navigate
 import id.worx.device.client.screen.DetailFormEvent
 import id.worx.device.client.screen.DetailFormScreen
+import id.worx.device.client.screen.components.WorxThemeStatusBar
 import id.worx.device.client.theme.WorxTheme
 import id.worx.device.client.viewmodel.CameraViewModel
 import id.worx.device.client.viewmodel.DetailFormViewModel
 import id.worx.device.client.viewmodel.HomeViewModel
+import id.worx.device.client.viewmodel.ThemeViewModel
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class DetailFormFragment : Fragment() {
@@ -24,6 +28,8 @@ class DetailFormFragment : Fragment() {
     private val viewModel by activityViewModels<DetailFormViewModel>()
     private val cameraViewModel by activityViewModels<CameraViewModel>()
     private val homeViewModel by activityViewModels<HomeViewModel>()
+    private val themeViewModel by activityViewModels<ThemeViewModel>()
+    @Inject lateinit var session: Session
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -38,10 +44,13 @@ class DetailFormFragment : Fragment() {
 
         return ComposeView(requireContext()).apply {
             setContent {
-                WorxTheme {
+                val theme = themeViewModel.theme.value
+                WorxTheme(theme = theme) {
+                    WorxThemeStatusBar()
                     DetailFormScreen(
                         viewModel,
-                        cameraViewModel
+                        cameraViewModel,
+                        session
                     ) { event ->
                         when (event) {
                             is DetailFormEvent.BackPressed -> {

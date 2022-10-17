@@ -4,10 +4,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.Divider
-import androidx.compose.material.RadioButton
-import androidx.compose.material.RadioButtonDefaults
-import androidx.compose.material.Text
+import androidx.compose.material.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableStateOf
@@ -39,7 +36,7 @@ fun WorxRadiobutton(indexForm: Int, viewModel: DetailFormViewModel) {
     }
 
     Column(modifier = Modifier.fillMaxWidth()) {
-        Text(title, style = Typography.body2, modifier = Modifier.padding(start = 16.dp))
+        Text(title, style = Typography.body2.copy(MaterialTheme.colors.onSecondary), modifier = Modifier.padding(start = 16.dp))
         Column {
             optionTitles.forEachIndexed { index, item ->
                 Row(verticalAlignment = Alignment.CenterVertically) {
@@ -48,9 +45,12 @@ fun WorxRadiobutton(indexForm: Int, viewModel: DetailFormViewModel) {
                         onClick = {
                             onCheck.value = index
                             viewModel.setComponentData(indexForm, RadioButtonValue(value = onCheck.value)) },
-                        colors = RadioButtonDefaults.colors(PrimaryMain)
+                        colors = RadioButtonDefaults.colors(
+                            selectedColor = MaterialTheme.colors.onBackground,
+                            unselectedColor = MaterialTheme.colors.onSecondary
+                        )
                     )
-                    Text(item.label ?: "", style = Typography.body1.copy(Color.Black))
+                    Text(item.label ?: "", style = Typography.body1.copy(MaterialTheme.colors.onSecondary))
                 }
             }
         }

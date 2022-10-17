@@ -1,6 +1,7 @@
 package id.worx.device.client.screen.main
 
 import android.provider.Settings
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -28,18 +29,30 @@ import androidx.constraintlayout.compose.Dimension
 import id.worx.device.client.BuildConfig
 import id.worx.device.client.R
 import id.worx.device.client.data.database.Session
-import id.worx.device.client.screen.WhiteFullWidthButton
-import id.worx.device.client.screen.WorxTopAppBar
+import id.worx.device.client.screen.components.WhiteFullWidthButton
 import id.worx.device.client.screen.components.WorxDialog
-import id.worx.device.client.theme.*
+import id.worx.device.client.screen.components.WorxTopAppBar
+import id.worx.device.client.theme.GrayDivider
+import id.worx.device.client.theme.Typography
+import id.worx.device.client.theme.WorxTheme
 import id.worx.device.client.viewmodel.HomeViewModel
+import id.worx.device.client.viewmodel.ThemeViewModel
+
+object SettingTheme {
+    val System = "System default"
+    val Dark = "Dark"
+    val Green = "Green"
+    val Blue = "Blue"
+}
 
 @Composable
 fun SettingScreen(
     viewModel: HomeViewModel,
     session: Session,
+    themeViewModel: ThemeViewModel,
     onBackNavigation: () -> Unit
 ) {
+    val theme = session.theme
     val showDialogTheme = remember {
         mutableStateOf(false)
     }
@@ -53,6 +66,7 @@ fun SettingScreen(
             content = {
                 ThemeDialog(
                     setShowDialog = { showDialogTheme.value = it },
+                    themeViewModel = themeViewModel,
                     session = session
                 )
             },
@@ -69,27 +83,33 @@ fun SettingScreen(
         topBar = {
             WorxTopAppBar(
                 onBack = onBackNavigation,
-                title = stringResource(id = R.string.settings)
+                title = stringResource(id = R.string.settings),
+                useProgressBar = false
             )
         }
     ) { paddingValues ->
         val verticalScroll = rememberScrollState()
 
         Column(
-            modifier = Modifier.verticalScroll(verticalScroll)
+            modifier = Modifier
+                .verticalScroll(verticalScroll)
+                .background(MaterialTheme.colors.secondary)
         ) {
             HeaderTileSetting(title = stringResource(id = R.string.organization_details))
             TileItemSetting(
                 title = stringResource(id = R.string.organizations),
                 subtitle = "Fields Service Mobile",
+                session = session
             )
             TileItemSetting(
                 title = stringResource(id = R.string.organizations_key),
                 subtitle = "AIT763",
+                session = session
             )
             TileItemSetting(
                 title = stringResource(id = R.string.device_name),
                 subtitle = Settings.Secure.getString(context.contentResolver, "bluetooth_name"),
+                session = session
             )
             Divider(color = GrayDivider, modifier = Modifier.padding(top = 20.dp))
             HeaderTileSetting(title = stringResource(id = R.string.devices_settings))
@@ -99,7 +119,8 @@ fun SettingScreen(
                 iconRes = R.drawable.ic_baseline_color_lens_24,
                 modifier = Modifier.clickable {
                     showDialogTheme.value = !showDialogTheme.value
-                }
+                },
+                session = session
             )
             TileItemSetting(
                 title = stringResource(id = R.string.save_image_in_gallery),
@@ -112,19 +133,25 @@ fun SettingScreen(
             TileItemSetting(
                 title = stringResource(id = R.string.app_version),
                 subtitle = BuildConfig.VERSION_NAME,
+                session = session
             )
             TileItemSetting(
                 title = stringResource(id = R.string.app_version_code),
                 subtitle = BuildConfig.VERSION_CODE.toString(),
+                session = session
             )
             TileItemSetting(
                 title = stringResource(id = R.string.app_package_name),
                 subtitle = BuildConfig.APPLICATION_ID,
+                session = session
             )
             HeaderTileSetting(title = stringResource(id = R.string.legal))
-            TileItemSetting(title = stringResource(id = R.string.open_source_licenses), onPress = {
-                viewModel.goToLicencesScreen()
-            })
+            TileItemSetting(
+                title = stringResource(id = R.string.open_source_licenses), onPress = {
+                    viewModel.goToLicencesScreen()
+                },
+                session = session
+            )
             WhiteFullWidthButton(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -133,6 +160,7 @@ fun SettingScreen(
                 onClickEvent = {
                     showDialogLeave.value = !showDialogLeave.value
                 },
+                theme = theme,
                 onClickCallback = {})
         }
     }
@@ -151,14 +179,15 @@ fun LeaveOrganizationDialog(
     setShowDialog: (Boolean) -> Unit = {}
 ) {
     ConstraintLayout(
-        modifier = Modifier.fillMaxWidth()
+        modifier = Modifier
+            .fillMaxWidth()
+            .background(MaterialTheme.colors.secondary)
     ) {
         val (tvTitle, tvYes, tvCancel) = createRefs()
 
         Text(
             text = stringResource(id = R.string.leave_organization),
-            style = Typography.body2,
-            color = BlackFont,
+            style = Typography.body2.copy(MaterialTheme.colors.onSecondary),
             modifier = Modifier.constrainAs(tvTitle) {
                 top.linkTo(parent.top)
                 start.linkTo(parent.start)
@@ -168,8 +197,7 @@ fun LeaveOrganizationDialog(
         )
         Text(
             text = stringResource(id = R.string.yes),
-            style = Typography.body2,
-            color = RedDark,
+            style = Typography.body2.copy(MaterialTheme.colors.onBackground),
             modifier = Modifier
                 .constrainAs(tvYes) {
                     top.linkTo(tvTitle.bottom, 32.dp)
@@ -183,8 +211,7 @@ fun LeaveOrganizationDialog(
         )
         Text(
             text = stringResource(id = R.string.cancel),
-            style = Typography.body2,
-            color = BlackVariantFont,
+            style = Typography.body2.copy(MaterialTheme.colors.onSecondary),
             modifier = Modifier
                 .constrainAs(tvCancel) {
                     top.linkTo(tvTitle.bottom, 32.dp)
@@ -202,18 +229,21 @@ fun LeaveOrganizationDialog(
 @Composable
 fun ThemeDialog(
     setShowDialog: (Boolean) -> Unit,
+    themeViewModel: ThemeViewModel,
     session: Session
 ) {
-    val rbOptions = arrayListOf("System", "Dark", "Green", "Blue")
+    val rbOptions =
+        arrayListOf(SettingTheme.System, SettingTheme.Dark, SettingTheme.Green, SettingTheme.Blue)
     val selectedTheme = session.theme
     val (selectedOption, onOptionSelected) = remember {
         mutableStateOf(selectedTheme)
     }
-    Column(modifier = Modifier.selectableGroup()) {
+    Column(modifier = Modifier
+        .selectableGroup()
+        .background(MaterialTheme.colors.secondary)) {
         Text(
             text = stringResource(id = R.string.theme),
-            style = Typography.body2,
-            color = BlackFont,
+            style = Typography.body2.copy(MaterialTheme.colors.onSecondary),
             fontWeight = FontWeight.W500
         )
         rbOptions.forEach { s ->
@@ -223,6 +253,7 @@ fun ThemeDialog(
                     .selectable(
                         selected = (s == selectedOption),
                         onClick = {
+                            themeViewModel.onThemeChanged(s)
                             onOptionSelected(s)
                             session.setTheme(s)
                             setShowDialog(false)
@@ -235,6 +266,7 @@ fun ThemeDialog(
                 RadioButton(
                     selected = (s == selectedOption),
                     onClick = {
+                        themeViewModel.onThemeChanged(s)
                         onOptionSelected(s)
                         session.setTheme(s)
                         setShowDialog(false)
@@ -244,12 +276,14 @@ fun ThemeDialog(
                         bottom.linkTo(parent.bottom)
                         start.linkTo(parent.start)
                     },
-                    colors = RadioButtonDefaults.colors(PrimaryMain)
+                    colors = RadioButtonDefaults.colors(
+                        selectedColor = MaterialTheme.colors.onBackground,
+                        unselectedColor = MaterialTheme.colors.onSecondary
+                    )
                 )
                 Text(
                     text = s,
-                    style = Typography.body1,
-                    color = BlackFont,
+                    style = Typography.body1.copy(MaterialTheme.colors.onSecondary),
                     modifier = Modifier.constrainAs(tvItem) {
                         top.linkTo(rbItem.top)
                         bottom.linkTo(rbItem.bottom)
@@ -270,11 +304,11 @@ fun TileItemSetting(
     iconRes: Int? = null,
     toggleActive: Boolean = false,
     onPress: () -> Unit = {},
-    session: Session? = null
+    session: Session?
 ) {
     val toggleValue = session?.isSaveImageToGallery ?: false
     val checkStateSwitch = remember { mutableStateOf(toggleValue) }
-
+    val theme = session?.theme
     ConstraintLayout(
         modifier = modifier
             .fillMaxWidth()
@@ -290,7 +324,8 @@ fun TileItemSetting(
                     top.linkTo(parent.top)
                     bottom.linkTo(parent.bottom)
                     start.linkTo(parent.start)
-                }
+                },
+                tint = MaterialTheme.colors.onSecondary
             )
         }
         Text(
@@ -317,7 +352,7 @@ fun TileItemSetting(
                     width = Dimension.fillToConstraints
                 },
             style = Typography.body2,
-            color = BlackFont,
+            color = MaterialTheme.colors.onSecondary,
         )
         if (subtitle != null) {
             Text(
@@ -330,7 +365,7 @@ fun TileItemSetting(
                     width = Dimension.fillToConstraints
                 },
                 style = Typography.body1,
-                color = BlackVariantFont,
+                color = MaterialTheme.colors.onSecondary.copy(0.54f),
                 maxLines = 2,
                 overflow = TextOverflow.Ellipsis
             )
@@ -348,10 +383,10 @@ fun TileItemSetting(
                     bottom.linkTo(parent.bottom)
                 },
                 colors = SwitchDefaults.colors(
-                    checkedThumbColor = RedDarkButton,
-                    uncheckedThumbColor = RedDarkButton,
-                    checkedTrackColor = RedDarkButton,
-                    uncheckedTrackColor = RedDarkButton,
+                    checkedThumbColor = MaterialTheme.colors.primary,
+                    uncheckedThumbColor = MaterialTheme.colors.surface,
+                    checkedTrackColor = MaterialTheme.colors.primary,
+                    uncheckedTrackColor = MaterialTheme.colors.surface,
                 )
             )
         }
@@ -360,13 +395,13 @@ fun TileItemSetting(
 
 @Composable
 fun HeaderTileSetting(
-    title: String
+    title: String,
 ) {
     ConstraintLayout(
         modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = 60.dp, vertical = 20.dp)
     ) {
-        Text(text = title, style = Typography.body1, color = BlackVariantFont)
+        Text(text = title, style = Typography.body1, color = MaterialTheme.colors.onSecondary)
     }
 }

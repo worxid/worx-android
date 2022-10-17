@@ -16,6 +16,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.Divider
 import androidx.compose.material.Icon
+import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -27,29 +28,39 @@ import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
+import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.AsyncImage
 import com.sangcomz.fishbun.FishBun
 import com.sangcomz.fishbun.adapter.image.impl.CoilAdapter
 import id.worx.device.client.R
+import id.worx.device.client.data.database.Session
 import id.worx.device.client.model.ImageField
 import id.worx.device.client.model.ImageValue
-import id.worx.device.client.screen.ActionRedButton
 import id.worx.device.client.theme.GrayDivider
 import id.worx.device.client.theme.PrimaryMain
 import id.worx.device.client.theme.Typography
+import id.worx.device.client.theme.WorxTheme
 import id.worx.device.client.viewmodel.DetailFormViewModel
 import java.io.File
 
 @Composable
-fun WorxAttachImage(indexForm:Int, viewModel:DetailFormViewModel, setIndexData: () -> Unit, navigateToPhotoCamera: () -> Unit) {
+fun WorxAttachImage(
+    indexForm: Int,
+    viewModel: DetailFormViewModel,
+    session: Session,
+    setIndexData: () -> Unit,
+    navigateToPhotoCamera: () -> Unit
+) {
     val form = viewModel.uiState.collectAsState().value.detailForm!!.fields[indexForm] as ImageField
     val title = form.label ?: ""
+    val theme = session.theme
 
     val fileValue = viewModel.uiState.collectAsState().value.values[form.id] as ImageValue?
-    val filePath = if (fileValue != null){
-        remember { mutableStateOf(fileValue.filePath.toList())}
+    val filePath = if (fileValue != null) {
+        remember { mutableStateOf(fileValue.filePath.toList()) }
     } else {
         remember {
             mutableStateOf(listOf())
@@ -68,7 +79,8 @@ fun WorxAttachImage(indexForm:Int, viewModel:DetailFormViewModel, setIndexData: 
                 val newPathList = ArrayList(filePath.value)
                 newPathList.add(fPath)
                 filePath.value = newPathList.toList()
-                viewModel.setComponentData(indexForm,
+                viewModel.setComponentData(
+                    indexForm,
                     ImageValue(value = ArrayList(newPathList.map { 1 }), filePath = newPathList)
                 )
             }
@@ -77,7 +89,7 @@ fun WorxAttachImage(indexForm:Int, viewModel:DetailFormViewModel, setIndexData: 
     Column(modifier = Modifier.fillMaxWidth()) {
         Text(
             title,
-            style = Typography.body2,
+            style = Typography.body2.copy(MaterialTheme.colors.onSecondary),
             modifier = Modifier
                 .padding(horizontal = 16.dp)
                 .padding(bottom = 8.dp)
@@ -95,16 +107,16 @@ fun WorxAttachImage(indexForm:Int, viewModel:DetailFormViewModel, setIndexData: 
                             indexForm,
                             ImageValue(value = ArrayList(newList.map { 1 }), filePath = newList)
                         )
+                    }
                 }
-            }
             }
         }
         Row(
             modifier = Modifier.padding(horizontal = 16.dp),
             horizontalArrangement = Arrangement.spacedBy(12.dp)
         ) {
-            TakeImageButton(navigateToPhotoCamera, setIndexData)
-            GalleryImageButton(form.maxFiles ?: 1, launcherGallery = launcherGallery)
+            TakeImageButton(navigateToPhotoCamera, setIndexData, theme)
+            GalleryImageButton(form.maxFiles ?: 1, launcherGallery = launcherGallery, theme)
         }
         Divider(color = GrayDivider, modifier = Modifier.padding(top = 12.dp))
     }
@@ -132,8 +144,8 @@ private fun ImageDataView(
                 .padding(horizontal = 12.dp)
                 .weight(1f)
         ) {
-            Text(text = filePath, style = Typography.body2)
-            Text(text = "$fileSize kb", style = Typography.body2)
+            Text(text = filePath, style = Typography.body2.copy(MaterialTheme.colors.onSecondary))
+            Text(text = "$fileSize kb", style = Typography.body2.copy(MaterialTheme.colors.onSecondary))
         }
         Icon(
             modifier = Modifier
@@ -141,7 +153,8 @@ private fun ImageDataView(
                 .clickable { onClick() }
                 .align(Alignment.CenterVertically),
             painter = painterResource(id = R.drawable.ic_delete_circle),
-            contentDescription = "Clear File"
+            contentDescription = "Clear File",
+            tint = MaterialTheme.colors.onSecondary
         )
     }
 }
@@ -149,7 +162,8 @@ private fun ImageDataView(
 @Composable
 private fun TakeImageButton(
     navigateToPhotoCamera: () -> Unit,
-    sendIndexFormData: () -> Unit
+    sendIndexFormData: () -> Unit,
+    theme: String?
 ) {
     val context = LocalContext.current
 
@@ -185,7 +199,8 @@ private fun TakeImageButton(
             } else {
                 launcherPermission.launch(requiredPermissions)
             }
-        })
+        }, theme = theme
+    )
 }
 
 fun Context.getActivity(): AppCompatActivity? = when (this) {
@@ -197,7 +212,8 @@ fun Context.getActivity(): AppCompatActivity? = when (this) {
 @Composable
 private fun GalleryImageButton(
     maxPhoto: Int,
-    launcherGallery: ManagedActivityResultLauncher<Intent, ActivityResult>
+    launcherGallery: ManagedActivityResultLauncher<Intent, ActivityResult>,
+    theme: String?
 ) {
     val context = LocalContext.current
 
@@ -232,13 +248,28 @@ private fun GalleryImageButton(
                         it
                     ) == PackageManager.PERMISSION_GRANTED
                 }) {
-                    FishBun.with(context.getActivity()!!)
-                        .setImageAdapter(CoilAdapter())
-                        .setMaxCount(maxPhoto)
-                        .setThemeColor(PrimaryMain.toArgb())
-                        .startAlbumWithActivityResultCallback(launcherGallery)
+                FishBun.with(context.getActivity()!!)
+                    .setImageAdapter(CoilAdapter())
+                    .setMaxCount(maxPhoto)
+                    .setThemeColor(PrimaryMain.toArgb())
+                    .startAlbumWithActivityResultCallback(launcherGallery)
             } else {
                 launcherPermission.launch(requiredPermissions)
             }
-        })
+        }, theme = theme
+    )
+}
+
+@Preview
+@Composable
+fun PreviewImageWorx(){
+    val viewModel: DetailFormViewModel = hiltViewModel()
+    WorxTheme() {
+        WorxAttachImage(
+            indexForm = 0 ,
+            viewModel = viewModel,
+            session = Session(LocalContext.current),
+            setIndexData = {}) {
+        }
+    }
 }
