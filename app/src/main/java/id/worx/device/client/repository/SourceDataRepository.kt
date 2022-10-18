@@ -11,6 +11,9 @@ import kotlinx.coroutines.flow.Flow
 import retrofit2.Response
 import javax.inject.Inject
 
+/**
+ * All method related to collect, retrieve, or post online from Form database
+ */
 class SourceDataRepository @Inject constructor(
     private val retrofitService: WorxApi,
     private val dao: FormDAO,

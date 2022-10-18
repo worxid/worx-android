@@ -7,6 +7,7 @@ import android.view.ViewGroup
 import androidx.compose.ui.platform.ComposeView
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.navigation.findNavController
 import dagger.hilt.android.AndroidEntryPoint
 import id.worx.device.client.screen.components.WorxThemeStatusBar
 import id.worx.device.client.screen.main.LicencesScreen
@@ -27,7 +28,7 @@ class LicencesFragment : Fragment() {
             setContent {
                 WorxTheme(theme = theme) {
                     WorxThemeStatusBar()
-                    LicencesScreen(onBackNavigation = { activity?.onBackPressedDispatcher?.onBackPressed() })
+                    LicencesScreen(onBackNavigation = { findNavController().navigateUp() })
                 }
             }
         }

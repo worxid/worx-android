@@ -1,5 +1,6 @@
 package id.worx.device.client.viewmodel
 
+import android.util.Log
 import androidx.lifecycle.*
 import androidx.work.*
 import com.google.gson.Gson
@@ -12,11 +13,15 @@ import id.worx.device.client.data.database.SubmissionDownloadWorker
 import id.worx.device.client.data.database.SubmissionUploadWorker
 import id.worx.device.client.model.EmptyForm
 import id.worx.device.client.model.SubmitForm
+import id.worx.device.client.repository.DeviceInfoRepository
 import id.worx.device.client.repository.SourceDataRepository
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 // Const to view dialog/notification on the screen
@@ -35,6 +40,7 @@ data class HomeUiState(
 @HiltViewModel
 class HomeViewModel @Inject constructor(
     private val savedStateHandle: SavedStateHandle,
+    private val deviceInfoRepository: DeviceInfoRepository,
     private val repository: SourceDataRepository
 ) : ViewModel() {
 
@@ -57,11 +63,11 @@ class HomeViewModel @Inject constructor(
         _navigateTo.value = Event(MainScreen.Detail)
     }
 
-    fun goToSettingScreen(){
+    fun goToSettingScreen() {
         _navigateTo.value = Event(MainScreen.Settings)
     }
 
-    fun goToLicencesScreen(){
+    fun goToLicencesScreen() {
         _navigateTo.value = Event(MainScreen.Licences)
     }
 
@@ -83,7 +89,7 @@ class HomeViewModel @Inject constructor(
         viewModelScope.launch {
             repository.getAllSubmission().collect { list ->
                 uiState.update {
-                    it.copy( submission = list)
+                    it.copy(submission = list)
                 }
             }
         }
@@ -110,7 +116,7 @@ class HomeViewModel @Inject constructor(
      * Show dialog of notification on the screen
      * Params : typeOfNotification that need to be shown
      */
-    fun showNotification(typeOfNotification: Int){
+    fun showNotification(typeOfNotification: Int) {
         _showNotification.value = typeOfNotification
     }
 
@@ -118,7 +124,7 @@ class HomeViewModel @Inject constructor(
      * Show badge if there is new draft or submission saved
      * Params : string resources R.String.draft or R.string.submission
      */
-    fun showBadge(typeOfBadge: Int){
+    fun showBadge(typeOfBadge: Int) {
         _showBadge.value = typeOfBadge
     }
 
@@ -150,7 +156,7 @@ class HomeViewModel @Inject constructor(
 
     internal fun uploadSubmissionWork() {
         viewModelScope.launch {
-            repository.getAllUnsubmitted().collect{
+            repository.getAllUnsubmitted().collect {
                 val uploadData: Data = workDataOf("submit_form_list" to Gson().toJson(it))
 
                 val uploadSubmisison = OneTimeWorkRequestBuilder<SubmissionUploadWorker>()
@@ -182,5 +188,24 @@ class HomeViewModel @Inject constructor(
                 refreshData()
             }
         })
+    }
+
+    fun leaveTeam(
+        onSuccess: () -> Unit,
+        onError: () -> Unit,
+        deviceCode: String
+    ) {
+        CoroutineScope(Dispatchers.IO).launch {
+            val response = deviceInfoRepository.leaveTeam(deviceCode)
+            withContext(Dispatchers.Main) {
+                if (response.isSuccessful) {
+                    onSuccess()
+                } else {
+                    val errorMessage = "Error " + response.code().toString()
+                    Log.d(SourceDataRepository.TAG, errorMessage)
+                    onError()
+                }
+            }
+        }
     }
 }

@@ -22,10 +22,7 @@ import androidx.compose.ui.window.Dialog
 import androidx.hilt.navigation.compose.hiltViewModel
 import id.worx.device.client.R
 import id.worx.device.client.data.database.Session
-import id.worx.device.client.model.Fields
-import id.worx.device.client.model.SeparatorValue
-import id.worx.device.client.model.TextFieldValue
-import id.worx.device.client.model.Type
+import id.worx.device.client.model.*
 import id.worx.device.client.screen.components.*
 import id.worx.device.client.theme.Typography
 import id.worx.device.client.viewmodel.CameraViewModel
@@ -161,12 +158,15 @@ fun DetailForm(
                 }
             }
         }
-        item {
-            RedFullWidthButton(
-                onClickCallback = { showSubmitDialog() },
-                label = "Submit", modifier = Modifier.padding(vertical = 16.dp),
-                theme = theme
-            )
+        val detailForm = viewModel.uiState.value.detailForm
+        if ( detailForm is EmptyForm || (detailForm is SubmitForm && detailForm.status == 0)) {
+            item {
+                RedFullWidthButton(
+                    onClickCallback = { showSubmitDialog() },
+                    label = "Submit", modifier = Modifier.padding(vertical = 16.dp),
+                    theme = theme
+                )
+            }
         }
     }
 }

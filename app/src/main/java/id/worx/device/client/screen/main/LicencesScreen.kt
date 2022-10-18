@@ -3,9 +3,11 @@ package id.worx.device.client.screen.main
 import android.content.ContentValues.TAG
 import android.content.Context
 import android.util.Log
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
@@ -79,7 +81,7 @@ fun LicencesScreen(
             }.toMutableList()
         }
 
-        val apanih = setOfLibs.groupBy({it.uniqueId},{it.name})
+        val apanih = setOfLibs.groupBy({ it.uniqueId }, { it.name })
         Log.d(TAG, "LicencesScreen: data $apanih")
 
         setOfLibs.forEach {
@@ -88,14 +90,15 @@ fun LicencesScreen(
 
         //get
         LazyColumn(
-            modifier = Modifier.padding(horizontal = 16.dp),
+            modifier = Modifier
+                .background(MaterialTheme.colors.secondary)
+                .padding(horizontal = 16.dp),
         ) {
             items(setOfLibs.size ?: 0) { index ->
                 Text(
 //                    text = "${setOfLibs[index].uniqueId} - ${setOfLibs[index].name}",
                     text = setOfLibs[index].name,
-                    style = Typography.body2,
-                    color = BlackFont,
+                    style = Typography.body2.copy(MaterialTheme.colors.onSecondary),
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(vertical = 16.dp)

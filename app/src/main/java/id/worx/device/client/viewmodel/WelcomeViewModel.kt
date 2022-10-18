@@ -3,13 +3,23 @@ package id.worx.device.client.viewmodel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import com.google.gson.Gson
 import dagger.hilt.android.lifecycle.HiltViewModel
 import id.worx.device.client.Event
 import id.worx.device.client.WelcomeScreen
+import id.worx.device.client.model.JoinTeamForm
+import id.worx.device.client.model.ResponseDeviceInfo
+import id.worx.device.client.repository.DeviceInfoRepository
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 @HiltViewModel
 class WelcomeViewModel @Inject constructor(
+    private val deviceInfoRepository: DeviceInfoRepository,
 ) : ViewModel() {
 
     private val _navigateTo = MutableLiveData<Event<WelcomeScreen>>()
@@ -29,8 +39,26 @@ class WelcomeViewModel @Inject constructor(
 
     fun resendEmail(){}
 
-    fun joinTeam () {
-        _navigateTo.value = Event(WelcomeScreen.WaitingVerification)
+    fun joinTeam(
+        onError: (String) -> Unit,
+        joinTeamForm: JoinTeamForm
+    ) {
+        CoroutineScope(Dispatchers.IO).launch {
+            val response = deviceInfoRepository.joinTeam(joinTeamForm)
+            withContext(Dispatchers.Main) {
+                if (response.isSuccessful) {
+                    _navigateTo.value = Event(WelcomeScreen.WaitingVerification)
+                } else if (response.code() == 404){
+                    val jsonString = response.errorBody()!!.charStream()
+                    val errorResponse = Gson().fromJson(jsonString, ResponseDeviceInfo::class.java)
+                    if (errorResponse?.success == false)
+                        errorResponse.error?.message?.let { onError(it) }
+                }
+                else {
+                    onError("Something Error")
+                }
+            }
+        }
     }
 
     fun backToJoinRequest(){
@@ -39,5 +67,35 @@ class WelcomeViewModel @Inject constructor(
 
     fun makeNewRequest() {
         _navigateTo.value = Event(WelcomeScreen.JoinTeam)
+    }
+
+    lateinit var uiHandler: UIHandler
+
+    private var _deviceStatus= MutableLiveData<String?>()
+    val deviceStatus: LiveData<String?> = _deviceStatus
+
+    // temporary solution for checking device status
+    fun getDeviceStatus(){
+        viewModelScope.launch {
+            val response = deviceInfoRepository.getDeviceStatus()
+            withContext(Dispatchers.Main){
+                if (response.isSuccessful){
+                    val deviceStatus = response.body()?.value?.deviceStatus
+                    _deviceStatus.postValue(deviceStatus)
+                } else if (response.code() == 404 ){
+                    val jsonString = response.errorBody()!!.charStream()
+                    val errorResponse = Gson().fromJson(jsonString, ResponseDeviceInfo::class.java)
+                    if (errorResponse?.error?.status == "ENTITY_NOT_FOUND_ERROR")
+                        _deviceStatus.postValue(errorResponse.error?.status)
+                } else {
+                    val errorMessage = "Error " + response.code().toString()
+                    uiHandler.showToast("$errorMessage fetching device info")
+                }
+            }
+        }
+    }
+
+    interface UIHandler {
+        fun showToast(text: String)
     }
 }

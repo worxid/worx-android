@@ -1,6 +1,8 @@
 package id.worx.device.client.screen.main
 
+import android.annotation.SuppressLint
 import android.provider.Settings
+import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
@@ -28,10 +30,12 @@ import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
 import id.worx.device.client.BuildConfig
 import id.worx.device.client.R
+import id.worx.device.client.Util
 import id.worx.device.client.data.database.Session
 import id.worx.device.client.screen.components.WhiteFullWidthButton
 import id.worx.device.client.screen.components.WorxDialog
 import id.worx.device.client.screen.components.WorxTopAppBar
+import id.worx.device.client.screen.components.getActivity
 import id.worx.device.client.theme.GrayDivider
 import id.worx.device.client.theme.Typography
 import id.worx.device.client.theme.WorxTheme
@@ -45,6 +49,7 @@ object SettingTheme {
     val Blue = "Blue"
 }
 
+@SuppressLint("HardwareIds")
 @Composable
 fun SettingScreen(
     viewModel: HomeViewModel,
@@ -75,7 +80,25 @@ fun SettingScreen(
 
     if (showDialogLeave.value) {
         WorxDialog(
-            content = { LeaveOrganizationDialog(setShowDialog = { showDialogLeave.value = it }) },
+            content = {
+                LeaveOrganizationDialog(setShowDialog = {
+                    showDialogLeave.value = it
+                },
+                    onPositiveButton = {
+                        viewModel.leaveTeam(
+                            onSuccess = {
+                                Toast.makeText(context, "SUCCESS LEAVE ORG", Toast.LENGTH_SHORT)
+                                    .show()
+                                context.getActivity()?.finishAffinity()
+                            },
+                            onError = {
+                                Toast.makeText(context, "Something Error", Toast.LENGTH_SHORT)
+                                    .show()
+                            },
+                            deviceCode = Util.getDeviceCode(context)
+                        )
+                    })
+            },
             setShowDialog = { showDialogLeave.value = it })
     }
 
@@ -176,7 +199,8 @@ fun TestDialog() {
 
 @Composable
 fun LeaveOrganizationDialog(
-    setShowDialog: (Boolean) -> Unit = {}
+    setShowDialog: (Boolean) -> Unit = {},
+    onPositiveButton: () -> Unit = {}
 ) {
     ConstraintLayout(
         modifier = Modifier
@@ -207,6 +231,7 @@ fun LeaveOrganizationDialog(
                 }
                 .clickable {
                     setShowDialog(false)
+                    onPositiveButton()
                 }
         )
         Text(
@@ -238,9 +263,11 @@ fun ThemeDialog(
     val (selectedOption, onOptionSelected) = remember {
         mutableStateOf(selectedTheme)
     }
-    Column(modifier = Modifier
-        .selectableGroup()
-        .background(MaterialTheme.colors.secondary)) {
+    Column(
+        modifier = Modifier
+            .selectableGroup()
+            .background(MaterialTheme.colors.secondary)
+    ) {
         Text(
             text = stringResource(id = R.string.theme),
             style = Typography.body2.copy(MaterialTheme.colors.onSecondary),

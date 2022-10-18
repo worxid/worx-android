@@ -99,14 +99,7 @@ fun JoinTeamScreen(
             )
             Spacer(modifier = Modifier.weight(1f))
             RedFullWidthButton(
-                onClickCallback = {
-                    onEvent(
-                        JoinTeamEvent.JoinTeam(
-                            name,
-                            organization
-                        )
-                    )
-                },
+                onClickCallback = {onEvent(JoinTeamEvent.JoinTeam(name, organization))},
                 label = stringResource(R.string.send_request),
                 modifier = Modifier.padding(vertical = 20.dp),
                 theme = theme
@@ -114,7 +107,6 @@ fun JoinTeamScreen(
         }
     }
 }
-
 
 @Preview(name = "JoinTeam Screen", showSystemUi = true)
 @Composable
