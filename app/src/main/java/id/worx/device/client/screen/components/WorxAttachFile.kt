@@ -58,9 +58,7 @@ fun WorxAttachFile(indexForm: Int, viewModel: DetailFormViewModel, session: Sess
                 val newPathList = ArrayList(filePath.value)
                 newPathList.add(path)
                 filePath.value = newPathList.toList()
-                viewModel.setComponentData(indexForm,
-                    FileValue(value = ArrayList(newPathList.map { 1 }), filePath = newPathList)
-                )
+                viewModel.getPresignedUrl(newPathList, indexForm, 1)
             }
         }
 

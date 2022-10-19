@@ -3,10 +3,7 @@ package id.worx.device.client.repository
 import id.worx.device.client.data.api.WorxApi
 import id.worx.device.client.data.dao.FormDAO
 import id.worx.device.client.data.dao.SubmitFormDAO
-import id.worx.device.client.model.EmptyForm
-import id.worx.device.client.model.ListFormResponse
-import id.worx.device.client.model.ListSubmissionResponse
-import id.worx.device.client.model.SubmitForm
+import id.worx.device.client.model.*
 import kotlinx.coroutines.flow.Flow
 import retrofit2.Response
 import javax.inject.Inject
@@ -42,6 +39,9 @@ class SourceDataRepository @Inject constructor(
 
     fun getAllUnsubmitted() =
         submitFormDAO.getAllUnsubmitted()
+
+    suspend fun getPresignedUrl(fileName: String): Response<FilePresignedUrlResponse> =
+        retrofitService.getPresignedUrl(fileName)
 
     suspend fun submitForm(form: SubmitForm) =
         retrofitService.submitForm(form)

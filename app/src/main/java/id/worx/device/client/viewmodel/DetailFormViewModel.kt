@@ -3,6 +3,7 @@ package id.worx.device.client.viewmodel
 import android.graphics.Bitmap
 import android.location.Address
 import android.location.Geocoder
+import android.util.Log
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.*
@@ -16,9 +17,13 @@ import id.worx.device.client.WorxApplication
 import id.worx.device.client.data.database.Session
 import id.worx.device.client.model.*
 import id.worx.device.client.repository.SourceDataRepository
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import net.gotev.uploadservice.protocols.binary.BinaryUploadRequest
+import java.io.File
 import java.util.*
 import javax.inject.Inject
 
@@ -115,6 +120,49 @@ class DetailFormViewModel @Inject constructor(
 
     fun currentComponentIndex(index: Int) {
         uiState.value.currentComponent = index
+    }
+
+    /**
+     * @param fileNames file path that needs to be uploaded
+     * @param indexForm the index of fields component inside the form
+     * @param typeValue 1 == File, 2 == Image
+     */
+    fun getPresignedUrl(fileNames: ArrayList<String>, indexForm:Int, typeValue: Int) {
+        viewModelScope.launch {
+            var value: Value = ImageValue(value = arrayListOf(), filePath = arrayListOf())
+            if (typeValue == 1) {
+                value = FileValue(value = arrayListOf(), filePath = arrayListOf())
+            }
+
+            fileNames.forEach {
+                val file = File(it)
+                val response = dataSourceRepo.getPresignedUrl(it)
+                withContext(Dispatchers.Main) {
+                    if (response.isSuccessful) {
+                        uploadMedia(response.body()!!.url!!, file)
+                        if (typeValue == 1){
+                            value as FileValue
+                            value.filePath.add(response.body()!!.path!!)
+                            value.value.add(response.body()!!.fileId!!)
+                        } else {
+                            value as ImageValue
+                            value.filePath.add(response.body()!!.path!!)
+                            value.value.add(response.body()!!.fileId!!)
+                        }
+                    } else {
+                        Log.d("WORX", "file $it failed to get url")
+                    }
+                }
+            }
+            setComponentData(indexForm, value)
+        }
+    }
+
+    private fun uploadMedia(url: String, myFile: File) {
+        val request = BinaryUploadRequest(this.application, url)
+            .setMethod("POST")
+        request.setFileToUpload(myFile.path)
+        request.startUpload()
     }
 
     fun submitForm(actionAfterSubmitted: () -> Unit) {

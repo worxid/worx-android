@@ -124,4 +124,9 @@ dependencies {
     // Paging Compose
     implementation "com.google.accompanist:accompanist-pager:0.13.0"
     implementation "com.google.accompanist:accompanist-pager-indicators:0.13.0"
+
+    // upload file
+    implementation "net.gotev:uploadservice:4.7.0"
+    implementation "net.gotev:uploadservice-okhttp:4.7.0"
+    implementation "net.gotev:uploadservice-ftp:4.7.0"
 }

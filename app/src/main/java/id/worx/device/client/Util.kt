@@ -43,4 +43,91 @@ object Util {
         return Settings.Secure.getString(context.contentResolver,
         Settings.Secure.ANDROID_ID)
     }
+
+    /**
+     * Notification configuration for upload file
+     */
+//    fun UploadNotificationConfig(
+//        context: Context,
+//        uploadId: String,
+//        @StringRes title: Int
+//    ): UploadNotificationConfig {
+//        val clickIntent = PendingIntent.getActivity(
+//            context,
+//            1,
+//            Intent(context, MainActivity::class.java),
+//            flagsCompat(PendingIntent.FLAG_UPDATE_CURRENT)
+//        )
+//
+//        val autoClear = false
+//        val largeIcon: Bitmap? = null
+//        val clearOnAction = true
+//        val ringToneEnabled = true
+//
+//        val cancelAction = UploadNotificationAction(
+//            R.drawable.ic_cancelled,
+//            context.getString(R.string.cancel_upload),
+//            context.getCancelUploadIntent(uploadId)
+//        )
+//
+//        val noActions = ArrayList<UploadNotificationAction>(1)
+//        val progressActions = ArrayList<UploadNotificationAction>(1)
+//        progressActions.add(cancelAction)
+//
+//        val progress = UploadNotificationStatusConfig(
+//            context.getString(title) + ": " + CustomPlaceholdersProcessor.FILENAME_PLACEHOLDER,
+//            context.getString(R.string.uploading),
+//            R.drawable.ic_upload,
+//            Color.BLUE,
+//            largeIcon,
+//            null,
+//            progressActions,
+//            clearOnAction,
+//            autoClear
+//        )
+//
+//        val success = UploadNotificationStatusConfig(
+//            context.getString(title) + ": " + CustomPlaceholdersProcessor.FILENAME_PLACEHOLDER,
+//            context.getString(R.string.upload_success),
+//            R.drawable.ic_upload_success,
+//            Color.GREEN,
+//            largeIcon,
+//            null,
+//            noActions,
+//            clearOnAction,
+//            autoClear
+//        )
+//
+//        val error = UploadNotificationStatusConfig(
+//            context.getString(title) + ": " + CustomPlaceholdersProcessor.FILENAME_PLACEHOLDER,
+//            context.getString(R.string.upload_error),
+//            R.drawable.ic_upload_error,
+//            Color.RED,
+//            largeIcon,
+//            null,
+//            noActions,
+//            clearOnAction,
+//            autoClear
+//        )
+//
+//        val cancelled = UploadNotificationStatusConfig(
+//            context.getString(title) + ": " + CustomPlaceholdersProcessor.FILENAME_PLACEHOLDER,
+//            context.getString(R.string.upload_cancelled),
+//            R.drawable.ic_cancelled,
+//            Color.YELLOW,
+//            largeIcon,
+//            null,
+//            noActions,
+//            clearOnAction
+//        )
+//
+//        return UploadNotificationConfig(
+//            WorxApplication.notificationChannelID,
+//            ringToneEnabled,
+//            progress,
+//            success,
+//            error,
+//            cancelled
+//        )
+//    }
 }
