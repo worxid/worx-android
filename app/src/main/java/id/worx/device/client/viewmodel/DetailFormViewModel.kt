@@ -1,5 +1,6 @@
 package id.worx.device.client.viewmodel
 
+import android.content.Context
 import android.graphics.Bitmap
 import android.location.Address
 import android.location.Geocoder
@@ -72,7 +73,8 @@ class DetailFormViewModel @Inject constructor(
                 }
                 it.copy(detailForm = form, values = form.values.toMutableMap(), status = status)
             } else {
-                it.copy(detailForm = form, status = EventStatus.Filling)
+                _formProgress.value = 0
+                it.copy(detailForm = form, values= mutableMapOf(), status = EventStatus.Filling)
             }
         }
     }
@@ -160,7 +162,9 @@ class DetailFormViewModel @Inject constructor(
 
     private fun uploadMedia(url: String, myFile: File) {
         val request = BinaryUploadRequest(this.application, url)
-            .setMethod("POST")
+            .setMethod("PUT")
+            .setNotificationConfig { _: Context, uploadId: String ->
+                Util.UploadNotificationConfig(this.application, uploadId, "File Upload")}
         request.setFileToUpload(myFile.path)
         request.startUpload()
     }
@@ -180,6 +184,7 @@ class DetailFormViewModel @Inject constructor(
             }
             form.dbId?.let { dbId -> dataSourceRepo.deleteSubmitFormById(dbId) } // if it is draft delete from DB
             dataSourceRepo.insertOrUpdateSubmitForm(form) //insertSubmission to db
+            _formProgress.value = 0
             uiState.update {
                 it.copy(
                     detailForm = null,
