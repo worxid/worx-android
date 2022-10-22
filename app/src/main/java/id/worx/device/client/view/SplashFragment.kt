@@ -79,7 +79,6 @@ class SplashFragment : Fragment(), SplashViewModel.UIHandler {
 
     private fun gotToHome(){
         val intent = Intent(requireContext(), MainActivity::class.java)
-        intent.flags = Intent.FLAG_ACTIVITY_NO_HISTORY
         startActivity(intent)
     }
 
