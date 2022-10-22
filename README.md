@@ -3,6 +3,6 @@ Android Client for WORX application system
 
 ## App System
 MVVM pattern
-Local data : ROOM
-Remote data : Retrofit, Ok-http
-View using Jetpack Compose hybrid with Fragment system
+</br>Local data : ROOM
+</br>Remote data : Retrofit, Ok-http
+</br>View using Jetpack Compose hybrid with Fragment system
