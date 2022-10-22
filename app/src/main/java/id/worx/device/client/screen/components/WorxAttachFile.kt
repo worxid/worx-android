@@ -52,15 +52,15 @@ fun WorxAttachFile(indexForm: Int, viewModel: DetailFormViewModel, session: Sess
 
     val launcherFile =
         rememberLauncherForActivityResult(
-            ActivityResultContracts.StartActivityForResult()
-        ) {
-            it.data?.data?.path?.let { path ->
-                val newPathList = ArrayList(filePath.value)
-                newPathList.add(path)
-                filePath.value = newPathList.toList()
-                viewModel.getPresignedUrl(newPathList, indexForm, 1)
-            }
-        }
+            contract = ActivityResultContracts.StartActivityForResult(),
+            onResult = {
+                it.data?.data?.path?.let { path ->
+                    val newPathList = ArrayList(filePath.value)
+                    newPathList.add(path)
+                    filePath.value = newPathList.toList()
+                    viewModel.getPresignedUrl(newPathList, indexForm, 1)
+                }
+            })
 
     Column(modifier = Modifier.fillMaxWidth()) {
         Text(

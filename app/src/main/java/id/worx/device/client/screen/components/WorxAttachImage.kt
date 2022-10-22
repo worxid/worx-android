@@ -6,6 +6,7 @@ import android.content.ContextWrapper
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
+import android.util.Log
 import android.widget.Toast
 import androidx.activity.compose.ManagedActivityResultLauncher
 import androidx.activity.compose.rememberLauncherForActivityResult
@@ -71,20 +72,18 @@ fun WorxAttachImage(
 
     val launcherGallery =
         rememberLauncherForActivityResult(
-            ActivityResultContracts.StartActivityForResult()
-        ) {
-            it.data?.getParcelableArrayListExtra<Uri>(FishBun.INTENT_PATH)?.forEach { uri ->
-                //val fPath = getRealPathFromURI(context, uri)
-                val fPath = uri.toString()
-                val newPathList = ArrayList(filePath.value)
-                newPathList.add(fPath)
-                filePath.value = newPathList.toList()
-                viewModel.setComponentData(
-                    indexForm,
-                    ImageValue(value = ArrayList(newPathList.map { 1 }), filePath = newPathList)
-                )
-            }
-        }
+            contract = ActivityResultContracts.StartActivityForResult(),
+            onResult = {
+                Log.d("TAGG2", it.toString())
+                it.data?.getParcelableArrayListExtra<Uri>(FishBun.INTENT_PATH)?.forEach { uri ->
+                    //val fPath = getRealPathFromURI(context, uri)
+                    val fPath = uri.toString()
+                    val newPathList = ArrayList(filePath.value)
+                    newPathList.add(fPath)
+                    filePath.value = newPathList.toList()
+                    viewModel.getPresignedUrl(newPathList, indexForm, 2)
+                }
+            })
 
     Column(modifier = Modifier.fillMaxWidth()) {
         Text(

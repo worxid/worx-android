@@ -57,7 +57,8 @@ object Util {
     fun UploadNotificationConfig(
         context: Context,
         uploadId: String,
-        title: String
+        title: String,
+        content: String
     ): UploadNotificationConfig {
         val autoClear = false
         val largeIcon: Bitmap? = null
@@ -76,7 +77,7 @@ object Util {
 
         val progress = UploadNotificationStatusConfig(
             title + ": " + CustomPlaceholdersProcessor.FILENAME_PLACEHOLDER,
-            context.getString(R.string.uploading),
+            context.getString(R.string.uploading) + " " + content,
             android.R.drawable.stat_sys_upload_done,
             Color.BLUE,
             largeIcon,
@@ -88,7 +89,7 @@ object Util {
 
         val success = UploadNotificationStatusConfig(
             title + ": " + CustomPlaceholdersProcessor.FILENAME_PLACEHOLDER,
-            context.getString(R.string.upload_success),
+            context.getString(R.string.upload_success) + " " + content,
             android.R.drawable.checkbox_on_background,
             Color.GREEN,
             largeIcon,
@@ -100,7 +101,7 @@ object Util {
 
         val error = UploadNotificationStatusConfig(
             title + ": " + CustomPlaceholdersProcessor.FILENAME_PLACEHOLDER,
-            context.getString(R.string.upload_error),
+            context.getString(R.string.upload_error) + " " + content,
             android.R.drawable.stat_notify_error,
             Color.RED,
             largeIcon,
@@ -112,7 +113,7 @@ object Util {
 
         val cancelled = UploadNotificationStatusConfig(
             title + ": " + CustomPlaceholdersProcessor.FILENAME_PLACEHOLDER,
-            context.getString(R.string.upload_cancel),
+            context.getString(R.string.upload_cancel) + " " + content,
             android.R.drawable.stat_notify_error,
             Color.YELLOW,
             largeIcon,

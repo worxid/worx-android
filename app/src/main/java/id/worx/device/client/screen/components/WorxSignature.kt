@@ -34,7 +34,7 @@ fun WorxSignature(indexForm: Int, viewModel: DetailFormViewModel, session: Sessi
     val theme = session.theme
 
     val value = viewModel.uiState.collectAsState().value.values[form.id] as SignatureValue?
-    var bitmap = if (value == null) {
+    val bitmap = if (value == null) {
         remember {
             mutableStateOf<Bitmap?>(null)
         }

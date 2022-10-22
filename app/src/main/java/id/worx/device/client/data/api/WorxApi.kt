@@ -50,7 +50,6 @@ interface WorxApi {
                 .addInterceptor { chain ->
                     val newRequest = chain.request().newBuilder()
                         .addHeader("deviceCode", deviceCode)
-                        .addHeader("device-code", deviceCode)
                         .build()
                     chain.proceed(newRequest)
                 }

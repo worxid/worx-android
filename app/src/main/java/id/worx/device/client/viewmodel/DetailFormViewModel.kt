@@ -25,6 +25,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import net.gotev.uploadservice.protocols.binary.BinaryUploadRequest
 import java.io.File
+import java.io.FileOutputStream
 import java.util.*
 import javax.inject.Inject
 
@@ -115,9 +116,21 @@ class DetailFormViewModel @Inject constructor(
         _navigateTo.value = Event(MainScreen.SignaturePad)
     }
 
-    fun saveSignature(bitmap: Bitmap?){
-        setComponentData(uiState.value.currentComponent, SignatureValue(value = 1, bitmap = bitmap))
+    fun saveSignature(bitmap: Bitmap){
+        val fileName = "signature${uiState.value.detailForm!!.fields[uiState.value.currentComponent].id}"
+        val filePath = createFileFromBitmap(fileName, bitmap)
+        getPresignedUrlForSignature(uiState.value.currentComponent, bitmap, filePath)
         _navigateTo.value = Event(MainScreen.Detail)
+    }
+
+    private fun createFileFromBitmap(fileName: String, bitmp: Bitmap): String {
+        val file = File(this.application.cacheDir, "$fileName.png")
+        file.createNewFile()
+        val fos = FileOutputStream(file)
+        bitmp.compress(Bitmap.CompressFormat.PNG, 100, fos)
+        fos.flush()
+        fos.close()
+        return file.absolutePath
     }
 
     fun currentComponentIndex(index: Int) {
@@ -130,24 +143,22 @@ class DetailFormViewModel @Inject constructor(
      * @param typeValue 1 == File, 2 == Image
      */
     fun getPresignedUrl(fileNames: ArrayList<String>, indexForm:Int, typeValue: Int) {
+        var value: Value = ImageValue(value = arrayListOf(), filePath = arrayListOf())
+        if (typeValue == 1) {
+            value = FileValue(value = arrayListOf(), filePath = arrayListOf())
+        }
         viewModelScope.launch {
-            var value: Value = ImageValue(value = arrayListOf(), filePath = arrayListOf())
-            if (typeValue == 1) {
-                value = FileValue(value = arrayListOf(), filePath = arrayListOf())
-            }
-
             fileNames.forEach {
                 val file = File(it)
                 val response = dataSourceRepo.getPresignedUrl(it)
                 withContext(Dispatchers.Main) {
                     if (response.isSuccessful) {
-                        uploadMedia(response.body()!!.url!!, file)
-                        if (typeValue == 1){
-                            value as FileValue
+                        if (typeValue == 1 && value is FileValue){
+                            uploadMedia(response.body()!!.url!!, file , "File $it")
                             value.filePath.add(response.body()!!.path!!)
                             value.value.add(response.body()!!.fileId!!)
-                        } else {
-                            value as ImageValue
+                        } else if (typeValue == 2 && value is ImageValue) {
+                            uploadMedia(response.body()!!.url!!, file, "Image $it")
                             value.filePath.add(response.body()!!.path!!)
                             value.value.add(response.body()!!.fileId!!)
                         }
@@ -160,11 +171,26 @@ class DetailFormViewModel @Inject constructor(
         }
     }
 
-    private fun uploadMedia(url: String, myFile: File) {
+    private fun getPresignedUrlForSignature(indexForm:Int, bitmap: Bitmap, fileName:String) {
+        viewModelScope.launch {
+            val file = File(fileName)
+                val response = dataSourceRepo.getPresignedUrl(fileName)
+                withContext(Dispatchers.Main) {
+                    if (response.isSuccessful) {
+                        uploadMedia(response.body()!!.url!!, file, "Signature $fileName")
+                        setComponentData(indexForm, SignatureValue(value = response.body()!!.fileId, bitmap = bitmap))
+                    } else {
+                        Log.d("WORX", "signature $fileName failed to get url")
+                    }
+                }
+            }
+    }
+
+    private fun uploadMedia(url: String, myFile: File, fileExplaination:String) {
         val request = BinaryUploadRequest(this.application, url)
             .setMethod("PUT")
             .setNotificationConfig { _: Context, uploadId: String ->
-                Util.UploadNotificationConfig(this.application, uploadId, "File Upload")}
+                Util.UploadNotificationConfig(this.application, uploadId, "File Upload", fileExplaination)}
         request.setFileToUpload(myFile.path)
         request.startUpload()
     }
