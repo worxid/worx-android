@@ -42,17 +42,17 @@ interface WorxApi {
         private const val BASE_URL = "https://api.dev.worx.id"
 
         fun create(deviceCode: String): WorxApi {
-            val logger = HttpLoggingInterceptor { Log.d("API", it) }
-            logger.level = HttpLoggingInterceptor.Level.BODY
+            val logger = HttpLoggingInterceptor { Log.d("WORX-API", it) }
+            logger.setLevel(HttpLoggingInterceptor.Level.BODY)
 
             val client = OkHttpClient.Builder()
-                .addInterceptor(logger)
                 .addInterceptor { chain ->
                     val newRequest = chain.request().newBuilder()
                         .addHeader("deviceCode", deviceCode)
                         .build()
                     chain.proceed(newRequest)
                 }
+                .addInterceptor(logger)
                 .build()
 
             val gson = GsonBuilder()
