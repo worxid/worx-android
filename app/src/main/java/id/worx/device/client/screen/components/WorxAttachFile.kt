@@ -17,12 +17,10 @@ import androidx.compose.material.Divider
 import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -35,6 +33,7 @@ import id.worx.device.client.model.FileValue
 import id.worx.device.client.theme.GrayDivider
 import id.worx.device.client.theme.Typography
 import id.worx.device.client.viewmodel.DetailFormViewModel
+import id.worx.device.client.viewmodel.EventStatus
 import java.io.File
 
 @Composable
@@ -49,6 +48,16 @@ fun WorxAttachFile(indexForm: Int, viewModel: DetailFormViewModel, session: Sess
             mutableStateOf(listOf())
         }
     }
+
+    val fileIds by if (fileValue != null) {
+        remember { mutableStateOf(fileValue.value.toList()) }
+    } else {
+        remember {
+            mutableStateOf(listOf())
+        }
+    }
+
+    val formStatus = viewModel.uiState.collectAsState().value.status
 
     val launcherFile =
         rememberLauncherForActivityResult(
@@ -84,8 +93,20 @@ fun WorxAttachFile(indexForm: Int, viewModel: DetailFormViewModel, session: Sess
                     }
                 }
             }
+        } else if (fileIds.isNotEmpty()){
+            Column {
+                fileIds.forEach {
+                    FileDataView(
+                        filePath = "File $it",
+                        fileSize = 0,
+                        showCloseButton = !arrayListOf(EventStatus.Done, EventStatus.Submitted).contains(formStatus)
+                    ) {}
+                }
+            }
         }
-        AttachFileButton(launcherFile, theme = theme)
+        if (arrayListOf(EventStatus.Loading, EventStatus.Filling, EventStatus.Saved).contains(formStatus)) {
+            AttachFileButton(launcherFile, theme = theme)
+        }
         Divider(color = GrayDivider, modifier = Modifier.padding(top = 12.dp))
     }
 }
@@ -133,6 +154,7 @@ private fun AttachFileButton(
 @Composable
 private fun FileDataView(
     filePath: String,
+    showCloseButton: Boolean = true,
     fileSize: Int,
     onClick: () -> Unit
 ) {
@@ -143,6 +165,7 @@ private fun FileDataView(
         Icon(
             modifier = Modifier.align(Alignment.CenterVertically),
             painter = painterResource(id = R.drawable.ic_file_gray),
+            tint = Color.Black.copy(0.54f),
             contentDescription = "File Icon"
         )
         Column(
@@ -150,16 +173,19 @@ private fun FileDataView(
                 .padding(horizontal = 12.dp)
                 .weight(1f)
         ) {
-            Text(text = filePath, style = Typography.body2)
+            Text(text = filePath.substringAfterLast("/"), style = Typography.body2)
             Text(text = "$fileSize kb", style = Typography.body2)
         }
-        Icon(
-            modifier = Modifier
-                .padding(start = 12.dp, end = 4.dp)
-                .clickable { onClick() }
-                .align(Alignment.CenterVertically),
-            painter = painterResource(id = R.drawable.ic_delete_circle),
-            contentDescription = "Clear File"
-        )
+        if (showCloseButton) {
+            Icon(
+                modifier = Modifier
+                    .padding(start = 12.dp, end = 4.dp)
+                    .clickable { onClick() }
+                    .align(Alignment.CenterVertically),
+                painter = painterResource(id = R.drawable.ic_delete_circle),
+                tint = Color.Black.copy(0.54f),
+                contentDescription = "Clear File"
+            )
+        }
     }
 }
