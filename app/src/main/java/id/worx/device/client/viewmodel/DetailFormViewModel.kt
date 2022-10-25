@@ -143,10 +143,15 @@ class DetailFormViewModel @Inject constructor(
      * @param typeValue 1 == File, 2 == Image
      */
     fun getPresignedUrl(fileNames: ArrayList<String>, indexForm:Int, typeValue: Int) {
-        var value: Value = ImageValue(value = arrayListOf(), filePath = arrayListOf())
-        if (typeValue == 1) {
-            value = FileValue(value = arrayListOf(), filePath = arrayListOf())
+        val value = uiState.value.values[uiState.value.detailForm!!.fields[indexForm].id]
+
+        fileNames.forEach {
+            if ((value is FileValue && value.filePath.contains(it)) ||
+                (value is ImageValue && value.filePath.contains(it))){
+                fileNames.remove(it)
+            }
         }
+
         viewModelScope.launch {
             fileNames.forEach {
                 val file = File(it)
@@ -155,11 +160,11 @@ class DetailFormViewModel @Inject constructor(
                     if (response.isSuccessful) {
                         if (typeValue == 1 && value is FileValue){
                             uploadMedia(response.body()!!.url!!, file , "File $it")
-                            value.filePath.add(response.body()!!.path!!)
+                            value.filePath.add(it)
                             value.value.add(response.body()!!.fileId!!)
                         } else if (typeValue == 2 && value is ImageValue) {
                             uploadMedia(response.body()!!.url!!, file, "Image $it")
-                            value.filePath.add(response.body()!!.path!!)
+                            value.filePath.add(it)
                             value.value.add(response.body()!!.fileId!!)
                         }
                     } else {

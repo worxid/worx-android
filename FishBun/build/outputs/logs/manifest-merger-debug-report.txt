@@ -1,57 +1,57 @@
 -- Merging decision tree log ---
 manifest
-ADDED from C:\Users\Ali\AndroidStudioProjects\worx-android\Fishbun\src\main\AndroidManifest.xml:2:1-25:12
-INJECTED from C:\Users\Ali\AndroidStudioProjects\worx-android\Fishbun\src\main\AndroidManifest.xml:2:1-25:12
-INJECTED from C:\Users\Ali\AndroidStudioProjects\worx-android\Fishbun\src\main\AndroidManifest.xml:2:1-25:12
+ADDED from /Users/andrea/Folders/Upwork/Worx/Fishbun/src/main/AndroidManifest.xml:2:1-25:12
+INJECTED from /Users/andrea/Folders/Upwork/Worx/Fishbun/src/main/AndroidManifest.xml:2:1-25:12
+INJECTED from /Users/andrea/Folders/Upwork/Worx/Fishbun/src/main/AndroidManifest.xml:2:1-25:12
 	package
-		ADDED from C:\Users\Ali\AndroidStudioProjects\worx-android\Fishbun\src\main\AndroidManifest.xml:3:5-35
-		INJECTED from C:\Users\Ali\AndroidStudioProjects\worx-android\Fishbun\src\main\AndroidManifest.xml
-		INJECTED from C:\Users\Ali\AndroidStudioProjects\worx-android\Fishbun\src\main\AndroidManifest.xml
+		ADDED from /Users/andrea/Folders/Upwork/Worx/Fishbun/src/main/AndroidManifest.xml:3:5-35
+		INJECTED from /Users/andrea/Folders/Upwork/Worx/Fishbun/src/main/AndroidManifest.xml
+		INJECTED from /Users/andrea/Folders/Upwork/Worx/Fishbun/src/main/AndroidManifest.xml
 	xmlns:android
-		ADDED from C:\Users\Ali\AndroidStudioProjects\worx-android\Fishbun\src\main\AndroidManifest.xml:2:11-69
+		ADDED from /Users/andrea/Folders/Upwork/Worx/Fishbun/src/main/AndroidManifest.xml:2:11-69
 application
-ADDED from C:\Users\Ali\AndroidStudioProjects\worx-android\Fishbun\src\main\AndroidManifest.xml:5:5-23:19
+ADDED from /Users/andrea/Folders/Upwork/Worx/Fishbun/src/main/AndroidManifest.xml:5:5-23:19
 provider#com.sangcomz.fishbun.FishBunFileProvider
-ADDED from C:\Users\Ali\AndroidStudioProjects\worx-android\Fishbun\src\main\AndroidManifest.xml:6:9-14:20
+ADDED from /Users/andrea/Folders/Upwork/Worx/Fishbun/src/main/AndroidManifest.xml:6:9-14:20
 	android:grantUriPermissions
-		ADDED from C:\Users\Ali\AndroidStudioProjects\worx-android\Fishbun\src\main\AndroidManifest.xml:10:13-47
+		ADDED from /Users/andrea/Folders/Upwork/Worx/Fishbun/src/main/AndroidManifest.xml:10:13-47
 	android:authorities
-		ADDED from C:\Users\Ali\AndroidStudioProjects\worx-android\Fishbun\src\main\AndroidManifest.xml:8:13-71
+		ADDED from /Users/andrea/Folders/Upwork/Worx/Fishbun/src/main/AndroidManifest.xml:8:13-71
 	android:exported
-		ADDED from C:\Users\Ali\AndroidStudioProjects\worx-android\Fishbun\src\main\AndroidManifest.xml:9:13-37
+		ADDED from /Users/andrea/Folders/Upwork/Worx/Fishbun/src/main/AndroidManifest.xml:9:13-37
 	android:name
-		ADDED from C:\Users\Ali\AndroidStudioProjects\worx-android\Fishbun\src\main\AndroidManifest.xml:7:13-68
+		ADDED from /Users/andrea/Folders/Upwork/Worx/Fishbun/src/main/AndroidManifest.xml:7:13-68
 meta-data#android.support.FILE_PROVIDER_PATHS
-ADDED from C:\Users\Ali\AndroidStudioProjects\worx-android\Fishbun\src\main\AndroidManifest.xml:11:13-13:58
+ADDED from /Users/andrea/Folders/Upwork/Worx/Fishbun/src/main/AndroidManifest.xml:11:13-13:58
 	android:resource
-		ADDED from C:\Users\Ali\AndroidStudioProjects\worx-android\Fishbun\src\main\AndroidManifest.xml:13:17-55
+		ADDED from /Users/andrea/Folders/Upwork/Worx/Fishbun/src/main/AndroidManifest.xml:13:17-55
 	android:name
-		ADDED from C:\Users\Ali\AndroidStudioProjects\worx-android\Fishbun\src\main\AndroidManifest.xml:12:17-67
+		ADDED from /Users/andrea/Folders/Upwork/Worx/Fishbun/src/main/AndroidManifest.xml:12:17-67
 activity#com.sangcomz.fishbun.ui.album.ui.AlbumActivity
-ADDED from C:\Users\Ali\AndroidStudioProjects\worx-android\Fishbun\src\main\AndroidManifest.xml:16:9-19:51
+ADDED from /Users/andrea/Folders/Upwork/Worx/Fishbun/src/main/AndroidManifest.xml:16:9-19:51
 	android:label
-		ADDED from C:\Users\Ali\AndroidStudioProjects\worx-android\Fishbun\src\main\AndroidManifest.xml:18:13-42
+		ADDED from /Users/andrea/Folders/Upwork/Worx/Fishbun/src/main/AndroidManifest.xml:18:13-42
 	android:theme
-		ADDED from C:\Users\Ali\AndroidStudioProjects\worx-android\Fishbun\src\main\AndroidManifest.xml:19:13-48
+		ADDED from /Users/andrea/Folders/Upwork/Worx/Fishbun/src/main/AndroidManifest.xml:19:13-48
 	android:name
-		ADDED from C:\Users\Ali\AndroidStudioProjects\worx-android\Fishbun\src\main\AndroidManifest.xml:17:13-54
+		ADDED from /Users/andrea/Folders/Upwork/Worx/Fishbun/src/main/AndroidManifest.xml:17:13-54
 activity#com.sangcomz.fishbun.ui.picker.PickerActivity
-ADDED from C:\Users\Ali\AndroidStudioProjects\worx-android\Fishbun\src\main\AndroidManifest.xml:20:9-22:51
+ADDED from /Users/andrea/Folders/Upwork/Worx/Fishbun/src/main/AndroidManifest.xml:20:9-22:51
 	android:theme
-		ADDED from C:\Users\Ali\AndroidStudioProjects\worx-android\Fishbun\src\main\AndroidManifest.xml:22:13-48
+		ADDED from /Users/andrea/Folders/Upwork/Worx/Fishbun/src/main/AndroidManifest.xml:22:13-48
 	android:name
-		ADDED from C:\Users\Ali\AndroidStudioProjects\worx-android\Fishbun\src\main\AndroidManifest.xml:21:13-53
+		ADDED from /Users/andrea/Folders/Upwork/Worx/Fishbun/src/main/AndroidManifest.xml:21:13-53
 uses-sdk
-INJECTED from C:\Users\Ali\AndroidStudioProjects\worx-android\Fishbun\src\main\AndroidManifest.xml reason: use-sdk injection requested
-INJECTED from C:\Users\Ali\AndroidStudioProjects\worx-android\Fishbun\src\main\AndroidManifest.xml
-INJECTED from C:\Users\Ali\AndroidStudioProjects\worx-android\Fishbun\src\main\AndroidManifest.xml
-INJECTED from C:\Users\Ali\AndroidStudioProjects\worx-android\Fishbun\src\main\AndroidManifest.xml
-INJECTED from C:\Users\Ali\AndroidStudioProjects\worx-android\Fishbun\src\main\AndroidManifest.xml
+INJECTED from /Users/andrea/Folders/Upwork/Worx/Fishbun/src/main/AndroidManifest.xml reason: use-sdk injection requested
+INJECTED from /Users/andrea/Folders/Upwork/Worx/Fishbun/src/main/AndroidManifest.xml
+INJECTED from /Users/andrea/Folders/Upwork/Worx/Fishbun/src/main/AndroidManifest.xml
+INJECTED from /Users/andrea/Folders/Upwork/Worx/Fishbun/src/main/AndroidManifest.xml
+INJECTED from /Users/andrea/Folders/Upwork/Worx/Fishbun/src/main/AndroidManifest.xml
 	android:targetSdkVersion
-		INJECTED from C:\Users\Ali\AndroidStudioProjects\worx-android\Fishbun\src\main\AndroidManifest.xml
-		ADDED from C:\Users\Ali\AndroidStudioProjects\worx-android\Fishbun\src\main\AndroidManifest.xml
-		INJECTED from C:\Users\Ali\AndroidStudioProjects\worx-android\Fishbun\src\main\AndroidManifest.xml
+		INJECTED from /Users/andrea/Folders/Upwork/Worx/Fishbun/src/main/AndroidManifest.xml
+		ADDED from /Users/andrea/Folders/Upwork/Worx/Fishbun/src/main/AndroidManifest.xml
+		INJECTED from /Users/andrea/Folders/Upwork/Worx/Fishbun/src/main/AndroidManifest.xml
 	android:minSdkVersion
-		INJECTED from C:\Users\Ali\AndroidStudioProjects\worx-android\Fishbun\src\main\AndroidManifest.xml
-		ADDED from C:\Users\Ali\AndroidStudioProjects\worx-android\Fishbun\src\main\AndroidManifest.xml
-		INJECTED from C:\Users\Ali\AndroidStudioProjects\worx-android\Fishbun\src\main\AndroidManifest.xml
+		INJECTED from /Users/andrea/Folders/Upwork/Worx/Fishbun/src/main/AndroidManifest.xml
+		ADDED from /Users/andrea/Folders/Upwork/Worx/Fishbun/src/main/AndroidManifest.xml
+		INJECTED from /Users/andrea/Folders/Upwork/Worx/Fishbun/src/main/AndroidManifest.xml
