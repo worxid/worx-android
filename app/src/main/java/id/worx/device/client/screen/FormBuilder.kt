@@ -1,8 +1,8 @@
 package id.worx.device.client.screen
 
-import androidx.compose.foundation.background
-import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
+import androidx.compose.foundation.*
+import androidx.compose.foundation.gestures.FlingBehavior
+import androidx.compose.foundation.gestures.ScrollableDefaults
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
@@ -83,7 +83,14 @@ fun DetailForm(
     val data = componentList.map { component ->
         remember { mutableStateOf("") }
     }.toMutableList()
-    val listState = rememberLazyListState()
+    val listState = rememberLazyListState(viewModel.indexScroll.value, viewModel.offset.value)
+
+    LaunchedEffect(key1 = listState.isScrollInProgress){
+        if (!listState.isScrollInProgress){
+            viewModel.indexScroll.value = listState.firstVisibleItemIndex
+            viewModel.offset.value = listState.firstVisibleItemScrollOffset
+        }
+    }
 
     LazyColumn(
         state = listState,
