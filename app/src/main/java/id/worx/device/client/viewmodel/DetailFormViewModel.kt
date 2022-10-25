@@ -53,6 +53,7 @@ class DetailFormViewModel @Inject constructor(
 ) : ViewModel() {
 
     var uiState = MutableStateFlow(DetailUiState())
+    lateinit var uiHandler: UIHandler
 
     private val _navigateTo = MutableLiveData<Event<MainScreen>>()
     val navigateTo: LiveData<Event<MainScreen>> = _navigateTo
@@ -66,16 +67,16 @@ class DetailFormViewModel @Inject constructor(
      */
     fun navigateFromHomeScreen(form: BasicForm) {
         uiState.update {
-            if (form is SubmitForm){
+            if (form is SubmitForm) {
                 _formProgress.value = initProgress(form.values.toMutableMap(), form.fields)
                 var status = EventStatus.Filling
-                if (form.status == 2 || form.status == 1){
+                if (form.status == 2 || form.status == 1) {
                     status = EventStatus.Done
                 }
                 it.copy(detailForm = form, values = form.values.toMutableMap(), status = status)
             } else {
                 _formProgress.value = 0
-                it.copy(detailForm = form, values= mutableMapOf(), status = EventStatus.Filling)
+                it.copy(detailForm = form, values = mutableMapOf(), status = EventStatus.Filling)
             }
         }
     }
@@ -116,8 +117,9 @@ class DetailFormViewModel @Inject constructor(
         _navigateTo.value = Event(MainScreen.SignaturePad)
     }
 
-    fun saveSignature(bitmap: Bitmap){
-        val fileName = "signature${uiState.value.detailForm!!.fields[uiState.value.currentComponent].id}"
+    fun saveSignature(bitmap: Bitmap) {
+        val fileName =
+            "signature${uiState.value.detailForm!!.fields[uiState.value.currentComponent].id}"
         val filePath = createFileFromBitmap(fileName, bitmap)
         getPresignedUrlForSignature(uiState.value.currentComponent, bitmap, filePath)
         _navigateTo.value = Event(MainScreen.Detail)
@@ -142,12 +144,13 @@ class DetailFormViewModel @Inject constructor(
      * @param indexForm the index of fields component inside the form
      * @param typeValue 1 == File, 2 == Image
      */
-    fun getPresignedUrl(fileNames: ArrayList<String>, indexForm:Int, typeValue: Int) {
+    fun getPresignedUrl(fileNames: ArrayList<String>, indexForm: Int, typeValue: Int) {
         val value = uiState.value.values[uiState.value.detailForm!!.fields[indexForm].id]
 
         fileNames.forEach {
             if ((value is FileValue && value.filePath.contains(it)) ||
-                (value is ImageValue && value.filePath.contains(it))){
+                (value is ImageValue && value.filePath.contains(it))
+            ) {
                 fileNames.remove(it)
             }
         }
@@ -158,8 +161,8 @@ class DetailFormViewModel @Inject constructor(
                 val response = dataSourceRepo.getPresignedUrl(it)
                 withContext(Dispatchers.Main) {
                     if (response.isSuccessful) {
-                        if (typeValue == 1 && value is FileValue){
-                            uploadMedia(response.body()!!.url!!, file , "File $it")
+                        if (typeValue == 1 && value is FileValue) {
+                            uploadMedia(response.body()!!.url!!, file, "File $it")
                             value.filePath.add(it)
                             value.value.add(response.body()!!.fileId!!)
                         } else if (typeValue == 2 && value is ImageValue) {
@@ -176,31 +179,40 @@ class DetailFormViewModel @Inject constructor(
         }
     }
 
-    private fun getPresignedUrlForSignature(indexForm:Int, bitmap: Bitmap, fileName:String) {
+    private fun getPresignedUrlForSignature(indexForm: Int, bitmap: Bitmap, fileName: String) {
         viewModelScope.launch {
             val file = File(fileName)
-                val response = dataSourceRepo.getPresignedUrl(fileName)
-                withContext(Dispatchers.Main) {
-                    if (response.isSuccessful) {
-                        uploadMedia(response.body()!!.url!!, file, "Signature $fileName")
-                        setComponentData(indexForm, SignatureValue(value = response.body()!!.fileId, bitmap = bitmap))
-                    } else {
-                        Log.d("WORX", "signature $fileName failed to get url")
-                    }
+            val response = dataSourceRepo.getPresignedUrl(fileName)
+            withContext(Dispatchers.Main) {
+                if (response.isSuccessful) {
+                    uploadMedia(response.body()!!.url!!, file, "Signature $fileName")
+                    setComponentData(
+                        indexForm,
+                        SignatureValue(value = response.body()!!.fileId, bitmap = bitmap)
+                    )
+                } else {
+                    Log.d("WORX", "signature $fileName failed to get url")
                 }
             }
+        }
     }
 
-    private fun uploadMedia(url: String, myFile: File, fileExplaination:String) {
+    private fun uploadMedia(url: String, myFile: File, fileExplaination: String) {
         val request = BinaryUploadRequest(this.application, url)
             .setMethod("PUT")
             .setNotificationConfig { _: Context, uploadId: String ->
-                Util.UploadNotificationConfig(this.application, uploadId, "File Upload", fileExplaination)}
+                Util.UploadNotificationConfig(
+                    this.application,
+                    uploadId,
+                    "File Upload",
+                    fileExplaination
+                )
+            }
         request.setFileToUpload(myFile.path)
         request.startUpload()
     }
 
-    fun submitForm(actionAfterSubmitted: () -> Unit) {
+    private fun submitForm(actionAfterSubmitted: () -> Unit) {
         viewModelScope.launch {
             val form = createSubmitForm()
             if (Util.isConnected(application.applicationContext)) {
@@ -230,6 +242,24 @@ class DetailFormViewModel @Inject constructor(
         }
     }
 
+    fun validateSubmitForm(actionAfterSubmitted: () -> Unit) {
+        val fields = uiState.value.detailForm!!.fields
+        val value = uiState.value.values
+        val unFilledFields = arrayListOf<String>()
+
+        fields.forEach {
+            if (it.required == true && value[it.id] == null) {
+                unFilledFields.add("${it.type} ${it.label}")
+            }
+        }
+
+        if (unFilledFields.isEmpty()) {
+            submitForm { actionAfterSubmitted() }
+        } else {
+            uiHandler.showToast("${unFilledFields.joinToString(", ")} must be filled")
+        }
+    }
+
     fun saveFormAsDraft(actionAfterSaved: () -> Unit) {
         viewModelScope.launch {
             val form = createSubmitForm()
@@ -248,7 +278,7 @@ class DetailFormViewModel @Inject constructor(
         }
     }
 
-    private fun createSubmitForm(): SubmitForm{
+    private fun createSubmitForm(): SubmitForm {
         val submitForm = SubmitForm(
             id = uiState.value.detailForm!!.id,
             label = uiState.value.detailForm!!.label,
@@ -256,7 +286,8 @@ class DetailFormViewModel @Inject constructor(
             fields = uiState.value.detailForm!!.fields,
             values = uiState.value.values,
             templateId = uiState.value.detailForm!!.id,
-            lastUpdated = getCurrentDate("dd/MM/yyyy hh:mm a"))
+            lastUpdated = getCurrentDate("dd/MM/yyyy hh:mm a")
+        )
 
         val latitude = session.latitude ?: "0.0010"
         val longitude = session.longitude ?: "-109.3222"
@@ -271,8 +302,13 @@ class DetailFormViewModel @Inject constructor(
                     "${address.locality}, ${address.subAdminArea}, " +
                     "${address.adminArea}, ${address.countryName}",
             latitude.toDouble().toInt(),
-            longitude.toDouble().toInt())
+            longitude.toDouble().toInt()
+        )
         submitForm.submitLocation = submitLocation
         return submitForm
+    }
+
+    interface UIHandler {
+        fun showToast(text: String)
     }
 }
