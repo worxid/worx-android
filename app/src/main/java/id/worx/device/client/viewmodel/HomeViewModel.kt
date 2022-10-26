@@ -55,6 +55,8 @@ class HomeViewModel @Inject constructor(
     private val _showBadge = MutableStateFlow(0)
     val showBadge: StateFlow<Int> = _showBadge
 
+    var isRefresh = MutableStateFlow(false)
+
     init {
         refreshData()
     }
@@ -74,7 +76,7 @@ class HomeViewModel @Inject constructor(
     /**
      * Refresh data and update the UI state accordingly
      */
-    private fun refreshData() {
+    fun refreshData() {
         // Ui state is refreshing
         uiState.value.isLoading = true
 

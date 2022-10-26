@@ -17,9 +17,11 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.LifecycleOwner
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.rememberPagerState
+import id.worx.device.client.MainActivity
 import id.worx.device.client.R
 import id.worx.device.client.data.database.Session
 import id.worx.device.client.model.EmptyForm
@@ -45,7 +47,8 @@ fun SearchScreen(
     submissionList: List<SubmitForm>,
     viewModel: HomeViewModel,
     detailVM: DetailFormViewModel,
-    session: Session
+    session: Session,
+    viewLifecycleOwner: LifecycleOwner
 ) {
     val searchInput = viewModel.uiState.collectAsState().value.searchInput
     val formData = formList.filter { data -> data.label?.contains(searchInput, true) ?: false}
@@ -117,7 +120,8 @@ fun SearchScreen(
                         detailVM,
                         stringResource(R.string.no_forms),
                         stringResource(R.string.empty_description_form),
-                        session = session
+                        session = session,
+                        viewLifecycleOwner
                     )
                     1 -> FormScreen(
                         draftData,
@@ -126,7 +130,8 @@ fun SearchScreen(
                         detailVM,
                         stringResource(R.string.no_drafts),
                         stringResource(R.string.empty_description_drafts),
-                        session = session
+                        session = session,
+                        viewLifecycleOwner
                     )
                     2 -> FormScreen(
                         submissionData,
@@ -135,7 +140,8 @@ fun SearchScreen(
                         detailVM,
                         stringResource(R.string.no_submission),
                         stringResource(R.string.empty_description_submission),
-                        session = session
+                        session = session,
+                        viewLifecycleOwner
                     )
                 }
             }
@@ -153,7 +159,8 @@ fun PreviewSearchScreen() {
             submissionList = arrayListOf(),
             viewModel = hiltViewModel(),
             detailVM = hiltViewModel(),
-            session = Session(LocalContext.current)
+            session = Session(LocalContext.current),
+            MainActivity()
         )
     }
 }
