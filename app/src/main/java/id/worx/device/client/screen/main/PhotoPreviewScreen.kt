@@ -62,10 +62,7 @@ fun PhotoPreviewScreen(
                         val value = detailViewModel.uiState.value.values[id] as ImageValue?
                         val filePath = value?.filePath ?: arrayListOf()
                         filePath.add(path)
-                        detailViewModel.setComponentData(
-                            index,
-                            ImageValue(value = ArrayList(filePath.map { 1 }), filePath = filePath)
-                        )
+                        detailViewModel.getPresignedUrl(filePath, index, 2)
                         addPhotoToGallery(path)
                         viewModel.navigateToDetail()
                     }

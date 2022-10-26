@@ -188,7 +188,7 @@ class CameraPhotoFragment : Fragment() {
     }
 
     companion object {
-        private const val TAG = "KorpsSabhara LaporanFotoFragment"
+        private const val TAG = "WORX CameraFragment"
         private val REQUIRED_PERMISSIONS = arrayOf(
             Manifest.permission.CAMERA,
             Manifest.permission.WRITE_EXTERNAL_STORAGE

@@ -58,4 +58,8 @@
     <string name="yes">Yes</string>
     <string name="cancel">Cancel</string>
     <string name="leave_organization">Are you sure you want to leave the organization?</string>
+    <string name="upload_cancel">Upload Cancelled</string>
+    <string name="upload_error">Upload Error</string>
+    <string name="upload_success">Upload Success</string>
+    <string name="uploading">Uploading</string>
 </resources>

@@ -20,3 +20,11 @@ data class FileValue(
     @SerializedName("file_ids") var value: ArrayList<Int> = arrayListOf(),
     @Transient val filePath: ArrayList<String> = arrayListOf()
 ) : Value
+
+data class FilePresignedUrlResponse (
+
+    @SerializedName("fileId" ) var fileId : Int?    = null,
+    @SerializedName("url"    ) var url    : String? = null,
+    @SerializedName("path"   ) var path   : String? = null
+
+)
