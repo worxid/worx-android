@@ -39,8 +39,9 @@ import java.io.File
 @Composable
 fun WorxAttachFile(indexForm: Int, viewModel: DetailFormViewModel, session: Session) {
     val theme = session.theme
-    val form = viewModel.uiState.collectAsState().value.detailForm!!.fields[indexForm] as FileField
-    val fileValue = viewModel.uiState.collectAsState().value.values[form.id] as FileValue?
+    val uiState = viewModel.uiState.collectAsState().value
+    val form = uiState.detailForm!!.fields[indexForm] as FileField
+    val fileValue = uiState.values[form.id] as FileValue?
     val filePath = if (fileValue != null) {
         remember { mutableStateOf(fileValue.filePath.toList()) }
     } else {
@@ -152,7 +153,7 @@ private fun AttachFileButton(
 }
 
 @Composable
-private fun FileDataView(
+fun FileDataView(
     filePath: String,
     showCloseButton: Boolean = true,
     fileSize: Int,
