@@ -131,21 +131,21 @@ fun WorxAttachImage(
                 ) {}
             }
         }
-    }
-    if (arrayListOf(
-            EventStatus.Loading,
-            EventStatus.Filling,
-            EventStatus.Saved
-        ).contains(formStatus)
-    ) {
-        Row(
-            modifier = Modifier.padding(horizontal = 16.dp),
-            horizontalArrangement = Arrangement.spacedBy(12.dp)
+        if (arrayListOf(
+                EventStatus.Loading,
+                EventStatus.Filling,
+                EventStatus.Saved
+            ).contains(formStatus)
         ) {
-            TakeImageButton(navigateToPhotoCamera, setIndexData, theme)
-            GalleryImageButton(form.maxFiles ?: 1, launcherGallery = launcherGallery, theme)
+            Row(
+                modifier = Modifier.padding(horizontal = 16.dp),
+                horizontalArrangement = Arrangement.spacedBy(12.dp)
+            ) {
+                TakeImageButton(navigateToPhotoCamera, setIndexData, theme)
+                GalleryImageButton(form.maxFiles ?: 1, launcherGallery = launcherGallery, theme)
+            }
+            Divider(color = GrayDivider, modifier = Modifier.padding(top = 12.dp))
         }
-        Divider(color = GrayDivider, modifier = Modifier.padding(top = 12.dp))
     }
 }
 
