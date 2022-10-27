@@ -1,17 +1,18 @@
 <h1 align="center">WORX Android</h1></br>
 <p align="center">  
-Android Client for [WORX](https://worx.id/) application system. Worx allows your teams to complete forms and collect data anywhere, anytime. Quickly retrieve accurate data, flag critical issues, reduce data entry errors, validate answers, add conditional logic, and more.
+Android Client for <a href="https://worx.id" target="_blank"> WORX </a> application system. Worx allows your teams to complete forms and collect data anywhere, anytime. Quickly retrieve accurate data, flag critical issues, reduce data entry errors, validate answers, add conditional logic, and more.
 </p>
 </br>
 
 ## Download
-<a href='https://play.google.com/store/apps/details?id=com.andreasgift.kutipanalkitab&pcampaignid=pcampaignidMKT-Other-global-all-co-prtnr-py-PartBadge-Mar2515-1'><img alt='Get it on Google Play' src='https://play.google.com/intl/en_us/badges/static/images/badges/en_badge_web_generic.png'/></a>
+<a href='https://play.google.com/store/apps/details?id=id.worx.device.client&pcampaignid=pcampaignidMKT-Other-global-all-co-prtnr-py-PartBadge-Mar2515-1'><img alt='Get it on Google Play' src='https://play.google.com/intl/en_us/badges/static/images/badges/en_badge_web_generic.png'/></a>
+
 
 ## Screenshots
 <p align="center">
-<img src="https://user-images.githubusercontent.com/24237865/93901108-238eb000-fd31-11ea-9fac-c9ba1eca146c.gif" width="270"/>
-<img src="/preview/preview0.gif" width="270"/>
-<img src="/preview/preview1.gif" width="270"/>
+<img src="https://github.com/worxid/worx-android/blob/master/releasedata/1.png" width="270"/>
+<img src="https://github.com/worxid/worx-android/blob/master/releasedata/2.png" width="270"/>
+<img src="https://github.com/worxid/worx-android/blob/master/releasedata/3.png" width="270"/>
 </p>
 
 ## Tech stack & Open-source libraries
