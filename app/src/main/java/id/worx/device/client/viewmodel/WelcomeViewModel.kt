@@ -47,7 +47,7 @@ class WelcomeViewModel @Inject constructor(
             withContext(Dispatchers.Main) {
                 if (response.isSuccessful) {
                     submitNewTeam()
-                } else if (response.code() in 400..404) {
+                } else if (response.code() == 404) {
                     val jsonString = response.errorBody()!!.charStream()
                     val errorResponse = Gson().fromJson(jsonString, ResponseDeviceInfo::class.java)
                     if (errorResponse?.success == false)
