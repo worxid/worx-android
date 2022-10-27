@@ -27,6 +27,7 @@ import id.worx.device.client.model.SignatureValue
 import id.worx.device.client.theme.GrayDivider
 import id.worx.device.client.theme.Typography
 import id.worx.device.client.viewmodel.DetailFormViewModel
+import id.worx.device.client.viewmodel.EventStatus
 
 @Composable
 fun WorxSignature(indexForm: Int, viewModel: DetailFormViewModel, session: Session) {
@@ -34,13 +35,16 @@ fun WorxSignature(indexForm: Int, viewModel: DetailFormViewModel, session: Sessi
     val theme = session.theme
 
     val value = viewModel.uiState.collectAsState().value.values[form.id] as SignatureValue?
-    var bitmap = if (value == null) {
+    val bitmap = if (value == null) {
         remember {
             mutableStateOf<Bitmap?>(null)
         }
     } else {
-        remember { mutableStateOf<Bitmap?>(value.bitmap) }
+        remember { mutableStateOf(value.bitmap) }
     }
+
+    val fileId = value?.value
+    val formStatus = viewModel.uiState.collectAsState().value.status
 
     Column(modifier = Modifier.fillMaxWidth()) {
         Text(
@@ -48,14 +52,27 @@ fun WorxSignature(indexForm: Int, viewModel: DetailFormViewModel, session: Sessi
             style = Typography.body2.copy(MaterialTheme.colors.onSecondary),
             modifier = Modifier.padding(start = 17.dp, bottom = 8.dp, end = 16.dp)
         )
-        if (bitmap.value != null) {
+        if (value?.bitmap != null) {
             SignatureView(bitmap.value) {
                 viewModel.setComponentData(indexForm, null)
                 bitmap.value = null
             }
+        } else if (fileId != null) {
+            FileDataView(
+                filePath = "File $fileId",
+                fileSize = 0,
+                showCloseButton = !arrayListOf(EventStatus.Done, EventStatus.Submitted).contains(
+                    formStatus
+                )
+            ) {}
         } else {
-            AttachSignatureButton(theme = theme) {
-                viewModel.goToSignaturePad(indexForm)
+            if (arrayListOf(EventStatus.Loading, EventStatus.Filling, EventStatus.Saved).contains(
+                    formStatus
+                )
+            ) {
+                AttachSignatureButton(theme = theme) {
+                    viewModel.goToSignaturePad(indexForm)
+                }
             }
         }
         Divider(color = GrayDivider, modifier = Modifier.padding(top = 12.dp))

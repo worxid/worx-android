@@ -9,10 +9,7 @@ import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
-import retrofit2.http.Body
-import retrofit2.http.GET
-import retrofit2.http.POST
-import retrofit2.http.PUT
+import retrofit2.http.*
 
 
 /**
@@ -22,6 +19,9 @@ interface WorxApi {
 
     @GET("/mobile/forms")
     suspend fun fetchAllTemplate(): Response<ListFormResponse>
+
+    @GET("/mobile/media/presigned-url")
+    suspend fun getPresignedUrl(@Query("filename") fileName: String): Response<FilePresignedUrlResponse>
 
     @POST("/mobile/forms/submit")
     suspend fun submitForm(@Body formFilled: SubmitForm): Response<ResponseBody>
@@ -42,18 +42,17 @@ interface WorxApi {
         private const val BASE_URL = "https://api.dev.worx.id"
 
         fun create(deviceCode: String): WorxApi {
-            val logger = HttpLoggingInterceptor { Log.d("API", it) }
-            logger.level = HttpLoggingInterceptor.Level.BODY
+            val logger = HttpLoggingInterceptor { Log.d("WORX-API", it) }
+            logger.setLevel(HttpLoggingInterceptor.Level.BODY)
 
             val client = OkHttpClient.Builder()
-                .addInterceptor(logger)
                 .addInterceptor { chain ->
                     val newRequest = chain.request().newBuilder()
                         .addHeader("deviceCode", deviceCode)
-                        .addHeader("device-code", deviceCode)
                         .build()
                     chain.proceed(newRequest)
                 }
+                .addInterceptor(logger)
                 .build()
 
             val gson = GsonBuilder()

@@ -1,10 +1,7 @@
 package id.worx.device.client.screen.main
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -49,6 +46,7 @@ fun SearchScreen(
     detailVM: DetailFormViewModel,
     session: Session,
     viewLifecycleOwner: LifecycleOwner
+    modifier: Modifier
 ) {
     val searchInput = viewModel.uiState.collectAsState().value.searchInput
     val formData = formList.filter { data -> data.label?.contains(searchInput, true) ?: false}
@@ -58,7 +56,7 @@ fun SearchScreen(
 
     Scaffold() { padding ->
         ConstraintLayout(
-            modifier = Modifier.padding(padding)
+            modifier = modifier
         ) {
             val (tablayout, tabcontent) = createRefs()
             val pagerState = rememberPagerState(pageCount = 3)
@@ -161,6 +159,7 @@ fun PreviewSearchScreen() {
             detailVM = hiltViewModel(),
             session = Session(LocalContext.current),
             MainActivity()
+            modifier = Modifier
         )
     }
 }

@@ -76,8 +76,9 @@ fun NavigationGraph(
     detailVM: DetailFormViewModel,
     session: Session,
     viewLifecycleOwner: LifecycleOwner
+    modifier: Modifier
 ) {
-    NavHost(navController, startDestination = BottomNavItem.Form.screen_route) {
+    NavHost(navController, startDestination = BottomNavItem.Form.screen_route, modifier = modifier) {
         composable(BottomNavItem.Form.screen_route) {
             FormScreen(
                 formList,
@@ -153,6 +154,7 @@ fun HomeScreen(
             )
         }
     ) { padding ->
+        val modifier = Modifier.padding(bottom = 56.dp)
         if (showBotNav) {
             NavigationGraph(
                 navController = navController,
@@ -163,6 +165,7 @@ fun HomeScreen(
                 detailVM = detailVM,
                 session = session,
                 viewLifecycleOwner = viewLifecycleOwner
+                modifier = modifier
             )
         } else {
             SearchScreen(
@@ -173,6 +176,7 @@ fun HomeScreen(
                 detailVM = detailVM,
                 session = session,
                 viewLifecycleOwner = viewLifecycleOwner
+                modifier = modifier
             )
         }
         AnimatedVisibility(

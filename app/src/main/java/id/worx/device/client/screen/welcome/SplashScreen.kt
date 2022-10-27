@@ -1,4 +1,4 @@
-package id.worx.device.client.screen
+package id.worx.device.client.screen.welcome
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
