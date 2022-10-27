@@ -20,6 +20,7 @@ import com.google.android.gms.location.*
 import com.google.android.material.navigation.NavigationView
 import dagger.hilt.android.AndroidEntryPoint
 import id.worx.device.client.data.database.Session
+import id.worx.device.client.view.getCountryName
 import id.worx.device.client.viewmodel.HomeViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -122,6 +123,10 @@ class MainActivity : AppCompatActivity() {
     fun parseLocation(location: Location){
         session.saveLatitude(String.format("%.4f", location.latitude))
         session.saveLongitude(String.format("%.4f", location.longitude))
+        val country = getCountryName(session, this)
+        if (country!=null){
+            session.saveCountry(country)
+        }
     }
 
     @SuppressLint("MissingPermission")

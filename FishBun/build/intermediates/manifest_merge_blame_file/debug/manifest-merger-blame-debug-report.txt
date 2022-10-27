@@ -4,44 +4,44 @@
 4
 5    <uses-sdk
 6        android:minSdkVersion="15"
-6-->/Users/andrea/Folders/Upwork/Worx/Fishbun/src/main/AndroidManifest.xml
+6-->C:\Users\Ali\AndroidStudioProjects\worx-android\Fishbun\src\main\AndroidManifest.xml
 7        android:targetSdkVersion="31" />
-7-->/Users/andrea/Folders/Upwork/Worx/Fishbun/src/main/AndroidManifest.xml
+7-->C:\Users\Ali\AndroidStudioProjects\worx-android\Fishbun\src\main\AndroidManifest.xml
 8
 9    <application>
-9-->/Users/andrea/Folders/Upwork/Worx/Fishbun/src/main/AndroidManifest.xml:5:5-23:19
+9-->C:\Users\Ali\AndroidStudioProjects\worx-android\Fishbun\src\main\AndroidManifest.xml:5:5-23:19
 10        <provider
-10-->/Users/andrea/Folders/Upwork/Worx/Fishbun/src/main/AndroidManifest.xml:6:9-14:20
+10-->C:\Users\Ali\AndroidStudioProjects\worx-android\Fishbun\src\main\AndroidManifest.xml:6:9-14:20
 11            android:name="com.sangcomz.fishbun.FishBunFileProvider"
-11-->/Users/andrea/Folders/Upwork/Worx/Fishbun/src/main/AndroidManifest.xml:7:13-68
+11-->C:\Users\Ali\AndroidStudioProjects\worx-android\Fishbun\src\main\AndroidManifest.xml:7:13-68
 12            android:authorities="${applicationId}.fishbunfileprovider"
-12-->/Users/andrea/Folders/Upwork/Worx/Fishbun/src/main/AndroidManifest.xml:8:13-71
+12-->C:\Users\Ali\AndroidStudioProjects\worx-android\Fishbun\src\main\AndroidManifest.xml:8:13-71
 13            android:exported="false"
-13-->/Users/andrea/Folders/Upwork/Worx/Fishbun/src/main/AndroidManifest.xml:9:13-37
+13-->C:\Users\Ali\AndroidStudioProjects\worx-android\Fishbun\src\main\AndroidManifest.xml:9:13-37
 14            android:grantUriPermissions="true" >
-14-->/Users/andrea/Folders/Upwork/Worx/Fishbun/src/main/AndroidManifest.xml:10:13-47
+14-->C:\Users\Ali\AndroidStudioProjects\worx-android\Fishbun\src\main\AndroidManifest.xml:10:13-47
 15            <meta-data
-15-->/Users/andrea/Folders/Upwork/Worx/Fishbun/src/main/AndroidManifest.xml:11:13-13:58
+15-->C:\Users\Ali\AndroidStudioProjects\worx-android\Fishbun\src\main\AndroidManifest.xml:11:13-13:58
 16                android:name="android.support.FILE_PROVIDER_PATHS"
-16-->/Users/andrea/Folders/Upwork/Worx/Fishbun/src/main/AndroidManifest.xml:12:17-67
+16-->C:\Users\Ali\AndroidStudioProjects\worx-android\Fishbun\src\main\AndroidManifest.xml:12:17-67
 17                android:resource="@xml/provider_paths" />
-17-->/Users/andrea/Folders/Upwork/Worx/Fishbun/src/main/AndroidManifest.xml:13:17-55
+17-->C:\Users\Ali\AndroidStudioProjects\worx-android\Fishbun\src\main\AndroidManifest.xml:13:17-55
 18        </provider>
 19
 20        <activity
-20-->/Users/andrea/Folders/Upwork/Worx/Fishbun/src/main/AndroidManifest.xml:16:9-19:51
+20-->C:\Users\Ali\AndroidStudioProjects\worx-android\Fishbun\src\main\AndroidManifest.xml:16:9-19:51
 21            android:name="com.sangcomz.fishbun.ui.album.ui.AlbumActivity"
-21-->/Users/andrea/Folders/Upwork/Worx/Fishbun/src/main/AndroidManifest.xml:17:13-54
+21-->C:\Users\Ali\AndroidStudioProjects\worx-android\Fishbun\src\main\AndroidManifest.xml:17:13-54
 22            android:label="@string/album"
-22-->/Users/andrea/Folders/Upwork/Worx/Fishbun/src/main/AndroidManifest.xml:18:13-42
+22-->C:\Users\Ali\AndroidStudioProjects\worx-android\Fishbun\src\main\AndroidManifest.xml:18:13-42
 23            android:theme="@style/FishBunTheme" />
-23-->/Users/andrea/Folders/Upwork/Worx/Fishbun/src/main/AndroidManifest.xml:19:13-48
+23-->C:\Users\Ali\AndroidStudioProjects\worx-android\Fishbun\src\main\AndroidManifest.xml:19:13-48
 24        <activity
-24-->/Users/andrea/Folders/Upwork/Worx/Fishbun/src/main/AndroidManifest.xml:20:9-22:51
+24-->C:\Users\Ali\AndroidStudioProjects\worx-android\Fishbun\src\main\AndroidManifest.xml:20:9-22:51
 25            android:name="com.sangcomz.fishbun.ui.picker.PickerActivity"
-25-->/Users/andrea/Folders/Upwork/Worx/Fishbun/src/main/AndroidManifest.xml:21:13-53
+25-->C:\Users\Ali\AndroidStudioProjects\worx-android\Fishbun\src\main\AndroidManifest.xml:21:13-53
 26            android:theme="@style/FishBunTheme" />
-26-->/Users/andrea/Folders/Upwork/Worx/Fishbun/src/main/AndroidManifest.xml:22:13-48
+26-->C:\Users\Ali\AndroidStudioProjects\worx-android\Fishbun\src\main\AndroidManifest.xml:22:13-48
 27    </application>
 28
 29</manifest>

@@ -1,16 +1,24 @@
 package id.worx.device.client.view
 
+import android.content.Context
+import android.location.Address
+import android.location.Geocoder
+import android.os.Build
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.compose.ui.platform.ComposeView
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.findNavController
+import com.google.android.gms.location.GeofenceStatusCodes
 import dagger.hilt.android.AndroidEntryPoint
 import id.worx.device.client.WelcomeScreen
 import id.worx.device.client.data.database.Session
+import id.worx.device.client.model.NewTeamForm
 import id.worx.device.client.navigate
 import id.worx.device.client.screen.components.WorxThemeStatusBar
 import id.worx.device.client.screen.welcome.CreateTeamEvent
@@ -18,6 +26,10 @@ import id.worx.device.client.screen.welcome.CreateTeamScreen
 import id.worx.device.client.theme.WorxTheme
 import id.worx.device.client.viewmodel.ThemeViewModel
 import id.worx.device.client.viewmodel.WelcomeViewModel
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import java.util.*
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -25,6 +37,7 @@ class CreateTeamFragment : Fragment() {
 
     private val viewModel by viewModels<WelcomeViewModel>()
     private val themeViewModel by viewModels<ThemeViewModel>()
+
     @Inject
     lateinit var session: Session
 
@@ -49,7 +62,19 @@ class CreateTeamFragment : Fragment() {
                         onNavigationEvent = { event ->
                             when (event) {
                                 is CreateTeamEvent.CreateTeam -> {
-                                    viewModel.submitNewTeam()
+                                    viewModel.createTeam(
+                                        onError = {
+                                            Toast.makeText(context, it, Toast.LENGTH_SHORT).show()
+                                        },
+                                        newTeamForm = NewTeamForm(
+                                            country = getCountryName(session, context),
+                                            email = event.email,
+                                            fullname = event.fullName,
+                                            organization_name = event.organizationName,
+                                            password = event.password,
+                                            phoneNo = event.workPhone
+                                        )
+                                    )
                                 }
                                 CreateTeamEvent.NavigateBack -> {
                                     findNavController().navigateUp()
@@ -61,4 +86,35 @@ class CreateTeamFragment : Fragment() {
             }
         }
     }
+}
+
+fun getCountryName(session: Session, context: Context): String? {
+    val geoCoder = Geocoder(context, Locale.getDefault())
+    var address: MutableList<Address>? = null
+
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+        geoCoder.getFromLocation(
+            session.latitude!!.replace(",", ".").toDouble(),
+            session.longitude!!.replace(",", ".").toDouble(),
+            1
+        ) { addresses -> address = addresses }
+        return address?.getOrNull(0)?.countryName
+    } else {
+        try {
+            if (!session.latitude.isNullOrEmpty() && !session.longitude.isNullOrEmpty()) {
+                address = geoCoder.getFromLocation(
+                    session.latitude!!.replace(",", ".").toDouble(),
+                    session.longitude!!.replace(",", ".").toDouble(),
+                    1
+                )
+                if (address != null) {
+                    return address!!.getOrNull(0)!!.countryName
+                }
+            }
+            return null
+        } catch (e: Exception) {
+            Log.d("TAG", "getCountryName: $e")
+        }
+    }
+    return null
 }
