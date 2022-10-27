@@ -1,6 +1,7 @@
 package id.worx.device.client.screen.components
 
 import android.Manifest
+import android.app.Activity
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.widget.Toast
@@ -64,13 +65,16 @@ fun WorxAttachFile(indexForm: Int, viewModel: DetailFormViewModel, session: Sess
         rememberLauncherForActivityResult(
             contract = ActivityResultContracts.StartActivityForResult(),
             onResult = {
-                it.data?.data?.path?.let { path ->
-                    val newPathList = ArrayList(filePath.value)
-                    newPathList.add(path)
-                    filePath.value = newPathList.toList()
-                    viewModel.getPresignedUrl(newPathList, indexForm, 1)
+                if (it.resultCode == Activity.RESULT_OK && it.data != null) {
+                    it.data?.data?.path?.let { path ->
+                        val newPathList = ArrayList(filePath.value)
+                        newPathList.add(path)
+                        filePath.value = newPathList.toList()
+                        viewModel.getPresignedUrl(newPathList, indexForm, 1)
+                    }
                 }
             })
+
 
     Column(modifier = Modifier.fillMaxWidth()) {
         Text(

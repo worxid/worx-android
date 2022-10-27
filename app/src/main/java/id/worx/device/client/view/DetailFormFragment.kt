@@ -80,6 +80,6 @@ class DetailFormFragment : Fragment(), DetailFormViewModel.UIHandler {
     }
 
     override fun showToast(text: String) {
-        Toast.makeText(requireContext(), text, Toast.LENGTH_SHORT).show()
+        Toast.makeText(requireContext().applicationContext, text, Toast.LENGTH_SHORT).show()
     }
 }
