@@ -61,6 +61,10 @@ class DetailFormViewModel @Inject constructor(
     private val _formProgress = mutableStateOf(0)
     val formProgress: State<Int> = _formProgress
 
+    val indexScroll = mutableStateOf(0)
+
+    val offset = mutableStateOf(0)
+
     /**
      * Pass data from Home ViewModel
      * Params : form - EmptyForm / SubmitForm
