@@ -1,5 +1,6 @@
 package id.worx.device.client.screen.main
 
+import android.widget.Toast
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.ExitTransition
@@ -36,12 +37,14 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.LifecycleOwner
 import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import id.worx.device.client.MainActivity
 import id.worx.device.client.R
 import id.worx.device.client.data.database.Session
 import id.worx.device.client.model.EmptyForm
@@ -51,7 +54,10 @@ import id.worx.device.client.theme.PrimaryMain
 import id.worx.device.client.theme.Typography
 import id.worx.device.client.viewmodel.DetailFormViewModel
 import id.worx.device.client.viewmodel.HomeViewModel
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 
 sealed class BottomNavItem(var title: Int, var icon: Int, var screen_route: String) {
 
@@ -69,6 +75,7 @@ fun NavigationGraph(
     viewModel: HomeViewModel,
     detailVM: DetailFormViewModel,
     session: Session,
+    viewLifecycleOwner: LifecycleOwner
     modifier: Modifier
 ) {
     NavHost(navController, startDestination = BottomNavItem.Form.screen_route, modifier = modifier) {
@@ -80,7 +87,8 @@ fun NavigationGraph(
                 detailVM,
                 stringResource(R.string.no_forms),
                 stringResource(R.string.empty_description_form),
-                session
+                session,
+                viewLifecycleOwner
             )
         }
         composable(BottomNavItem.Draft.screen_route) {
@@ -91,7 +99,8 @@ fun NavigationGraph(
                 detailVM,
                 stringResource(R.string.no_drafts),
                 stringResource(R.string.empty_description_drafts),
-                session
+                session,
+                viewLifecycleOwner
             )
         }
         composable(BottomNavItem.Submission.screen_route) {
@@ -102,7 +111,8 @@ fun NavigationGraph(
                 detailVM,
                 stringResource(R.string.no_submission),
                 stringResource(R.string.empty_description_submission),
-                session
+                session,
+                viewLifecycleOwner
             )
         }
     }
@@ -115,7 +125,8 @@ fun HomeScreen(
     submissionList: List<SubmitForm>,
     viewModel: HomeViewModel,
     detailVM: DetailFormViewModel,
-    session: Session
+    session: Session,
+    viewLifecycleOwner: LifecycleOwner
 ) {
     val navController = rememberNavController()
     val notificationType by viewModel.showNotification.collectAsState()
@@ -153,6 +164,7 @@ fun HomeScreen(
                 viewModel = viewModel,
                 detailVM = detailVM,
                 session = session,
+                viewLifecycleOwner = viewLifecycleOwner
                 modifier = modifier
             )
         } else {
@@ -163,6 +175,7 @@ fun HomeScreen(
                 viewModel = viewModel,
                 detailVM = detailVM,
                 session = session,
+                viewLifecycleOwner = viewLifecycleOwner
                 modifier = modifier
             )
         }
@@ -454,5 +467,5 @@ private fun BottomNavPreview(
     session: Session = Session(LocalContext.current)
 ) {
     val list = arrayListOf<EmptyForm>()
-    HomeScreen(list, arrayListOf(), arrayListOf(), viewModel, detailVM,session)
+    HomeScreen(list, arrayListOf(), arrayListOf(), viewModel, detailVM,session,MainActivity())
 }

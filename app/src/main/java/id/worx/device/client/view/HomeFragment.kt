@@ -21,12 +21,13 @@ import id.worx.device.client.viewmodel.ThemeViewModel
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class HomeFragment: Fragment() {
+class HomeFragment : Fragment() {
 
     private val viewModel by activityViewModels<HomeViewModel>()
     private val detailViewModel by activityViewModels<DetailFormViewModel>()
     private val themeViewModel by activityViewModels<ThemeViewModel>()
-    @Inject lateinit var session: Session
+    @Inject
+    lateinit var session: Session
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -48,9 +49,10 @@ class HomeFragment: Fragment() {
                         formList = viewModel.uiState.collectAsState().value.list,
                         draftList = viewModel.uiState.collectAsState().value.drafts,
                         submissionList = viewModel.uiState.collectAsState().value.submission,
-                    viewModel = viewModel,
-                    detailVM = detailViewModel,
-                    session = session
+                        viewModel = viewModel,
+                        detailVM = detailViewModel,
+                        session = session,
+                        viewLifecycleOwner = viewLifecycleOwner
                     )
                 }
             }
