@@ -1,6 +1,5 @@
 package id.worx.device.client.screen.main
 
-import android.widget.Toast
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.ExitTransition
@@ -54,10 +53,7 @@ import id.worx.device.client.theme.PrimaryMain
 import id.worx.device.client.theme.Typography
 import id.worx.device.client.viewmodel.DetailFormViewModel
 import id.worx.device.client.viewmodel.HomeViewModel
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.update
-import kotlinx.coroutines.launch
 
 sealed class BottomNavItem(var title: Int, var icon: Int, var screen_route: String) {
 
@@ -75,7 +71,7 @@ fun NavigationGraph(
     viewModel: HomeViewModel,
     detailVM: DetailFormViewModel,
     session: Session,
-    viewLifecycleOwner: LifecycleOwner
+    viewLifecycleOwner: LifecycleOwner,
     modifier: Modifier
 ) {
     NavHost(navController, startDestination = BottomNavItem.Form.screen_route, modifier = modifier) {
@@ -164,7 +160,7 @@ fun HomeScreen(
                 viewModel = viewModel,
                 detailVM = detailVM,
                 session = session,
-                viewLifecycleOwner = viewLifecycleOwner
+                viewLifecycleOwner = viewLifecycleOwner,
                 modifier = modifier
             )
         } else {
@@ -175,7 +171,7 @@ fun HomeScreen(
                 viewModel = viewModel,
                 detailVM = detailVM,
                 session = session,
-                viewLifecycleOwner = viewLifecycleOwner
+                viewLifecycleOwner = viewLifecycleOwner,
                 modifier = modifier
             )
         }

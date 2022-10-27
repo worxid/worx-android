@@ -1,13 +1,14 @@
 package id.worx.device.client.screen.main
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.material.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -36,7 +37,7 @@ val tabItems = listOf(
     R.string.submission to R.drawable.ic_tick
 )
 
-@OptIn(ExperimentalPagerApi::class, ExperimentalMaterialApi::class)
+@OptIn(ExperimentalPagerApi::class)
 @Composable
 fun SearchScreen(
     formList: List<EmptyForm>,
@@ -45,7 +46,7 @@ fun SearchScreen(
     viewModel: HomeViewModel,
     detailVM: DetailFormViewModel,
     session: Session,
-    viewLifecycleOwner: LifecycleOwner
+    viewLifecycleOwner: LifecycleOwner,
     modifier: Modifier
 ) {
     val searchInput = viewModel.uiState.collectAsState().value.searchInput
@@ -54,7 +55,7 @@ fun SearchScreen(
     val submissionData = submissionList.filter { data -> data.label?.contains(searchInput, true) ?: false}
     val theme = session.theme
 
-    Scaffold() { padding ->
+    Scaffold { padding ->
         ConstraintLayout(
             modifier = modifier
         ) {
@@ -150,7 +151,7 @@ fun SearchScreen(
 @Preview
 @Composable
 fun PreviewSearchScreen() {
-    WorxTheme() {
+    WorxTheme {
         SearchScreen(
             formList = arrayListOf(),
             draftList = arrayListOf(),
@@ -158,7 +159,7 @@ fun PreviewSearchScreen() {
             viewModel = hiltViewModel(),
             detailVM = hiltViewModel(),
             session = Session(LocalContext.current),
-            MainActivity()
+            MainActivity(),
             modifier = Modifier
         )
     }
