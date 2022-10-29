@@ -12,7 +12,7 @@ class Session(context: Context) {
     val isSaveImageToGallery get() = pref.getBoolean(SETTING_SAVE_IMAGE, false)
     val latitude get() = pref.getString(LATITUDE, "-5.1966")
     val longitude get() = pref.getString(LONGITUDE, " 119.4926")
-    val country get() = pref.getString(COUNTRY,"NA")
+    val organization get() = pref.getString(ORGANIZATION,"")
 
     companion object{
         val SHARED_NAME = "id.worx"
@@ -21,7 +21,7 @@ class Session(context: Context) {
 
         val LATITUDE = "LATITUDE"
         val LONGITUDE = "LONGITUDE"
-        val COUNTRY = "COUNTRY"
+        val ORGANIZATION = "ORGANIZATION"
     }
 
     init {
@@ -49,8 +49,8 @@ class Session(context: Context) {
         editor.commit()
     }
 
-    fun saveCountry(country : String){
-        editor.putString(COUNTRY, country)
+    fun saveOrganization(org : String){
+        editor.putString(ORGANIZATION, organization)
         editor.commit()
     }
 

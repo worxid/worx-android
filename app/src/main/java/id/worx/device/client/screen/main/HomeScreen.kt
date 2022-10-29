@@ -133,6 +133,7 @@ fun HomeScreen(
     Scaffold(
         topBar = {
             MainTopAppBar(
+                title = session.organization ?: "",
                 onSearchMode = { showBotNav = it },
                 viewModel = viewModel
             ) { input ->
@@ -275,6 +276,7 @@ fun BottomNavigationView(navController: NavController, showBadge: Int, showBotNa
 
 @Composable
 fun MainTopAppBar(
+    title: String,
     onSearchMode: (Boolean) -> Unit,
     viewModel: HomeViewModel,
     searchAction: (String) -> Unit,
@@ -303,7 +305,7 @@ fun MainTopAppBar(
                 )
                 Text(
                     textAlign = TextAlign.Center,
-                    text = "PT Virtue Digital Indonesia",
+                    text = title,
                     style = Typography.body1
                 )
                 Spacer(modifier = Modifier.weight(1f))

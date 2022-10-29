@@ -14,7 +14,6 @@ import androidx.compose.ui.platform.ComposeView
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.findNavController
-import com.google.android.gms.location.GeofenceStatusCodes
 import dagger.hilt.android.AndroidEntryPoint
 import id.worx.device.client.WelcomeScreen
 import id.worx.device.client.data.database.Session
@@ -26,9 +25,6 @@ import id.worx.device.client.screen.welcome.CreateTeamScreen
 import id.worx.device.client.theme.WorxTheme
 import id.worx.device.client.viewmodel.ThemeViewModel
 import id.worx.device.client.viewmodel.WelcomeViewModel
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 import java.util.*
 import javax.inject.Inject
 
@@ -62,6 +58,7 @@ class CreateTeamFragment : Fragment() {
                         onNavigationEvent = { event ->
                             when (event) {
                                 is CreateTeamEvent.CreateTeam -> {
+                                    session.saveOrganization(event.organizationName)
                                     viewModel.createTeam(
                                         onError = {
                                             Toast.makeText(context, it, Toast.LENGTH_SHORT).show()
