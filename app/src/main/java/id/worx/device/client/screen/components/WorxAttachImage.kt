@@ -1,6 +1,7 @@
 package id.worx.device.client.screen.components
 
 import android.Manifest
+import android.app.Activity
 import android.content.Context
 import android.content.ContextWrapper
 import android.content.Intent
@@ -18,10 +19,7 @@ import androidx.compose.material.Divider
 import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.toArgb
@@ -35,6 +33,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.AsyncImage
 import com.sangcomz.fishbun.FishBun
 import com.sangcomz.fishbun.adapter.image.impl.CoilAdapter
+import com.sangcomz.fishbun.util.getRealPathFromURI
 import id.worx.device.client.R
 import id.worx.device.client.data.database.Session
 import id.worx.device.client.model.ImageField
@@ -44,6 +43,7 @@ import id.worx.device.client.theme.PrimaryMain
 import id.worx.device.client.theme.Typography
 import id.worx.device.client.theme.WorxTheme
 import id.worx.device.client.viewmodel.DetailFormViewModel
+import id.worx.device.client.viewmodel.EventStatus
 import java.io.File
 
 @Composable
@@ -67,24 +67,33 @@ fun WorxAttachImage(
         }
     }
 
+    val fileIds by if (fileValue != null) {
+        remember { mutableStateOf(fileValue.value.toList()) }
+    } else {
+        remember {
+            mutableStateOf(listOf())
+        }
+    }
+
+    val formStatus = viewModel.uiState.collectAsState().value.status
+
     val context = LocalContext.current
 
     val launcherGallery =
         rememberLauncherForActivityResult(
-            ActivityResultContracts.StartActivityForResult()
-        ) {
-            it.data?.getParcelableArrayListExtra<Uri>(FishBun.INTENT_PATH)?.forEach { uri ->
-                //val fPath = getRealPathFromURI(context, uri)
-                val fPath = uri.toString()
-                val newPathList = ArrayList(filePath.value)
-                newPathList.add(fPath)
-                filePath.value = newPathList.toList()
-                viewModel.setComponentData(
-                    indexForm,
-                    ImageValue(value = ArrayList(newPathList.map { 1 }), filePath = newPathList)
-                )
-            }
-        }
+            contract = ActivityResultContracts.StartActivityForResult(),
+            onResult = {
+                if (it.resultCode == Activity.RESULT_OK && it.data != null) {
+                    it.data!!.getParcelableArrayListExtra<Uri>(FishBun.INTENT_PATH)
+                        ?.forEach { uri ->
+                            val fPath = getRealPathFromURI(context, uri)
+                            val newPathList = ArrayList(filePath.value)
+                            newPathList.add(fPath)
+                            filePath.value = newPathList.toList()
+                            viewModel.getPresignedUrl(newPathList, indexForm, 2)
+                        }
+                }
+            })
 
     Column(modifier = Modifier.fillMaxWidth()) {
         Text(
@@ -110,15 +119,33 @@ fun WorxAttachImage(
                     }
                 }
             }
+        } else if (fileIds.isNotEmpty()) {
+            fileIds.forEach {
+                ImageDataView(
+                    filePath = "File $it",
+                    fileSize = 0,
+                    showCloseButton = !arrayListOf(
+                        EventStatus.Done,
+                        EventStatus.Submitted
+                    ).contains(formStatus)
+                ) {}
+            }
         }
-        Row(
-            modifier = Modifier.padding(horizontal = 16.dp),
-            horizontalArrangement = Arrangement.spacedBy(12.dp)
+        if (arrayListOf(
+                EventStatus.Loading,
+                EventStatus.Filling,
+                EventStatus.Saved
+            ).contains(formStatus)
         ) {
-            TakeImageButton(navigateToPhotoCamera, setIndexData, theme)
-            GalleryImageButton(form.maxFiles ?: 1, launcherGallery = launcherGallery, theme)
+            Row(
+                modifier = Modifier.padding(horizontal = 16.dp),
+                horizontalArrangement = Arrangement.spacedBy(12.dp)
+            ) {
+                TakeImageButton(navigateToPhotoCamera, setIndexData, theme)
+                GalleryImageButton(form.maxFiles ?: 1, launcherGallery = launcherGallery, theme)
+            }
+            Divider(color = GrayDivider, modifier = Modifier.padding(top = 12.dp))
         }
-        Divider(color = GrayDivider, modifier = Modifier.padding(top = 12.dp))
     }
 }
 
@@ -126,6 +153,7 @@ fun WorxAttachImage(
 private fun ImageDataView(
     filePath: String,
     fileSize: Int,
+    showCloseButton: Boolean = true,
     onClick: () -> Unit
 ) {
     Row(
@@ -144,18 +172,20 @@ private fun ImageDataView(
                 .padding(horizontal = 12.dp)
                 .weight(1f)
         ) {
-            Text(text = filePath, style = Typography.body2.copy(MaterialTheme.colors.onSecondary))
+            Text(text = filePath.substringAfterLast("/"), style = Typography.body2.copy(MaterialTheme.colors.onSecondary))
             Text(text = "$fileSize kb", style = Typography.body2.copy(MaterialTheme.colors.onSecondary))
         }
-        Icon(
-            modifier = Modifier
-                .padding(start = 12.dp, end = 4.dp)
-                .clickable { onClick() }
-                .align(Alignment.CenterVertically),
-            painter = painterResource(id = R.drawable.ic_delete_circle),
-            contentDescription = "Clear File",
-            tint = MaterialTheme.colors.onSecondary
-        )
+        if (showCloseButton) {
+            Icon(
+                modifier = Modifier
+                    .padding(start = 12.dp, end = 4.dp)
+                    .clickable { onClick() }
+                    .align(Alignment.CenterVertically),
+                painter = painterResource(id = R.drawable.ic_delete_circle),
+                contentDescription = "Clear File",
+                tint = MaterialTheme.colors.onSecondary
+            )
+        }
     }
 }
 

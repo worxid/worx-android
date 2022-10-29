@@ -6,6 +6,8 @@ plugins {
     id 'com.google.android.libraries.mapsplatform.secrets-gradle-plugin'
     id 'com.mikepenz.aboutlibraries.plugin'
     id "com.google.android.gms.oss-licenses-plugin"
+    id 'com.google.gms.google-services'
+    id 'com.google.firebase.crashlytics'
 }
 
 android {
@@ -62,11 +64,12 @@ dependencies {
     implementation "androidx.compose.material:material:$compose_version"
     implementation "androidx.compose.ui:ui-tooling-preview:$compose_version"
     implementation 'androidx.lifecycle:lifecycle-runtime-ktx:2.5.1'
-    implementation 'androidx.activity:activity-compose:1.5.1'
+    implementation 'androidx.activity:activity-compose:1.6.0'
     implementation "androidx.compose.runtime:runtime-livedata:$compose_version"
     debugImplementation "androidx.compose.ui:ui-tooling:$compose_version"
     debugImplementation "androidx.compose.ui:ui-test-manifest:$compose_version"
     implementation "com.google.accompanist:accompanist-systemuicontroller:0.26.2-beta"
+    implementation "com.google.accompanist:accompanist-swiperefresh:0.27.0"
     implementation "androidx.constraintlayout:constraintlayout-compose:1.0.1"
 
     //DI
@@ -86,8 +89,6 @@ dependencies {
     //image picker custom
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     implementation project(':Fishbun')
-
-    debugImplementation 'com.squareup.leakcanary:leakcanary-android:2.9.1'
 
     // signature pad
     implementation 'se.warting.signature:signature-pad:0.0.20'
@@ -115,7 +116,7 @@ dependencies {
     implementation "androidx.work:work-multiprocess:$work_version"
 
     // location
-    implementation 'com.google.android.gms:play-services-location:20.0.0'
+    implementation 'com.google.android.gms:play-services-location:21.0.0'
     implementation 'com.google.android.gms:play-services-maps:18.1.0'
 
     //constraintlayout
@@ -124,4 +125,15 @@ dependencies {
     // Paging Compose
     implementation "com.google.accompanist:accompanist-pager:0.13.0"
     implementation "com.google.accompanist:accompanist-pager-indicators:0.13.0"
+
+    // upload file
+    implementation "net.gotev:uploadservice:4.7.0"
+    implementation "net.gotev:uploadservice-okhttp:4.7.0"
+    implementation "net.gotev:uploadservice-ftp:4.7.0"
+    
+    //Crashlytic
+    implementation platform('com.google.firebase:firebase-bom:30.1.0')
+    implementation 'com.google.firebase:firebase-analytics-ktx'
+    implementation 'com.google.firebase:firebase-crashlytics-ktx'
+    debugImplementation 'com.squareup.leakcanary:leakcanary-android:2.9.1'
 }

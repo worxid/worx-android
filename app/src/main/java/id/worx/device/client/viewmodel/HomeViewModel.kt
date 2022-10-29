@@ -3,16 +3,20 @@ package id.worx.device.client.viewmodel
 import android.util.Log
 import androidx.lifecycle.*
 import androidx.work.*
-import com.google.gson.Gson
+import com.google.gson.GsonBuilder
 import dagger.hilt.android.lifecycle.HiltViewModel
 import id.worx.device.client.Event
 import id.worx.device.client.MainScreen
 import id.worx.device.client.WorxApplication
+import id.worx.device.client.data.api.FieldsDeserializer
+import id.worx.device.client.data.api.ValueSerialize
 import id.worx.device.client.data.database.FormDownloadWorker
 import id.worx.device.client.data.database.SubmissionDownloadWorker
 import id.worx.device.client.data.database.SubmissionUploadWorker
 import id.worx.device.client.model.EmptyForm
+import id.worx.device.client.model.Fields
 import id.worx.device.client.model.SubmitForm
+import id.worx.device.client.model.Value
 import id.worx.device.client.repository.DeviceInfoRepository
 import id.worx.device.client.repository.SourceDataRepository
 import kotlinx.coroutines.CoroutineScope
@@ -55,6 +59,8 @@ class HomeViewModel @Inject constructor(
     private val _showBadge = MutableStateFlow(0)
     val showBadge: StateFlow<Int> = _showBadge
 
+    var isRefresh = MutableStateFlow(false)
+
     init {
         refreshData()
     }
@@ -74,7 +80,7 @@ class HomeViewModel @Inject constructor(
     /**
      * Refresh data and update the UI state accordingly
      */
-    private fun refreshData() {
+    fun refreshData() {
         // Ui state is refreshing
         uiState.value.isLoading = true
 
@@ -157,7 +163,12 @@ class HomeViewModel @Inject constructor(
     internal fun uploadSubmissionWork() {
         viewModelScope.launch {
             repository.getAllUnsubmitted().collect {
-                val uploadData: Data = workDataOf("submit_form_list" to Gson().toJson(it))
+
+                val gson = GsonBuilder()
+                    .registerTypeAdapter(Fields::class.java, FieldsDeserializer())
+                    .registerTypeAdapter(Value::class.java, ValueSerialize())
+                    .create()
+                val uploadData: Data = workDataOf("submit_form_list" to gson.toJson(it))
 
                 val uploadSubmisison = OneTimeWorkRequestBuilder<SubmissionUploadWorker>()
                     .setInputData(uploadData)
