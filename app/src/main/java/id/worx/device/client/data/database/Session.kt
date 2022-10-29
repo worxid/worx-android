@@ -50,7 +50,7 @@ class Session(context: Context) {
     }
 
     fun saveOrganization(org : String){
-        editor.putString(ORGANIZATION, organization)
+        editor.putString(ORGANIZATION, org)
         editor.commit()
     }
 

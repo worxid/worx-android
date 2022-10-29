@@ -1,5 +1,6 @@
 package id.worx.device.client.screen.main
 
+import android.util.Log
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.ExitTransition
@@ -129,6 +130,7 @@ fun HomeScreen(
     val showBadge by viewModel.showBadge.collectAsState()
     var showSubmittedStatus by remember { mutableStateOf(notificationType == 1) }
     var showBotNav by remember { mutableStateOf(false) }
+    Log.d("TAGG", session.organization ?: "null")
 
     Scaffold(
         topBar = {
@@ -306,7 +308,7 @@ fun MainTopAppBar(
                 Text(
                     textAlign = TextAlign.Center,
                     text = title,
-                    style = Typography.body1
+                    style = Typography.button.copy(Color.White)
                 )
                 Spacer(modifier = Modifier.weight(1f))
                 Icon(
