@@ -121,12 +121,12 @@ fun SettingScreen(
             HeaderTileSetting(title = stringResource(id = R.string.organization_details))
             TileItemSetting(
                 title = stringResource(id = R.string.organizations),
-                subtitle = "Fields Service Mobile",
+                subtitle = session.organization,
                 session = session
             )
             TileItemSetting(
                 title = stringResource(id = R.string.organizations_key),
-                subtitle = "AIT763",
+                subtitle = session.organization,
                 session = session
             )
             TileItemSetting(
