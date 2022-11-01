@@ -162,13 +162,15 @@ class DetailFormViewModel @Inject constructor(
             uiState.value.values[uiState.value.detailForm!!.fields[indexForm].id] ?: FileValue()
         }
 
+        val valuesToRemove = mutableSetOf<String>()
         fileNames.forEach {
             if ((value is FileValue && value.filePath.contains(it)) ||
                 (value is ImageValue && value.filePath.contains(it))
             ) {
-                fileNames.remove(it)
+                valuesToRemove.add(it)
             }
         }
+        fileNames.removeAll(valuesToRemove)
 
         viewModelScope.launch {
             fileNames.forEach {

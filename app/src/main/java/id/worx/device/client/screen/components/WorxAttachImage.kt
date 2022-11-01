@@ -59,7 +59,7 @@ fun WorxAttachImage(
     val theme = session.theme
 
     val fileValue = viewModel.uiState.collectAsState().value.values[form.id] as ImageValue?
-    val filePath = if (fileValue != null) {
+    var filePath by if (fileValue != null) {
         remember { mutableStateOf(fileValue.filePath.toList()) }
     } else {
         remember {
@@ -67,7 +67,7 @@ fun WorxAttachImage(
         }
     }
 
-    val fileIds by if (fileValue != null) {
+    var fileIds by if (fileValue != null) {
         remember { mutableStateOf(fileValue.value.toList()) }
     } else {
         remember {
@@ -83,14 +83,13 @@ fun WorxAttachImage(
         rememberLauncherForActivityResult(
             contract = ActivityResultContracts.StartActivityForResult(),
             onResult = {
-                if (it.resultCode == Activity.RESULT_OK && it.data != null) {
+                if (it.resultCode == Activity.RESULT_OK &&
+                    it.data != null) {
                     it.data!!.getParcelableArrayListExtra<Uri>(FishBun.INTENT_PATH)
                         ?.forEach { uri ->
                             val fPath = getRealPathFromURI(context, uri)
-                            val newPathList = ArrayList(filePath.value)
-                            newPathList.add(fPath)
-                            filePath.value = newPathList.toList()
-                            viewModel.getPresignedUrl(newPathList, indexForm, 2)
+                            ArrayList(filePath).apply { add(fPath) }.also { array -> filePath = array.toList() }
+                            viewModel.getPresignedUrl(ArrayList(filePath), indexForm, 2)
                         }
                 }
             })
@@ -103,18 +102,17 @@ fun WorxAttachImage(
                 .padding(horizontal = 16.dp)
                 .padding(bottom = 8.dp)
         )
-        if (filePath.value.isNotEmpty()) {
+        if (filePath.isNotEmpty()) {
             Column {
-                filePath.value.forEachIndexed { index, item ->
+                filePath.forEachIndexed { index, item ->
                     val file = File(item)
                     val fileSize = (file.length() / 1024).toInt()
                     ImageDataView(filePath = item, fileSize = fileSize) {
-                        val newList = ArrayList(filePath.value)
-                        newList.remove(item)
-                        filePath.value = newList
+                        ArrayList(filePath).apply { remove(item) }.also { filePath = it.toList() }
+                        ArrayList(fileIds).apply { remove(index) }.also { fileIds = it.toList() }
                         viewModel.setComponentData(
                             indexForm,
-                            ImageValue(value = ArrayList(newList.map { 1 }), filePath = newList)
+                            ImageValue(value = ArrayList(fileIds), filePath = ArrayList(filePath))
                         )
                     }
                 }
@@ -128,7 +126,13 @@ fun WorxAttachImage(
                         EventStatus.Done,
                         EventStatus.Submitted
                     ).contains(formStatus)
-                ) {}
+                ) {
+                    ArrayList(fileIds).apply { remove(it) }.also { ids -> fileIds = ids.toList() }
+                    viewModel.setComponentData(
+                        indexForm,
+                        ImageValue(value = ArrayList(fileIds), filePath = ArrayList(filePath))
+                    )
+                }
             }
         }
         if (arrayListOf(
@@ -141,8 +145,8 @@ fun WorxAttachImage(
                 modifier = Modifier.padding(horizontal = 16.dp),
                 horizontalArrangement = Arrangement.spacedBy(12.dp)
             ) {
-                TakeImageButton(navigateToPhotoCamera, setIndexData, theme)
-                GalleryImageButton(form.maxFiles ?: 1, launcherGallery = launcherGallery, theme)
+                TakeImageButton((form.maxFiles ?: 10) > fileIds.size, navigateToPhotoCamera, setIndexData, theme)
+                GalleryImageButton((form.maxFiles ?: 10) > fileIds.size, launcherGallery = launcherGallery, theme)
             }
             Divider(color = GrayDivider, modifier = Modifier.padding(top = 12.dp))
         }
@@ -191,6 +195,7 @@ private fun ImageDataView(
 
 @Composable
 private fun TakeImageButton(
+    isMaxFilesNumberNotAchieved: Boolean,
     navigateToPhotoCamera: () -> Unit,
     sendIndexFormData: () -> Unit,
     theme: String?
@@ -217,7 +222,9 @@ private fun TakeImageButton(
         iconRes = R.drawable.ic_photo_camera,
         title = "Camera",
         actionClick = {
-            if (
+            if (!isMaxFilesNumberNotAchieved){
+                Toast.makeText(context, "Already achieved max files. Please remove one of the them first", Toast.LENGTH_LONG).show()
+            } else if (
                 requiredPermissions.all {
                     ContextCompat.checkSelfPermission(
                         context,
@@ -241,7 +248,7 @@ fun Context.getActivity(): AppCompatActivity? = when (this) {
 
 @Composable
 private fun GalleryImageButton(
-    maxPhoto: Int,
+    isMaxFilesNumberNotAchieved: Boolean,
     launcherGallery: ManagedActivityResultLauncher<Intent, ActivityResult>,
     theme: String?
 ) {
@@ -260,7 +267,7 @@ private fun GalleryImageButton(
         } else {
             FishBun.with(context.getActivity()!!)
                 .setImageAdapter(CoilAdapter())
-                .setMaxCount(maxPhoto)
+                .setMaxCount(1)
                 .setThemeColor(PrimaryMain.toArgb())
                 .startAlbumWithActivityResultCallback(launcherGallery)
         }
@@ -271,7 +278,9 @@ private fun GalleryImageButton(
         iconRes = R.drawable.ic_image,
         title = stringResource(R.string.gallery),
         actionClick = {
-            if (
+            if (!isMaxFilesNumberNotAchieved){
+                Toast.makeText(context, "Already achieved max files. Please remove one of the them first", Toast.LENGTH_LONG).show()
+            }else if (
                 requiredPermissions.all {
                     ContextCompat.checkSelfPermission(
                         context,
@@ -280,7 +289,7 @@ private fun GalleryImageButton(
                 }) {
                 FishBun.with(context.getActivity()!!)
                     .setImageAdapter(CoilAdapter())
-                    .setMaxCount(maxPhoto)
+                    .setMaxCount(1)
                     .setThemeColor(PrimaryMain.toArgb())
                     .startAlbumWithActivityResultCallback(launcherGallery)
             } else {
