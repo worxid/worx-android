@@ -354,7 +354,7 @@ fun TileItemTheme(
             modifier = Modifier
                 .clip(RoundedCornerShape(2.dp))
                 .background(
-                    if (session.theme?.equals(SettingTheme.System) == true) PrimaryMain.copy(
+                    if (session.theme?.equals(SettingTheme.System) == true) MaterialTheme.colors.primary.copy(
                         0.2f
                     ) else Color.White.copy(0f)
                 )
@@ -377,7 +377,7 @@ fun TileItemTheme(
             modifier = Modifier
                 .clip(RoundedCornerShape(2.dp))
                 .background(
-                    if (session.theme?.equals(SettingTheme.Dark) == true) PrimaryMainDark.copy(
+                    if (session.theme?.equals(SettingTheme.Dark) == true) MaterialTheme.colors.primary.copy(
                         0.2f
                     ) else Color.White.copy(0f)
                 )
@@ -400,7 +400,7 @@ fun TileItemTheme(
             modifier = Modifier
                 .clip(RoundedCornerShape(2.dp))
                 .background(
-                    if (session.theme?.equals(SettingTheme.Blue) == true) PrimaryMainBlue.copy(
+                    if (session.theme?.equals(SettingTheme.Blue) == true) MaterialTheme.colors.primary.copy(
                         0.2f
                     ) else Color.White.copy(0f)
                 )
@@ -422,7 +422,7 @@ fun TileItemTheme(
             modifier = Modifier
                 .clip(RoundedCornerShape(2.dp))
                 .background(
-                    if (session.theme?.equals(SettingTheme.Green) == true) PrimaryMainGreen.copy(
+                    if (session.theme?.equals(SettingTheme.Green) == true) MaterialTheme.colors.primary.copy(
                         0.2f
                     ) else Color.White.copy(0f)
                 )
