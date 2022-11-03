@@ -83,12 +83,12 @@ class MainActivity : AppCompatActivity() {
             viewModel.uploadSubmissionWork()
             viewModel.downloadFormTemplate(this@MainActivity)
             {
-                Toast.makeText(applicationContext, "Sync Empty Form DB with server is done", Toast.LENGTH_LONG)
+                Toast.makeText(applicationContext, "Sync Empty Form DB with server is done", Toast.LENGTH_SHORT)
                     .show()
             }
             viewModel.downloadSubmissionList(this@MainActivity)
             {
-                Toast.makeText(applicationContext, "Sync Submission From DB with server is done", Toast.LENGTH_LONG)
+                Toast.makeText(applicationContext, "Sync Submission From DB with server is done", Toast.LENGTH_SHORT)
                     .show()
             }
         }
