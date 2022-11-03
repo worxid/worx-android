@@ -50,7 +50,6 @@ fun WelcomeScreen(onEvent: (WelcomeEvent) -> Unit, session: Session) {
             WelcomeHeader(session)
             CreateTeamButton(session, onEvent = onEvent)
             JoinTeamButton(session, onEvent)
-            GoToMainScreen(session, onEvent)
         }
     }
 }
