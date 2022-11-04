@@ -90,7 +90,14 @@ fun WorxAttachFile(indexForm: Int, viewModel: DetailFormViewModel, session: Sess
                         ArrayList(fileIds).apply { removeAt(index) }.also { fileIds = it.toList() }
                         viewModel.setComponentData(
                             indexForm,
-                            FileValue(value = ArrayList(fileIds), filePath = ArrayList(filePath))
+                            if (filePath.isEmpty()) {
+                                null
+                            } else {
+                                FileValue(
+                                    value = ArrayList(fileIds),
+                                    filePath = ArrayList(filePath)
+                                )
+                            }
                         )
                     }
                 }
@@ -106,7 +113,11 @@ fun WorxAttachFile(indexForm: Int, viewModel: DetailFormViewModel, session: Sess
                         ArrayList(fileIds).apply { remove(it) }.also { ids -> fileIds = ids.toList() }
                         viewModel.setComponentData(
                             indexForm,
-                            FileValue(value = ArrayList(fileIds), filePath = ArrayList(filePath))
+                            if (fileIds.isEmpty()) {
+                                null
+                            } else {
+                                FileValue(value = ArrayList(fileIds), filePath = ArrayList(filePath))
+                            }
                         )
                     }
                 }

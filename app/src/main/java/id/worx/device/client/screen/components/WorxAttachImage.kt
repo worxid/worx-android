@@ -111,8 +111,11 @@ fun WorxAttachImage(
                         ArrayList(filePath).apply { remove(item) }.also { filePath = it.toList() }
                         ArrayList(fileIds).apply { remove(index) }.also { fileIds = it.toList() }
                         viewModel.setComponentData(
-                            indexForm,
-                            ImageValue(value = ArrayList(fileIds), filePath = ArrayList(filePath))
+                            indexForm, if (filePath.isEmpty()) {
+                                null
+                            } else {
+                                ImageValue(value = ArrayList(fileIds), filePath = ArrayList(filePath))
+                            }
                         )
                     }
                 }
@@ -130,7 +133,11 @@ fun WorxAttachImage(
                     ArrayList(fileIds).apply { remove(it) }.also { ids -> fileIds = ids.toList() }
                     viewModel.setComponentData(
                         indexForm,
-                        ImageValue(value = ArrayList(fileIds), filePath = ArrayList(filePath))
+                        if (fileIds.isEmpty()) {
+                            null
+                        } else {
+                            ImageValue(value = ArrayList(fileIds), filePath = ArrayList(filePath))
+                        }
                     )
                 }
             }

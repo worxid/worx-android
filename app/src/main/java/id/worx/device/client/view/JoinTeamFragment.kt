@@ -78,7 +78,6 @@ class JoinTeamFragment : Fragment() {
     private fun provideJoinForm(context: Context, name: String, organization: String) : JoinTeamForm {
         val wifiManager = context.getSystemService(Context.WIFI_SERVICE)  as WifiManager
         val ipAddress = Formatter.formatIpAddress(wifiManager.connectionInfo.ipAddress)
-        session.saveOrganization(organization)
         return JoinTeamForm(
             device_app_version = BuildConfig.VERSION_CODE.toString(),
             device_code = Util.getDeviceCode(context),
