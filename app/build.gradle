@@ -17,10 +17,10 @@ android {
         applicationId "id.worx.device.client"
         minSdk 24
         targetSdk 31
-        versionCode 3
+        versionCode 4
         versionName "1.0"
 
-        testInstrumentationRunner  "id.worx.device.client.android.dagger.CustomTestRunner"
+        testInstrumentationRunner  "id.worx.device.client.CustomTestRunner"
     }
 
     buildTypes {
