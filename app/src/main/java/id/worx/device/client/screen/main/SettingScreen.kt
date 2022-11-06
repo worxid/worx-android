@@ -1,13 +1,15 @@
 package id.worx.device.client.screen.main
 
 import android.annotation.SuppressLint
-import android.provider.Settings
 import android.widget.Toast
-import androidx.compose.foundation.*
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.selection.selectableGroup
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
@@ -128,7 +130,7 @@ fun SettingScreen(
             )
             TileItemSetting(
                 title = stringResource(id = R.string.device_name),
-                subtitle = Settings.Secure.getString(context.contentResolver, "bluetooth_name"),
+                subtitle = session.deviceName,
                 session = session
             )
             Divider(color = GrayDivider, modifier = Modifier.padding(top = 20.dp))

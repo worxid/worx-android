@@ -16,7 +16,7 @@ android {
     defaultConfig {
         applicationId "id.worx.device.client"
         minSdk 24
-        targetSdk 31
+        targetSdk 33
         versionCode 4
         versionName "1.0"
 

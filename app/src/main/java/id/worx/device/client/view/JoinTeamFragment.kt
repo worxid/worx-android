@@ -58,6 +58,7 @@ class JoinTeamFragment : Fragment() {
                         onEvent = { event ->
                             when (event) {
                                 is JoinTeamEvent.JoinTeam -> {
+                                    session.saveDeviceName(event.fullName)
                                     viewModel.joinTeam(
                                         onError = { Toast.makeText(requireContext(), it, Toast.LENGTH_SHORT).show() },
                                         joinTeamForm = provideJoinForm(requireContext(), event.fullName, event.organizationCode)

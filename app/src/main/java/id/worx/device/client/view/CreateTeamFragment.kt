@@ -58,6 +58,7 @@ class CreateTeamFragment : Fragment() {
                         onNavigationEvent = { event ->
                             when (event) {
                                 is CreateTeamEvent.CreateTeam -> {
+                                    session.saveDeviceName(event.fullName)
                                     session.saveOrganization(event.organizationName)
                                     viewModel.createTeam(
                                         onError = {
