@@ -125,7 +125,7 @@ fun SettingScreen(
             )
             TileItemSetting(
                 title = stringResource(id = R.string.organizations_key),
-                subtitle = session.organization,
+                subtitle = session.organizationKey,
                 session = session
             )
             TileItemSetting(
