@@ -12,7 +12,9 @@ class Session(context: Context) {
     val isSaveImageToGallery get() = pref.getBoolean(SETTING_SAVE_IMAGE, false)
     val latitude get() = pref.getString(LATITUDE, "-5.1966")
     val longitude get() = pref.getString(LONGITUDE, " 119.4926")
-    val country get() = pref.getString(COUNTRY,"NA")
+    val organization get() = pref.getString(ORGANIZATION,"")
+    val organizationKey get() = pref.getString(ORGANIZATION_KEY, "")
+    val deviceName get() = pref.getString(DEVICE_NAME, "")
 
     companion object{
         val SHARED_NAME = "id.worx"
@@ -21,7 +23,9 @@ class Session(context: Context) {
 
         val LATITUDE = "LATITUDE"
         val LONGITUDE = "LONGITUDE"
-        val COUNTRY = "COUNTRY"
+        val ORGANIZATION = "ORGANIZATION"
+        val ORGANIZATION_KEY = "ORGANIZATION_KEY"
+        val DEVICE_NAME = "DEVICE_NAME"
     }
 
     init {
@@ -49,8 +53,18 @@ class Session(context: Context) {
         editor.commit()
     }
 
-    fun saveCountry(country : String){
-        editor.putString(COUNTRY, country)
+    fun saveOrganization(org : String?){
+        editor.putString(ORGANIZATION, org)
+        editor.commit()
+    }
+
+    fun saveOrganizationCode(key : String?){
+        editor.putString(ORGANIZATION_KEY, key)
+        editor.commit()
+    }
+
+    fun saveDeviceName(deviceName : String){
+        editor.putString(DEVICE_NAME, deviceName)
         editor.commit()
     }
 

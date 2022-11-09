@@ -43,7 +43,7 @@ fun WorxAttachFile(indexForm: Int, viewModel: DetailFormViewModel, session: Sess
     val uiState = viewModel.uiState.collectAsState().value
     val form = uiState.detailForm!!.fields[indexForm] as FileField
     val fileValue = uiState.values[form.id] as FileValue?
-    val filePath = if (fileValue != null) {
+    var filePath by if (fileValue != null) {
         remember { mutableStateOf(fileValue.filePath.toList()) }
     } else {
         remember {
@@ -51,7 +51,7 @@ fun WorxAttachFile(indexForm: Int, viewModel: DetailFormViewModel, session: Sess
         }
     }
 
-    val fileIds by if (fileValue != null) {
+    var fileIds by if (fileValue != null) {
         remember { mutableStateOf(fileValue.value.toList()) }
     } else {
         remember {
@@ -67,10 +67,8 @@ fun WorxAttachFile(indexForm: Int, viewModel: DetailFormViewModel, session: Sess
             onResult = {
                 if (it.resultCode == Activity.RESULT_OK && it.data != null) {
                     it.data?.data?.path?.let { path ->
-                        val newPathList = ArrayList(filePath.value)
-                        newPathList.add(path)
-                        filePath.value = newPathList.toList()
-                        viewModel.getPresignedUrl(newPathList, indexForm, 1)
+                        filePath = ArrayList(filePath).apply { add(path) }.toList()
+                        viewModel.getPresignedUrl(ArrayList(filePath), indexForm, 1)
                     }
                 }
             })
@@ -82,18 +80,24 @@ fun WorxAttachFile(indexForm: Int, viewModel: DetailFormViewModel, session: Sess
             style = Typography.body2.copy(MaterialTheme.colors.onSecondary),
             modifier = Modifier.padding(start = 17.dp, bottom = 8.dp, end = 16.dp)
         )
-        if (filePath.value.isNotEmpty()) {
+        if (filePath.isNotEmpty()) {
             Column {
-                filePath.value.forEachIndexed { index, item ->
+                filePath.forEachIndexed { index, item ->
                     val file = File(item)
                     val fileSize = (file.length() / 1024).toInt()
                     FileDataView(filePath = item, fileSize = fileSize) {
-                        val newList = ArrayList(filePath.value)
-                        newList.remove(item)
-                        filePath.value = newList
+                        ArrayList(filePath).apply { remove(item) }.also { filePath = it.toList() }
+                        ArrayList(fileIds).apply { removeAt(index) }.also { fileIds = it.toList() }
                         viewModel.setComponentData(
                             indexForm,
-                            FileValue(value = ArrayList(newList.map { 1 }), filePath = newList)
+                            if (filePath.isEmpty()) {
+                                null
+                            } else {
+                                FileValue(
+                                    value = ArrayList(fileIds),
+                                    filePath = ArrayList(filePath)
+                                )
+                            }
                         )
                     }
                 }
@@ -105,12 +109,22 @@ fun WorxAttachFile(indexForm: Int, viewModel: DetailFormViewModel, session: Sess
                         filePath = "File $it",
                         fileSize = 0,
                         showCloseButton = !arrayListOf(EventStatus.Done, EventStatus.Submitted).contains(formStatus)
-                    ) {}
+                    ) {
+                        ArrayList(fileIds).apply { remove(it) }.also { ids -> fileIds = ids.toList() }
+                        viewModel.setComponentData(
+                            indexForm,
+                            if (fileIds.isEmpty()) {
+                                null
+                            } else {
+                                FileValue(value = ArrayList(fileIds), filePath = ArrayList(filePath))
+                            }
+                        )
+                    }
                 }
             }
         }
         if (arrayListOf(EventStatus.Loading, EventStatus.Filling, EventStatus.Saved).contains(formStatus)) {
-            AttachFileButton(launcherFile, theme = theme)
+            AttachFileButton((form.maxFiles ?: 10) > fileIds.size, launcherFile, theme = theme)
         }
         Divider(color = GrayDivider, modifier = Modifier.padding(top = 12.dp))
     }
@@ -118,6 +132,7 @@ fun WorxAttachFile(indexForm: Int, viewModel: DetailFormViewModel, session: Sess
 
 @Composable
 private fun AttachFileButton(
+    isMaxFilesNotAchieved:Boolean,
     launcherFile: ManagedActivityResultLauncher<Intent, ActivityResult>,
     theme: String?
 ) {
@@ -141,15 +156,19 @@ private fun AttachFileButton(
         iconRes = R.drawable.ic_baseline_attach_file_24,
         title = stringResource(id = R.string.add_file),
         actionClick = {
-            when (PackageManager.PERMISSION_GRANTED) {
-                ContextCompat.checkSelfPermission(
-                    context,
-                    Manifest.permission.READ_EXTERNAL_STORAGE
-                ) -> {
-                    launcherFile.launch(intent)
-                }
-                else -> {
-                    launcherPermission.launch(Manifest.permission.READ_EXTERNAL_STORAGE)
+            if (!isMaxFilesNotAchieved){
+                Toast.makeText(context, "Already achieved max files. Please remove one of the them first", Toast.LENGTH_LONG).show()
+            } else {
+                when (PackageManager.PERMISSION_GRANTED) {
+                    ContextCompat.checkSelfPermission(
+                        context,
+                        Manifest.permission.READ_EXTERNAL_STORAGE
+                    ) -> {
+                        launcherFile.launch(intent)
+                    }
+                    else -> {
+                        launcherPermission.launch(Manifest.permission.READ_EXTERNAL_STORAGE)
+                    }
                 }
             }
         }, theme = theme

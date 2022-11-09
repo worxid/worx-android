@@ -1,23 +1,24 @@
 package id.worx.device.client.screen.main
 
 import android.annotation.SuppressLint
-import android.provider.Settings
 import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.selection.selectableGroup
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -36,9 +37,7 @@ import id.worx.device.client.screen.components.WhiteFullWidthButton
 import id.worx.device.client.screen.components.WorxDialog
 import id.worx.device.client.screen.components.WorxTopAppBar
 import id.worx.device.client.screen.components.getActivity
-import id.worx.device.client.theme.GrayDivider
-import id.worx.device.client.theme.Typography
-import id.worx.device.client.theme.WorxTheme
+import id.worx.device.client.theme.*
 import id.worx.device.client.viewmodel.HomeViewModel
 import id.worx.device.client.viewmodel.ThemeViewModel
 
@@ -121,30 +120,24 @@ fun SettingScreen(
             HeaderTileSetting(title = stringResource(id = R.string.organization_details))
             TileItemSetting(
                 title = stringResource(id = R.string.organizations),
-                subtitle = "Fields Service Mobile",
+                subtitle = session.organization,
                 session = session
             )
             TileItemSetting(
                 title = stringResource(id = R.string.organizations_key),
-                subtitle = "AIT763",
+                subtitle = session.organizationKey,
                 session = session
             )
             TileItemSetting(
                 title = stringResource(id = R.string.device_name),
-                subtitle = Settings.Secure.getString(context.contentResolver, "bluetooth_name"),
+                subtitle = session.deviceName,
                 session = session
             )
             Divider(color = GrayDivider, modifier = Modifier.padding(top = 20.dp))
             HeaderTileSetting(title = stringResource(id = R.string.devices_settings))
-            TileItemSetting(
-                title = stringResource(id = R.string.theme),
-                subtitle = session.theme,
-                iconRes = R.drawable.ic_baseline_color_lens_24,
-                modifier = Modifier.clickable {
-                    showDialogTheme.value = !showDialogTheme.value
-                },
-                session = session
-            )
+            TileItemTheme(modifier = Modifier.clickable {
+                showDialogTheme.value = !showDialogTheme.value
+            }, session = session)
             TileItemSetting(
                 title = stringResource(id = R.string.save_image_in_gallery),
                 subtitle = stringResource(id = R.string.save_image_in_gallery_sub),
@@ -321,6 +314,137 @@ fun ThemeDialog(
         }
     }
 }
+
+
+@Composable
+fun TileItemTheme(
+    modifier: Modifier = Modifier,
+    session: Session
+) {
+    ConstraintLayout(
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(horizontal = 18.dp, vertical = 8.dp)
+    ) {
+        val (icon, tvTitle, red, dark, green, blue) = createRefs()
+        Icon(
+            painter = painterResource(id = R.drawable.ic_baseline_color_lens_24),
+            contentDescription = "Icon",
+            modifier = modifier.constrainAs(icon) {
+                top.linkTo(parent.top)
+                bottom.linkTo(parent.bottom)
+                start.linkTo(parent.start)
+            },
+            tint = MaterialTheme.colors.onSecondary
+        )
+        Text(
+            text = stringResource(id = R.string.theme),
+            modifier = modifier
+                .constrainAs(tvTitle) {
+                    top.linkTo(parent.top)
+                    start.linkTo(
+                        icon.end,
+                        18.dp
+                    )
+                    end.linkTo(parent.end)
+                    width = Dimension.fillToConstraints
+                },
+            style = Typography.body2,
+            color = MaterialTheme.colors.onSecondary,
+        )
+        Box(
+            modifier = Modifier
+                .clip(RoundedCornerShape(2.dp))
+                .background(
+                    if (session.theme?.equals(SettingTheme.System) == true) MaterialTheme.colors.primary.copy(
+                        0.2f
+                    ) else Color.White.copy(0f)
+                )
+                .size(28.dp)
+                .constrainAs(red) {
+                    top.linkTo(tvTitle.bottom, 7.dp)
+                    bottom.linkTo(parent.bottom)
+                    start.linkTo(tvTitle.start)
+                }, contentAlignment = Alignment.Center
+        ) {
+            Box(
+                modifier = Modifier
+                    .clip(RoundedCornerShape(2.dp))
+                    .background(PrimaryMain)
+                    .size(24.dp)
+            )
+        }
+
+        Box(
+            modifier = Modifier
+                .clip(RoundedCornerShape(2.dp))
+                .background(
+                    if (session.theme?.equals(SettingTheme.Dark) == true) MaterialTheme.colors.primary.copy(
+                        0.2f
+                    ) else Color.White.copy(0f)
+                )
+                .size(28.dp)
+                .constrainAs(dark) {
+                    top.linkTo(red.top)
+                    bottom.linkTo(red.bottom)
+                    start.linkTo(red.end, 20.dp)
+                }, contentAlignment = Alignment.Center
+        ) {
+            Box(
+                modifier = Modifier
+                    .clip(RoundedCornerShape(2.dp))
+                    .background(PrimaryMainDark)
+                    .size(24.dp)
+            )
+        }
+
+        Box(
+            modifier = Modifier
+                .clip(RoundedCornerShape(2.dp))
+                .background(
+                    if (session.theme?.equals(SettingTheme.Blue) == true) MaterialTheme.colors.primary.copy(
+                        0.2f
+                    ) else Color.White.copy(0f)
+                )
+                .size(28.dp)
+                .constrainAs(blue) {
+                    top.linkTo(dark.top)
+                    bottom.linkTo(dark.bottom)
+                    start.linkTo(dark.end, 20.dp)
+                }, contentAlignment = Alignment.Center
+        ) {
+            Box(
+                modifier = Modifier
+                    .clip(RoundedCornerShape(2.dp))
+                    .background(PrimaryMainBlue)
+                    .size(24.dp)
+            )
+        }
+        Box(
+            modifier = Modifier
+                .clip(RoundedCornerShape(2.dp))
+                .background(
+                    if (session.theme?.equals(SettingTheme.Green) == true) MaterialTheme.colors.primary.copy(
+                        0.2f
+                    ) else Color.White.copy(0f)
+                )
+                .size(28.dp)
+                .constrainAs(green) {
+                    top.linkTo(blue.top)
+                    bottom.linkTo(blue.bottom)
+                    start.linkTo(blue.end, 20.dp)
+                }, contentAlignment = Alignment.Center
+        ) {
+            Box(
+                modifier = Modifier
+                    .clip(RoundedCornerShape(2.dp))
+                    .background(PrimaryMainGreen)
+                    .size(24.dp)
+            )
+        }
+    }
+}
+
 
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable

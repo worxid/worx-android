@@ -19,8 +19,11 @@ import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import java.util.concurrent.TimeUnit
 
+// For instrumentation test
+open class AppCore: Application()
+
 @HiltAndroidApp
-class WorxApplication : Application() {
+class WorxApplication : AppCore() {
     companion object {
         // ID of the notification channel used by upload service. This is needed by Android API 26+
         const val notificationChannelID = "UploadFileChannel"

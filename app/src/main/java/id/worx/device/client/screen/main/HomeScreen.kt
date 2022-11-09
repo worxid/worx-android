@@ -1,5 +1,6 @@
 package id.worx.device.client.screen.main
 
+import android.util.Log
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.ExitTransition
@@ -129,10 +130,12 @@ fun HomeScreen(
     val showBadge by viewModel.showBadge.collectAsState()
     var showSubmittedStatus by remember { mutableStateOf(notificationType == 1) }
     var showBotNav by remember { mutableStateOf(false) }
+    Log.d("TAGG", session.organization ?: "null")
 
     Scaffold(
         topBar = {
             MainTopAppBar(
+                title = session.organization ?: "",
                 onSearchMode = { showBotNav = it },
                 viewModel = viewModel
             ) { input ->
@@ -275,6 +278,7 @@ fun BottomNavigationView(navController: NavController, showBadge: Int, showBotNa
 
 @Composable
 fun MainTopAppBar(
+    title: String,
     onSearchMode: (Boolean) -> Unit,
     viewModel: HomeViewModel,
     searchAction: (String) -> Unit,
@@ -303,8 +307,8 @@ fun MainTopAppBar(
                 )
                 Text(
                     textAlign = TextAlign.Center,
-                    text = "PT Virtue Digital Indonesia",
-                    style = Typography.body1
+                    text = title,
+                    style = Typography.button.copy(Color.White)
                 )
                 Spacer(modifier = Modifier.weight(1f))
                 Icon(
