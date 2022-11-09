@@ -46,6 +46,10 @@ class CameraPhotoFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
+        if (android.os.Build.VERSION.SDK_INT > 32){
+            REQUIRED_PERMISSIONS = arrayOf(Manifest.permission.CAMERA)
+        }
+
         viewModel.navigateTo.observe(viewLifecycleOwner) { navigateToEvent ->
             navigateToEvent.getContentIfNotHandled()?.let { navigateTo ->
                 navigate(navigateTo, MainScreen.CameraPhoto)
@@ -189,7 +193,7 @@ class CameraPhotoFragment : Fragment() {
 
     companion object {
         private const val TAG = "WORX CameraFragment"
-        private val REQUIRED_PERMISSIONS = arrayOf(
+        private var REQUIRED_PERMISSIONS = arrayOf(
             Manifest.permission.CAMERA,
             Manifest.permission.WRITE_EXTERNAL_STORAGE
         )

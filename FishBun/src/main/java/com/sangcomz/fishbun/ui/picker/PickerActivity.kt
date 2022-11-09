@@ -116,16 +116,20 @@ class PickerActivity : BaseActivity(),
         permissions: Array<String>, grantResults: IntArray
     ) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-        when (requestCode) {
-            PERMISSION_STORAGE -> {
-                if (grantResults.isNotEmpty()) {
-                    if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                        pickerPresenter.getPickerListItem()
-                        // permission was granted, yay! do the
-                        // calendar task you need to do.
-                    } else {
-                        PermissionCheck(this).showPermissionDialog()
-                        finish()
+        if (Build.VERSION.SDK_INT > 32){
+            pickerPresenter.getPickerListItem()
+        } else {
+            when (requestCode) {
+                PERMISSION_STORAGE -> {
+                    if (grantResults.isNotEmpty()) {
+                        if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                            pickerPresenter.getPickerListItem()
+                            // permission was granted, yay! do the
+                            // calendar task you need to do.
+                        } else {
+                            PermissionCheck(this).showPermissionDialog()
+                            finish()
+                        }
                     }
                 }
             }

@@ -209,10 +209,14 @@ private fun TakeImageButton(
 ) {
     val context = LocalContext.current
 
-    val requiredPermissions = arrayOf(
+    var requiredPermissions = arrayOf(
         Manifest.permission.CAMERA,
         Manifest.permission.WRITE_EXTERNAL_STORAGE
     )
+
+    if (android.os.Build.VERSION.SDK_INT > 32){
+        requiredPermissions = arrayOf(Manifest.permission.CAMERA)
+    }
 
     val launcherPermission = rememberLauncherForActivityResult(
         ActivityResultContracts.RequestMultiplePermissions()
@@ -261,7 +265,7 @@ private fun GalleryImageButton(
 ) {
     val context = LocalContext.current
 
-    val requiredPermissions = arrayOf(
+    var requiredPermissions = arrayOf(
         Manifest.permission.READ_EXTERNAL_STORAGE,
         Manifest.permission.WRITE_EXTERNAL_STORAGE
     )
@@ -285,22 +289,35 @@ private fun GalleryImageButton(
         iconRes = R.drawable.ic_image,
         title = stringResource(R.string.gallery),
         actionClick = {
-            if (!isMaxFilesNumberNotAchieved){
-                Toast.makeText(context, context.getString(R.string.max_files_message), Toast.LENGTH_LONG).show()
-            }else if (
-                requiredPermissions.all {
-                    ContextCompat.checkSelfPermission(
-                        context,
-                        it
-                    ) == PackageManager.PERMISSION_GRANTED
-                }) {
-                FishBun.with(context.getActivity()!!)
-                    .setImageAdapter(CoilAdapter())
-                    .setMaxCount(1)
-                    .setThemeColor(PrimaryMain.toArgb())
-                    .startAlbumWithActivityResultCallback(launcherGallery)
+            if (!isMaxFilesNumberNotAchieved) {
+                Toast.makeText(
+                    context,
+                    context.getString(R.string.max_files_message),
+                    Toast.LENGTH_LONG
+                ).show()
             } else {
-                launcherPermission.launch(requiredPermissions)
+                if (android.os.Build.VERSION.SDK_INT > 32) {
+                    FishBun.with(context.getActivity()!!)
+                        .setImageAdapter(CoilAdapter())
+                        .setMaxCount(1)
+                        .setThemeColor(PrimaryMain.toArgb())
+                        .startAlbumWithActivityResultCallback(launcherGallery)
+                } else {
+                    if (requiredPermissions.all {
+                            ContextCompat.checkSelfPermission(
+                                context,
+                                it
+                            ) == PackageManager.PERMISSION_GRANTED
+                        }) {
+                        FishBun.with(context.getActivity()!!)
+                            .setImageAdapter(CoilAdapter())
+                            .setMaxCount(1)
+                            .setThemeColor(PrimaryMain.toArgb())
+                            .startAlbumWithActivityResultCallback(launcherGallery)
+                    } else {
+                        launcherPermission.launch(requiredPermissions)
+                    }
+                }
             }
         }, theme = theme
     )

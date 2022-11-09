@@ -137,7 +137,7 @@ private fun AttachFileButton(
     theme: String?
 ) {
     val intent = Intent(Intent.ACTION_GET_CONTENT)
-        .apply { type = "file/*" }
+        .apply { type = "*/*" }
 
     val context = LocalContext.current
 
@@ -159,15 +159,19 @@ private fun AttachFileButton(
             if (!isMaxFilesNotAchieved){
                 Toast.makeText(context, context.getString(R.string.max_files_message), Toast.LENGTH_LONG).show()
             } else {
-                when (PackageManager.PERMISSION_GRANTED) {
-                    ContextCompat.checkSelfPermission(
-                        context,
-                        Manifest.permission.READ_EXTERNAL_STORAGE
-                    ) -> {
-                        launcherFile.launch(intent)
-                    }
-                    else -> {
-                        launcherPermission.launch(Manifest.permission.READ_EXTERNAL_STORAGE)
+                if (android.os.Build.VERSION.SDK_INT > 32){
+                    launcherFile.launch(intent)
+                } else {
+                    when (PackageManager.PERMISSION_GRANTED) {
+                        ContextCompat.checkSelfPermission(
+                            context,
+                            Manifest.permission.READ_EXTERNAL_STORAGE
+                        ) -> {
+                            launcherFile.launch(intent)
+                        }
+                        else -> {
+                            launcherPermission.launch(Manifest.permission.READ_EXTERNAL_STORAGE)
+                        }
                     }
                 }
             }
