@@ -14,6 +14,7 @@ import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
@@ -59,7 +60,7 @@ fun CreateTeamSubmittedScreen(session: Session, onEvent: (CreateTeamSubmittedEve
                 contentDescription = " Email Logo"
             )
             Text(
-                "Check Your Email",
+                stringResource(id = R.string.check_email),
                 fontSize = 16.sp,
                 fontWeight = FontWeight.W700,
                 fontFamily = FontFamily.Monospace,
@@ -67,25 +68,26 @@ fun CreateTeamSubmittedScreen(session: Session, onEvent: (CreateTeamSubmittedEve
                 modifier = Modifier.padding(top = 24.dp, bottom = 8.dp)
             )
             Text(
-                "Click the link in your email to",
+                stringResource(id = R.string.activate_acc_1),
                 style = Typography.body1.copy(MaterialTheme.colors.onSecondary)
             )
             Text(
-                "activate your account",
+                stringResource(id = R.string.activate_acc_2),
                 style = Typography.body1.copy(MaterialTheme.colors.onSecondary)
             )
             RedFullWidthButton(
                 onClickCallback = { onEvent(CreateTeamSubmittedEvent.OpenEmailApp) },
-                label = "Open Email App",
+                label = stringResource(id = R.string.open_email),
                 modifier = Modifier.padding(vertical = 20.dp),
                 theme = theme
             )
             Row(modifier = Modifier.padding(top = 20.dp)) {
                 Text(
-                    "Didn't receive the link? ",
+                    stringResource(id = R.string.not_receive_link),
                     style = Typography.body1.copy(MaterialTheme.colors.onSecondary)
                 )
-                Text("Resend",
+                Text(
+                    stringResource(id = R.string.resend),
                     style = Typography.body1.copy(color = if (theme == SettingTheme.Dark) PrimaryMain else MaterialTheme.colors.primary),
                     modifier = Modifier.clickable {
                         onEvent(CreateTeamSubmittedEvent.Resend)

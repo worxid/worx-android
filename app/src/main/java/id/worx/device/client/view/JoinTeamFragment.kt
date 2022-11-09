@@ -90,8 +90,6 @@ class JoinTeamFragment : Fragment() {
             organization_code = organization,
             port = 443,
         )
-        //ip dan port sementara gunakan api.dev.worx.id dan 443
-        //org code semenatara WXLK94C
     }
 
 }

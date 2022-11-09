@@ -147,7 +147,7 @@ private fun AttachFileButton(
         if (isGranted) {
             launcherFile.launch(intent)
         } else {
-            Toast.makeText(context, "Permission is denied", Toast.LENGTH_LONG).show()
+            Toast.makeText(context, context.getString(R.string.permission_rejected), Toast.LENGTH_LONG).show()
         }
     }
 
@@ -157,7 +157,7 @@ private fun AttachFileButton(
         title = stringResource(id = R.string.add_file),
         actionClick = {
             if (!isMaxFilesNotAchieved){
-                Toast.makeText(context, "Already achieved max files. Please remove one of the them first", Toast.LENGTH_LONG).show()
+                Toast.makeText(context, context.getString(R.string.max_files_message), Toast.LENGTH_LONG).show()
             } else {
                 when (PackageManager.PERMISSION_GRANTED) {
                     ContextCompat.checkSelfPermission(

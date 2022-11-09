@@ -107,7 +107,7 @@ class CameraPhotoFragment : Fragment() {
             )
             FileOutputStream(photoFile.path).use { stream -> stream.write(result.data) }
 
-            val msg = "Foto berhasil"
+            val msg = this@CameraPhotoFragment.requireContext().getString(R.string.photo_taken)
             Toast.makeText(
                 this@CameraPhotoFragment.requireContext(),
                 msg,
@@ -173,7 +173,7 @@ class CameraPhotoFragment : Fragment() {
             } else {
                 Toast.makeText(
                     requireContext(),
-                    "Permissions not granted by the user.",
+                    requireContext().getString(R.string.permission_rejected),
                     Toast.LENGTH_SHORT
                 ).show()
             }

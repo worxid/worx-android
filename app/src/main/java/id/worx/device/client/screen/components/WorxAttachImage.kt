@@ -218,7 +218,7 @@ private fun TakeImageButton(
         ActivityResultContracts.RequestMultiplePermissions()
     ) {
         if (it.containsValue(false)) {
-            Toast.makeText(context, "Permission is denied", Toast.LENGTH_LONG).show()
+            Toast.makeText(context, context.getString(R.string.permission_rejected), Toast.LENGTH_LONG).show()
         } else {
             navigateToPhotoCamera()
         }
@@ -230,7 +230,7 @@ private fun TakeImageButton(
         title = "Camera",
         actionClick = {
             if (!isMaxFilesNumberNotAchieved){
-                Toast.makeText(context, "Already achieved max files. Please remove one of the them first", Toast.LENGTH_LONG).show()
+                Toast.makeText(context, context.getString(R.string.max_files_message), Toast.LENGTH_LONG).show()
             } else if (
                 requiredPermissions.all {
                     ContextCompat.checkSelfPermission(
@@ -270,7 +270,7 @@ private fun GalleryImageButton(
         ActivityResultContracts.RequestMultiplePermissions()
     ) {
         if (it.containsValue(false)) {
-            Toast.makeText(context, "Permission is denied", Toast.LENGTH_LONG).show()
+            Toast.makeText(context, context.getString(R.string.permission_rejected), Toast.LENGTH_LONG).show()
         } else {
             FishBun.with(context.getActivity()!!)
                 .setImageAdapter(CoilAdapter())
@@ -286,7 +286,7 @@ private fun GalleryImageButton(
         title = stringResource(R.string.gallery),
         actionClick = {
             if (!isMaxFilesNumberNotAchieved){
-                Toast.makeText(context, "Already achieved max files. Please remove one of the them first", Toast.LENGTH_LONG).show()
+                Toast.makeText(context, context.getString(R.string.max_files_message), Toast.LENGTH_LONG).show()
             }else if (
                 requiredPermissions.all {
                     ContextCompat.checkSelfPermission(

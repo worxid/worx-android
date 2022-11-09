@@ -83,12 +83,12 @@ class MainActivity : AppCompatActivity() {
             viewModel.uploadSubmissionWork()
             viewModel.downloadFormTemplate(this@MainActivity)
             {
-                Toast.makeText(applicationContext, "Sync Empty Form DB with server is done", Toast.LENGTH_SHORT)
+                Toast.makeText(applicationContext, applicationContext.getString(R.string.sync_form_message), Toast.LENGTH_SHORT)
                     .show()
             }
             viewModel.downloadSubmissionList(this@MainActivity)
             {
-                Toast.makeText(applicationContext, "Sync Submission From DB with server is done", Toast.LENGTH_SHORT)
+                Toast.makeText(applicationContext, applicationContext.getString(R.string.sync_submission_message), Toast.LENGTH_SHORT)
                     .show()
             }
         }
@@ -113,7 +113,7 @@ class MainActivity : AppCompatActivity() {
             } else {
                 Toast.makeText(
                     applicationContext,
-                    "Permissions not granted by the user.",
+                    applicationContext.getString(R.string.permission_rejected),
                     Toast.LENGTH_SHORT
                 ).show()
             }
