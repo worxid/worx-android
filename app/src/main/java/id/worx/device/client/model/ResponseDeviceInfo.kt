@@ -21,7 +21,9 @@ data class DeviceValue (
     @SerializedName("device_os_version"  ) var deviceOsVersion  : String?           = null,
     @SerializedName("device_app_version" ) var deviceAppVersion : String?           = null,
     @SerializedName("device_language"    ) var deviceLanguage   : String?           = null,
-    @SerializedName("joined_time"        ) var joinedTime       : String?           = null
+    @SerializedName("joined_time"        ) var joinedTime       : String?           = null,
+    @SerializedName("organization_code"  ) var organizationCode : String?           = null,
+    @SerializedName("organization_name"  ) var organizationName : String?           = null
 
 )
 

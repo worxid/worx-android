@@ -3,6 +3,7 @@ package id.worx.device.client.viewmodel
 import android.util.Log
 import androidx.lifecycle.*
 import androidx.work.*
+import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import dagger.hilt.android.lifecycle.HiltViewModel
 import id.worx.device.client.Event
@@ -11,12 +12,10 @@ import id.worx.device.client.WorxApplication
 import id.worx.device.client.data.api.FieldsDeserializer
 import id.worx.device.client.data.api.ValueSerialize
 import id.worx.device.client.data.database.FormDownloadWorker
+import id.worx.device.client.data.database.Session
 import id.worx.device.client.data.database.SubmissionDownloadWorker
 import id.worx.device.client.data.database.SubmissionUploadWorker
-import id.worx.device.client.model.EmptyForm
-import id.worx.device.client.model.Fields
-import id.worx.device.client.model.SubmitForm
-import id.worx.device.client.model.Value
+import id.worx.device.client.model.*
 import id.worx.device.client.repository.DeviceInfoRepository
 import id.worx.device.client.repository.SourceDataRepository
 import kotlinx.coroutines.CoroutineScope
@@ -49,6 +48,7 @@ class HomeViewModel @Inject constructor(
 ) : ViewModel() {
 
     val uiState = MutableStateFlow(HomeUiState())
+    lateinit var uiHandler: UIHandler
 
     private val _navigateTo = MutableLiveData<Event<MainScreen>>()
     val navigateTo: LiveData<Event<MainScreen>> = _navigateTo
@@ -218,5 +218,32 @@ class HomeViewModel @Inject constructor(
                 }
             }
         }
+    }
+
+    fun getDeviceInfo(session: Session) {
+        viewModelScope.launch {
+            val response = deviceInfoRepository.getDeviceStatus()
+            withContext(Dispatchers.Main) {
+                if (response.isSuccessful) {
+                    val value = response.body()?.value
+                    val organization = value?.organizationName
+                    val organizationKey = value?.organizationCode
+                    session.saveOrganization(organization)
+                    session.saveOrganizationCode(organizationKey)
+                } else if (response.code() == 404) {
+                    val jsonString = response.errorBody()!!.charStream()
+                    val errorResponse = Gson().fromJson(jsonString, ResponseDeviceInfo::class.java)
+                    if (errorResponse?.error?.status == "ENTITY_NOT_FOUND_ERROR")
+                        uiHandler.showToast(errorResponse.error?.status!!)
+                } else {
+                    val errorMessage = "Error " + response.code().toString()
+                    uiHandler.showToast("$errorMessage fetching device info")
+                }
+            }
+        }
+    }
+
+    interface UIHandler {
+        fun showToast(text: String)
     }
 }

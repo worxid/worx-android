@@ -39,7 +39,7 @@ class HomeFragment : Fragment() {
                 navigate(navigateTo, MainScreen.Home)
             }
         }
-
+        viewModel.getDeviceInfo(session)
         return ComposeView(requireContext()).apply {
             setContent {
                 val theme = themeViewModel.theme.value

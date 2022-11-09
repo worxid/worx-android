@@ -9,6 +9,7 @@ import com.google.gson.Gson
 import dagger.hilt.android.lifecycle.HiltViewModel
 import id.worx.device.client.Event
 import id.worx.device.client.WelcomeScreen
+import id.worx.device.client.data.database.Session
 import id.worx.device.client.model.JoinTeamForm
 import id.worx.device.client.model.NewTeamForm
 import id.worx.device.client.model.ResponseDeviceInfo
@@ -94,12 +95,17 @@ class WelcomeViewModel @Inject constructor(
     val deviceStatus: LiveData<String?> = _deviceStatus
 
     // temporary solution for checking device status
-    fun getDeviceStatus() {
+    fun getDeviceStatus(session: Session) {
         viewModelScope.launch {
             val response = deviceInfoRepository.getDeviceStatus()
             withContext(Dispatchers.Main) {
                 if (response.isSuccessful) {
-                    val deviceStatus = response.body()?.value?.deviceStatus
+                    val value = response.body()?.value
+                    val deviceStatus = value?.deviceStatus
+                    val organization = value?.organizationName
+                    val organizationKey = value?.organizationCode
+                    session.saveOrganization(organization)
+                    session.saveOrganizationCode(organizationKey)
                     _deviceStatus.postValue(deviceStatus)
                 } else if (response.code() == 404) {
                     val jsonString = response.errorBody()!!.charStream()

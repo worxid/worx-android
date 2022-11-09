@@ -13,6 +13,7 @@ class Session(context: Context) {
     val latitude get() = pref.getString(LATITUDE, "-5.1966")
     val longitude get() = pref.getString(LONGITUDE, " 119.4926")
     val organization get() = pref.getString(ORGANIZATION,"")
+    val organizationKey get() = pref.getString(ORGANIZATION_KEY, "")
     val deviceName get() = pref.getString(DEVICE_NAME, "")
 
     companion object{
@@ -23,6 +24,7 @@ class Session(context: Context) {
         val LATITUDE = "LATITUDE"
         val LONGITUDE = "LONGITUDE"
         val ORGANIZATION = "ORGANIZATION"
+        val ORGANIZATION_KEY = "ORGANIZATION_KEY"
         val DEVICE_NAME = "DEVICE_NAME"
     }
 
@@ -51,8 +53,13 @@ class Session(context: Context) {
         editor.commit()
     }
 
-    fun saveOrganization(org : String){
+    fun saveOrganization(org : String?){
         editor.putString(ORGANIZATION, org)
+        editor.commit()
+    }
+
+    fun saveOrganizationCode(key : String?){
+        editor.putString(ORGANIZATION_KEY, key)
         editor.commit()
     }
 
