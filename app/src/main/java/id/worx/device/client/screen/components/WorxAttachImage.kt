@@ -224,6 +224,7 @@ private fun TakeImageButton(
         if (it.containsValue(false)) {
             Toast.makeText(context, context.getString(R.string.permission_rejected), Toast.LENGTH_LONG).show()
         } else {
+            sendIndexFormData()
             navigateToPhotoCamera()
         }
     }
