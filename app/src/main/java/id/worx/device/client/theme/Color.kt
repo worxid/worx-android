@@ -9,7 +9,7 @@ val RedDarkButton = Color(0xFFDA3630)
 
 val GrayDivider = Color(0x61FFFFFF)
 val SurfaceSystem = Color(0xFF646464)
-val BlackFont = Color(0xFF000000)
+val BlackFont = Color(0xFF222222)
 val BlackVariantFont = Color(0f, 0f, 0f, 0.54f)
 val textUnfocusColorSystem = Color(0xB3000000)
 
