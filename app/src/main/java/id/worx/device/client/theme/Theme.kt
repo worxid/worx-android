@@ -25,18 +25,19 @@ val LightThemeColorsSystem = lightColors(
     onError = Color.White
 )
 
+@SuppressLint("ConflictingOnColor")
 val DarkThemeColorsSystem = darkColors(
     primary = PrimaryMain,
     primaryVariant = RedDark,
-    onPrimary = Color.Blue,
-    secondary = Color.Black,
-    onSecondary = Color.Yellow,
-    background = Color.DarkGray,
-    onBackground = Color.Green,
-    surface = Color.Magenta,
-    onSurface = Color.White,
+    onPrimary = Color.White,
+    secondary = Color.White,
+    onSecondary = Color.Black,
+    background = PrimaryMain,
+    onBackground = PrimaryMain,
+    surface = SurfaceSystem,
+    onSurface = Color.Black,
     error = RedDark,
-    onError = Color.Blue
+    onError = Color.White
 )
 
 //Dark
@@ -55,19 +56,18 @@ val LightThemeColorsDark = lightColors(
 )
 
 val DarkThemeColorsDark = darkColors(
-    primary = PrimaryMain,
-    primaryVariant = RedDark,
-    onPrimary = Color.Blue,
-    secondary = Color.Black,
-    onSecondary = Color.Yellow,
-    background = Color.DarkGray,
-    onBackground = Color.Green,
-    surface = Color.Magenta,
-    onSurface = Color.White,
-    error = RedDark,
-    onError = Color.Blue
+    primary = PrimaryMainDark,
+    primaryVariant = BlackDark,
+    onPrimary = Color.White,
+    secondary = DarkBackground,
+    onSecondary = Color.White,
+    background = Color.White,
+    onBackground = PrimaryMain,
+    surface = SurfaceMainDark,
+    onSurface = Color.Black,
+    error = BlackDark,
+    onError = Color.White
 )
-
 
 //Green
 @SuppressLint("ConflictingOnColor")
@@ -85,18 +85,19 @@ val LightThemeColorsGreen = lightColors(
     onError = Color.White
 )
 
+@SuppressLint("ConflictingOnColor")
 val DarkThemeColorsGreen = darkColors(
-    primary = PrimaryMain,
-    primaryVariant = RedDark,
-    onPrimary = Color.Blue,
-    secondary = Color.Black,
-    onSecondary = Color.Yellow,
-    background = Color.DarkGray,
-    onBackground = Color.Green,
-    surface = Color.Magenta,
-    onSurface = Color.White,
-    error = RedDark,
-    onError = Color.Blue
+    primary = PrimaryMainGreen,
+    primaryVariant = GreenDark,
+    onPrimary = Color.White,
+    secondary = Color.White,
+    onSecondary = Color.Black,
+    background = PrimaryMainGreen,
+    onBackground = PrimaryMainGreen,
+    surface = SurfaceSystem,
+    onSurface = Color.Black,
+    error = GreenDark,
+    onError = Color.White
 )
 
 //Blue
@@ -115,18 +116,19 @@ val LightThemeColorsBlue = lightColors(
     onError = Color.White
 )
 
+@SuppressLint("ConflictingOnColor")
 val DarkThemeColorsBlue = darkColors(
-    primary = PrimaryMain,
-    primaryVariant = RedDark,
-    onPrimary = Color.Blue,
-    secondary = Color.Black,
-    onSecondary = Color.Yellow,
-    background = Color.DarkGray,
-    onBackground = Color.Green,
-    surface = Color.Magenta,
-    onSurface = Color.White,
-    error = RedDark,
-    onError = Color.Blue
+    primary = PrimaryMainBlue,
+    primaryVariant = BlueDark,
+    onPrimary = Color.White,
+    secondary = Color.White,
+    onSecondary = Color.Black,
+    background = PrimaryMainBlue,
+    onBackground = PrimaryMainBlue,
+    surface = SurfaceSystem,
+    onSurface = Color.Black,
+    error = BlueDark,
+    onError = Color.White
 )
 @Composable
 fun WorxTheme(

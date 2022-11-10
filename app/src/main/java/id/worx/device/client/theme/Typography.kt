@@ -60,12 +60,10 @@ val Typography = Typography(
         fontSize = 12.sp,
         fontFamily = FontFamily.Monospace,
         letterSpacing = 0.15.sp,
-        color = Color.White
     ),
     body2 = TextStyle(
         fontWeight = FontWeight.W400,
         fontSize = 14.sp,
-        color = Color.Black,
         fontFamily = FontFamily.Monospace),
     button = TextStyle(
         fontWeight = FontWeight.W500,
