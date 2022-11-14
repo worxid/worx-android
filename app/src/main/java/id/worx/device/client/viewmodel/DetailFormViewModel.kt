@@ -263,8 +263,18 @@ class DetailFormViewModel @Inject constructor(
         val value = uiState.value.values
         val unFilledFields = arrayListOf<String>()
 
-        fields.forEach {
-            if (it.required == true && value[it.id] == null) {
+        fields.forEach { it ->
+            var totalCheck = 0
+            var minCheck = 0
+            if (it.type == Type.Checkbox.name){
+               val checkBoxValue = value[it.id] as CheckBoxValue
+               minCheck = (it as CheckBoxField).minChecked ?: 0
+               totalCheck = checkBoxValue.value.filter { it }.size
+            }
+
+            if (totalCheck in 1 until minCheck) {
+                unFilledFields.add("${it.type} ${it.label}")
+            } else if (it.required == true && value[it.id] == null) {
                 unFilledFields.add("${it.type} ${it.label}")
             }
         }
@@ -272,7 +282,7 @@ class DetailFormViewModel @Inject constructor(
         if (unFilledFields.isEmpty()) {
             submitForm { actionAfterSubmitted() }
         } else {
-            uiHandler.showToast("${unFilledFields.joinToString(", ")} must be filled")
+            uiHandler.showToast("Form is not complete!")
         }
     }
 
