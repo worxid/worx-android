@@ -1,8 +1,8 @@
 package id.worx.device.client.screen
 
-import androidx.compose.foundation.*
-import androidx.compose.foundation.gestures.FlingBehavior
-import androidx.compose.foundation.gestures.ScrollableDefaults
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
@@ -27,6 +27,7 @@ import id.worx.device.client.screen.components.*
 import id.worx.device.client.theme.Typography
 import id.worx.device.client.viewmodel.CameraViewModel
 import id.worx.device.client.viewmodel.DetailFormViewModel
+import id.worx.device.client.viewmodel.EventStatus
 
 @Composable
 fun ValidFormBuilder(
@@ -84,6 +85,7 @@ fun DetailForm(
         remember { mutableStateOf("") }
     }.toMutableList()
     val listState = rememberLazyListState(viewModel.indexScroll.value, viewModel.offset.value)
+    val formStatus = viewModel.uiState.collectAsState().value.status
 
     LaunchedEffect(key1 = listState.isScrollInProgress){
         if (!listState.isScrollInProgress){
@@ -120,7 +122,7 @@ fun DetailForm(
                             data[index].value = it
                             viewModel.setComponentData(index, TextFieldValue(values = it))
                         },
-                        isDeleteTrail = true
+                        isDeleteTrail = !arrayListOf(EventStatus.Done, EventStatus.Submitted).contains(formStatus)
                     )
                 }
                 Type.Checkbox.type -> {
@@ -154,7 +156,7 @@ fun DetailForm(
                     WorxSignature(index, viewModel, session)
                 }
                 Type.Separator.type -> {
-                    WorxSeparator()
+                    WorxSeparator(index, viewModel, session)
                     viewModel.setComponentData(index, SeparatorValue())
                 }
                 else -> {

@@ -155,8 +155,8 @@ fun WorxAttachImage(
                 TakeImageButton((form.maxFiles ?: 10) > fileIds.size, navigateToPhotoCamera, setIndexData, theme)
                 GalleryImageButton((form.maxFiles ?: 10) > fileIds.size, launcherGallery = launcherGallery, theme)
             }
-            Divider(color = GrayDivider, modifier = Modifier.padding(top = 12.dp))
         }
+        Divider(color = GrayDivider, modifier = Modifier.padding(top = 12.dp))
     }
 }
 

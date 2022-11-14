@@ -63,6 +63,7 @@ fun WorxTextField(
                 onValueChange(it.text)
                 textValue = it
             },
+            enabled = isDeleteTrail,
             label = {
                 Text(
                     text = hint ?: "Enter $label",
