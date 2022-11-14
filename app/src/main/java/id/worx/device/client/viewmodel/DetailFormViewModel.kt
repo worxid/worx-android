@@ -283,6 +283,8 @@ class DetailFormViewModel @Inject constructor(
             submitForm { actionAfterSubmitted() }
         } else {
             uiHandler.showToast("Form is not complete!")
+            uiState.update { it.copy(status = EventStatus.Filling,)
+            }
         }
     }
 
