@@ -172,7 +172,11 @@ private fun ImageDataView(
             .padding(horizontal = 16.dp, vertical = 12.dp)
     ) {
         AsyncImage(
-            model = filePath,
+            model = if (fileSize > 0) {
+                filePath
+            } else {
+                android.R.drawable.ic_menu_gallery
+            },
             contentDescription = "Image",
             modifier = Modifier
                 .width(48.dp)
@@ -184,7 +188,7 @@ private fun ImageDataView(
                 .weight(1f)
         ) {
             Text(text = filePath.substringAfterLast("/"), style = Typography.body2.copy(MaterialTheme.colors.onSecondary))
-            Text(text = "$fileSize kb", style = Typography.body2.copy(MaterialTheme.colors.onSecondary))
+            if (fileSize> 0 ) Text(text = "$fileSize kb", style = Typography.body2.copy(MaterialTheme.colors.onSecondary))
         }
         if (showCloseButton) {
             Icon(

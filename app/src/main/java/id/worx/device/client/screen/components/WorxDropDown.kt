@@ -20,12 +20,14 @@ import id.worx.device.client.model.DropDownValue
 import id.worx.device.client.theme.GrayDivider
 import id.worx.device.client.theme.Typography
 import id.worx.device.client.viewmodel.DetailFormViewModel
+import id.worx.device.client.viewmodel.EventStatus
 
 @Composable
 fun WorxDropdown(indexForm: Int, viewModel: DetailFormViewModel, session: Session) {
     val theme = session.theme
     val form =
         viewModel.uiState.collectAsState().value.detailForm!!.fields[indexForm] as DropDownField
+    val formStatus = viewModel.uiState.collectAsState().value.status
     val title = form.label ?: "DropDown"
     val optionTitles = form.options
 
@@ -84,7 +86,13 @@ fun WorxDropdown(indexForm: Int, viewModel: DetailFormViewModel, session: Sessio
                 },
                 onValueChange = {})
             DropdownMenu(
-                expanded = expanded,
+                expanded =
+                    if (!arrayListOf(EventStatus.Done, EventStatus.Submitted).contains(formStatus)
+                    ) {
+                        expanded
+                    } else {
+                        false
+                    },
                 onDismissRequest = { expanded = false },
                 modifier = Modifier
                     .fillMaxWidth(0.94f)

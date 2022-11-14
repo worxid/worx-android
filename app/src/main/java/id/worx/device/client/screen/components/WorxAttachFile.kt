@@ -4,6 +4,7 @@ import android.Manifest
 import android.app.Activity
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.util.Log
 import android.widget.Toast
 import androidx.activity.compose.ManagedActivityResultLauncher
 import androidx.activity.compose.rememberLauncherForActivityResult
@@ -67,6 +68,7 @@ fun WorxAttachFile(indexForm: Int, viewModel: DetailFormViewModel, session: Sess
             onResult = {
                 if (it.resultCode == Activity.RESULT_OK && it.data != null) {
                     it.data?.data?.path?.let { path ->
+                        Log.d("TAGG", path)
                         filePath = ArrayList(filePath).apply { add(path) }.toList()
                         viewModel.getPresignedUrl(ArrayList(filePath), indexForm, 1)
                     }

@@ -11,18 +11,18 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import id.worx.device.client.model.RadioButtonField
 import id.worx.device.client.model.RadioButtonValue
 import id.worx.device.client.theme.GrayDivider
-import id.worx.device.client.theme.PrimaryMain
 import id.worx.device.client.theme.Typography
 import id.worx.device.client.viewmodel.DetailFormViewModel
+import id.worx.device.client.viewmodel.EventStatus
 
 @Composable
 fun WorxRadiobutton(indexForm: Int, viewModel: DetailFormViewModel) {
     val form = viewModel.uiState.collectAsState().value.detailForm!!.fields[indexForm] as RadioButtonField
+    val formStatus = viewModel.uiState.collectAsState().value.status
     val title = form.label ?: "RadioButton"
     val optionTitles = form.options
 
@@ -43,8 +43,18 @@ fun WorxRadiobutton(indexForm: Int, viewModel: DetailFormViewModel) {
                     RadioButton(
                         selected = index == onCheck.value ,
                         onClick = {
-                            onCheck.value = index
-                            viewModel.setComponentData(indexForm, RadioButtonValue(value = onCheck.value)) },
+                            if (!arrayListOf(
+                                    EventStatus.Done,
+                                    EventStatus.Submitted
+                                ).contains(formStatus)
+                            ) {
+                                onCheck.value = index
+                                viewModel.setComponentData(
+                                    indexForm,
+                                    RadioButtonValue(value = onCheck.value)
+                                )
+                            }
+                        },
                         colors = RadioButtonDefaults.colors(
                             selectedColor = MaterialTheme.colors.onBackground,
                             unselectedColor = MaterialTheme.colors.onSecondary
