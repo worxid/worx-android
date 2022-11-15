@@ -1,9 +1,11 @@
 package id.worx.device.client
 
+import android.content.ContentResolver
 import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.Color
 import android.net.ConnectivityManager
+import android.net.Uri
 import android.os.Build
 import android.provider.Settings
 import id.worx.device.client.data.upload.CustomPlaceholdersProcessor
@@ -13,6 +15,8 @@ import net.gotev.uploadservice.data.UploadNotificationAction
 import net.gotev.uploadservice.data.UploadNotificationConfig
 import net.gotev.uploadservice.data.UploadNotificationStatusConfig
 import net.gotev.uploadservice.extensions.getCancelUploadIntent
+import java.io.File
+import java.net.URLConnection
 import java.text.SimpleDateFormat
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
@@ -33,6 +37,36 @@ object Util {
             val calendar = Calendar.getInstance()
             SimpleDateFormat(dateFormat, Locale.getDefault()).format(calendar.time)
         }
+    }
+
+    fun getFileFromUri(contentResolver: ContentResolver, uri: Uri, directory: File): File {
+        val source = contentResolver.openInputStream(uri)
+        val fileType = URLConnection.guessContentTypeFromStream(source)
+        val file = File.createTempFile(uri.path ?: "file", "", directory)
+        file.outputStream().use {
+            source?.copyTo(it)
+        }
+        source?.close()
+        return file
+    }
+
+    fun getRealPathFromURI(context: Context, contentURI: Uri): String {
+        var result = ""
+        val cursor = context.contentResolver.query(contentURI, null, null, null, null)
+        if (cursor == null) {
+            result = contentURI.path!!
+        } else {
+            cursor.moveToFirst()
+            val documentId = "document_id"
+            val displayName = "_display_name"
+            val mimeType = "mime_type"
+            val idx = cursor.getColumnIndex(displayName)
+            val id2 = cursor.getColumnIndex(documentId)
+            val id3 = cursor.getColumnIndex(mimeType)
+            result = cursor.getString(idx)
+            cursor.close()
+        }
+        return result
     }
 
     /**

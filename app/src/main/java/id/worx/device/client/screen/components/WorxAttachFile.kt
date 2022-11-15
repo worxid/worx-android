@@ -4,7 +4,6 @@ import android.Manifest
 import android.app.Activity
 import android.content.Intent
 import android.content.pm.PackageManager
-import android.util.Log
 import android.widget.Toast
 import androidx.activity.compose.ManagedActivityResultLauncher
 import androidx.activity.compose.rememberLauncherForActivityResult
@@ -29,6 +28,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
 import id.worx.device.client.R
+import id.worx.device.client.Util.getRealPathFromURI
 import id.worx.device.client.data.database.Session
 import id.worx.device.client.model.FileField
 import id.worx.device.client.model.FileValue
@@ -62,13 +62,15 @@ fun WorxAttachFile(indexForm: Int, viewModel: DetailFormViewModel, session: Sess
 
     val formStatus = viewModel.uiState.collectAsState().value.status
 
+    var context = LocalContext.current
+
     val launcherFile =
         rememberLauncherForActivityResult(
             contract = ActivityResultContracts.StartActivityForResult(),
             onResult = {
                 if (it.resultCode == Activity.RESULT_OK && it.data != null) {
-                    it.data?.data?.path?.let { path ->
-                        Log.d("TAGG", path)
+                    it.data?.data?.let { uri ->
+                        val path = getRealPathFromURI(context, uri)
                         filePath = ArrayList(filePath).apply { add(path) }.toList()
                         viewModel.getPresignedUrl(ArrayList(filePath), indexForm, 1)
                     }
@@ -203,8 +205,8 @@ fun FileDataView(
                 .padding(horizontal = 12.dp)
                 .weight(1f)
         ) {
-            Text(text = filePath.substringAfterLast("/"), style = Typography.body2)
-            Text(text = "$fileSize kb", style = Typography.body2)
+            Text(text = filePath.substringAfterLast("/"), style = Typography.body2.copy(MaterialTheme.colors.onSecondary))
+            if(fileSize > 0) Text(text = "$fileSize kb", style = Typography.body2.copy(MaterialTheme.colors.onSecondary))
         }
         if (showCloseButton) {
             Icon(
