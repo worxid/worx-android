@@ -122,7 +122,8 @@ fun DetailForm(
                             data[index].value = it
                             viewModel.setComponentData(index, TextFieldValue(values = it))
                         },
-                        isDeleteTrail = !arrayListOf(EventStatus.Done, EventStatus.Submitted).contains(formStatus)
+                        isDeleteTrail  = !arrayListOf(EventStatus.Done, EventStatus.Submitted).contains(formStatus),
+                        isEnabled  = !arrayListOf(EventStatus.Done, EventStatus.Submitted).contains(formStatus)
                     )
                 }
                 Type.Checkbox.type -> {
