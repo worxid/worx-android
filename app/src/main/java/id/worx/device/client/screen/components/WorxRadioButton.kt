@@ -18,6 +18,7 @@ import id.worx.device.client.theme.GrayDivider
 import id.worx.device.client.theme.Typography
 import id.worx.device.client.viewmodel.DetailFormViewModel
 import id.worx.device.client.viewmodel.EventStatus
+import kotlinx.coroutines.flow.update
 
 @Composable
 fun WorxRadiobutton(indexForm: Int, viewModel: DetailFormViewModel) {
@@ -53,6 +54,9 @@ fun WorxRadiobutton(indexForm: Int, viewModel: DetailFormViewModel) {
                                     indexForm,
                                     RadioButtonValue(value = onCheck.value)
                                 )
+                                viewModel.uiState.update {
+                                    it.copy(status = EventStatus.Edited)
+                                }
                             }
                         },
                         colors = RadioButtonDefaults.colors(

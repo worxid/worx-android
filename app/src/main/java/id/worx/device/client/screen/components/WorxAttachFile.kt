@@ -36,6 +36,7 @@ import id.worx.device.client.theme.GrayDivider
 import id.worx.device.client.theme.Typography
 import id.worx.device.client.viewmodel.DetailFormViewModel
 import id.worx.device.client.viewmodel.EventStatus
+import kotlinx.coroutines.flow.update
 import java.io.File
 
 @Composable
@@ -102,6 +103,9 @@ fun WorxAttachFile(indexForm: Int, viewModel: DetailFormViewModel, session: Sess
                             }
                         )
                     }
+                    viewModel.uiState.update {
+                        it.copy(status = EventStatus.Edited)
+                    }
                 }
             }
         } else if (fileIds.isNotEmpty()){
@@ -122,10 +126,13 @@ fun WorxAttachFile(indexForm: Int, viewModel: DetailFormViewModel, session: Sess
                             }
                         )
                     }
+                    viewModel.uiState.update {
+                        it.copy(status = EventStatus.Edited)
+                    }
                 }
             }
         }
-        if (arrayListOf(EventStatus.Loading, EventStatus.Filling, EventStatus.Saved).contains(formStatus)) {
+        if (arrayListOf(EventStatus.Loading, EventStatus.Filling, EventStatus.Saved, EventStatus.Edited).contains(formStatus)) {
             AttachFileButton((form.maxFiles ?: 10) > fileIds.size, launcherFile, theme = theme)
         }
         Divider(color = GrayDivider, modifier = Modifier.padding(top = 12.dp))

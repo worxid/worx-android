@@ -30,7 +30,7 @@ import java.util.*
 import javax.inject.Inject
 
 enum class EventStatus {
-    Loading, Filling, Submitted, Done, Saved
+    Loading, Filling, Submitted, Done, Saved, Edited
 }
 
 /**
