@@ -16,6 +16,8 @@ import net.gotev.uploadservice.data.UploadNotificationConfig
 import net.gotev.uploadservice.data.UploadNotificationStatusConfig
 import net.gotev.uploadservice.extensions.getCancelUploadIntent
 import java.io.File
+import java.io.FileOutputStream
+import java.io.OutputStream
 import java.net.URLConnection
 import java.text.SimpleDateFormat
 import java.time.LocalDateTime
@@ -57,16 +59,33 @@ object Util {
             result = contentURI.path!!
         } else {
             cursor.moveToFirst()
-            val documentId = "document_id"
-            val displayName = "_display_name"
-            val mimeType = "mime_type"
-            val idx = cursor.getColumnIndex(displayName)
-            val id2 = cursor.getColumnIndex(documentId)
-            val id3 = cursor.getColumnIndex(mimeType)
-            result = cursor.getString(idx)
+            val idx = cursor.getColumnIndex("_display_name")
+            val id2 = cursor.getColumnIndex("document_id")
+            val id3 = cursor.getColumnIndex("mime_type")
+            val fileName = cursor.getString(idx)
             cursor.close()
+
+            val file = File(context.cacheDir, fileName)
+            copy(context, contentURI, file)
+            result = file.path
         }
         return result
+    }
+
+    fun copy(context: Context, srcUri: Uri?, dstFile: File?) {
+        try {
+            val inputStream = context.contentResolver.openInputStream(srcUri!!) ?: return
+            val outputStream: OutputStream = FileOutputStream(dstFile)
+            val buf = ByteArray(1024)
+            var len: Int
+            while (inputStream.read(buf).also { len = it } > 0) {
+                outputStream.write(buf, 0, len)
+            }
+            inputStream.close()
+            outputStream.close()
+        } catch (e: java.lang.Exception) { // IOException
+            e.printStackTrace()
+        }
     }
 
     /**
