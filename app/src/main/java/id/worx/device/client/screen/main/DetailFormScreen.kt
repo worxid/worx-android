@@ -47,13 +47,13 @@ fun DetailFormScreen(
 ) {
     val uistate = viewModel.uiState.collectAsState().value
     val formStatus = viewModel.uiState.collectAsState().value.status
-    val showDialogLeaveForm = remember { mutableStateOf(formStatus == EventStatus.Edited) }
+    val showDialogLeaveForm = remember { mutableStateOf(false )}
 
     Scaffold(
         topBar = {
             WorxTopAppBar(
                 onBack = {
-                    showDialogLeaveForm.value = formStatus == EventStatus.Edited
+                    showDialogLeaveForm.value = (formStatus == EventStatus.Filling && viewModel.formProgress.value > 0)
                     if (!showDialogLeaveForm.value){
                         onEvent(DetailFormEvent.BackPressed)
                     }
@@ -84,7 +84,7 @@ fun DetailFormScreen(
                 LeaveForm(
                     setShowDialog = { showDialogLeaveForm.value = it },
                     onPositiveButton = {
-                        onEvent(DetailFormEvent.SaveDraft)
+                        viewModel.goToHome()
                     }
                 )
             }, setShowDialog = { showDialogLeaveForm.value = it })

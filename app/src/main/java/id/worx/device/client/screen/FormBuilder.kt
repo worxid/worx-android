@@ -1,6 +1,5 @@
 package id.worx.device.client.screen
 
-import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -29,7 +28,6 @@ import id.worx.device.client.theme.Typography
 import id.worx.device.client.viewmodel.CameraViewModel
 import id.worx.device.client.viewmodel.DetailFormViewModel
 import id.worx.device.client.viewmodel.EventStatus
-import kotlinx.coroutines.flow.update
 
 @Composable
 fun ValidFormBuilder(
@@ -123,9 +121,6 @@ fun DetailForm(
                         onValueChange = { it ->
                             data[index].value = it
                             viewModel.setComponentData(index, TextFieldValue(values = it))
-                            viewModel.uiState.update { 
-                                it.copy(status = EventStatus.Edited)
-                            }
                         },
                         isDeleteTrail  = !arrayListOf(EventStatus.Done, EventStatus.Submitted).contains(formStatus),
                         isEnabled  = !arrayListOf(EventStatus.Done, EventStatus.Submitted).contains(formStatus)
@@ -163,7 +158,6 @@ fun DetailForm(
                 }
                 Type.Separator.type -> {
                     WorxSeparator(index, viewModel, session)
-                    viewModel.setComponentData(index, SeparatorValue())
                 }
                 else -> {
                     Text(

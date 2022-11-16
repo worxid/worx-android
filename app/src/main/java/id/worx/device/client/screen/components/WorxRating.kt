@@ -26,7 +26,6 @@ import id.worx.device.client.theme.SecondaryMain
 import id.worx.device.client.theme.Typography
 import id.worx.device.client.viewmodel.DetailFormViewModel
 import id.worx.device.client.viewmodel.EventStatus
-import kotlinx.coroutines.flow.update
 
 @Composable
 fun WorxRating(indexForm: Int, viewModel: DetailFormViewModel) {
@@ -65,9 +64,6 @@ fun WorxRating(indexForm: Int, viewModel: DetailFormViewModel) {
                         ) {
                             rating.value = index + 1
                             viewModel.setComponentData(indexForm, RatingValue(value = index + 1))
-                            viewModel.uiState.update {
-                                it.copy(status = EventStatus.Edited)
-                            }
                         }
                     },
                     painter = painterResource(id = R.drawable.star_big_off),

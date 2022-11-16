@@ -30,7 +30,6 @@ import id.worx.device.client.theme.GrayDivider
 import id.worx.device.client.theme.Typography
 import id.worx.device.client.viewmodel.DetailFormViewModel
 import id.worx.device.client.viewmodel.EventStatus
-import kotlinx.coroutines.flow.update
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -68,9 +67,6 @@ fun WorxDateInput(indexForm: Int, viewModel: DetailFormViewModel, session: Sessi
         val newDate = calendar.time
         val dateString = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(newDate)
         viewModel.setComponentData(indexForm, DateValue(value = dateString))
-        viewModel.uiState.update {
-            it.copy(status = EventStatus.Edited)
-        }
         value.value = SimpleDateFormat("dd/MM/yy", Locale.getDefault()).format(newDate)
         showDatePicker = false
     }
@@ -124,9 +120,6 @@ fun WorxDateInput(indexForm: Int, viewModel: DetailFormViewModel, session: Sessi
                                 .clickable {
                                     viewModel.setComponentData(indexForm, null)
                                     value.value = null
-                                    viewModel.uiState.update {
-                                        it.copy(status = EventStatus.Edited)
-                                    }
                                 },
                             tint = MaterialTheme.colors.onSecondary
                         )

@@ -21,7 +21,6 @@ import id.worx.device.client.theme.GrayDivider
 import id.worx.device.client.theme.Typography
 import id.worx.device.client.viewmodel.DetailFormViewModel
 import id.worx.device.client.viewmodel.EventStatus
-import kotlinx.coroutines.flow.update
 
 @Composable
 fun WorxDropdown(indexForm: Int, viewModel: DetailFormViewModel, session: Session) {
@@ -104,9 +103,6 @@ fun WorxDropdown(indexForm: Int, viewModel: DetailFormViewModel, session: Sessio
                         onClick = {
                             selected.value.value = index
                             viewModel.setComponentData(indexForm, selected.value)
-                            viewModel.uiState.update {
-                                it.copy(status = EventStatus.Edited)
-                            }
                             expanded = false
                         },
                         modifier = Modifier.background(Color.White)

@@ -30,7 +30,7 @@ import java.util.*
 import javax.inject.Inject
 
 enum class EventStatus {
-    Loading, Filling, Submitted, Done, Saved, Edited
+    Loading, Filling, Submitted, Done, Saved
 }
 
 /**
@@ -148,6 +148,10 @@ class DetailFormViewModel @Inject constructor(
         uiState.update {
             it.copy(currentComponent = index)
         }
+    }
+
+    fun goToHome() {
+        _navigateTo.value = Event(MainScreen.Home)
     }
 
     /**
