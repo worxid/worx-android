@@ -1,6 +1,7 @@
 package id.worx.device.client.screen.components
 
 import android.graphics.Bitmap
+import android.util.Log
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -28,6 +29,7 @@ import id.worx.device.client.theme.GrayDivider
 import id.worx.device.client.theme.Typography
 import id.worx.device.client.viewmodel.DetailFormViewModel
 import id.worx.device.client.viewmodel.EventStatus
+import kotlinx.coroutines.flow.update
 
 @Composable
 fun WorxSignature(indexForm: Int, viewModel: DetailFormViewModel, session: Session) {
@@ -57,6 +59,9 @@ fun WorxSignature(indexForm: Int, viewModel: DetailFormViewModel, session: Sessi
                 viewModel.setComponentData(indexForm, null)
                 bitmap.value = null
             }
+            viewModel.uiState.update {
+                it.copy(status = EventStatus.Edited)
+            }
         } else if (fileId != null) {
             FileDataView(
                 filePath = "File $fileId",
@@ -66,7 +71,7 @@ fun WorxSignature(indexForm: Int, viewModel: DetailFormViewModel, session: Sessi
                 )
             ) {}
         } else {
-            if (arrayListOf(EventStatus.Loading, EventStatus.Filling, EventStatus.Saved).contains(
+            if (arrayListOf(EventStatus.Loading, EventStatus.Filling, EventStatus.Saved, EventStatus.Edited).contains(
                     formStatus
                 )
             ) {

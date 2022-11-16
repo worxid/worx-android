@@ -7,6 +7,7 @@ import android.content.ContextWrapper
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
+import android.util.Log
 import android.widget.Toast
 import androidx.activity.compose.ManagedActivityResultLauncher
 import androidx.activity.compose.rememberLauncherForActivityResult
@@ -44,6 +45,7 @@ import id.worx.device.client.theme.Typography
 import id.worx.device.client.theme.WorxTheme
 import id.worx.device.client.viewmodel.DetailFormViewModel
 import id.worx.device.client.viewmodel.EventStatus
+import kotlinx.coroutines.flow.update
 import java.io.File
 
 @Composable
@@ -118,6 +120,9 @@ fun WorxAttachImage(
                             }
                         )
                     }
+                    viewModel.uiState.update {
+                        it.copy(status = EventStatus.Edited)
+                    }
                 }
             }
         } else if (fileIds.isNotEmpty()) {
@@ -140,12 +145,15 @@ fun WorxAttachImage(
                         }
                     )
                 }
+                viewModel.uiState.update {
+                    it.copy(status = EventStatus.Edited)
+                }
             }
         }
         if (arrayListOf(
                 EventStatus.Loading,
                 EventStatus.Filling,
-                EventStatus.Saved
+                EventStatus.Saved, EventStatus.Edited
             ).contains(formStatus)
         ) {
             Row(
