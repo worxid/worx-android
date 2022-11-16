@@ -39,6 +39,8 @@ fun ValidFormBuilder(
 ) {
     var showSubmitDialog by remember { mutableStateOf(false) }
     var showDraftDialog by remember { mutableStateOf(false) }
+    var validation by remember { mutableStateOf(false) }
+    var isValid by remember { mutableStateOf(false) }
     val theme = session.theme
 
     Box(
@@ -50,7 +52,9 @@ fun ValidFormBuilder(
             componentList,
             viewModel,
             cameraViewModel,
-            session
+            session,
+            validation,
+            { isValid = it }
         )
         { showSubmitDialog = true }
         if (showSubmitDialog) {
@@ -58,7 +62,10 @@ fun ValidFormBuilder(
                 viewModel,
                 session,
                 {
-                    onEvent(DetailFormEvent.SubmitForm)
+                    validation = true
+                    if (isValid) {
+                        onEvent(DetailFormEvent.SubmitForm)
+                    }
                     showSubmitDialog = false
                 },
                 { showDraftDialog = true })
@@ -78,6 +85,8 @@ fun DetailForm(
     viewModel: DetailFormViewModel,
     cameraViewModel: CameraViewModel,
     session: Session,
+    validation: Boolean,
+    isValid: (Boolean) -> Unit,
     showSubmitDialog: () -> Unit
 ) {
     val theme = session.theme
@@ -87,8 +96,8 @@ fun DetailForm(
     val listState = rememberLazyListState(viewModel.indexScroll.value, viewModel.offset.value)
     val formStatus = viewModel.uiState.collectAsState().value.status
 
-    LaunchedEffect(key1 = listState.isScrollInProgress){
-        if (!listState.isScrollInProgress){
+    LaunchedEffect(key1 = listState.isScrollInProgress) {
+        if (!listState.isScrollInProgress) {
             viewModel.indexScroll.value = listState.firstVisibleItemIndex
             viewModel.offset.value = listState.firstVisibleItemScrollOffset
         }
@@ -110,6 +119,8 @@ fun DetailForm(
                             ?: 0
                     val value = viewModel.uiState.collectAsState().value.values[id]
                             as TextFieldValue? ?: TextFieldValue()
+                    val form =
+                        viewModel.uiState.collectAsState().value.detailForm!!.fields.getOrNull(index)
                     WorxTextField(
                         theme = theme,
                         label = item.label ?: "Free Text",
@@ -122,38 +133,45 @@ fun DetailForm(
                             data[index].value = it
                             viewModel.setComponentData(index, TextFieldValue(values = it))
                         },
-                        isDeleteTrail = !arrayListOf(EventStatus.Done, EventStatus.Submitted).contains(formStatus)
+                        isDeleteTrail = !arrayListOf(
+                            EventStatus.Done,
+                            EventStatus.Submitted
+                        ).contains(formStatus),
+                        isRequired = form?.required ?: false,
+                        validation = validation,
+                        isValid = isValid
                     )
                 }
                 Type.Checkbox.type -> {
-                    WorxCheckBox(index, viewModel)
+                    WorxCheckBox(index, viewModel, validation, isValid)
                 }
                 Type.RadioGroup.type -> {
-                    WorxRadiobutton(index, viewModel)
+                    WorxRadiobutton(index, viewModel, validation, isValid)
                 }
                 Type.Dropdown.type -> {
-                    WorxDropdown(index, viewModel, session)
+                    WorxDropdown(index, viewModel, session, validation, isValid)
                 }
                 Type.Date.type -> {
-                    WorxDateInput(index, viewModel, session)
+                    WorxDateInput(index, viewModel, session, validation, isValid)
                 }
                 Type.Rating.type -> {
-                    WorxRating(index, viewModel)
+                    WorxRating(index, viewModel, validation, isValid)
                 }
                 Type.File.type -> {
-                    WorxAttachFile(index, viewModel, session)
+                    WorxAttachFile(index, viewModel, session, validation, isValid)
                 }
                 Type.Photo.type -> {
                     WorxAttachImage(
                         index,
                         viewModel,
                         session,
-                        { cameraViewModel.navigateFromDetailScreen(index) }) {
+                        { cameraViewModel.navigateFromDetailScreen(index) }, validation, isValid
+                    ) {
                         viewModel.goToCameraPhoto(index)
                     }
                 }
                 Type.Signature.type -> {
-                    WorxSignature(index, viewModel, session)
+                    WorxSignature(index, viewModel, session, validation, isValid)
                 }
                 Type.Separator.type -> {
                     WorxSeparator(index, viewModel, session)
@@ -168,7 +186,7 @@ fun DetailForm(
             }
         }
         val detailForm = viewModel.uiState.value.detailForm
-        if ( detailForm is EmptyForm || (detailForm is SubmitForm && detailForm.status == 0)) {
+        if (detailForm is EmptyForm || (detailForm is SubmitForm && detailForm.status == 0)) {
             item {
                 RedFullWidthButton(
                     onClickCallback = { showSubmitDialog() },

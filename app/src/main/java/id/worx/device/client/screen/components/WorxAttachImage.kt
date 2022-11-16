@@ -52,7 +52,9 @@ fun WorxAttachImage(
     viewModel: DetailFormViewModel,
     session: Session,
     setIndexData: () -> Unit,
-    navigateToPhotoCamera: () -> Unit
+    validation : Boolean = false,
+    isValid : (Boolean) -> Unit ={},
+    navigateToPhotoCamera: () -> Unit,
 ) {
     val form = viewModel.uiState.collectAsState().value.detailForm!!.fields[indexForm] as ImageField
     val title = form.label ?: ""
@@ -66,6 +68,7 @@ fun WorxAttachImage(
             mutableStateOf(listOf())
         }
     }
+    val warningInfo = if (form.required == true && filePath.isEmpty()) "${form.label} is required" else ""
 
     var fileIds by if (fileValue != null) {
         remember { mutableStateOf(fileValue.value.toList()) }
@@ -155,6 +158,18 @@ fun WorxAttachImage(
                 TakeImageButton((form.maxFiles ?: 10) > fileIds.size, navigateToPhotoCamera, setIndexData, theme)
                 GalleryImageButton((form.maxFiles ?: 10) > fileIds.size, launcherGallery = launcherGallery, theme)
             }
+        }
+        if (validation && warningInfo.isNotBlank()) {
+            Text(
+                text = warningInfo,
+                modifier = Modifier
+                    .padding(horizontal = 16.dp)
+                    .padding(top = 4.dp),
+                color = PrimaryMain
+            )
+            isValid(false)
+        } else {
+            isValid(true)
         }
         Divider(color = GrayDivider, modifier = Modifier.padding(top = 12.dp))
     }

@@ -15,18 +15,20 @@ import androidx.compose.ui.unit.dp
 import id.worx.device.client.model.RadioButtonField
 import id.worx.device.client.model.RadioButtonValue
 import id.worx.device.client.theme.GrayDivider
+import id.worx.device.client.theme.PrimaryMain
 import id.worx.device.client.theme.Typography
 import id.worx.device.client.viewmodel.DetailFormViewModel
 import id.worx.device.client.viewmodel.EventStatus
 
 @Composable
-fun WorxRadiobutton(indexForm: Int, viewModel: DetailFormViewModel) {
-    val form = viewModel.uiState.collectAsState().value.detailForm!!.fields[indexForm] as RadioButtonField
+fun WorxRadiobutton(indexForm: Int, viewModel: DetailFormViewModel, validation: Boolean = false,isValid : (Boolean) -> Unit ={}) {
+    val form =
+        viewModel.uiState.collectAsState().value.detailForm!!.fields[indexForm] as RadioButtonField
     val formStatus = viewModel.uiState.collectAsState().value.status
     val title = form.label ?: "RadioButton"
     val optionTitles = form.options
-
-    val radioButtonValue = viewModel.uiState.collectAsState().value.values[form.id] as RadioButtonValue?
+    val radioButtonValue =
+        viewModel.uiState.collectAsState().value.values[form.id] as RadioButtonValue?
     val onCheck = if (radioButtonValue != null) {
         remember {
             mutableStateOf(radioButtonValue.value)
@@ -34,14 +36,19 @@ fun WorxRadiobutton(indexForm: Int, viewModel: DetailFormViewModel) {
     } else {
         remember { mutableStateOf<Int?>(null) }
     }
+    val warningInfo =if (form.required == true && onCheck.value == null) "$title is required" else ""
 
     Column(modifier = Modifier.fillMaxWidth()) {
-        Text(title, style = Typography.body2.copy(MaterialTheme.colors.onSecondary), modifier = Modifier.padding(start = 16.dp))
+        Text(
+            title,
+            style = Typography.body2.copy(MaterialTheme.colors.onSecondary),
+            modifier = Modifier.padding(start = 16.dp)
+        )
         Column {
             optionTitles.forEachIndexed { index, item ->
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     RadioButton(
-                        selected = index == onCheck.value ,
+                        selected = index == onCheck.value,
                         onClick = {
                             if (!arrayListOf(
                                     EventStatus.Done,
@@ -60,9 +67,24 @@ fun WorxRadiobutton(indexForm: Int, viewModel: DetailFormViewModel) {
                             unselectedColor = MaterialTheme.colors.onSecondary
                         )
                     )
-                    Text(item.label ?: "", style = Typography.body1.copy(MaterialTheme.colors.onSecondary))
+                    Text(
+                        item.label ?: "",
+                        style = Typography.body1.copy(MaterialTheme.colors.onSecondary)
+                    )
                 }
             }
+        }
+        if (validation && warningInfo.isNotBlank()) {
+            Text(
+                text = warningInfo,
+                modifier = Modifier
+                    .padding(horizontal = 16.dp)
+                    .padding(bottom = 8.dp),
+                color = PrimaryMain
+            )
+            isValid(false)
+        } else {
+            isValid(true)
         }
         Divider(color = GrayDivider, modifier = Modifier.padding(top = 12.dp))
     }

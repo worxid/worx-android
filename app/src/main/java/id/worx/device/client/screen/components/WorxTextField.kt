@@ -1,5 +1,7 @@
 package id.worx.device.client.screen.components
 
+import android.text.BoringLayout
+import android.util.Log
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -19,10 +21,7 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import id.worx.device.client.R
 import id.worx.device.client.screen.main.SettingTheme
-import id.worx.device.client.theme.GrayDivider
-import id.worx.device.client.theme.Typography
-import id.worx.device.client.theme.textUnfocusColorDark
-import id.worx.device.client.theme.textUnfocusColorSystem
+import id.worx.device.client.theme.*
 
 @Composable
 fun WorxTextField(
@@ -33,7 +32,10 @@ fun WorxTextField(
     initialValue: TextFieldValue = TextFieldValue(),
     onValueChange: (String) -> Unit,
     isPassword: Boolean = false,
-    isDeleteTrail: Boolean = false
+    isDeleteTrail: Boolean = false,
+    isRequired : Boolean = false,
+    validation: Boolean = false,
+    isValid : (Boolean) -> Unit ={}
 ) {
     var textValue by remember { mutableStateOf(initialValue) }
 
@@ -56,7 +58,7 @@ fun WorxTextField(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = 16.dp)
-                .padding(bottom = 12.dp),
+                .padding(bottom = 4.dp),
             shape = RoundedCornerShape(4.dp),
             value = textValue,
             onValueChange = {
@@ -83,7 +85,11 @@ fun WorxTextField(
                     val description = if (passwordVisible) "Hide password" else "Show password"
 
                     IconButton(onClick = { passwordVisible = !passwordVisible }) {
-                        Icon(painter = image, description, tint = MaterialTheme.colors.onSecondary.copy(0.54f))
+                        Icon(
+                            painter = image,
+                            description,
+                            tint = MaterialTheme.colors.onSecondary.copy(0.54f)
+                        )
                     }
                 }
                 if (isDeleteTrail) {
@@ -99,6 +105,18 @@ fun WorxTextField(
                 }
             }
         )
+        if (validation && isRequired && textValue.text.isBlank()){
+            Text(
+                text = "$label is required",
+                modifier = Modifier
+                    .padding(horizontal = 16.dp)
+                    .padding(bottom = 8.dp),
+                color = PrimaryMain
+            )
+            isValid(false)
+        } else {
+            isValid(true)
+        }
         Divider(
             color = GrayDivider
         )

@@ -33,13 +33,14 @@ import id.worx.device.client.data.database.Session
 import id.worx.device.client.model.FileField
 import id.worx.device.client.model.FileValue
 import id.worx.device.client.theme.GrayDivider
+import id.worx.device.client.theme.PrimaryMain
 import id.worx.device.client.theme.Typography
 import id.worx.device.client.viewmodel.DetailFormViewModel
 import id.worx.device.client.viewmodel.EventStatus
 import java.io.File
 
 @Composable
-fun WorxAttachFile(indexForm: Int, viewModel: DetailFormViewModel, session: Session) {
+fun WorxAttachFile(indexForm: Int, viewModel: DetailFormViewModel, session: Session, validation : Boolean = false,isValid : (Boolean) -> Unit ={}) {
     val theme = session.theme
     val uiState = viewModel.uiState.collectAsState().value
     val form = uiState.detailForm!!.fields[indexForm] as FileField
@@ -51,6 +52,7 @@ fun WorxAttachFile(indexForm: Int, viewModel: DetailFormViewModel, session: Sess
             mutableStateOf(listOf())
         }
     }
+    val warningInfo = if (form.required == true && filePath.isEmpty()) "${form.label} is required" else ""
 
     var fileIds by if (fileValue != null) {
         remember { mutableStateOf(fileValue.value.toList()) }
@@ -127,6 +129,18 @@ fun WorxAttachFile(indexForm: Int, viewModel: DetailFormViewModel, session: Sess
         }
         if (arrayListOf(EventStatus.Loading, EventStatus.Filling, EventStatus.Saved).contains(formStatus)) {
             AttachFileButton((form.maxFiles ?: 10) > fileIds.size, launcherFile, theme = theme)
+        }
+        if (validation && warningInfo.isNotBlank()) {
+            Text(
+                text = warningInfo,
+                modifier = Modifier
+                    .padding(horizontal = 16.dp)
+                    .padding(top = 4.dp),
+                color = PrimaryMain
+            )
+            isValid(false)
+        } else {
+            isValid(true)
         }
         Divider(color = GrayDivider, modifier = Modifier.padding(top = 12.dp))
     }
