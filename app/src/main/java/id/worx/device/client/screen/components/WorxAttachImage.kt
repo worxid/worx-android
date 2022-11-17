@@ -145,7 +145,7 @@ fun WorxAttachImage(
         if (arrayListOf(
                 EventStatus.Loading,
                 EventStatus.Filling,
-                EventStatus.Saved
+                EventStatus.Saved,
             ).contains(formStatus)
         ) {
             Row(
@@ -155,8 +155,8 @@ fun WorxAttachImage(
                 TakeImageButton((form.maxFiles ?: 10) > fileIds.size, navigateToPhotoCamera, setIndexData, theme)
                 GalleryImageButton((form.maxFiles ?: 10) > fileIds.size, launcherGallery = launcherGallery, theme)
             }
-            Divider(color = GrayDivider, modifier = Modifier.padding(top = 12.dp))
         }
+        Divider(color = GrayDivider, modifier = Modifier.padding(top = 12.dp))
     }
 }
 
@@ -172,7 +172,11 @@ private fun ImageDataView(
             .padding(horizontal = 16.dp, vertical = 12.dp)
     ) {
         AsyncImage(
-            model = filePath,
+            model = if (fileSize > 0) {
+                filePath
+            } else {
+                android.R.drawable.ic_menu_gallery
+            },
             contentDescription = "Image",
             modifier = Modifier
                 .width(48.dp)
@@ -184,7 +188,7 @@ private fun ImageDataView(
                 .weight(1f)
         ) {
             Text(text = filePath.substringAfterLast("/"), style = Typography.body2.copy(MaterialTheme.colors.onSecondary))
-            Text(text = "$fileSize kb", style = Typography.body2.copy(MaterialTheme.colors.onSecondary))
+            if (fileSize> 0 ) Text(text = "$fileSize kb", style = Typography.body2.copy(MaterialTheme.colors.onSecondary))
         }
         if (showCloseButton) {
             Icon(
@@ -209,17 +213,22 @@ private fun TakeImageButton(
 ) {
     val context = LocalContext.current
 
-    val requiredPermissions = arrayOf(
+    var requiredPermissions = arrayOf(
         Manifest.permission.CAMERA,
         Manifest.permission.WRITE_EXTERNAL_STORAGE
     )
+
+    if (android.os.Build.VERSION.SDK_INT > 32){
+        requiredPermissions = arrayOf(Manifest.permission.CAMERA)
+    }
 
     val launcherPermission = rememberLauncherForActivityResult(
         ActivityResultContracts.RequestMultiplePermissions()
     ) {
         if (it.containsValue(false)) {
-            Toast.makeText(context, "Permission is denied", Toast.LENGTH_LONG).show()
+            Toast.makeText(context, context.getString(R.string.permission_rejected), Toast.LENGTH_LONG).show()
         } else {
+            sendIndexFormData()
             navigateToPhotoCamera()
         }
     }
@@ -230,7 +239,7 @@ private fun TakeImageButton(
         title = "Camera",
         actionClick = {
             if (!isMaxFilesNumberNotAchieved){
-                Toast.makeText(context, "Already achieved max files. Please remove one of the them first", Toast.LENGTH_LONG).show()
+                Toast.makeText(context, context.getString(R.string.max_files_message), Toast.LENGTH_LONG).show()
             } else if (
                 requiredPermissions.all {
                     ContextCompat.checkSelfPermission(
@@ -261,7 +270,7 @@ private fun GalleryImageButton(
 ) {
     val context = LocalContext.current
 
-    val requiredPermissions = arrayOf(
+    var requiredPermissions = arrayOf(
         Manifest.permission.READ_EXTERNAL_STORAGE,
         Manifest.permission.WRITE_EXTERNAL_STORAGE
     )
@@ -270,7 +279,7 @@ private fun GalleryImageButton(
         ActivityResultContracts.RequestMultiplePermissions()
     ) {
         if (it.containsValue(false)) {
-            Toast.makeText(context, "Permission is denied", Toast.LENGTH_LONG).show()
+            Toast.makeText(context, context.getString(R.string.permission_rejected), Toast.LENGTH_LONG).show()
         } else {
             FishBun.with(context.getActivity()!!)
                 .setImageAdapter(CoilAdapter())
@@ -285,22 +294,35 @@ private fun GalleryImageButton(
         iconRes = R.drawable.ic_image,
         title = stringResource(R.string.gallery),
         actionClick = {
-            if (!isMaxFilesNumberNotAchieved){
-                Toast.makeText(context, "Already achieved max files. Please remove one of the them first", Toast.LENGTH_LONG).show()
-            }else if (
-                requiredPermissions.all {
-                    ContextCompat.checkSelfPermission(
-                        context,
-                        it
-                    ) == PackageManager.PERMISSION_GRANTED
-                }) {
-                FishBun.with(context.getActivity()!!)
-                    .setImageAdapter(CoilAdapter())
-                    .setMaxCount(1)
-                    .setThemeColor(PrimaryMain.toArgb())
-                    .startAlbumWithActivityResultCallback(launcherGallery)
+            if (!isMaxFilesNumberNotAchieved) {
+                Toast.makeText(
+                    context,
+                    context.getString(R.string.max_files_message),
+                    Toast.LENGTH_LONG
+                ).show()
             } else {
-                launcherPermission.launch(requiredPermissions)
+                if (android.os.Build.VERSION.SDK_INT > 32) {
+                    FishBun.with(context.getActivity()!!)
+                        .setImageAdapter(CoilAdapter())
+                        .setMaxCount(1)
+                        .setThemeColor(PrimaryMain.toArgb())
+                        .startAlbumWithActivityResultCallback(launcherGallery)
+                } else {
+                    if (requiredPermissions.all {
+                            ContextCompat.checkSelfPermission(
+                                context,
+                                it
+                            ) == PackageManager.PERMISSION_GRANTED
+                        }) {
+                        FishBun.with(context.getActivity()!!)
+                            .setImageAdapter(CoilAdapter())
+                            .setMaxCount(1)
+                            .setThemeColor(PrimaryMain.toArgb())
+                            .startAlbumWithActivityResultCallback(launcherGallery)
+                    } else {
+                        launcherPermission.launch(requiredPermissions)
+                    }
+                }
             }
         }, theme = theme
     )

@@ -1,6 +1,18 @@
-<resources>
-    <string name="app_name">Worx</string>
+<resources xmlns:tools="http://schemas.android.com/tools"
+    tools:ignore="MissingTranslation">
+    <string name="app_name" translatable="false">Worx</string>
+    <string name="welcome">Hi, Welcome!</string>
+    <string name="welcome_messg_1">Enjoy All The Features Of The App</string>
+    <string name="welcome_messg_2">Easily &amp; Interactively</string>
+    <string name="create_new_team">Create New Team</string>
+    <string name="join_team">Join Existing Team</string>
     <string name="full_name">Full Name</string>
+    <string name="check_email">Check Your Email</string>
+    <string name="activate_acc_1">Click the link in your email to</string>
+    <string name="activate_acc_2">activate your account</string>
+    <string name="open_email">Open Email App</string>
+    <string name="not_receive_link">Didn\'t receive the link?</string>
+    <string name="resend">Resend</string>
     <string name="ready_to_join">Ready to join</string>
     <string name="admin_will_approve">Admin will approve your device</string>
     <string name="name">Name</string>
@@ -14,14 +26,7 @@
     <string name="verification_rejected">Your verification was rejected</string>
     <string name="make_new_request">Make A New Request</string>
     <string name="title_activity_main">MainActivity</string>
-    <!-- Strings used for fragments for navigation -->
-    <string name="first_fragment_label">First Fragment</string>
-    <string name="second_fragment_label">Second Fragment</string>
-    <string name="next">Next</string>
-    <string name="previous">Previous</string>
 
-    <string name="hello_first_fragment">Hello first fragment</string>
-    <string name="hello_second_fragment">Hello second fragment. Arg: %1$s</string>
     <string name="form">Form</string>
     <string name="draft">Draft</string>
     <string name="submission">Submission</string>
@@ -30,7 +35,9 @@
     <string name="camera">Camera</string>
     <string name="add_signature">Add Signature</string>
     <string name="erase">Hapus</string>
+    <string name="erase_eng">Delete</string>
     <string name="save">Simpan</string>
+    <string name="save_eng">Save</string>
     <string name="draft_descr">Draft description</string>
     <string name="empty_description_form">You currently aren’t any forms. Please contact your admin too add forms to tour device</string>
     <string name="no_forms">No Forms</string>
@@ -58,8 +65,18 @@
     <string name="yes">Yes</string>
     <string name="cancel">Cancel</string>
     <string name="leave_organization">Are you sure you want to leave the organization?</string>
+    <string name="leave_form">Leave This Form?</string>
+    <string name="leave_form_sub">Are you sure you want to leave this page? if you leave this form, your existing work will be included in the draft</string>
+    <string name="leave">Leave</string>
     <string name="upload_cancel">Upload Cancelled</string>
     <string name="upload_error">Upload Error</string>
     <string name="upload_success">Upload Success</string>
     <string name="uploading">Uploading</string>
+
+<!--    list error/notification message-->
+    <string name="sync_form_message">Sync Empty Form DB with server is done</string>
+    <string name="sync_submission_message">Sync Submission From DB with server is done</string>
+    <string name="permission_rejected">Permissions not granted by the user</string>
+    <string name="photo_taken">Photo was taken</string>
+    <string name="max_files_message">Already achieved max files. Please remove one of the them first</string>
 </resources>

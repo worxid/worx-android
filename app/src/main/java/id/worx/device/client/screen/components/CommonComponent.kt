@@ -67,17 +67,18 @@ fun ActionRedButton(
                     alpha = 0.1f
                 )
             )
-            .clickable { actionClick() },
-        verticalAlignment = Alignment.CenterVertically
+            .clickable { actionClick() }
+            .padding(8.dp),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.SpaceBetween
     ) {
         Icon(
-            modifier = Modifier.padding(horizontal = 15.dp, vertical = 9.dp),
             painter = painterResource(id = iconRes),
             contentDescription = "Icon",
             tint = MaterialTheme.colors.onBackground
         )
         Text(
-            modifier = Modifier.padding(end = 8.dp),
+            modifier = Modifier.padding(start = 8.dp, end = 1.dp),
             text = title,
             style = Typography.body2.copy(MaterialTheme.colors.onBackground),
         )

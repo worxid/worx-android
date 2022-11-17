@@ -18,6 +18,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import id.worx.device.client.R
@@ -95,16 +96,16 @@ private fun WelcomeHeader(session: Session) {
                 )
                 Text(
                     modifier = Modifier.padding(12.dp),
-                    text = "Hi, Welcome!",
+                    text = stringResource(id = R.string.welcome),
                     style = Typography.subtitle1,
                     color = Color.White
                 )
                 Text(
-                    text = "Enjoy All The Features Of The App",
+                    text = stringResource(id = R.string.welcome_messg_1),
                     style = Typography.body1
                 )
                 Text(
-                    text = "Easily & Interactively",
+                    text = stringResource(id = R.string.welcome_messg_2),
                     style = Typography.body1
                 )
                 Divider(
@@ -128,7 +129,7 @@ private fun CreateTeamButton(session: Session, onEvent: (WelcomeEvent) -> Unit) 
         onClickCallback = {
             onEvent(WelcomeEvent.CreateTeam)
         },
-        label = "Create New Team",
+        label = stringResource(id = R.string.create_new_team),
         theme = theme
     )
 }
@@ -141,7 +142,7 @@ private fun JoinTeamButton(session: Session, onEvent: (WelcomeEvent) -> Unit) {
         modifier = Modifier
             .fillMaxWidth()
             .padding(16.dp),
-        label = "Join Existing Team",
+        label = stringResource(id = R.string.join_team),
         theme = theme,
         onClickCallback = { onEvent(WelcomeEvent.JoinTeam) }
     )

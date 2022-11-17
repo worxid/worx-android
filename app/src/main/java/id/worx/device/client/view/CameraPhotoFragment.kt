@@ -11,6 +11,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.WindowManager
 import android.widget.Toast
+import androidx.activity.addCallback
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
 import androidx.core.content.res.ResourcesCompat
@@ -46,11 +47,17 @@ class CameraPhotoFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
+        if (android.os.Build.VERSION.SDK_INT > 32){
+            REQUIRED_PERMISSIONS = arrayOf(Manifest.permission.CAMERA)
+        }
+
         viewModel.navigateTo.observe(viewLifecycleOwner) { navigateToEvent ->
             navigateToEvent.getContentIfNotHandled()?.let { navigateTo ->
                 navigate(navigateTo, MainScreen.CameraPhoto)
             }
         }
+
+        requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner) {}
 
         _binding = PhotoScreenBinding.inflate(inflater, container, false)
         return binding.root
@@ -107,7 +114,7 @@ class CameraPhotoFragment : Fragment() {
             )
             FileOutputStream(photoFile.path).use { stream -> stream.write(result.data) }
 
-            val msg = "Foto berhasil"
+            val msg = this@CameraPhotoFragment.requireContext().getString(R.string.photo_taken)
             Toast.makeText(
                 this@CameraPhotoFragment.requireContext(),
                 msg,
@@ -173,7 +180,7 @@ class CameraPhotoFragment : Fragment() {
             } else {
                 Toast.makeText(
                     requireContext(),
-                    "Permissions not granted by the user.",
+                    requireContext().getString(R.string.permission_rejected),
                     Toast.LENGTH_SHORT
                 ).show()
             }
@@ -189,7 +196,7 @@ class CameraPhotoFragment : Fragment() {
 
     companion object {
         private const val TAG = "WORX CameraFragment"
-        private val REQUIRED_PERMISSIONS = arrayOf(
+        private var REQUIRED_PERMISSIONS = arrayOf(
             Manifest.permission.CAMERA,
             Manifest.permission.WRITE_EXTERNAL_STORAGE
         )

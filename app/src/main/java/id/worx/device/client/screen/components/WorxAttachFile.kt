@@ -28,6 +28,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
 import id.worx.device.client.R
+import id.worx.device.client.Util.getRealPathFromURI
 import id.worx.device.client.data.database.Session
 import id.worx.device.client.model.FileField
 import id.worx.device.client.model.FileValue
@@ -61,12 +62,15 @@ fun WorxAttachFile(indexForm: Int, viewModel: DetailFormViewModel, session: Sess
 
     val formStatus = viewModel.uiState.collectAsState().value.status
 
+    var context = LocalContext.current
+
     val launcherFile =
         rememberLauncherForActivityResult(
             contract = ActivityResultContracts.StartActivityForResult(),
             onResult = {
                 if (it.resultCode == Activity.RESULT_OK && it.data != null) {
-                    it.data?.data?.path?.let { path ->
+                    it.data?.data?.let { uri ->
+                        val path = getRealPathFromURI(context, uri)
                         filePath = ArrayList(filePath).apply { add(path) }.toList()
                         viewModel.getPresignedUrl(ArrayList(filePath), indexForm, 1)
                     }
@@ -137,7 +141,7 @@ private fun AttachFileButton(
     theme: String?
 ) {
     val intent = Intent(Intent.ACTION_GET_CONTENT)
-        .apply { type = "file/*" }
+        .apply { type = "*/*" }
 
     val context = LocalContext.current
 
@@ -147,7 +151,7 @@ private fun AttachFileButton(
         if (isGranted) {
             launcherFile.launch(intent)
         } else {
-            Toast.makeText(context, "Permission is denied", Toast.LENGTH_LONG).show()
+            Toast.makeText(context, context.getString(R.string.permission_rejected), Toast.LENGTH_LONG).show()
         }
     }
 
@@ -157,17 +161,21 @@ private fun AttachFileButton(
         title = stringResource(id = R.string.add_file),
         actionClick = {
             if (!isMaxFilesNotAchieved){
-                Toast.makeText(context, "Already achieved max files. Please remove one of the them first", Toast.LENGTH_LONG).show()
+                Toast.makeText(context, context.getString(R.string.max_files_message), Toast.LENGTH_LONG).show()
             } else {
-                when (PackageManager.PERMISSION_GRANTED) {
-                    ContextCompat.checkSelfPermission(
-                        context,
-                        Manifest.permission.READ_EXTERNAL_STORAGE
-                    ) -> {
-                        launcherFile.launch(intent)
-                    }
-                    else -> {
-                        launcherPermission.launch(Manifest.permission.READ_EXTERNAL_STORAGE)
+                if (android.os.Build.VERSION.SDK_INT > 32){
+                    launcherFile.launch(intent)
+                } else {
+                    when (PackageManager.PERMISSION_GRANTED) {
+                        ContextCompat.checkSelfPermission(
+                            context,
+                            Manifest.permission.READ_EXTERNAL_STORAGE
+                        ) -> {
+                            launcherFile.launch(intent)
+                        }
+                        else -> {
+                            launcherPermission.launch(Manifest.permission.READ_EXTERNAL_STORAGE)
+                        }
                     }
                 }
             }
@@ -197,8 +205,8 @@ fun FileDataView(
                 .padding(horizontal = 12.dp)
                 .weight(1f)
         ) {
-            Text(text = filePath.substringAfterLast("/"), style = Typography.body2)
-            Text(text = "$fileSize kb", style = Typography.body2)
+            Text(text = filePath.substringAfterLast("/"), style = Typography.body2.copy(MaterialTheme.colors.onSecondary))
+            if(fileSize > 0) Text(text = "$fileSize kb", style = Typography.body2.copy(MaterialTheme.colors.onSecondary))
         }
         if (showCloseButton) {
             Icon(

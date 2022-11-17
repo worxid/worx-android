@@ -29,6 +29,7 @@ import id.worx.device.client.screen.main.SettingTheme
 import id.worx.device.client.theme.GrayDivider
 import id.worx.device.client.theme.Typography
 import id.worx.device.client.viewmodel.DetailFormViewModel
+import id.worx.device.client.viewmodel.EventStatus
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -37,6 +38,7 @@ fun WorxDateInput(indexForm: Int, viewModel: DetailFormViewModel, session: Sessi
     val theme = session.theme
     val form =
         viewModel.uiState.collectAsState().value.detailForm?.fields?.get(indexForm)!! as DateField
+    val formStatus = viewModel.uiState.collectAsState().value.status
     val dateValue = viewModel.uiState.collectAsState().value.values[form.id] as DateValue?
     val value = if (dateValue != null) {
         remember { mutableStateOf(dateValue.value) }
@@ -106,16 +108,22 @@ fun WorxDateInput(indexForm: Int, viewModel: DetailFormViewModel, session: Sessi
                 },
                 shape = RoundedCornerShape(4.dp),
                 trailingIcon = {
-                    Icon(
-                        painterResource(id = R.drawable.ic_delete_circle),
-                        contentDescription = "Clear Text",
-                        modifier = Modifier
-                            .clickable {
-                                viewModel.setComponentData(indexForm, null)
-                                value.value = null
-                            },
-                        tint = MaterialTheme.colors.onSecondary
-                    )
+                    if (!arrayListOf(
+                            EventStatus.Done,
+                            EventStatus.Submitted
+                        ).contains(formStatus)
+                    ) {
+                        Icon(
+                            painterResource(id = R.drawable.ic_delete_circle),
+                            contentDescription = "Clear Text",
+                            modifier = Modifier
+                                .clickable {
+                                    viewModel.setComponentData(indexForm, null)
+                                    value.value = null
+                                },
+                            tint = MaterialTheme.colors.onSecondary
+                        )
+                    }
                 },
                 value = if (value.value == null) {
                     "Answer"

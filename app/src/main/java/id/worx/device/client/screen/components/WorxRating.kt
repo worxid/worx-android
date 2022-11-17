@@ -25,10 +25,12 @@ import id.worx.device.client.theme.GrayDivider
 import id.worx.device.client.theme.SecondaryMain
 import id.worx.device.client.theme.Typography
 import id.worx.device.client.viewmodel.DetailFormViewModel
+import id.worx.device.client.viewmodel.EventStatus
 
 @Composable
 fun WorxRating(indexForm: Int, viewModel: DetailFormViewModel) {
     val form = viewModel.uiState.collectAsState().value.detailForm!!.fields[indexForm] as RatingField
+    val formStatus = viewModel.uiState.collectAsState().value.status
     val title = form.label ?: "Rating"
 
     val ratingValue = viewModel.uiState.collectAsState().value.values[form.id] as RatingValue?
@@ -55,8 +57,14 @@ fun WorxRating(indexForm: Int, viewModel: DetailFormViewModel) {
             items(form.maxStars ?: 5) { index ->
                 Icon(
                     modifier = Modifier.clickable {
-                        rating.value = index+1
-                        viewModel.setComponentData(indexForm, RatingValue(value = index+1))
+                        if (!arrayListOf(
+                                EventStatus.Done,
+                                EventStatus.Submitted
+                            ).contains(formStatus)
+                        ) {
+                            rating.value = index + 1
+                            viewModel.setComponentData(indexForm, RatingValue(value = index + 1))
+                        }
                     },
                     painter = painterResource(id = R.drawable.star_big_off),
                     contentDescription = "Star Icon",

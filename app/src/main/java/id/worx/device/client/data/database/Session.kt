@@ -44,12 +44,20 @@ class Session(context: Context) {
     }
 
     fun saveLatitude(latitude: String){
-        editor.putString(LATITUDE, latitude)
+        if (latitude.contains(",")) {
+            editor.putString(LATITUDE, latitude.replace(",","."))
+        } else {
+            editor.putString(LATITUDE, latitude)
+        }
         editor.commit()
     }
 
     fun saveLongitude(longitude: String){
-        editor.putString(LONGITUDE, longitude)
+        if (longitude.contains(",")){
+            editor.putString(LONGITUDE, longitude.replace(",","."))
+        } else {
+            editor.putString(LONGITUDE, longitude)
+        }
         editor.commit()
     }
 

@@ -158,15 +158,19 @@ class AlbumActivity : BaseActivity(),
         permissions: Array<String>, grantResults: IntArray
     ) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-        when (requestCode) {
-            PERMISSION_STORAGE -> {
-                if (grantResults.isNotEmpty()) {
-                    if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                        // permission was granted, yay!
-                        albumPresenter.loadAlbumList()
-                    } else {
-                        permissionCheck.showPermissionDialog()
-                        finish()
+        if (Build.VERSION.SDK_INT > 32){
+            albumPresenter.loadAlbumList()
+        } else {
+            when (requestCode) {
+                PERMISSION_STORAGE -> {
+                    if (grantResults.isNotEmpty()) {
+                        if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                            // permission was granted, yay!
+                            albumPresenter.loadAlbumList()
+                        } else {
+                            permissionCheck.showPermissionDialog()
+                            finish()
+                        }
                     }
                 }
             }
