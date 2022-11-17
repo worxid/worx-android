@@ -35,7 +35,9 @@
     <string name="camera">Camera</string>
     <string name="add_signature">Add Signature</string>
     <string name="erase">Hapus</string>
+    <string name="erase_eng">Delete</string>
     <string name="save">Simpan</string>
+    <string name="save_eng">Save</string>
     <string name="draft_descr">Draft description</string>
     <string name="empty_description_form">You currently aren’t any forms. Please contact your admin too add forms to tour device</string>
     <string name="no_forms">No Forms</string>
