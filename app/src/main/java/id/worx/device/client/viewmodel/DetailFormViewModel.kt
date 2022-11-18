@@ -229,6 +229,7 @@ class DetailFormViewModel @Inject constructor(
                     fileExplaination
                 )
             }
+            .setAutoDeleteFilesAfterSuccessfulUpload(true)
         request.setFileToUpload(myFile.path)
         request.startUpload()
     }

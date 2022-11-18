@@ -113,7 +113,6 @@ object Util {
         title: String,
         content: String
     ): UploadNotificationConfig {
-        val autoClear = false
         val largeIcon: Bitmap? = null
         val clearOnAction = true
         val ringToneEnabled = true
@@ -137,7 +136,7 @@ object Util {
             null,
             progressActions,
             clearOnAction,
-            autoClear
+            true
         )
 
         val success = UploadNotificationStatusConfig(
@@ -149,7 +148,7 @@ object Util {
             null,
             noActions,
             clearOnAction,
-            autoClear
+            true
         )
 
         val error = UploadNotificationStatusConfig(
@@ -161,7 +160,7 @@ object Util {
             null,
             noActions,
             clearOnAction,
-            autoClear
+            false
         )
 
         val cancelled = UploadNotificationStatusConfig(
@@ -172,7 +171,7 @@ object Util {
             largeIcon,
             null,
             noActions,
-            clearOnAction
+            false
         )
 
         return UploadNotificationConfig(
