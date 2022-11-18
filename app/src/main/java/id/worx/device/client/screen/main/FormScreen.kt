@@ -1,6 +1,5 @@
 package id.worx.device.client.screen.main
 
-import android.widget.Toast
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -58,15 +57,7 @@ fun FormScreen(
             if (viewModel.isRefresh.value){
                 viewModel.uploadSubmissionWork()
                 viewModel.downloadFormTemplate(viewLifecycleOwner)
-                {
-                    Toast.makeText(context, context.getString(R.string.sync_form_message), Toast.LENGTH_SHORT)
-                        .show()
-                }
                 viewModel.downloadSubmissionList(viewLifecycleOwner)
-                {
-                    Toast.makeText(context, context.getString(R.string.sync_submission_message), Toast.LENGTH_SHORT)
-                        .show()
-                }
                 viewModel.isRefresh.value = false
             }
         }

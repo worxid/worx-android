@@ -259,112 +259,61 @@ fun TileItemTheme(
             style = Typography.body2,
             color = MaterialTheme.colors.onSecondary,
         )
-        Box(
-            modifier = Modifier
-                .clickable {
-                    themeViewModel.onThemeChanged(SettingTheme.System)
-                    session.setTheme(SettingTheme.System)
-                }
-                .clip(RoundedCornerShape(2.dp))
-                .background(
-                    if (session.theme?.equals(SettingTheme.System) == true) MaterialTheme.colors.primary.copy(
-                        0.2f
-                    ) else Color.White.copy(0f)
-                )
-                .size(28.dp)
-                .constrainAs(red) {
-                    top.linkTo(tvTitle.bottom, 7.dp)
-                    bottom.linkTo(parent.bottom)
-                    start.linkTo(tvTitle.start)
-                }, contentAlignment = Alignment.Center
-        ) {
-            Box(
-                modifier = Modifier
-                    .clip(RoundedCornerShape(2.dp))
-                    .background(PrimaryMain)
-                    .size(24.dp)
-            )
-        }
+        BoxTheme(
+            Modifier.constrainAs(red) {
+            top.linkTo(tvTitle.bottom, 7.dp)
+            bottom.linkTo(parent.bottom)
+            start.linkTo(tvTitle.start)
+        }, SettingTheme.System, themeViewModel, session, PrimaryMain)
 
-        Box(
-            modifier = Modifier
-                .clickable {
-                    themeViewModel.onThemeChanged(SettingTheme.Dark)
-                    session.setTheme(SettingTheme.Dark)
-                }
-                .clip(RoundedCornerShape(2.dp))
-                .background(
-                    if (session.theme?.equals(SettingTheme.Dark) == true) MaterialTheme.colors.primary.copy(
-                        0.2f
-                    ) else Color.White.copy(0f)
-                )
-                .size(28.dp)
-                .constrainAs(dark) {
-                    top.linkTo(red.top)
-                    bottom.linkTo(red.bottom)
-                    start.linkTo(red.end, 20.dp)
-                }, contentAlignment = Alignment.Center
-        ) {
-            Box(
-                modifier = Modifier
-                    .clip(RoundedCornerShape(2.dp))
-                    .background(PrimaryMainDark)
-                    .size(24.dp)
-            )
-        }
+        BoxTheme(Modifier.constrainAs(dark) {
+            top.linkTo(red.top)
+            bottom.linkTo(red.bottom)
+            start.linkTo(red.end, 20.dp)
+        } , SettingTheme.Dark, themeViewModel , session, PrimaryMainDark )
 
+        BoxTheme(Modifier.constrainAs(blue) {
+            top.linkTo(dark.top)
+            bottom.linkTo(dark.bottom)
+            start.linkTo(dark.end, 20.dp)
+        }, SettingTheme.Blue , themeViewModel, session, PrimaryMainBlue )
+
+        BoxTheme(Modifier.constrainAs(green) {
+            top.linkTo(blue.top)
+            bottom.linkTo(blue.bottom)
+            start.linkTo(blue.end, 20.dp)
+        }, SettingTheme.Green, themeViewModel , session, PrimaryMainGreen )
+    }
+}
+
+@Composable
+private fun BoxTheme(
+    modifier: Modifier,
+    selectedTheme: String,
+    themeViewModel: ThemeViewModel,
+    session: Session,
+    themeColor: Color
+) {
+    Box(
+        modifier = modifier
+            .clickable {
+                themeViewModel.onThemeChanged(selectedTheme)
+                session.setTheme(selectedTheme)
+            }
+            .clip(RoundedCornerShape(2.dp))
+            .background(
+                if (session.theme?.equals(selectedTheme) == true) MaterialTheme.colors.primary.copy(
+                    0.2f
+                ) else Color.White.copy(0f)
+            )
+            .size(36.dp), contentAlignment = Alignment.Center
+    ) {
         Box(
             modifier = Modifier
-                .clickable {
-                    themeViewModel.onThemeChanged(SettingTheme.Blue)
-                    session.setTheme(SettingTheme.Blue)
-                }
                 .clip(RoundedCornerShape(2.dp))
-                .background(
-                    if (session.theme?.equals(SettingTheme.Blue) == true) MaterialTheme.colors.primary.copy(
-                        0.2f
-                    ) else Color.White.copy(0f)
-                )
-                .size(28.dp)
-                .constrainAs(blue) {
-                    top.linkTo(dark.top)
-                    bottom.linkTo(dark.bottom)
-                    start.linkTo(dark.end, 20.dp)
-                }, contentAlignment = Alignment.Center
-        ) {
-            Box(
-                modifier = Modifier
-                    .clip(RoundedCornerShape(2.dp))
-                    .background(PrimaryMainBlue)
-                    .size(24.dp)
-            )
-        }
-        Box(
-            modifier = Modifier
-                .clickable {
-                    themeViewModel.onThemeChanged(SettingTheme.Green)
-                    session.setTheme(SettingTheme.Green)
-                }
-                .clip(RoundedCornerShape(2.dp))
-                .background(
-                    if (session.theme?.equals(SettingTheme.Green) == true) MaterialTheme.colors.primary.copy(
-                        0.2f
-                    ) else Color.White.copy(0f)
-                )
-                .size(28.dp)
-                .constrainAs(green) {
-                    top.linkTo(blue.top)
-                    bottom.linkTo(blue.bottom)
-                    start.linkTo(blue.end, 20.dp)
-                }, contentAlignment = Alignment.Center
-        ) {
-            Box(
-                modifier = Modifier
-                    .clip(RoundedCornerShape(2.dp))
-                    .background(PrimaryMainGreen)
-                    .size(24.dp)
-            )
-        }
+                .background(themeColor)
+                .size(32.dp)
+        )
     }
 }
 
