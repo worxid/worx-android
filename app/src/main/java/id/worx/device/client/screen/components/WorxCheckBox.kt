@@ -1,5 +1,6 @@
 package id.worx.device.client.screen.components
 
+import android.util.Log
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -15,17 +16,19 @@ import androidx.compose.ui.unit.dp
 import id.worx.device.client.model.CheckBoxField
 import id.worx.device.client.model.CheckBoxValue
 import id.worx.device.client.theme.GrayDivider
+import id.worx.device.client.theme.PrimaryMain
 import id.worx.device.client.theme.Typography
 import id.worx.device.client.viewmodel.DetailFormViewModel
 import id.worx.device.client.viewmodel.EventStatus
 
 @Composable
-fun WorxCheckBox(indexForm: Int, viewModel: DetailFormViewModel) {
+fun WorxCheckBox(indexForm: Int, viewModel: DetailFormViewModel, validation: Boolean = false,isValid : (Boolean) -> Unit ={}) {
     val form =
         viewModel.uiState.collectAsState().value.detailForm!!.fields[indexForm] as CheckBoxField
     val formStatus = viewModel.uiState.collectAsState().value.status
     val title = form.label ?: ""
     val optionTitles = form.group
+    val minChecked = form.minChecked ?: 0
 
     val checkBoxValue = viewModel.uiState.collectAsState().value.values[form.id] as CheckBoxValue?
     val value = if (checkBoxValue != null) {
@@ -35,9 +38,23 @@ fun WorxCheckBox(indexForm: Int, viewModel: DetailFormViewModel) {
             mutableStateOf(optionTitles.map { false })
         }
     }
+    val totalCheckOptions = remember {
+        mutableStateOf(value.value.count { it })
+    }
+    val warningInfo = if (minChecked > totalCheckOptions.value) {
+        "Select minimum $minChecked options"
+    } else if (form.required == true && totalCheckOptions.value ==0) {
+        "$title is required"
+    } else {
+        ""
+    }
 
     Column(modifier = Modifier.fillMaxWidth()) {
-        Text(title, style = Typography.body2.copy(MaterialTheme.colors.onSecondary), modifier = Modifier.padding(start = 16.dp))
+        Text(
+            title,
+            style = Typography.body2.copy(MaterialTheme.colors.onSecondary),
+            modifier = Modifier.padding(start = 16.dp)
+        )
         Column {
             optionTitles.forEachIndexed() { index, item ->
                 Row(verticalAlignment = Alignment.CenterVertically) {
@@ -60,6 +77,7 @@ fun WorxCheckBox(indexForm: Int, viewModel: DetailFormViewModel) {
                                     indexForm,
                                     CheckBoxValue(value = ArrayList(value.value))
                                 )
+                                totalCheckOptions.value = value.value.count { it }
                             }
                         },
                         colors = CheckboxDefaults.colors(
@@ -68,9 +86,24 @@ fun WorxCheckBox(indexForm: Int, viewModel: DetailFormViewModel) {
                             uncheckedColor = MaterialTheme.colors.onSecondary
                         )
                     )
-                    Text(item.label ?: "", style = Typography.body1.copy(color = MaterialTheme.colors.onSecondary))
+                    Text(
+                        item.label ?: "",
+                        style = Typography.body1.copy(color = MaterialTheme.colors.onSecondary)
+                    )
                 }
             }
+        }
+        if (validation && warningInfo.isNotBlank()) {
+            Text(
+                text = warningInfo,
+                modifier = Modifier
+                    .padding(horizontal = 16.dp)
+                    .padding(bottom = 8.dp),
+                color = PrimaryMain
+            )
+            isValid(false)
+        } else {
+            isValid(true)
         }
         Divider(color = GrayDivider, modifier = Modifier.padding(top = 12.dp))
     }
