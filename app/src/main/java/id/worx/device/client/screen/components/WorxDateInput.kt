@@ -151,6 +151,7 @@ fun WorxDateInput(indexForm: Int, viewModel: DetailFormViewModel, session: Sessi
             }
         }
         if (showDatePicker) {
+            mDatePickerDialog.setOnCancelListener { showDatePicker = false }
             mDatePickerDialog.show()
         }
         Divider(color = GrayDivider, modifier = Modifier.padding(top = 12.dp))
