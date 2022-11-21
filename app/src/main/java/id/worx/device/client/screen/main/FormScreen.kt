@@ -58,15 +58,15 @@ fun FormScreen(
             if (viewModel.isRefresh.value){
                 viewModel.uploadSubmissionWork()
                 viewModel.downloadFormTemplate(viewLifecycleOwner)
-                {
-                    Toast.makeText(context, context.getString(R.string.sync_form_message), Toast.LENGTH_SHORT)
-                        .show()
-                }
+//                {
+//                    Toast.makeText(context, context.getString(R.string.sync_form_message), Toast.LENGTH_SHORT)
+//                        .show()
+//                }
                 viewModel.downloadSubmissionList(viewLifecycleOwner)
-                {
-                    Toast.makeText(context, context.getString(R.string.sync_submission_message), Toast.LENGTH_SHORT)
-                        .show()
-                }
+//                {
+//                    Toast.makeText(context, context.getString(R.string.sync_submission_message), Toast.LENGTH_SHORT)
+//                        .show()
+//                }
                 viewModel.isRefresh.value = false
             }
         }
