@@ -3,6 +3,7 @@ package id.worx.device.client.screen.components
 import android.app.DatePickerDialog
 import android.content.Context
 import android.os.Build
+import android.util.Log
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.annotation.Nullable
@@ -20,6 +21,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import id.worx.device.client.R
 import id.worx.device.client.data.database.Session
@@ -27,6 +29,7 @@ import id.worx.device.client.model.DateField
 import id.worx.device.client.model.DateValue
 import id.worx.device.client.screen.main.SettingTheme
 import id.worx.device.client.theme.GrayDivider
+import id.worx.device.client.theme.PrimaryMain
 import id.worx.device.client.theme.Typography
 import id.worx.device.client.viewmodel.DetailFormViewModel
 import id.worx.device.client.viewmodel.EventStatus
@@ -34,7 +37,7 @@ import java.text.SimpleDateFormat
 import java.util.*
 
 @Composable
-fun WorxDateInput(indexForm: Int, viewModel: DetailFormViewModel, session: Session) {
+fun WorxDateInput(indexForm: Int, viewModel: DetailFormViewModel, session: Session, validation : Boolean = false,isValid : (Boolean) -> Unit ={}) {
     val theme = session.theme
     val form =
         viewModel.uiState.collectAsState().value.detailForm?.fields?.get(indexForm)!! as DateField
@@ -47,7 +50,7 @@ fun WorxDateInput(indexForm: Int, viewModel: DetailFormViewModel, session: Sessi
     }
     var showDatePicker by remember { mutableStateOf(false) }
     val context = LocalContext.current
-
+    val warningInfo = if (form.required == true && value.value == null) "${form.label} is required" else ""
     val c = Calendar.getInstance()
     var year = c.get(Calendar.YEAR)
     var month = c.get(Calendar.MONTH)
@@ -149,6 +152,18 @@ fun WorxDateInput(indexForm: Int, viewModel: DetailFormViewModel, session: Sessi
                     tint = MaterialTheme.colors.onBackground
                 )
             }
+        }
+        if (validation && warningInfo.isNotBlank()) {
+            Text(
+                text = warningInfo,
+                modifier = Modifier
+                    .padding(horizontal = 16.dp)
+                    .padding(top = 4.dp),
+                color = PrimaryMain
+            )
+            isValid(false)
+        } else {
+            isValid(true)
         }
         if (showDatePicker) {
             mDatePickerDialog.setOnCancelListener { showDatePicker = false }

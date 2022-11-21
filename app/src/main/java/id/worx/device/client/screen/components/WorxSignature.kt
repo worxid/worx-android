@@ -25,12 +25,13 @@ import id.worx.device.client.data.database.Session
 import id.worx.device.client.model.SignatureField
 import id.worx.device.client.model.SignatureValue
 import id.worx.device.client.theme.GrayDivider
+import id.worx.device.client.theme.PrimaryMain
 import id.worx.device.client.theme.Typography
 import id.worx.device.client.viewmodel.DetailFormViewModel
 import id.worx.device.client.viewmodel.EventStatus
 
 @Composable
-fun WorxSignature(indexForm: Int, viewModel: DetailFormViewModel, session: Session) {
+fun WorxSignature(indexForm: Int, viewModel: DetailFormViewModel, session: Session,validation : Boolean = false,isValid : (Boolean) -> Unit ={}) {
     val form = viewModel.uiState.collectAsState().value.detailForm!!.fields[indexForm] as SignatureField
     val theme = session.theme
 
@@ -42,6 +43,7 @@ fun WorxSignature(indexForm: Int, viewModel: DetailFormViewModel, session: Sessi
     } else {
         remember { mutableStateOf(value.bitmap) }
     }
+    val warningInfo = if (form.required == true && bitmap.value == null) "${form.label} is required" else ""
 
     val fileId = value?.value
     val formStatus = viewModel.uiState.collectAsState().value.status
@@ -74,6 +76,18 @@ fun WorxSignature(indexForm: Int, viewModel: DetailFormViewModel, session: Sessi
                     viewModel.goToSignaturePad(indexForm)
                 }
             }
+        }
+        if (validation && warningInfo.isNotBlank()) {
+            Text(
+                text = warningInfo,
+                modifier = Modifier
+                    .padding(horizontal = 16.dp)
+                    .padding(top = 4.dp),
+                color = PrimaryMain
+            )
+            isValid(false)
+        } else {
+            isValid(true)
         }
         Divider(color = GrayDivider, modifier = Modifier.padding(top = 12.dp))
     }
