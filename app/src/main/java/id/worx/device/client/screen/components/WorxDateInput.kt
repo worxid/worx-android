@@ -3,7 +3,6 @@ package id.worx.device.client.screen.components
 import android.app.DatePickerDialog
 import android.content.Context
 import android.os.Build
-import android.util.Log
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.annotation.Nullable
@@ -21,7 +20,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import id.worx.device.client.R
 import id.worx.device.client.data.database.Session
@@ -165,7 +163,10 @@ fun WorxDateInput(indexForm: Int, viewModel: DetailFormViewModel, session: Sessi
         } else {
             isValid(true)
         }
-        if (showDatePicker) {
+        if (showDatePicker && !arrayListOf(
+                EventStatus.Done,
+                EventStatus.Submitted
+            ).contains(formStatus)) {
             mDatePickerDialog.setOnCancelListener { showDatePicker = false }
             mDatePickerDialog.show()
         }
