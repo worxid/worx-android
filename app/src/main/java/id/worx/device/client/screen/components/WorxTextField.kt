@@ -35,7 +35,8 @@ fun WorxTextField(
     isDeleteTrail: Boolean = false,
     isRequired : Boolean = false,
     validation: Boolean = false,
-    isValid : (Boolean) -> Unit ={}
+    isValid : (Boolean) -> Unit ={},
+    isEnabled: Boolean = true
 ) {
     var textValue by remember { mutableStateOf(initialValue) }
 
@@ -65,7 +66,7 @@ fun WorxTextField(
                 onValueChange(it.text)
                 textValue = it
             },
-            enabled = isDeleteTrail,
+            enabled = isEnabled,
             label = {
                 Text(
                     text = hint ?: "Enter $label",

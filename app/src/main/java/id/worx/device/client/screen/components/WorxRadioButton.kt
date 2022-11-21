@@ -60,6 +60,7 @@ fun WorxRadiobutton(indexForm: Int, viewModel: DetailFormViewModel, validation: 
                                     indexForm,
                                     RadioButtonValue(value = onCheck.value)
                                 )
+
                             }
                         },
                         colors = RadioButtonDefaults.colors(

@@ -148,7 +148,7 @@ fun WorxAttachImage(
         if (arrayListOf(
                 EventStatus.Loading,
                 EventStatus.Filling,
-                EventStatus.Saved
+                EventStatus.Saved,
             ).contains(formStatus)
         ) {
             Row(

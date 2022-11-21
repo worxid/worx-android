@@ -1,6 +1,5 @@
 package id.worx.device.client.screen.main
 
-import android.util.Log
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.ExitTransition
@@ -130,7 +129,6 @@ fun HomeScreen(
     val showBadge by viewModel.showBadge.collectAsState()
     var showSubmittedStatus by remember { mutableStateOf(notificationType == 1) }
     var showBotNav by remember { mutableStateOf(false) }
-    Log.d("TAGG", session.organization ?: "null")
 
     Scaffold(
         topBar = {
@@ -213,7 +211,9 @@ fun BottomNavigationView(navController: NavController, showBadge: Int, showBotNa
     if (showBotNav) {
         BottomNavigation(
             backgroundColor = Color.White,
-            modifier = Modifier.border(1.5.dp, MaterialTheme.colors.onSecondary.copy(0.54f))
+            modifier = Modifier
+                .border(1.5.dp, MaterialTheme.colors.onSecondary.copy(0.54f))
+                .height(72.dp)
         ) {
             val navBackStackEntry by navController.currentBackStackEntryAsState()
             val currentRoute = navBackStackEntry?.destination?.route
@@ -234,7 +234,8 @@ fun BottomNavigationView(navController: NavController, showBadge: Int, showBotNa
                         }) {
                             Icon(
                                 painterResource(id = item.icon),
-                                contentDescription = stringResource(id = item.title)
+                                contentDescription = stringResource(id = item.title),
+                                modifier = Modifier.padding(6.dp)
                             )
                         }
                     },
@@ -269,7 +270,7 @@ fun BottomNavigationView(navController: NavController, showBadge: Int, showBotNa
                         modifierBorder.background(if (theme == SettingTheme.Dark) PrimaryMain else MaterialTheme.colors.primary)
                     } else {
                         modifierBorder.background(color = MaterialTheme.colors.secondary)
-                    },
+                    }.align(Alignment.CenterVertically).fillMaxHeight().padding(bottom = 4.dp),
                 )
             }
         }
@@ -459,13 +460,19 @@ fun FormSubmitted(
     )
 }
 
-@Preview(showSystemUi = true)
+//@Preview(showSystemUi = true)
+//@Composable
+//private fun BottomNavPreview(
+//    viewModel: HomeViewModel = hiltViewModel(),
+//    detailVM: DetailFormViewModel = hiltViewModel(),
+//    session: Session = Session(LocalContext.current)
+//) {
+//    val list = arrayListOf<EmptyForm>()
+//    HomeScreen(list, arrayListOf(), arrayListOf(), viewModel, detailVM,session,MainActivity())
+//}
+
+@Preview(showBackground = true)
 @Composable
-private fun BottomNavPreview(
-    viewModel: HomeViewModel = hiltViewModel(),
-    detailVM: DetailFormViewModel = hiltViewModel(),
-    session: Session = Session(LocalContext.current)
-) {
-    val list = arrayListOf<EmptyForm>()
-    HomeScreen(list, arrayListOf(), arrayListOf(), viewModel, detailVM,session,MainActivity())
+private fun BottomNavigationViewPreview(){
+    BottomNavigationView(navController = rememberNavController(), showBadge = 1, showBotNav = true, theme = "")
 }

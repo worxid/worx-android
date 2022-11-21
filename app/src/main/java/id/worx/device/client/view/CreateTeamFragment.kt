@@ -3,7 +3,6 @@ package id.worx.device.client.view
 import android.content.Context
 import android.location.Address
 import android.location.Geocoder
-import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -90,29 +89,20 @@ fun getCountryName(session: Session, context: Context): String? {
     val geoCoder = Geocoder(context, Locale.getDefault())
     var address: MutableList<Address>? = null
 
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-        geoCoder.getFromLocation(
-            session.latitude!!.replace(",", ".").toDouble(),
-            session.longitude!!.replace(",", ".").toDouble(),
-            1
-        ) { addresses -> address = addresses }
-        return address?.getOrNull(0)?.countryName
-    } else {
-        try {
-            if (!session.latitude.isNullOrEmpty() && !session.longitude.isNullOrEmpty()) {
-                address = geoCoder.getFromLocation(
-                    session.latitude!!.replace(",", ".").toDouble(),
-                    session.longitude!!.replace(",", ".").toDouble(),
-                    1
-                )
-                if (address != null) {
-                    return address!!.getOrNull(0)!!.countryName
-                }
+    try {
+        if (!session.latitude.isNullOrEmpty() && !session.longitude.isNullOrEmpty()) {
+            address = geoCoder.getFromLocation(
+                session.latitude!!.replace(",", ".").toDouble(),
+                session.longitude!!.replace(",", ".").toDouble(),
+                1
+            )
+            if (address != null) {
+                return address.getOrNull(0)!!.countryName
             }
-            return null
-        } catch (e: Exception) {
-            Log.d("TAG", "getCountryName: $e")
         }
+        return null
+    } catch (e: Exception) {
+        Log.d("TAG", "getCountryName: $e")
     }
     return null
 }

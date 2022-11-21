@@ -11,6 +11,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.WindowManager
 import android.widget.Toast
+import androidx.activity.addCallback
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
 import androidx.core.content.res.ResourcesCompat
@@ -55,6 +56,8 @@ class CameraPhotoFragment : Fragment() {
                 navigate(navigateTo, MainScreen.CameraPhoto)
             }
         }
+
+        requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner) {}
 
         _binding = PhotoScreenBinding.inflate(inflater, container, false)
         return binding.root

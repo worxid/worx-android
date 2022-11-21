@@ -1,9 +1,11 @@
 package id.worx.device.client
 
+import android.content.ContentResolver
 import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.Color
 import android.net.ConnectivityManager
+import android.net.Uri
 import android.os.Build
 import android.provider.Settings
 import id.worx.device.client.data.upload.CustomPlaceholdersProcessor
@@ -13,6 +15,10 @@ import net.gotev.uploadservice.data.UploadNotificationAction
 import net.gotev.uploadservice.data.UploadNotificationConfig
 import net.gotev.uploadservice.data.UploadNotificationStatusConfig
 import net.gotev.uploadservice.extensions.getCancelUploadIntent
+import java.io.File
+import java.io.FileOutputStream
+import java.io.OutputStream
+import java.net.URLConnection
 import java.text.SimpleDateFormat
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
@@ -32,6 +38,53 @@ object Util {
         } else {
             val calendar = Calendar.getInstance()
             SimpleDateFormat(dateFormat, Locale.getDefault()).format(calendar.time)
+        }
+    }
+
+    fun getFileFromUri(contentResolver: ContentResolver, uri: Uri, directory: File): File {
+        val source = contentResolver.openInputStream(uri)
+        val fileType = URLConnection.guessContentTypeFromStream(source)
+        val file = File.createTempFile(uri.path ?: "file", "", directory)
+        file.outputStream().use {
+            source?.copyTo(it)
+        }
+        source?.close()
+        return file
+    }
+
+    fun getRealPathFromURI(context: Context, contentURI: Uri): String {
+        var result = ""
+        val cursor = context.contentResolver.query(contentURI, null, null, null, null)
+        if (cursor == null) {
+            result = contentURI.path!!
+        } else {
+            cursor.moveToFirst()
+            val idx = cursor.getColumnIndex("_display_name")
+            val id2 = cursor.getColumnIndex("document_id")
+            val id3 = cursor.getColumnIndex("mime_type")
+            val fileName = cursor.getString(idx)
+            cursor.close()
+
+            val file = File(context.cacheDir, fileName)
+            copy(context, contentURI, file)
+            result = file.path
+        }
+        return result
+    }
+
+    fun copy(context: Context, srcUri: Uri?, dstFile: File?) {
+        try {
+            val inputStream = context.contentResolver.openInputStream(srcUri!!) ?: return
+            val outputStream: OutputStream = FileOutputStream(dstFile)
+            val buf = ByteArray(1024)
+            var len: Int
+            while (inputStream.read(buf).also { len = it } > 0) {
+                outputStream.write(buf, 0, len)
+            }
+            inputStream.close()
+            outputStream.close()
+        } catch (e: java.lang.Exception) { // IOException
+            e.printStackTrace()
         }
     }
 
@@ -60,7 +113,6 @@ object Util {
         title: String,
         content: String
     ): UploadNotificationConfig {
-        val autoClear = false
         val largeIcon: Bitmap? = null
         val clearOnAction = true
         val ringToneEnabled = true
@@ -84,7 +136,7 @@ object Util {
             null,
             progressActions,
             clearOnAction,
-            autoClear
+            true
         )
 
         val success = UploadNotificationStatusConfig(
@@ -96,7 +148,7 @@ object Util {
             null,
             noActions,
             clearOnAction,
-            autoClear
+            true
         )
 
         val error = UploadNotificationStatusConfig(
@@ -108,7 +160,7 @@ object Util {
             null,
             noActions,
             clearOnAction,
-            autoClear
+            false
         )
 
         val cancelled = UploadNotificationStatusConfig(
@@ -119,7 +171,7 @@ object Util {
             largeIcon,
             null,
             noActions,
-            clearOnAction
+            false
         )
 
         return UploadNotificationConfig(

@@ -35,7 +35,9 @@
     <string name="camera">Camera</string>
     <string name="add_signature">Add Signature</string>
     <string name="erase">Hapus</string>
+    <string name="erase_eng">Delete</string>
     <string name="save">Simpan</string>
+    <string name="save_eng">Save</string>
     <string name="draft_descr">Draft description</string>
     <string name="empty_description_form">You currently aren’t any forms. Please contact your admin too add forms to tour device</string>
     <string name="no_forms">No Forms</string>
@@ -63,6 +65,9 @@
     <string name="yes">Yes</string>
     <string name="cancel">Cancel</string>
     <string name="leave_organization">Are you sure you want to leave the organization?</string>
+    <string name="leave_form">Leave This Form?</string>
+    <string name="leave_form_sub">Are you sure you want to leave this page? if you leave this form, your existing work will be included in the draft</string>
+    <string name="leave">Leave</string>
     <string name="upload_cancel">Upload Cancelled</string>
     <string name="upload_error">Upload Error</string>
     <string name="upload_success">Upload Success</string>

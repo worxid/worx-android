@@ -150,6 +150,10 @@ class DetailFormViewModel @Inject constructor(
         }
     }
 
+    fun goToHome() {
+        _navigateTo.value = Event(MainScreen.Home)
+    }
+
     /**
      * @param fileNames file path that needs to be uploaded
      * @param indexForm the index of fields component inside the form
@@ -225,6 +229,7 @@ class DetailFormViewModel @Inject constructor(
                     fileExplaination
                 )
             }
+            .setAutoDeleteFilesAfterSuccessfulUpload(true)
         request.setFileToUpload(myFile.path)
         request.startUpload()
     }

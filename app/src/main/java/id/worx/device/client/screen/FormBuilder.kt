@@ -139,7 +139,8 @@ fun DetailForm(
                         ).contains(formStatus),
                         isRequired = form?.required ?: false,
                         validation = validation,
-                        isValid = isValid
+                        isValid = isValid,
+                        isEnabled  = !arrayListOf(EventStatus.Done, EventStatus.Submitted).contains(formStatus)
                     )
                 }
                 Type.Checkbox.type -> {
@@ -171,11 +172,10 @@ fun DetailForm(
                     }
                 }
                 Type.Signature.type -> {
-                    WorxSignature(index, viewModel, session, validation, isValid)
+                    WorxSignature(index, viewModel, session)
                 }
                 Type.Separator.type -> {
                     WorxSeparator(index, viewModel, session)
-                    viewModel.setComponentData(index, SeparatorValue())
                 }
                 else -> {
                     Text(

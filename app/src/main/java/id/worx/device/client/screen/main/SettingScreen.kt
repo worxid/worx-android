@@ -6,8 +6,6 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.selection.selectable
-import androidx.compose.foundation.selection.selectableGroup
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.*
@@ -15,15 +13,12 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
-import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.semantics.Role
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -57,25 +52,10 @@ fun SettingScreen(
     onBackNavigation: () -> Unit
 ) {
     val theme = session.theme
-    val showDialogTheme = remember {
-        mutableStateOf(false)
-    }
     val showDialogLeave = remember {
         mutableStateOf(false)
     }
     val context = LocalContext.current
-
-    if (showDialogTheme.value) {
-        WorxDialog(
-            content = {
-                ThemeDialog(
-                    setShowDialog = { showDialogTheme.value = it },
-                    themeViewModel = themeViewModel,
-                    session = session
-                )
-            },
-            setShowDialog = { showDialogTheme.value = it })
-    }
 
     if (showDialogLeave.value) {
         WorxDialog(
@@ -135,9 +115,7 @@ fun SettingScreen(
             )
             Divider(color = GrayDivider, modifier = Modifier.padding(top = 20.dp))
             HeaderTileSetting(title = stringResource(id = R.string.devices_settings))
-            TileItemTheme(modifier = Modifier.clickable {
-                showDialogTheme.value = !showDialogTheme.value
-            }, session = session)
+            TileItemTheme( themeViewModel = themeViewModel, session = session)
             TileItemSetting(
                 title = stringResource(id = R.string.save_image_in_gallery),
                 subtitle = stringResource(id = R.string.save_image_in_gallery_sub),
@@ -244,85 +222,14 @@ fun LeaveOrganizationDialog(
     }
 }
 
-@Composable
-fun ThemeDialog(
-    setShowDialog: (Boolean) -> Unit,
-    themeViewModel: ThemeViewModel,
-    session: Session
-) {
-    val rbOptions =
-        arrayListOf(SettingTheme.System, SettingTheme.Dark, SettingTheme.Green, SettingTheme.Blue)
-    val selectedTheme = session.theme
-    val (selectedOption, onOptionSelected) = remember {
-        mutableStateOf(selectedTheme)
-    }
-    Column(
-        modifier = Modifier
-            .selectableGroup()
-            .background(MaterialTheme.colors.secondary)
-    ) {
-        Text(
-            text = stringResource(id = R.string.theme),
-            style = Typography.body2.copy(MaterialTheme.colors.onSecondary),
-            fontWeight = FontWeight.W500
-        )
-        rbOptions.forEach { s ->
-            ConstraintLayout(
-                modifier = Modifier
-                    .selectableGroup()
-                    .selectable(
-                        selected = (s == selectedOption),
-                        onClick = {
-                            themeViewModel.onThemeChanged(s)
-                            onOptionSelected(s)
-                            session.setTheme(s)
-                            setShowDialog(false)
-                        },
-                        role = Role.RadioButton
-                    )
-            ) {
-                val (tvItem, rbItem) = createRefs()
-
-                RadioButton(
-                    selected = (s == selectedOption),
-                    onClick = {
-                        themeViewModel.onThemeChanged(s)
-                        onOptionSelected(s)
-                        session.setTheme(s)
-                        setShowDialog(false)
-                    },
-                    modifier = Modifier.constrainAs(rbItem) {
-                        top.linkTo(parent.top)
-                        bottom.linkTo(parent.bottom)
-                        start.linkTo(parent.start)
-                    },
-                    colors = RadioButtonDefaults.colors(
-                        selectedColor = MaterialTheme.colors.onBackground,
-                        unselectedColor = MaterialTheme.colors.onSecondary
-                    )
-                )
-                Text(
-                    text = s,
-                    style = Typography.body1.copy(MaterialTheme.colors.onSecondary),
-                    modifier = Modifier.constrainAs(tvItem) {
-                        top.linkTo(rbItem.top)
-                        bottom.linkTo(rbItem.bottom)
-                        start.linkTo(rbItem.end, 8.dp)
-                    }
-                )
-            }
-        }
-    }
-}
-
 
 @Composable
 fun TileItemTheme(
-    modifier: Modifier = Modifier,
+    themeViewModel: ThemeViewModel,
     session: Session
 ) {
     ConstraintLayout(
-        modifier = modifier
+        modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = 18.dp, vertical = 8.dp)
     ) {
@@ -330,7 +237,7 @@ fun TileItemTheme(
         Icon(
             painter = painterResource(id = R.drawable.ic_baseline_color_lens_24),
             contentDescription = "Icon",
-            modifier = modifier.constrainAs(icon) {
+            modifier = Modifier.constrainAs(icon) {
                 top.linkTo(parent.top)
                 bottom.linkTo(parent.bottom)
                 start.linkTo(parent.start)
@@ -339,7 +246,7 @@ fun TileItemTheme(
         )
         Text(
             text = stringResource(id = R.string.theme),
-            modifier = modifier
+            modifier = Modifier
                 .constrainAs(tvTitle) {
                     top.linkTo(parent.top)
                     start.linkTo(
@@ -352,101 +259,65 @@ fun TileItemTheme(
             style = Typography.body2,
             color = MaterialTheme.colors.onSecondary,
         )
-        Box(
-            modifier = Modifier
-                .clip(RoundedCornerShape(2.dp))
-                .background(
-                    if (session.theme?.equals(SettingTheme.System) == true) MaterialTheme.colors.primary.copy(
-                        0.2f
-                    ) else Color.White.copy(0f)
-                )
-                .size(28.dp)
-                .constrainAs(red) {
-                    top.linkTo(tvTitle.bottom, 7.dp)
-                    bottom.linkTo(parent.bottom)
-                    start.linkTo(tvTitle.start)
-                }, contentAlignment = Alignment.Center
-        ) {
-            Box(
-                modifier = Modifier
-                    .clip(RoundedCornerShape(2.dp))
-                    .background(PrimaryMain)
-                    .size(24.dp)
-            )
-        }
+        BoxTheme(
+            Modifier.constrainAs(red) {
+            top.linkTo(tvTitle.bottom, 7.dp)
+            bottom.linkTo(parent.bottom)
+            start.linkTo(tvTitle.start)
+        }, SettingTheme.System, themeViewModel, session, PrimaryMain)
 
-        Box(
-            modifier = Modifier
-                .clip(RoundedCornerShape(2.dp))
-                .background(
-                    if (session.theme?.equals(SettingTheme.Dark) == true) MaterialTheme.colors.primary.copy(
-                        0.2f
-                    ) else Color.White.copy(0f)
-                )
-                .size(28.dp)
-                .constrainAs(dark) {
-                    top.linkTo(red.top)
-                    bottom.linkTo(red.bottom)
-                    start.linkTo(red.end, 20.dp)
-                }, contentAlignment = Alignment.Center
-        ) {
-            Box(
-                modifier = Modifier
-                    .clip(RoundedCornerShape(2.dp))
-                    .background(PrimaryMainDark)
-                    .size(24.dp)
-            )
-        }
+        BoxTheme(Modifier.constrainAs(dark) {
+            top.linkTo(red.top)
+            bottom.linkTo(red.bottom)
+            start.linkTo(red.end, 20.dp)
+        } , SettingTheme.Dark, themeViewModel , session, PrimaryMainDark )
 
+        BoxTheme(Modifier.constrainAs(blue) {
+            top.linkTo(dark.top)
+            bottom.linkTo(dark.bottom)
+            start.linkTo(dark.end, 20.dp)
+        }, SettingTheme.Blue , themeViewModel, session, PrimaryMainBlue )
+
+        BoxTheme(Modifier.constrainAs(green) {
+            top.linkTo(blue.top)
+            bottom.linkTo(blue.bottom)
+            start.linkTo(blue.end, 20.dp)
+        }, SettingTheme.Green, themeViewModel , session, PrimaryMainGreen )
+    }
+}
+
+@Composable
+private fun BoxTheme(
+    modifier: Modifier,
+    selectedTheme: String,
+    themeViewModel: ThemeViewModel,
+    session: Session,
+    themeColor: Color
+) {
+    Box(
+        modifier = modifier
+            .clickable {
+                themeViewModel.onThemeChanged(selectedTheme)
+                session.setTheme(selectedTheme)
+            }
+            .clip(RoundedCornerShape(2.dp))
+            .background(
+                if (session.theme?.equals(selectedTheme) == true) MaterialTheme.colors.primary.copy(
+                    0.2f
+                ) else Color.White.copy(0f)
+            )
+            .size(36.dp), contentAlignment = Alignment.Center
+    ) {
         Box(
             modifier = Modifier
                 .clip(RoundedCornerShape(2.dp))
-                .background(
-                    if (session.theme?.equals(SettingTheme.Blue) == true) MaterialTheme.colors.primary.copy(
-                        0.2f
-                    ) else Color.White.copy(0f)
-                )
-                .size(28.dp)
-                .constrainAs(blue) {
-                    top.linkTo(dark.top)
-                    bottom.linkTo(dark.bottom)
-                    start.linkTo(dark.end, 20.dp)
-                }, contentAlignment = Alignment.Center
-        ) {
-            Box(
-                modifier = Modifier
-                    .clip(RoundedCornerShape(2.dp))
-                    .background(PrimaryMainBlue)
-                    .size(24.dp)
-            )
-        }
-        Box(
-            modifier = Modifier
-                .clip(RoundedCornerShape(2.dp))
-                .background(
-                    if (session.theme?.equals(SettingTheme.Green) == true) MaterialTheme.colors.primary.copy(
-                        0.2f
-                    ) else Color.White.copy(0f)
-                )
-                .size(28.dp)
-                .constrainAs(green) {
-                    top.linkTo(blue.top)
-                    bottom.linkTo(blue.bottom)
-                    start.linkTo(blue.end, 20.dp)
-                }, contentAlignment = Alignment.Center
-        ) {
-            Box(
-                modifier = Modifier
-                    .clip(RoundedCornerShape(2.dp))
-                    .background(PrimaryMainGreen)
-                    .size(24.dp)
-            )
-        }
+                .background(themeColor)
+                .size(32.dp)
+        )
     }
 }
 
 
-@OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun TileItemSetting(
     modifier: Modifier = Modifier,
