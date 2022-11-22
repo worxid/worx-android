@@ -1,6 +1,7 @@
 package id.worx.device.client.screen.components
 
 import android.R
+import android.util.Log
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -22,13 +23,14 @@ import androidx.compose.ui.unit.dp
 import id.worx.device.client.model.RatingField
 import id.worx.device.client.model.RatingValue
 import id.worx.device.client.theme.GrayDivider
+import id.worx.device.client.theme.PrimaryMain
 import id.worx.device.client.theme.SecondaryMain
 import id.worx.device.client.theme.Typography
 import id.worx.device.client.viewmodel.DetailFormViewModel
 import id.worx.device.client.viewmodel.EventStatus
 
 @Composable
-fun WorxRating(indexForm: Int, viewModel: DetailFormViewModel) {
+fun WorxRating(indexForm: Int, viewModel: DetailFormViewModel,validation : Boolean,isValid : (Boolean) -> Unit ={}) {
     val form = viewModel.uiState.collectAsState().value.detailForm!!.fields[indexForm] as RatingField
     val formStatus = viewModel.uiState.collectAsState().value.status
     val title = form.label ?: "Rating"
@@ -43,7 +45,7 @@ fun WorxRating(indexForm: Int, viewModel: DetailFormViewModel) {
             mutableStateOf(ratingValue.value!!)
         }
     }
-
+    val warningInfo = if ((form.required == true) && (rating.value == 0)) "$title is required" else ""
     Column(modifier = Modifier.fillMaxWidth()) {
         Text(
             title,
@@ -75,6 +77,18 @@ fun WorxRating(indexForm: Int, viewModel: DetailFormViewModel) {
                     }
                 )
             }
+        }
+        if (validation && warningInfo.isNotBlank()) {
+            Text(
+                text = warningInfo,
+                modifier = Modifier
+                    .padding(horizontal = 16.dp)
+                    .padding(top = 4.dp),
+                color = PrimaryMain
+            )
+            isValid(false)
+        } else {
+            isValid(true)
         }
         Divider(color = GrayDivider, modifier = Modifier.padding(top = 12.dp))
     }
