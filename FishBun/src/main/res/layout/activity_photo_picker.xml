@@ -103,7 +103,7 @@
             android:foreground="?selectableItemBackground"
             android:foregroundTint="#804C9CEE"
             android:padding="16dp"
-            android:text="Batal"
+            android:text="Cancel"
             android:textColor="@color/primary_main"
             android:textSize="16sp" />
 
@@ -117,7 +117,7 @@
             android:foreground="?selectableItemBackground"
             android:foregroundTint="#804C9CEE"
             android:padding="16dp"
-            android:text="Kirim"
+            android:text="Send"
             android:textColor="@color/primary_main"
             android:textSize="16sp" />
     </RelativeLayout>

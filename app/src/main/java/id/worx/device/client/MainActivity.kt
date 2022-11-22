@@ -13,7 +13,6 @@ import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
-import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.content.ContextCompat
 import androidx.navigation.findNavController
 import androidx.navigation.ui.setupWithNavController
@@ -83,15 +82,7 @@ class MainActivity : AppCompatActivity() {
         CoroutineScope(Dispatchers.Main).launch {
             viewModel.uploadSubmissionWork()
             viewModel.downloadFormTemplate(this@MainActivity)
-            {
-                Toast.makeText(applicationContext, applicationContext.getString(R.string.sync_form_message), Toast.LENGTH_SHORT)
-                    .show()
-            }
             viewModel.downloadSubmissionList(this@MainActivity)
-            {
-                Toast.makeText(applicationContext, applicationContext.getString(R.string.sync_submission_message), Toast.LENGTH_SHORT)
-                    .show()
-            }
         }
     }
 

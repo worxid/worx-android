@@ -1,5 +1,6 @@
 package id.worx.device.client.screen.components
 
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -18,12 +19,13 @@ import id.worx.device.client.data.database.Session
 import id.worx.device.client.model.DropDownField
 import id.worx.device.client.model.DropDownValue
 import id.worx.device.client.theme.GrayDivider
+import id.worx.device.client.theme.PrimaryMain
 import id.worx.device.client.theme.Typography
 import id.worx.device.client.viewmodel.DetailFormViewModel
 import id.worx.device.client.viewmodel.EventStatus
 
 @Composable
-fun WorxDropdown(indexForm: Int, viewModel: DetailFormViewModel, session: Session) {
+fun WorxDropdown(indexForm: Int, viewModel: DetailFormViewModel, session: Session, validation : Boolean = false,isValid : (Boolean) -> Unit ={}) {
     val theme = session.theme
     val form =
         viewModel.uiState.collectAsState().value.detailForm!!.fields[indexForm] as DropDownField
@@ -39,6 +41,7 @@ fun WorxDropdown(indexForm: Int, viewModel: DetailFormViewModel, session: Sessio
             mutableStateOf(DropDownValue())
         }
     }
+    val warningInfo = if (form.required == true && value == null) "$title is required" else ""
 
     var expanded by remember { mutableStateOf(false) }
 
@@ -114,6 +117,18 @@ fun WorxDropdown(indexForm: Int, viewModel: DetailFormViewModel, session: Sessio
                     }
                 }
             }
+        }
+        if (validation && warningInfo.isNotBlank()) {
+            Text(
+                text = warningInfo,
+                modifier = Modifier
+                    .padding(horizontal = 16.dp)
+                    .padding(top = 4.dp),
+                color = PrimaryMain
+            )
+            isValid(false)
+        } else {
+            isValid(true)
         }
         Divider(color = GrayDivider, modifier = Modifier.padding(top = 12.dp))
     }

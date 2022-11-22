@@ -27,6 +27,7 @@ import id.worx.device.client.model.DateField
 import id.worx.device.client.model.DateValue
 import id.worx.device.client.screen.main.SettingTheme
 import id.worx.device.client.theme.GrayDivider
+import id.worx.device.client.theme.PrimaryMain
 import id.worx.device.client.theme.Typography
 import id.worx.device.client.viewmodel.DetailFormViewModel
 import id.worx.device.client.viewmodel.EventStatus
@@ -34,7 +35,7 @@ import java.text.SimpleDateFormat
 import java.util.*
 
 @Composable
-fun WorxDateInput(indexForm: Int, viewModel: DetailFormViewModel, session: Session) {
+fun WorxDateInput(indexForm: Int, viewModel: DetailFormViewModel, session: Session, validation : Boolean = false,isValid : (Boolean) -> Unit ={}) {
     val theme = session.theme
     val form =
         viewModel.uiState.collectAsState().value.detailForm?.fields?.get(indexForm)!! as DateField
@@ -47,7 +48,7 @@ fun WorxDateInput(indexForm: Int, viewModel: DetailFormViewModel, session: Sessi
     }
     var showDatePicker by remember { mutableStateOf(false) }
     val context = LocalContext.current
-
+    val warningInfo = if (form.required == true && value.value == null) "${form.label} is required" else ""
     val c = Calendar.getInstance()
     var year = c.get(Calendar.YEAR)
     var month = c.get(Calendar.MONTH)
@@ -150,7 +151,23 @@ fun WorxDateInput(indexForm: Int, viewModel: DetailFormViewModel, session: Sessi
                 )
             }
         }
-        if (showDatePicker) {
+        if (validation && warningInfo.isNotBlank()) {
+            Text(
+                text = warningInfo,
+                modifier = Modifier
+                    .padding(horizontal = 16.dp)
+                    .padding(top = 4.dp),
+                color = PrimaryMain
+            )
+            isValid(false)
+        } else {
+            isValid(true)
+        }
+        if (showDatePicker && !arrayListOf(
+                EventStatus.Done,
+                EventStatus.Submitted
+            ).contains(formStatus)) {
+            mDatePickerDialog.setOnCancelListener { showDatePicker = false }
             mDatePickerDialog.show()
         }
         Divider(color = GrayDivider, modifier = Modifier.padding(top = 12.dp))
