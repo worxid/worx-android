@@ -16,11 +16,12 @@ import id.worx.device.client.model.CheckBoxField
 import id.worx.device.client.model.CheckBoxValue
 import id.worx.device.client.theme.GrayDivider
 import id.worx.device.client.theme.Typography
+import id.worx.device.client.theme.textFormDescription
 import id.worx.device.client.viewmodel.DetailFormViewModel
 import id.worx.device.client.viewmodel.EventStatus
 
 @Composable
-fun WorxCheckBox(indexForm: Int, viewModel: DetailFormViewModel) {
+fun WorxCheckBox(indexForm: Int, description: String, viewModel: DetailFormViewModel) {
     val form =
         viewModel.uiState.collectAsState().value.detailForm!!.fields[indexForm] as CheckBoxField
     val formStatus = viewModel.uiState.collectAsState().value.status
@@ -37,7 +38,14 @@ fun WorxCheckBox(indexForm: Int, viewModel: DetailFormViewModel) {
     }
 
     Column(modifier = Modifier.fillMaxWidth()) {
-        Text(title, style = Typography.body2.copy(MaterialTheme.colors.onSecondary), modifier = Modifier.padding(start = 16.dp))
+        Text(title, style = Typography.body2.copy(MaterialTheme.colors.onSecondary), modifier = Modifier.padding(bottom = 8.dp,start = 16.dp))
+        if (description.isNotBlank()) {
+            Text(
+                text = description,
+                style = MaterialTheme.typography.body1.copy(textFormDescription),
+                modifier = Modifier.padding(bottom = 8.dp, start = 17.dp)
+            )
+        }
         Column {
             optionTitles.forEachIndexed() { index, item ->
                 Row(verticalAlignment = Alignment.CenterVertically) {

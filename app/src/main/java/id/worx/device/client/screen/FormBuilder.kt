@@ -87,8 +87,8 @@ fun DetailForm(
     val listState = rememberLazyListState(viewModel.indexScroll.value, viewModel.offset.value)
     val formStatus = viewModel.uiState.collectAsState().value.status
 
-    LaunchedEffect(key1 = listState.isScrollInProgress){
-        if (!listState.isScrollInProgress){
+    LaunchedEffect(key1 = listState.isScrollInProgress) {
+        if (!listState.isScrollInProgress) {
             viewModel.indexScroll.value = listState.firstVisibleItemIndex
             viewModel.offset.value = listState.firstVisibleItemScrollOffset
         }
@@ -113,6 +113,7 @@ fun DetailForm(
                     WorxTextField(
                         theme = theme,
                         label = item.label ?: "Free Text",
+                        description = item.description ?: "Anything you want to fill",
                         hint = "Answer",
                         inputType = KeyboardOptions(keyboardType = KeyboardType.Text),
                         initialValue = androidx.compose.ui.text.input.TextFieldValue(
@@ -122,31 +123,56 @@ fun DetailForm(
                             data[index].value = it
                             viewModel.setComponentData(index, TextFieldValue(values = it))
                         },
-                        isDeleteTrail  = !arrayListOf(EventStatus.Done, EventStatus.Submitted).contains(formStatus),
-                        isEnabled  = !arrayListOf(EventStatus.Done, EventStatus.Submitted).contains(formStatus)
+                        isDeleteTrail = !arrayListOf(
+                            EventStatus.Done,
+                            EventStatus.Submitted
+                        ).contains(formStatus),
+                        isEnabled = !arrayListOf(EventStatus.Done, EventStatus.Submitted).contains(
+                            formStatus
+                        )
                     )
+
                 }
                 Type.Checkbox.type -> {
-                    WorxCheckBox(index, viewModel)
+                    WorxCheckBox(
+                        index,
+                        item.description ?: "",
+                        viewModel
+                    )
                 }
                 Type.RadioGroup.type -> {
-                    WorxRadiobutton(index, viewModel)
+                    WorxRadiobutton(
+                        index,
+                        item.description ?: "",
+                        viewModel
+                    )
                 }
                 Type.Dropdown.type -> {
-                    WorxDropdown(index, viewModel, session)
+                    WorxDropdown(
+                        index,
+                        item.description ?: "",
+                        viewModel,
+                        session
+                    )
                 }
                 Type.Date.type -> {
-                    WorxDateInput(index, viewModel, session)
+                    WorxDateInput(index, item.description ?: "", viewModel, session)
                 }
                 Type.Rating.type -> {
-                    WorxRating(index, viewModel)
+                    WorxRating(index, item.description ?: "", viewModel)
                 }
                 Type.File.type -> {
-                    WorxAttachFile(index, viewModel, session)
+                    WorxAttachFile(
+                        index,
+                        item.description ?: "",
+                        viewModel,
+                        session
+                    )
                 }
                 Type.Photo.type -> {
                     WorxAttachImage(
                         index,
+                        item.description ?: "",
                         viewModel,
                         session,
                         { cameraViewModel.navigateFromDetailScreen(index) }) {
@@ -154,10 +180,13 @@ fun DetailForm(
                     }
                 }
                 Type.Signature.type -> {
-                    WorxSignature(index, viewModel, session)
+                    WorxSignature(index, item.description ?: "", viewModel, session)
                 }
                 Type.Separator.type -> {
-                    WorxSeparator(index, viewModel, session)
+                    WorxSeparator(
+                        index, item.description ?: ""
+                        , viewModel, session
+                    )
                     viewModel.setComponentData(index, SeparatorValue())
                 }
                 else -> {
@@ -169,7 +198,7 @@ fun DetailForm(
             }
         }
         val detailForm = viewModel.uiState.value.detailForm
-        if ( detailForm is EmptyForm || (detailForm is SubmitForm && detailForm.status == 0)) {
+        if (detailForm is EmptyForm || (detailForm is SubmitForm && detailForm.status == 0)) {
             item {
                 RedFullWidthButton(
                     onClickCallback = { showSubmitDialog() },
@@ -289,6 +318,7 @@ fun DialogDraftForm(
                 WorxTextField(
                     theme = theme,
                     label = "",
+                    description = "",
                     hint = stringResource(R.string.draft_descr),
                     inputType = KeyboardOptions(keyboardType = KeyboardType.Text),
                     onValueChange = {})
