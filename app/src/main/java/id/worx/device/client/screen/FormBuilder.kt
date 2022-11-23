@@ -3,6 +3,7 @@ package id.worx.device.client.screen
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
@@ -13,6 +14,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
@@ -28,6 +30,7 @@ import id.worx.device.client.theme.Typography
 import id.worx.device.client.viewmodel.CameraViewModel
 import id.worx.device.client.viewmodel.DetailFormViewModel
 import id.worx.device.client.viewmodel.EventStatus
+import kotlinx.coroutines.*
 
 @Composable
 fun ValidFormBuilder(
@@ -42,11 +45,18 @@ fun ValidFormBuilder(
     var validation by remember { mutableStateOf(false) }
     var isValid by remember { mutableStateOf(false) }
     val theme = session.theme
-
+    val scope = rememberCoroutineScope()
     Box(
         modifier = Modifier
             .fillMaxSize()
             .background(MaterialTheme.colors.secondary)
+            .pointerInput(Unit) {
+                detectTapGestures {
+                    scope.launch {
+                        if (bottom)
+                    }
+                }
+            }
     ) {
         DetailForm(
             componentList,
@@ -140,7 +150,9 @@ fun DetailForm(
                         isRequired = form?.required ?: false,
                         validation = validation,
                         isValid = isValid,
-                        isEnabled  = !arrayListOf(EventStatus.Done, EventStatus.Submitted).contains(formStatus)
+                        isEnabled = !arrayListOf(EventStatus.Done, EventStatus.Submitted).contains(
+                            formStatus
+                        )
                     )
                 }
                 Type.Checkbox.type -> {
@@ -209,9 +221,13 @@ fun DialogSubmitForm(
     val progress = viewModel.formProgress.value
     val fieldsNo = viewModel.uiState.collectAsState().value.detailForm!!.fields.size
     val theme = session.theme
+    val state = rememberModalBottomSheetState(
+        initialValue = ModalBottomSheetValue.Expanded,
+        confirmStateChange = { true })
+    val scope = rememberCoroutineScope()
 
     ModalBottomSheetLayout(
-        sheetState = ModalBottomSheetState(ModalBottomSheetValue.Expanded),
+        sheetState = state,
         sheetContent = {
             Column(
                 modifier = Modifier
@@ -222,7 +238,13 @@ fun DialogSubmitForm(
                 verticalArrangement = Arrangement.spacedBy(20.dp)
             ) {
                 Text(
-                    modifier = Modifier.padding(top = 24.dp),
+                    modifier = Modifier
+                        .padding(top = 24.dp)
+                        .clickable {
+                            scope.launch {
+                                state.hide()
+                            }
+                        },
                     text = "Submit",
                     style = Typography.subtitle1.copy(MaterialTheme.colors.onSecondary)
                 )
