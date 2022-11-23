@@ -207,7 +207,8 @@ fun DialogSubmitForm(
     saveDraftForm: () -> Unit
 ) {
     val progress = viewModel.formProgress.value
-    val fieldsNo = viewModel.uiState.collectAsState().value.detailForm!!.fields.size
+    val separatorCount = viewModel.uiState.collectAsState().value.detailForm!!.fields.count { it.type == Type.Separator.type }
+    val fieldsNo = viewModel.uiState.collectAsState().value.detailForm!!.fields.size - separatorCount
     val theme = session.theme
 
     ModalBottomSheetLayout(

@@ -92,7 +92,8 @@ class DetailFormViewModel @Inject constructor(
         val fields = uiState.value.detailForm!!.fields
         val id = fields[index].id!!
         val values = uiState.value.values.toMutableMap()
-        val progressBit = 100 / fields.size
+        val separatorCount = fields.count { it.type == Type.Separator.type }
+        val progressBit = 100 / (fields.size - separatorCount)
 
         uiState.update {
             if (value == null) {
