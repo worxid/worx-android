@@ -2,10 +2,7 @@ package id.worx.device.client.screen.components
 
 import android.R
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.material.Divider
 import androidx.compose.material.Icon
@@ -45,6 +42,14 @@ fun WorxRating(indexForm: Int, viewModel: DetailFormViewModel) {
         }
     }
 
+    val starSize = if (form.maxStars!! <= 5) {
+        42.dp
+    } else if (form.maxStars!! in 6..7) {
+        28.dp
+    } else {
+        21.dp
+    }
+
     Column(modifier = Modifier.fillMaxWidth()) {
         Text(
             title,
@@ -55,25 +60,30 @@ fun WorxRating(indexForm: Int, viewModel: DetailFormViewModel) {
             Text(
                 text = form.description!!,
                 style = MaterialTheme.typography.body1.copy(textFormDescription),
-                modifier = Modifier.padding(bottom = 8.dp, start = 17.dp)
+                modifier = Modifier.padding(bottom = 8.dp, start = 16.dp)
             )
         }
         LazyRow(
             modifier = Modifier.padding(horizontal = 16.dp),
-            horizontalArrangement = Arrangement.spacedBy(12.dp)
+            horizontalArrangement = Arrangement.spacedBy(12.dp),
         ) {
             items(form.maxStars ?: 5) { index ->
                 Icon(
-                    modifier = Modifier.clickable {
-                        if (!arrayListOf(
-                                EventStatus.Done,
-                                EventStatus.Submitted
-                            ).contains(formStatus)
-                        ) {
-                            rating.value = index + 1
-                            viewModel.setComponentData(indexForm, RatingValue(value = index + 1))
+                    modifier = Modifier
+                        .clickable {
+                            if (!arrayListOf(
+                                    EventStatus.Done,
+                                    EventStatus.Submitted
+                                ).contains(formStatus)
+                            ) {
+                                rating.value = index + 1
+                                viewModel.setComponentData(
+                                    indexForm,
+                                    RatingValue(value = index + 1)
+                                )
+                            }
                         }
-                    },
+                        .size(starSize),
                     painter = painterResource(id = R.drawable.star_big_off),
                     contentDescription = "Star Icon",
                     tint = if (index < (rating.value ?: 0)) {
