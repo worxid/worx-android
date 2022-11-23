@@ -258,7 +258,7 @@ fun DialogSubmitForm(
                 }
                 val fieldFilled = viewModel.uiState.collectAsState().value.values.count { it.value != null }
                 Text(
-                    text = "${fieldFilled.toInt()} of $fieldsNo Fields Answered",
+                    text = "$fieldFilled of $fieldsNo Fields Answered",
                     style = Typography.body2.copy(MaterialTheme.colors.onSecondary.copy(0.54f))
                 )
                 RedFullWidthButton(

@@ -8,6 +8,7 @@ plugins {
     id "com.google.android.gms.oss-licenses-plugin"
     id 'com.google.gms.google-services'
     id 'com.google.firebase.crashlytics'
+    id 'org.sonarqube'
 }
 
 android {
@@ -33,7 +34,8 @@ android {
 
     buildTypes {
         release {
-            minifyEnabled false
+            minifyEnabled true
+            shrinkResources true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
             signingConfig signingConfigs.release
         }
