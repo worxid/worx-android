@@ -1,6 +1,8 @@
 package id.worx.device.client.screen
 
 import android.util.Log
+import androidx.activity.compose.BackHandler
+import androidx.activity.compose.LocalOnBackPressedDispatcherOwner
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -49,15 +51,18 @@ fun DetailFormScreen(
     val formStatus = viewModel.uiState.collectAsState().value.status
     val showDialogLeaveForm = remember { mutableStateOf(false )}
 
+    BackHandler {
+        showDialogLeaveForm.value = (formStatus == EventStatus.Filling && viewModel.formProgress.value > 0)
+        if (!showDialogLeaveForm.value){
+            onEvent(DetailFormEvent.BackPressed)
+        }
+    }
+    val dispatcher = LocalOnBackPressedDispatcherOwner.current!!.onBackPressedDispatcher
+    
     Scaffold(
         topBar = {
             WorxTopAppBar(
-                onBack = {
-                    showDialogLeaveForm.value = (formStatus == EventStatus.Filling && viewModel.formProgress.value > 0)
-                    if (!showDialogLeaveForm.value){
-                        onEvent(DetailFormEvent.BackPressed)
-                    }
-                },
+                onBack = { dispatcher.onBackPressed() },
                 progress = viewModel.formProgress.value,
                 title = if (uistate.detailForm != null) {
                     uistate.detailForm!!.label ?: ""
