@@ -113,7 +113,7 @@ fun DetailForm(
                     WorxTextField(
                         theme = theme,
                         label = item.label ?: "Free Text",
-                        description = item.description ?: "Anything you want to fill",
+                        description = item.description ?: "",
                         hint = "Answer",
                         inputType = KeyboardOptions(keyboardType = KeyboardType.Text),
                         initialValue = androidx.compose.ui.text.input.TextFieldValue(
@@ -136,35 +136,31 @@ fun DetailForm(
                 Type.Checkbox.type -> {
                     WorxCheckBox(
                         index,
-                        item.description ?: "",
                         viewModel
                     )
                 }
                 Type.RadioGroup.type -> {
                     WorxRadiobutton(
                         index,
-                        item.description ?: "",
                         viewModel
                     )
                 }
                 Type.Dropdown.type -> {
                     WorxDropdown(
                         index,
-                        item.description ?: "",
                         viewModel,
                         session
                     )
                 }
                 Type.Date.type -> {
-                    WorxDateInput(index, item.description ?: "", viewModel, session)
+                    WorxDateInput(index,  viewModel, session)
                 }
                 Type.Rating.type -> {
-                    WorxRating(index, item.description ?: "", viewModel)
+                    WorxRating(index,  viewModel)
                 }
                 Type.File.type -> {
                     WorxAttachFile(
                         index,
-                        item.description ?: "",
                         viewModel,
                         session
                     )
@@ -172,7 +168,6 @@ fun DetailForm(
                 Type.Photo.type -> {
                     WorxAttachImage(
                         index,
-                        item.description ?: "",
                         viewModel,
                         session,
                         { cameraViewModel.navigateFromDetailScreen(index) }) {
@@ -180,12 +175,11 @@ fun DetailForm(
                     }
                 }
                 Type.Signature.type -> {
-                    WorxSignature(index, item.description ?: "", viewModel, session)
+                    WorxSignature(index, viewModel, session)
                 }
                 Type.Separator.type -> {
                     WorxSeparator(
-                        index, item.description ?: ""
-                        , viewModel, session
+                        index, viewModel, session
                     )
                     viewModel.setComponentData(index, SeparatorValue())
                 }

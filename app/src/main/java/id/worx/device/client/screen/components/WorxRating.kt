@@ -29,7 +29,7 @@ import id.worx.device.client.viewmodel.DetailFormViewModel
 import id.worx.device.client.viewmodel.EventStatus
 
 @Composable
-fun WorxRating(indexForm: Int, description: String, viewModel: DetailFormViewModel) {
+fun WorxRating(indexForm: Int, viewModel: DetailFormViewModel) {
     val form = viewModel.uiState.collectAsState().value.detailForm!!.fields[indexForm] as RatingField
     val formStatus = viewModel.uiState.collectAsState().value.status
     val title = form.label ?: "Rating"
@@ -51,9 +51,9 @@ fun WorxRating(indexForm: Int, description: String, viewModel: DetailFormViewMod
             style = Typography.body2.copy(MaterialTheme.colors.onSecondary),
             modifier = Modifier.padding(start = 16.dp, bottom = 8.dp)
         )
-        if (description.isNotBlank()) {
+        if (!form.description.isNullOrBlank()) {
             Text(
-                text = description,
+                text = form.description!!,
                 style = MaterialTheme.typography.body1.copy(textFormDescription),
                 modifier = Modifier.padding(bottom = 8.dp, start = 17.dp)
             )

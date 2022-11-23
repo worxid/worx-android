@@ -21,7 +21,7 @@ import id.worx.device.client.viewmodel.DetailFormViewModel
 import id.worx.device.client.viewmodel.EventStatus
 
 @Composable
-fun WorxCheckBox(indexForm: Int, description: String, viewModel: DetailFormViewModel) {
+fun WorxCheckBox(indexForm: Int, viewModel: DetailFormViewModel) {
     val form =
         viewModel.uiState.collectAsState().value.detailForm!!.fields[indexForm] as CheckBoxField
     val formStatus = viewModel.uiState.collectAsState().value.status
@@ -39,9 +39,9 @@ fun WorxCheckBox(indexForm: Int, description: String, viewModel: DetailFormViewM
 
     Column(modifier = Modifier.fillMaxWidth()) {
         Text(title, style = Typography.body2.copy(MaterialTheme.colors.onSecondary), modifier = Modifier.padding(bottom = 8.dp,start = 16.dp))
-        if (description.isNotBlank()) {
+        if (!form.description.isNullOrBlank()) {
             Text(
-                text = description,
+                text = form.description!!,
                 style = MaterialTheme.typography.body1.copy(textFormDescription),
                 modifier = Modifier.padding(bottom = 8.dp, start = 17.dp)
             )

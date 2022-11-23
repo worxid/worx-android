@@ -46,7 +46,6 @@ import java.io.File
 @Composable
 fun WorxAttachImage(
     indexForm: Int,
-    description: String,
     viewModel: DetailFormViewModel,
     session: Session,
     setIndexData: () -> Unit,
@@ -100,9 +99,9 @@ fun WorxAttachImage(
                 .padding(horizontal = 16.dp)
                 .padding(bottom = 8.dp)
         )
-        if (description.isNotBlank()) {
+        if (!form.description.isNullOrBlank()) {
             Text(
-                text = description,
+                text = form.description!!,
                 style = MaterialTheme.typography.body1.copy(textFormDescription),
                 modifier = Modifier.padding(bottom = 8.dp, start = 17.dp)
             )
@@ -340,7 +339,6 @@ fun PreviewImageWorx(){
     WorxTheme() {
         WorxAttachImage(
             indexForm = 0 ,
-            "",
             viewModel = viewModel,
             session = Session(LocalContext.current),
             setIndexData = {}) {

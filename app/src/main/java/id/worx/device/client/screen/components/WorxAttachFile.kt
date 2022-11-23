@@ -40,7 +40,7 @@ import id.worx.device.client.viewmodel.EventStatus
 import java.io.File
 
 @Composable
-fun WorxAttachFile(indexForm: Int, description: String, viewModel: DetailFormViewModel, session: Session) {
+fun WorxAttachFile(indexForm: Int, viewModel: DetailFormViewModel, session: Session) {
     val theme = session.theme
     val uiState = viewModel.uiState.collectAsState().value
     val form = uiState.detailForm!!.fields[indexForm] as FileField
@@ -85,9 +85,9 @@ fun WorxAttachFile(indexForm: Int, description: String, viewModel: DetailFormVie
             style = Typography.body2.copy(MaterialTheme.colors.onSecondary),
             modifier = Modifier.padding(start = 17.dp, bottom = 8.dp, end = 16.dp)
         )
-        if (description.isNotBlank()) {
+        if (!form.description.isNullOrBlank()) {
             Text(
-                text = description,
+                text = form.description!!,
                 style = MaterialTheme.typography.body1.copy(textFormDescription),
                 modifier = Modifier.padding(bottom = 8.dp, start = 17.dp)
             )

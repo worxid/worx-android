@@ -24,7 +24,7 @@ import id.worx.device.client.viewmodel.DetailFormViewModel
 import id.worx.device.client.viewmodel.EventStatus
 
 @Composable
-fun WorxDropdown(indexForm: Int, description: String, viewModel: DetailFormViewModel, session: Session) {
+fun WorxDropdown(indexForm: Int, viewModel: DetailFormViewModel, session: Session) {
     val theme = session.theme
     val form =
         viewModel.uiState.collectAsState().value.detailForm!!.fields[indexForm] as DropDownField
@@ -53,9 +53,9 @@ fun WorxDropdown(indexForm: Int, description: String, viewModel: DetailFormViewM
             style = Typography.body2.copy(MaterialTheme.colors.onSecondary),
             modifier = Modifier.padding(start = 17.dp, bottom = 8.dp)
         )
-        if (description.isNotBlank()) {
+        if (!form.description.isNullOrBlank()) {
             Text(
-                text = description,
+                text = form.description!!,
                 style = MaterialTheme.typography.body1.copy(textFormDescription),
                 modifier = Modifier.padding(bottom = 8.dp, start = 17.dp)
             )

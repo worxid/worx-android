@@ -35,7 +35,7 @@ import java.text.SimpleDateFormat
 import java.util.*
 
 @Composable
-fun WorxDateInput(indexForm: Int, description: String, viewModel: DetailFormViewModel, session: Session) {
+fun WorxDateInput(indexForm: Int, viewModel: DetailFormViewModel, session: Session) {
     val theme = session.theme
     val form =
         viewModel.uiState.collectAsState().value.detailForm?.fields?.get(indexForm)!! as DateField
@@ -90,9 +90,9 @@ fun WorxDateInput(indexForm: Int, description: String, viewModel: DetailFormView
             style = Typography.body2.copy(MaterialTheme.colors.onSecondary),
             modifier = Modifier.padding(start = 17.dp, bottom = 8.dp)
         )
-        if (description.isNotBlank()) {
+        if (!form.description.isNullOrBlank()) {
             Text(
-                text = description,
+                text = form.description!!,
                 style = MaterialTheme.typography.body1.copy(textFormDescription),
                 modifier = Modifier.padding(bottom = 8.dp, start = 17.dp)
             )
