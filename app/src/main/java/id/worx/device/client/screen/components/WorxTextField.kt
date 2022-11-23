@@ -1,5 +1,7 @@
 package id.worx.device.client.screen.components
 
+import android.text.BoringLayout
+import android.util.Log
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -32,6 +34,9 @@ fun WorxTextField(
     onValueChange: (String) -> Unit,
     isPassword: Boolean = false,
     isDeleteTrail: Boolean = false,
+    isRequired : Boolean = false,
+    validation: Boolean = false,
+    isValid : (Boolean) -> Unit ={},
     isEnabled: Boolean = true
 ) {
     var textValue by remember { mutableStateOf(initialValue) }
@@ -62,7 +67,7 @@ fun WorxTextField(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = 16.dp)
-                .padding(bottom = 12.dp),
+                .padding(bottom = 4.dp),
             shape = RoundedCornerShape(4.dp),
             value = textValue,
             onValueChange = {
@@ -109,6 +114,18 @@ fun WorxTextField(
                 }
             }
         )
+        if (validation && isRequired && textValue.text.isBlank()){
+            Text(
+                text = "$label is required",
+                modifier = Modifier
+                    .padding(horizontal = 16.dp)
+                    .padding(bottom = 8.dp),
+                color = PrimaryMain
+            )
+            isValid(false)
+        } else {
+            isValid(true)
+        }
         Divider(
             color = GrayDivider
         )

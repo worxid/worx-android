@@ -19,7 +19,8 @@ import androidx.compose.material.Divider
 import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.toArgb
@@ -49,28 +50,20 @@ fun WorxAttachImage(
     viewModel: DetailFormViewModel,
     session: Session,
     setIndexData: () -> Unit,
-    navigateToPhotoCamera: () -> Unit
+    validation : Boolean = false,
+    isValid : (Boolean) -> Unit ={},
+    navigateToPhotoCamera: () -> Unit,
 ) {
     val form = viewModel.uiState.collectAsState().value.detailForm!!.fields[indexForm] as ImageField
     val title = form.label ?: ""
     val theme = session.theme
 
     val fileValue = viewModel.uiState.collectAsState().value.values[form.id] as ImageValue?
-    var filePath by if (fileValue != null) {
-        remember { mutableStateOf(fileValue.filePath.toList()) }
-    } else {
-        remember {
-            mutableStateOf(listOf())
-        }
-    }
+    var filePath = fileValue?.filePath?.toList() ?: listOf()
 
-    var fileIds by if (fileValue != null) {
-        remember { mutableStateOf(fileValue.value.toList()) }
-    } else {
-        remember {
-            mutableStateOf(listOf())
-        }
-    }
+    val warningInfo = if (form.required == true && filePath.isEmpty()) "${form.label} is required" else ""
+
+    var fileIds = fileValue?.value?.toList() ?: listOf()
 
     val formStatus = viewModel.uiState.collectAsState().value.status
 
@@ -149,7 +142,7 @@ fun WorxAttachImage(
         if (arrayListOf(
                 EventStatus.Loading,
                 EventStatus.Filling,
-                EventStatus.Saved
+                EventStatus.Saved,
             ).contains(formStatus)
         ) {
             Row(
@@ -159,6 +152,18 @@ fun WorxAttachImage(
                 TakeImageButton((form.maxFiles ?: 10) > fileIds.size, navigateToPhotoCamera, setIndexData, theme)
                 GalleryImageButton((form.maxFiles ?: 10) > fileIds.size, launcherGallery = launcherGallery, theme)
             }
+        }
+        if (validation && warningInfo.isNotBlank()) {
+            Text(
+                text = warningInfo,
+                modifier = Modifier
+                    .padding(horizontal = 16.dp)
+                    .padding(top = 4.dp),
+                color = PrimaryMain
+            )
+            isValid(false)
+        } else {
+            isValid(true)
         }
         Divider(color = GrayDivider, modifier = Modifier.padding(top = 12.dp))
     }
@@ -176,10 +181,10 @@ private fun ImageDataView(
             .padding(horizontal = 16.dp, vertical = 12.dp)
     ) {
         AsyncImage(
-            model = if (fileSize > 0) {
-                filePath
-            } else {
+            model = if (filePath.contains("File")) {
                 android.R.drawable.ic_menu_gallery
+            } else {
+                filePath
             },
             contentDescription = "Image",
             modifier = Modifier

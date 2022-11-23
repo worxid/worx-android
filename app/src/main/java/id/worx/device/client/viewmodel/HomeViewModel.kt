@@ -142,7 +142,7 @@ class HomeViewModel @Inject constructor(
     private val formTemplateWorkInfoItems: LiveData<List<WorkInfo>> =
         workManager.getWorkInfosByTagLiveData("form_template")
 
-    internal fun downloadFormTemplate(lifecycleOwner: LifecycleOwner, uiUpdate: () -> Unit) {
+    internal fun downloadFormTemplate(lifecycleOwner: LifecycleOwner) {
         val syncTemplateDBRequest = OneTimeWorkRequestBuilder<FormDownloadWorker>()
             .addTag("form_template")
             .setConstraints(networkConstraints)
@@ -153,7 +153,6 @@ class HomeViewModel @Inject constructor(
         formTemplateWorkInfoItems.observe(lifecycleOwner, Observer { list ->
             val workInfo = list[0]
             if (list.isNotEmpty() && workInfo.state.isFinished) {
-                uiUpdate()
                 refreshData()
             }
         })
@@ -184,7 +183,7 @@ class HomeViewModel @Inject constructor(
     private val downloadSubmissionWorkInfoItems: LiveData<List<WorkInfo>> =
         workManager.getWorkInfosByTagLiveData("submission_list")
 
-    internal fun downloadSubmissionList(lifecycleOwner: LifecycleOwner, uiUpdate: () -> Unit) {
+    internal fun downloadSubmissionList(lifecycleOwner: LifecycleOwner) {
         val syncSubmitFormDBRequest = OneTimeWorkRequestBuilder<SubmissionDownloadWorker>()
             .addTag("submission_list")
             .setConstraints(networkConstraints)
@@ -195,7 +194,6 @@ class HomeViewModel @Inject constructor(
         formTemplateWorkInfoItems.observe(lifecycleOwner, Observer { list ->
             val workInfo = list[0]
             if (list.isNotEmpty() && workInfo.state.isFinished) {
-                uiUpdate()
                 refreshData()
             }
         })

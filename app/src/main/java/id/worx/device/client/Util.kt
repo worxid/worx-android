@@ -10,6 +10,7 @@ import android.os.Build
 import android.provider.Settings
 import id.worx.device.client.data.upload.CustomPlaceholdersProcessor
 import id.worx.device.client.model.Fields
+import id.worx.device.client.model.Type
 import id.worx.device.client.model.Value
 import net.gotev.uploadservice.data.UploadNotificationAction
 import net.gotev.uploadservice.data.UploadNotificationConfig
@@ -92,7 +93,8 @@ object Util {
      * If the form is half filled, set the progress value
      */
     fun initProgress(values: MutableMap<String, Value>, fields: ArrayList<Fields>): Int{
-        val progressBit = 100 / fields.size
+        val separatorCount = fields.count { it.type == Type.Separator.type }
+        val progressBit = 100 / (fields.size - separatorCount)
         if (values.isNotEmpty()) {
             return progressBit * values.size
         }
@@ -113,7 +115,6 @@ object Util {
         title: String,
         content: String
     ): UploadNotificationConfig {
-        val autoClear = false
         val largeIcon: Bitmap? = null
         val clearOnAction = true
         val ringToneEnabled = true
@@ -137,7 +138,7 @@ object Util {
             null,
             progressActions,
             clearOnAction,
-            autoClear
+            true
         )
 
         val success = UploadNotificationStatusConfig(
@@ -149,7 +150,7 @@ object Util {
             null,
             noActions,
             clearOnAction,
-            autoClear
+            true
         )
 
         val error = UploadNotificationStatusConfig(
@@ -161,7 +162,7 @@ object Util {
             null,
             noActions,
             clearOnAction,
-            autoClear
+            false
         )
 
         val cancelled = UploadNotificationStatusConfig(
@@ -172,7 +173,7 @@ object Util {
             largeIcon,
             null,
             noActions,
-            clearOnAction
+            false
         )
 
         return UploadNotificationConfig(

@@ -46,7 +46,11 @@ fun Fragment.navigate(to: MainScreen, from: MainScreen) {
     }
     when (to) {
         MainScreen.Home -> {
-            findNavController().navigate(R.id.home_fragment)
+            if (from == MainScreen.Detail){
+                findNavController().navigate(R.id.action_detail_to_home)
+            } else {
+                findNavController().navigate(R.id.home_fragment)
+            }
         }
         MainScreen.Detail -> {
             when (from) {
