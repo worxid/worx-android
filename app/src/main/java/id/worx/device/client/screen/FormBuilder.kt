@@ -97,6 +97,7 @@ fun DetailForm(
     }.toMutableList()
     val listState = rememberLazyListState(viewModel.indexScroll.value, viewModel.offset.value)
     val formStatus = viewModel.uiState.collectAsState().value.status
+    val detailForm = viewModel.uiState.collectAsState().value.detailForm
 
     LaunchedEffect(key1 = listState.isScrollInProgress) {
         if (!listState.isScrollInProgress) {
@@ -205,29 +206,21 @@ fun DetailForm(
             }
         }
 
-//        val detailForm = viewModel.uiState.value.detailForm
-//        if (detailForm is EmptyForm || (detailForm is SubmitForm && detailForm.status == 0)) {
-//            item {
-//                RedFullWidthButton(
-//                    onClickCallback = { showSubmitDialog() },
-//                    label = "Submit", modifier = Modifier.padding(vertical = 16.dp),
-//                    theme = theme
-//                )
-//            }
-//        }
-        RedFullWidthButton(
-            onClickCallback = { showSubmitDialog() },
-            label = "Submit",
-            modifier = Modifier
-                .padding(vertical = 16.dp)
-                .constrainAs(btnSubmit) {
-                    bottom.linkTo(parent.bottom)
-                    start.linkTo(parent.start)
-                    end.linkTo(parent.end)
-                    width = Dimension.fillToConstraints
-                },
-            theme = theme
-        )
+        if (detailForm is EmptyForm || (detailForm is SubmitForm && detailForm.status == 0)) {
+            RedFullWidthButton(
+                onClickCallback = { showSubmitDialog() },
+                label = "Submit",
+                modifier = Modifier
+                    .padding(vertical = 16.dp)
+                    .constrainAs(btnSubmit) {
+                        bottom.linkTo(parent.bottom)
+                        start.linkTo(parent.start)
+                        end.linkTo(parent.end)
+                        width = Dimension.fillToConstraints
+                    },
+                theme = theme
+            )
+        }
     }
 }
 

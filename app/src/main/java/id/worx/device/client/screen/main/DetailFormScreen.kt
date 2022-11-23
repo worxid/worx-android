@@ -69,8 +69,6 @@ fun DetailFormScreen(
     ) { padding ->
         val componentList = uistate.detailForm!!.fields
 
-        Log.d("TAG", "DetailFormScreen: ${formStatus.name}")
-
         ValidFormBuilder(
             componentList = componentList,
             viewModel,
