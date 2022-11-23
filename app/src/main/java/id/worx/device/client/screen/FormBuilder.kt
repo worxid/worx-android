@@ -19,6 +19,8 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
+import androidx.constraintlayout.compose.ConstraintLayout
+import androidx.constraintlayout.compose.Dimension
 import androidx.hilt.navigation.compose.hiltViewModel
 import id.worx.device.client.R
 import id.worx.device.client.data.database.Session
@@ -103,98 +105,129 @@ fun DetailForm(
         }
     }
 
-    LazyColumn(
-        state = listState,
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(vertical = 12.dp),
-        verticalArrangement = Arrangement.spacedBy(12.dp)
+    ConstraintLayout(
+        modifier = Modifier.fillMaxSize()
     ) {
-        itemsIndexed(items = componentList) { index, item ->
-            viewModel.currentComponentIndex(index)
-            when (item.type) {
-                Type.TextField.type -> {
-                    val id =
-                        viewModel.uiState.collectAsState().value.detailForm?.fields?.get(index)?.id
-                            ?: 0
-                    val value = viewModel.uiState.collectAsState().value.values[id]
-                            as TextFieldValue? ?: TextFieldValue()
-                    val form =
-                        viewModel.uiState.collectAsState().value.detailForm!!.fields.getOrNull(index)
-                    WorxTextField(
-                        theme = theme,
-                        label = item.label ?: "Free Text",
-                        hint = "Answer",
-                        inputType = KeyboardOptions(keyboardType = KeyboardType.Text),
-                        initialValue = androidx.compose.ui.text.input.TextFieldValue(
-                            value.values ?: ""
-                        ),
-                        onValueChange = {
-                            data[index].value = it
-                            viewModel.setComponentData(index, TextFieldValue(values = it))
-                        },
-                        isDeleteTrail = !arrayListOf(
-                            EventStatus.Done,
-                            EventStatus.Submitted
-                        ).contains(formStatus),
-                        isRequired = form?.required ?: false,
-                        validation = validation,
-                        isValid = isValid,
-                        isEnabled  = !arrayListOf(EventStatus.Done, EventStatus.Submitted).contains(formStatus)
-                    )
+        val (lazyColumn, btnSubmit) = createRefs()
+        LazyColumn(
+            state = listState,
+            modifier = Modifier
+                .constrainAs(lazyColumn) {
+                    top.linkTo(parent.top)
+                    start.linkTo(parent.start)
+                    bottom.linkTo(btnSubmit.top)
+                    end.linkTo(parent.end)
+                    width = Dimension.fillToConstraints
+                    height = Dimension.fillToConstraints
                 }
-                Type.Checkbox.type -> {
-                    WorxCheckBox(index, viewModel, validation, isValid)
-                }
-                Type.RadioGroup.type -> {
-                    WorxRadiobutton(index, viewModel, validation, isValid)
-                }
-                Type.Dropdown.type -> {
-                    WorxDropdown(index, viewModel, session, validation, isValid)
-                }
-                Type.Date.type -> {
-                    WorxDateInput(index, viewModel, session, validation, isValid)
-                }
-                Type.Rating.type -> {
-                    WorxRating(index, viewModel, validation, isValid)
-                }
-                Type.File.type -> {
-                    WorxAttachFile(index, viewModel, session, validation, isValid)
-                }
-                Type.Photo.type -> {
-                    WorxAttachImage(
-                        index,
-                        viewModel,
-                        session,
-                        { cameraViewModel.navigateFromDetailScreen(index) }, validation, isValid
-                    ) {
-                        viewModel.goToCameraPhoto(index)
+                .padding(vertical = 12.dp),
+            verticalArrangement = Arrangement.spacedBy(12.dp)
+        ) {
+            itemsIndexed(items = componentList) { index, item ->
+                viewModel.currentComponentIndex(index)
+                when (item.type) {
+                    Type.TextField.type -> {
+                        val id =
+                            viewModel.uiState.collectAsState().value.detailForm?.fields?.get(index)?.id
+                                ?: 0
+                        val value = viewModel.uiState.collectAsState().value.values[id]
+                                as TextFieldValue? ?: TextFieldValue()
+                        val form =
+                            viewModel.uiState.collectAsState().value.detailForm!!.fields.getOrNull(
+                                index
+                            )
+                        WorxTextField(
+                            theme = theme,
+                            label = item.label ?: "Free Text",
+                            hint = "Answer",
+                            inputType = KeyboardOptions(keyboardType = KeyboardType.Text),
+                            initialValue = androidx.compose.ui.text.input.TextFieldValue(
+                                value.values ?: ""
+                            ),
+                            onValueChange = {
+                                data[index].value = it
+                                viewModel.setComponentData(index, TextFieldValue(values = it))
+                            },
+                            isDeleteTrail = !arrayListOf(
+                                EventStatus.Done,
+                                EventStatus.Submitted
+                            ).contains(formStatus),
+                            isRequired = form?.required ?: false,
+                            validation = validation,
+                            isValid = isValid,
+                            isEnabled = !arrayListOf(
+                                EventStatus.Done,
+                                EventStatus.Submitted
+                            ).contains(formStatus)
+                        )
+                    }
+                    Type.Checkbox.type -> {
+                        WorxCheckBox(index, viewModel, validation, isValid)
+                    }
+                    Type.RadioGroup.type -> {
+                        WorxRadiobutton(index, viewModel, validation, isValid)
+                    }
+                    Type.Dropdown.type -> {
+                        WorxDropdown(index, viewModel, session, validation, isValid)
+                    }
+                    Type.Date.type -> {
+                        WorxDateInput(index, viewModel, session, validation, isValid)
+                    }
+                    Type.Rating.type -> {
+                        WorxRating(index, viewModel, validation, isValid)
+                    }
+                    Type.File.type -> {
+                        WorxAttachFile(index, viewModel, session, validation, isValid)
+                    }
+                    Type.Photo.type -> {
+                        WorxAttachImage(
+                            index,
+                            viewModel,
+                            session,
+                            { cameraViewModel.navigateFromDetailScreen(index) }, validation, isValid
+                        ) {
+                            viewModel.goToCameraPhoto(index)
+                        }
+                    }
+                    Type.Signature.type -> {
+                        WorxSignature(index, viewModel, session)
+                    }
+                    Type.Separator.type -> {
+                        WorxSeparator(index, viewModel, session)
+                    }
+                    else -> {
+                        Text(
+                            text = "Unknown component",
+                            style = Typography.body1.copy(color = Color.Black)
+                        )
                     }
                 }
-                Type.Signature.type -> {
-                    WorxSignature(index, viewModel, session)
-                }
-                Type.Separator.type -> {
-                    WorxSeparator(index, viewModel, session)
-                }
-                else -> {
-                    Text(
-                        text = "Unknown component",
-                        style = Typography.body1.copy(color = Color.Black)
-                    )
-                }
             }
         }
-        val detailForm = viewModel.uiState.value.detailForm
-        if (detailForm is EmptyForm || (detailForm is SubmitForm && detailForm.status == 0)) {
-            item {
-                RedFullWidthButton(
-                    onClickCallback = { showSubmitDialog() },
-                    label = "Submit", modifier = Modifier.padding(vertical = 16.dp),
-                    theme = theme
-                )
-            }
-        }
+
+//        val detailForm = viewModel.uiState.value.detailForm
+//        if (detailForm is EmptyForm || (detailForm is SubmitForm && detailForm.status == 0)) {
+//            item {
+//                RedFullWidthButton(
+//                    onClickCallback = { showSubmitDialog() },
+//                    label = "Submit", modifier = Modifier.padding(vertical = 16.dp),
+//                    theme = theme
+//                )
+//            }
+//        }
+        RedFullWidthButton(
+            onClickCallback = { showSubmitDialog() },
+            label = "Submit",
+            modifier = Modifier
+                .padding(vertical = 16.dp)
+                .constrainAs(btnSubmit) {
+                    bottom.linkTo(parent.bottom)
+                    start.linkTo(parent.start)
+                    end.linkTo(parent.end)
+                    width = Dimension.fillToConstraints
+                },
+            theme = theme
+        )
     }
 }
 
