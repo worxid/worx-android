@@ -6,6 +6,7 @@ import android.location.Address
 import android.location.Geocoder
 import android.util.Log
 import androidx.compose.runtime.State
+import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.*
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -38,7 +39,7 @@ enum class EventStatus {
  */
 data class DetailUiState(
     val detailForm: BasicForm? = null,
-    val values: MutableMap<String, Value> = mutableMapOf(),
+    val values: Map<String, Value> = mutableStateMapOf(),
     val currentComponent: Int = -1,
     val status: EventStatus = EventStatus.Loading,
     val errorMessages: String = "",
@@ -99,15 +100,15 @@ class DetailFormViewModel @Inject constructor(
             if (value == null) {
                 _formProgress.value -= progressBit
                 values.remove(id)
-                it.copy(values = values)
+                it.copy(values = values.toMap())
             } else {
                 if (it.values.contains(fields[index].id)) {
                     values.replace(id, value)
-                    it.copy(values = values)
+                    it.copy(values = values.toMap())
                 } else {
                     _formProgress.value += progressBit
                     values[id] = value
-                    it.copy(values = values)
+                    it.copy(values = values.toMap())
                 }
             }
         }
