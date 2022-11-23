@@ -27,6 +27,7 @@ import id.worx.device.client.theme.*
 fun WorxTextField(
     theme: String?,
     label: String,
+    description: String = "",
     hint: String? = null,
     inputType: KeyboardOptions,
     initialValue: TextFieldValue = TextFieldValue(),
@@ -50,6 +51,13 @@ fun WorxTextField(
             text = label,
             style = Typography.body2.copy(MaterialTheme.colors.onSecondary)
         )
+        if (description.isNotBlank()) {
+            Text(
+                text = description,
+                style = MaterialTheme.typography.body1.copy(textFormDescription),
+                modifier = Modifier.padding(bottom = 8.dp, start = 17.dp)
+            )
+        }
         TextField(
             colors = TextFieldDefaults.textFieldColors(
                 backgroundColor = Color.Black.copy(0.06f),
