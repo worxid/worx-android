@@ -46,7 +46,7 @@ fun SearchScreen(
     viewModel: HomeViewModel,
     detailVM: DetailFormViewModel,
     session: Session,
-    viewLifecycleOwner: LifecycleOwner,
+    syncWithServer: () -> Unit,
     modifier: Modifier
 ) {
     val searchInput = viewModel.uiState.collectAsState().value.searchInput
@@ -120,7 +120,7 @@ fun SearchScreen(
                         stringResource(R.string.no_forms),
                         stringResource(R.string.empty_description_form),
                         session = session,
-                        viewLifecycleOwner
+                        syncWithServer
                     )
                     1 -> FormScreen(
                         draftData,
@@ -130,7 +130,7 @@ fun SearchScreen(
                         stringResource(R.string.no_drafts),
                         stringResource(R.string.empty_description_drafts),
                         session = session,
-                        viewLifecycleOwner
+                        syncWithServer
                     )
                     2 -> FormScreen(
                         submissionData,
@@ -140,7 +140,7 @@ fun SearchScreen(
                         stringResource(R.string.no_submission),
                         stringResource(R.string.empty_description_submission),
                         session = session,
-                        viewLifecycleOwner
+                        syncWithServer
                     )
                 }
             }
@@ -159,7 +159,7 @@ fun PreviewSearchScreen() {
             viewModel = hiltViewModel(),
             detailVM = hiltViewModel(),
             session = Session(LocalContext.current),
-            MainActivity(),
+            {  },
             modifier = Modifier
         )
     }

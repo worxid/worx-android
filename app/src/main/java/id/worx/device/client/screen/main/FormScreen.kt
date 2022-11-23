@@ -1,5 +1,6 @@
 package id.worx.device.client.screen.main
 
+import android.util.Log
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -45,23 +46,13 @@ fun FormScreen(
     titleForEmpty: String,
     descriptionForEmpty: String,
     session: Session,
-    viewLifecycleOwner: LifecycleOwner
+    syncWithServer : () -> Unit
 ) {
     val searchInput = viewModel.uiState.collectAsState().value.searchInput
     val theme = session.theme
     val isRefreshing by remember { mutableStateOf(viewModel.isRefresh.value) }
     val context = LocalContext.current
-
-    fun syncWithServer(){
-        CoroutineScope(Dispatchers.Main).launch {
-            if (viewModel.isRefresh.value){
-                viewModel.uploadSubmissionWork()
-                viewModel.downloadFormTemplate(viewLifecycleOwner)
-                viewModel.downloadSubmissionList(viewLifecycleOwner)
-                viewModel.isRefresh.value = false
-            }
-        }
-    }
+    Log.d("TAG", "FormScreen: $isRefreshing")
 
     SwipeRefresh(
         state = rememberSwipeRefreshState(isRefreshing),
