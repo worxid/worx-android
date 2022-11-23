@@ -3,7 +3,6 @@ package id.worx.device.client.screen
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
@@ -32,6 +31,7 @@ import id.worx.device.client.viewmodel.DetailFormViewModel
 import id.worx.device.client.viewmodel.EventStatus
 import kotlinx.coroutines.*
 
+@OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun ValidFormBuilder(
     componentList: List<Fields>,
@@ -40,23 +40,22 @@ fun ValidFormBuilder(
     session: Session,
     onEvent: (DetailFormEvent) -> Unit
 ) {
-    var showSubmitDialog by remember { mutableStateOf(false) }
     var showDraftDialog by remember { mutableStateOf(false) }
     var validation by remember { mutableStateOf(false) }
     var isValid by remember { mutableStateOf(false) }
     val theme = session.theme
     val scope = rememberCoroutineScope()
+    val state = rememberModalBottomSheetState(
+        initialValue = ModalBottomSheetValue.Hidden,
+        confirmStateChange = { true },
+        skipHalfExpanded = true
+    )
+    var showSubmitDialog by remember { mutableStateOf(state.isVisible) }
+
     Box(
         modifier = Modifier
             .fillMaxSize()
             .background(MaterialTheme.colors.secondary)
-            .pointerInput(Unit) {
-                detectTapGestures {
-                    scope.launch {
-                        if (bottom)
-                    }
-                }
-            }
     ) {
         DetailForm(
             componentList,
@@ -66,11 +65,17 @@ fun ValidFormBuilder(
             validation,
             { isValid = it }
         )
-        { showSubmitDialog = true }
+        {
+            showSubmitDialog = true
+            scope.launch {
+                state.animateTo(ModalBottomSheetValue.Expanded)
+            }
+        }
         if (showSubmitDialog) {
             DialogSubmitForm(
                 viewModel,
                 session,
+                state,
                 {
                     validation = true
                     if (isValid) {
@@ -215,16 +220,13 @@ fun DetailForm(
 fun DialogSubmitForm(
     viewModel: DetailFormViewModel,
     session: Session,
+    state: ModalBottomSheetState,
     submitForm: () -> Unit,
     saveDraftForm: () -> Unit
 ) {
     val progress = viewModel.formProgress.value
     val fieldsNo = viewModel.uiState.collectAsState().value.detailForm!!.fields.size
     val theme = session.theme
-    val state = rememberModalBottomSheetState(
-        initialValue = ModalBottomSheetValue.Expanded,
-        confirmStateChange = { true })
-    val scope = rememberCoroutineScope()
 
     ModalBottomSheetLayout(
         sheetState = state,
@@ -238,13 +240,7 @@ fun DialogSubmitForm(
                 verticalArrangement = Arrangement.spacedBy(20.dp)
             ) {
                 Text(
-                    modifier = Modifier
-                        .padding(top = 24.dp)
-                        .clickable {
-                            scope.launch {
-                                state.hide()
-                            }
-                        },
+                    modifier = Modifier.padding(top = 24.dp),
                     text = "Submit",
                     style = Typography.subtitle1.copy(MaterialTheme.colors.onSecondary)
                 )

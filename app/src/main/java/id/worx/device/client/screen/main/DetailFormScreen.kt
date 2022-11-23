@@ -4,9 +4,7 @@ import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Scaffold
-import androidx.compose.material.Text
+import androidx.compose.material.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableStateOf
@@ -47,14 +45,15 @@ fun DetailFormScreen(
 ) {
     val uistate = viewModel.uiState.collectAsState().value
     val formStatus = viewModel.uiState.collectAsState().value.status
-    val showDialogLeaveForm = remember { mutableStateOf(false )}
+    val showDialogLeaveForm = remember { mutableStateOf(false) }
 
     Scaffold(
         topBar = {
             WorxTopAppBar(
                 onBack = {
-                    showDialogLeaveForm.value = (formStatus == EventStatus.Filling && viewModel.formProgress.value > 0)
-                    if (!showDialogLeaveForm.value){
+                    showDialogLeaveForm.value =
+                        (formStatus == EventStatus.Filling && viewModel.formProgress.value > 0)
+                    if (!showDialogLeaveForm.value) {
                         onEvent(DetailFormEvent.BackPressed)
                     }
                 },
@@ -68,8 +67,6 @@ fun DetailFormScreen(
         }
     ) { padding ->
         val componentList = uistate.detailForm!!.fields
-
-        Log.d("TAG", "DetailFormScreen: ${formStatus.name}")
 
         ValidFormBuilder(
             componentList = componentList,
