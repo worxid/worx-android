@@ -187,10 +187,10 @@ private fun ImageDataView(
             .padding(horizontal = 16.dp, vertical = 12.dp)
     ) {
         AsyncImage(
-            model = if (fileSize > 0) {
-                filePath
-            } else {
+            model = if (filePath.contains("File")) {
                 android.R.drawable.ic_menu_gallery
+            } else {
+                filePath
             },
             contentDescription = "Image",
             modifier = Modifier
