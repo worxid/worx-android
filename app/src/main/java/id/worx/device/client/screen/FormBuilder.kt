@@ -255,7 +255,7 @@ fun DialogSubmitForm(
                         tint = MaterialTheme.colors.onBackground
                     )
                 }
-                val fieldFilled = progress.toDouble() / 100 * fieldsNo
+                val fieldFilled = viewModel.uiState.collectAsState().value.values.count { it.value != null }
                 Text(
                     text = "${fieldFilled.toInt()} of $fieldsNo Fields Answered",
                     style = Typography.body2.copy(MaterialTheme.colors.onSecondary.copy(0.54f))
