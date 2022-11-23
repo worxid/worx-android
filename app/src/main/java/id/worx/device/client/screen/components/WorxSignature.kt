@@ -27,6 +27,7 @@ import id.worx.device.client.model.SignatureValue
 import id.worx.device.client.theme.GrayDivider
 import id.worx.device.client.theme.PrimaryMain
 import id.worx.device.client.theme.Typography
+import id.worx.device.client.theme.textFormDescription
 import id.worx.device.client.viewmodel.DetailFormViewModel
 import id.worx.device.client.viewmodel.EventStatus
 
@@ -54,6 +55,13 @@ fun WorxSignature(indexForm: Int, viewModel: DetailFormViewModel, session: Sessi
             style = Typography.body2.copy(MaterialTheme.colors.onSecondary),
             modifier = Modifier.padding(start = 17.dp, bottom = 8.dp, end = 16.dp)
         )
+        if (!form.description.isNullOrEmpty()) {
+            Text(
+                text = form.description!!,
+                style = MaterialTheme.typography.body1.copy(textFormDescription),
+                modifier = Modifier.padding(bottom = 8.dp, start = 17.dp)
+            )
+        }
         if (value?.bitmap != null) {
             SignatureView(bitmap.value) {
                 viewModel.setComponentData(indexForm, null)

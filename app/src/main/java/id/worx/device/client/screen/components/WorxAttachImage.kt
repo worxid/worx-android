@@ -39,10 +39,7 @@ import id.worx.device.client.R
 import id.worx.device.client.data.database.Session
 import id.worx.device.client.model.ImageField
 import id.worx.device.client.model.ImageValue
-import id.worx.device.client.theme.GrayDivider
-import id.worx.device.client.theme.PrimaryMain
-import id.worx.device.client.theme.Typography
-import id.worx.device.client.theme.WorxTheme
+import id.worx.device.client.theme.*
 import id.worx.device.client.viewmodel.DetailFormViewModel
 import id.worx.device.client.viewmodel.EventStatus
 import java.io.File
@@ -95,6 +92,13 @@ fun WorxAttachImage(
                 .padding(horizontal = 16.dp)
                 .padding(bottom = 8.dp)
         )
+        if (!form.description.isNullOrBlank()) {
+            Text(
+                text = form.description!!,
+                style = MaterialTheme.typography.body1.copy(textFormDescription),
+                modifier = Modifier.padding(bottom = 8.dp, start = 17.dp)
+            )
+        }
         if (filePath.isNotEmpty()) {
             Column {
                 filePath.forEachIndexed { index, item ->

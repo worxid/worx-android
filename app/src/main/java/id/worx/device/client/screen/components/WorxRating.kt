@@ -3,10 +3,7 @@ package id.worx.device.client.screen.components
 import android.R
 import android.util.Log
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.material.Divider
 import androidx.compose.material.Icon
@@ -26,6 +23,7 @@ import id.worx.device.client.theme.GrayDivider
 import id.worx.device.client.theme.PrimaryMain
 import id.worx.device.client.theme.SecondaryMain
 import id.worx.device.client.theme.Typography
+import id.worx.device.client.theme.textFormDescription
 import id.worx.device.client.viewmodel.DetailFormViewModel
 import id.worx.device.client.viewmodel.EventStatus
 
@@ -46,28 +44,49 @@ fun WorxRating(indexForm: Int, viewModel: DetailFormViewModel,validation : Boole
         }
     }
     val warningInfo = if ((form.required == true) && (rating.value == 0)) "$title is required" else ""
+
+    val starSize = if (form.maxStars!! <= 5) {
+        42.dp
+    } else if (form.maxStars!! in 6..7) {
+        28.dp
+    } else {
+        21.dp
+    }
+
     Column(modifier = Modifier.fillMaxWidth()) {
         Text(
             title,
             style = Typography.body2.copy(MaterialTheme.colors.onSecondary),
             modifier = Modifier.padding(start = 16.dp, bottom = 8.dp)
         )
+        if (!form.description.isNullOrBlank()) {
+            Text(
+                text = form.description!!,
+                style = MaterialTheme.typography.body1.copy(textFormDescription),
+                modifier = Modifier.padding(bottom = 8.dp, start = 16.dp)
+            )
+        }
         LazyRow(
             modifier = Modifier.padding(horizontal = 16.dp),
             horizontalArrangement = Arrangement.spacedBy(12.dp)
         ) {
             items(form.maxStars ?: 5) { index ->
                 Icon(
-                    modifier = Modifier.clickable {
-                        if (!arrayListOf(
-                                EventStatus.Done,
-                                EventStatus.Submitted
-                            ).contains(formStatus)
-                        ) {
-                            rating.value = index + 1
-                            viewModel.setComponentData(indexForm, RatingValue(value = index + 1))
+                    modifier = Modifier
+                        .clickable {
+                            if (!arrayListOf(
+                                    EventStatus.Done,
+                                    EventStatus.Submitted
+                                ).contains(formStatus)
+                            ) {
+                                rating.value = index + 1
+                                viewModel.setComponentData(
+                                    indexForm,
+                                    RatingValue(value = index + 1)
+                                )
+                            }
                         }
-                    },
+                        .size(starSize),
                     painter = painterResource(id = R.drawable.star_big_off),
                     contentDescription = "Star Icon",
                     tint = if (index < (rating.value ?: 0)) {

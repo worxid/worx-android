@@ -96,8 +96,8 @@ fun DetailForm(
     val listState = rememberLazyListState(viewModel.indexScroll.value, viewModel.offset.value)
     val formStatus = viewModel.uiState.collectAsState().value.status
 
-    LaunchedEffect(key1 = listState.isScrollInProgress) {
-        if (!listState.isScrollInProgress) {
+    LaunchedEffect(key1 = listState.isScrollInProgress){
+        if (!listState.isScrollInProgress){
             viewModel.indexScroll.value = listState.firstVisibleItemIndex
             viewModel.offset.value = listState.firstVisibleItemScrollOffset
         }
@@ -124,6 +124,7 @@ fun DetailForm(
                     WorxTextField(
                         theme = theme,
                         label = item.label ?: "Free Text",
+                        description = item.description ?: "",
                         hint = "Answer",
                         inputType = KeyboardOptions(keyboardType = KeyboardType.Text),
                         initialValue = androidx.compose.ui.text.input.TextFieldValue(
@@ -186,7 +187,7 @@ fun DetailForm(
             }
         }
         val detailForm = viewModel.uiState.value.detailForm
-        if (detailForm is EmptyForm || (detailForm is SubmitForm && detailForm.status == 0)) {
+        if ( detailForm is EmptyForm || (detailForm is SubmitForm && detailForm.status == 0)) {
             item {
                 RedFullWidthButton(
                     onClickCallback = { showSubmitDialog() },
@@ -307,6 +308,7 @@ fun DialogDraftForm(
                 WorxTextField(
                     theme = theme,
                     label = "",
+                    description = "",
                     hint = stringResource(R.string.draft_descr),
                     inputType = KeyboardOptions(keyboardType = KeyboardType.Text),
                     onValueChange = {})

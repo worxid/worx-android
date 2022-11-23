@@ -18,6 +18,7 @@ import id.worx.device.client.model.CheckBoxValue
 import id.worx.device.client.theme.GrayDivider
 import id.worx.device.client.theme.PrimaryMain
 import id.worx.device.client.theme.Typography
+import id.worx.device.client.theme.textFormDescription
 import id.worx.device.client.viewmodel.DetailFormViewModel
 import id.worx.device.client.viewmodel.EventStatus
 
