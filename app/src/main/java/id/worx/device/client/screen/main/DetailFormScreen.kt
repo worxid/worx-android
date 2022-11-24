@@ -15,6 +15,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
@@ -24,7 +25,9 @@ import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
 import androidx.hilt.navigation.compose.hiltViewModel
 import id.worx.device.client.R
+import id.worx.device.client.data.api.SyncServer.Companion.DOWNLOADFROMSERVER
 import id.worx.device.client.data.database.Session
+import id.worx.device.client.screen.components.WorxBoxPullRefresh
 import id.worx.device.client.screen.components.WorxDialog
 import id.worx.device.client.screen.components.WorxTopAppBar
 import id.worx.device.client.theme.Typography
@@ -50,6 +53,7 @@ fun DetailFormScreen(
     val uistate = viewModel.uiState.collectAsState().value
     val formStatus = viewModel.uiState.collectAsState().value.status
     val showDialogLeaveForm = remember { mutableStateOf(false )}
+    val lifecycleOwner = LocalLifecycleOwner.current
 
     BackHandler {
         showDialogLeaveForm.value = (formStatus == EventStatus.Filling && viewModel.formProgress.value > 0)
@@ -74,25 +78,30 @@ fun DetailFormScreen(
     ) { padding ->
         val componentList = uistate.detailForm!!.fields
 
-        Log.d("TAG", "DetailFormScreen: ${formStatus.name}")
+        Log.d("TAG", "DetailFormScreen: ${formStatus.name} $padding")
 
-        ValidFormBuilder(
-            componentList = componentList,
-            viewModel,
-            cameraViewModel,
-            session,
-            onEvent,
-        )
+        WorxBoxPullRefresh(
+            onRefresh = {viewModel.syncWithServer(DOWNLOADFROMSERVER, lifecycleOwner)}
+        ) {
 
-        if (showDialogLeaveForm.value) {
-            WorxDialog(content = {
-                LeaveForm(
-                    setShowDialog = { showDialogLeaveForm.value = it },
-                    onPositiveButton = {
-                        viewModel.goToHome()
-                    }
-                )
-            }, setShowDialog = { showDialogLeaveForm.value = it })
+            ValidFormBuilder(
+                componentList = componentList,
+                viewModel,
+                cameraViewModel,
+                session,
+                onEvent,
+            )
+
+            if (showDialogLeaveForm.value) {
+                WorxDialog(content = {
+                    LeaveForm(
+                        setShowDialog = { showDialogLeaveForm.value = it },
+                        onPositiveButton = {
+                            viewModel.goToHome()
+                        }
+                    )
+                }, setShowDialog = { showDialogLeaveForm.value = it })
+            }
         }
     }
 }

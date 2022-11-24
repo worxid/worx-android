@@ -10,6 +10,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import dagger.hilt.android.AndroidEntryPoint
 import id.worx.device.client.MainScreen
+import id.worx.device.client.data.api.SyncServer.Companion.DOWNLOADFROMSERVER
 import id.worx.device.client.data.database.Session
 import id.worx.device.client.navigate
 import id.worx.device.client.screen.components.WorxThemeStatusBar
@@ -26,6 +27,7 @@ class HomeFragment : Fragment() {
     private val viewModel by activityViewModels<HomeViewModel>()
     private val detailViewModel by activityViewModels<DetailFormViewModel>()
     private val themeViewModel by activityViewModels<ThemeViewModel>()
+
     @Inject
     lateinit var session: Session
 
@@ -52,10 +54,14 @@ class HomeFragment : Fragment() {
                         viewModel = viewModel,
                         detailVM = detailViewModel,
                         session = session,
-                        viewLifecycleOwner = viewLifecycleOwner
+                        syncWithServer = { syncWithServer() }
                     )
                 }
             }
         }
+    }
+
+    private fun syncWithServer() {
+        viewModel.syncWithServer(DOWNLOADFROMSERVER, viewLifecycleOwner)
     }
 }

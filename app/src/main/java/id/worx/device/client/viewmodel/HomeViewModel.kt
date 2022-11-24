@@ -2,20 +2,15 @@ package id.worx.device.client.viewmodel
 
 import android.util.Log
 import androidx.lifecycle.*
-import androidx.work.*
 import com.google.gson.Gson
-import com.google.gson.GsonBuilder
 import dagger.hilt.android.lifecycle.HiltViewModel
 import id.worx.device.client.Event
 import id.worx.device.client.MainScreen
-import id.worx.device.client.WorxApplication
-import id.worx.device.client.data.api.FieldsDeserializer
-import id.worx.device.client.data.api.ValueSerialize
-import id.worx.device.client.data.database.FormDownloadWorker
+import id.worx.device.client.data.api.SyncServer
 import id.worx.device.client.data.database.Session
-import id.worx.device.client.data.database.SubmissionDownloadWorker
-import id.worx.device.client.data.database.SubmissionUploadWorker
-import id.worx.device.client.model.*
+import id.worx.device.client.model.EmptyForm
+import id.worx.device.client.model.ResponseDeviceInfo
+import id.worx.device.client.model.SubmitForm
 import id.worx.device.client.repository.DeviceInfoRepository
 import id.worx.device.client.repository.SourceDataRepository
 import kotlinx.coroutines.CoroutineScope
@@ -44,7 +39,8 @@ data class HomeUiState(
 class HomeViewModel @Inject constructor(
     private val savedStateHandle: SavedStateHandle,
     private val deviceInfoRepository: DeviceInfoRepository,
-    private val repository: SourceDataRepository
+    private val repository: SourceDataRepository,
+    private val syncServerWork: SyncServer
 ) : ViewModel() {
 
     val uiState = MutableStateFlow(HomeUiState())
@@ -58,8 +54,6 @@ class HomeViewModel @Inject constructor(
 
     private val _showBadge = MutableStateFlow(0)
     val showBadge: StateFlow<Int> = _showBadge
-
-    var isRefresh = MutableStateFlow(false)
 
     init {
         refreshData()
@@ -80,7 +74,7 @@ class HomeViewModel @Inject constructor(
     /**
      * Refresh data and update the UI state accordingly
      */
-    fun refreshData() {
+    private fun refreshData() {
         // Ui state is refreshing
         uiState.value.isLoading = true
 
@@ -134,69 +128,10 @@ class HomeViewModel @Inject constructor(
         _showBadge.value = typeOfBadge
     }
 
-    private var workManager = WorkManager.getInstance(WorxApplication())
-    private val networkConstraints = Constraints.Builder()
-        .setRequiredNetworkType(NetworkType.CONNECTED)
-        .build()
-
-    private val formTemplateWorkInfoItems: LiveData<List<WorkInfo>> =
-        workManager.getWorkInfosByTagLiveData("form_template")
-
-    internal fun downloadFormTemplate(lifecycleOwner: LifecycleOwner) {
-        val syncTemplateDBRequest = OneTimeWorkRequestBuilder<FormDownloadWorker>()
-            .addTag("form_template")
-            .setConstraints(networkConstraints)
-            .build()
-
-        workManager.enqueue(syncTemplateDBRequest)
-
-        formTemplateWorkInfoItems.observe(lifecycleOwner, Observer { list ->
-            val workInfo = list[0]
-            if (list.isNotEmpty() && workInfo.state.isFinished) {
-                refreshData()
-            }
-        })
-    }
-
-
-    internal fun uploadSubmissionWork() {
+    fun syncWithServer(typeData : Int, viewLifecycleOwner: LifecycleOwner){
         viewModelScope.launch {
-            repository.getAllUnsubmitted().collect {
-
-                val gson = GsonBuilder()
-                    .registerTypeAdapter(Fields::class.java, FieldsDeserializer())
-                    .registerTypeAdapter(Value::class.java, ValueSerialize())
-                    .create()
-                val uploadData: Data = workDataOf("submit_form_list" to gson.toJson(it))
-
-                val uploadSubmisison = OneTimeWorkRequestBuilder<SubmissionUploadWorker>()
-                    .setInputData(uploadData)
-                    .addTag("upload_submission")
-                    .setConstraints(networkConstraints)
-                    .build()
-
-                workManager.enqueue(uploadSubmisison)
-            }
+            syncServerWork.syncWithServer(typeData, viewLifecycleOwner) { refreshData() }
         }
-    }
-
-    private val downloadSubmissionWorkInfoItems: LiveData<List<WorkInfo>> =
-        workManager.getWorkInfosByTagLiveData("submission_list")
-
-    internal fun downloadSubmissionList(lifecycleOwner: LifecycleOwner) {
-        val syncSubmitFormDBRequest = OneTimeWorkRequestBuilder<SubmissionDownloadWorker>()
-            .addTag("submission_list")
-            .setConstraints(networkConstraints)
-            .build()
-
-        workManager.enqueue(syncSubmitFormDBRequest)
-
-        formTemplateWorkInfoItems.observe(lifecycleOwner, Observer { list ->
-            val workInfo = list[0]
-            if (list.isNotEmpty() && workInfo.state.isFinished) {
-                refreshData()
-            }
-        })
     }
 
     fun leaveTeam(

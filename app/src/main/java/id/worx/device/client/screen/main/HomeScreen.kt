@@ -24,7 +24,6 @@ import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontFamily
@@ -35,15 +34,12 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
-import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.LifecycleOwner
 import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
-import id.worx.device.client.MainActivity
 import id.worx.device.client.R
 import id.worx.device.client.data.database.Session
 import id.worx.device.client.model.EmptyForm
@@ -71,7 +67,7 @@ fun NavigationGraph(
     viewModel: HomeViewModel,
     detailVM: DetailFormViewModel,
     session: Session,
-    viewLifecycleOwner: LifecycleOwner,
+    syncWithServer : () -> Unit,
     modifier: Modifier
 ) {
     NavHost(navController, startDestination = BottomNavItem.Form.screen_route, modifier = modifier) {
@@ -84,7 +80,7 @@ fun NavigationGraph(
                 stringResource(R.string.no_forms),
                 stringResource(R.string.empty_description_form),
                 session,
-                viewLifecycleOwner
+                syncWithServer
             )
         }
         composable(BottomNavItem.Draft.screen_route) {
@@ -96,7 +92,7 @@ fun NavigationGraph(
                 stringResource(R.string.no_drafts),
                 stringResource(R.string.empty_description_drafts),
                 session,
-                viewLifecycleOwner
+                syncWithServer
             )
         }
         composable(BottomNavItem.Submission.screen_route) {
@@ -108,7 +104,7 @@ fun NavigationGraph(
                 stringResource(R.string.no_submission),
                 stringResource(R.string.empty_description_submission),
                 session,
-                viewLifecycleOwner
+                syncWithServer
             )
         }
     }
@@ -122,7 +118,7 @@ fun HomeScreen(
     viewModel: HomeViewModel,
     detailVM: DetailFormViewModel,
     session: Session,
-    viewLifecycleOwner: LifecycleOwner
+    syncWithServer: () -> Unit
 ) {
     val navController = rememberNavController()
     val notificationType by viewModel.showNotification.collectAsState()
@@ -161,7 +157,7 @@ fun HomeScreen(
                 viewModel = viewModel,
                 detailVM = detailVM,
                 session = session,
-                viewLifecycleOwner = viewLifecycleOwner,
+                syncWithServer = syncWithServer,
                 modifier = modifier
             )
         } else {
@@ -172,7 +168,7 @@ fun HomeScreen(
                 viewModel = viewModel,
                 detailVM = detailVM,
                 session = session,
-                viewLifecycleOwner = viewLifecycleOwner,
+                syncWithServer = syncWithServer,
                 modifier = modifier
             )
         }
