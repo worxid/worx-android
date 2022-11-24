@@ -1,6 +1,7 @@
 package id.worx.device.client.view
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -18,6 +19,10 @@ import id.worx.device.client.theme.WorxTheme
 import id.worx.device.client.viewmodel.DetailFormViewModel
 import id.worx.device.client.viewmodel.HomeViewModel
 import id.worx.device.client.viewmodel.ThemeViewModel
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -26,6 +31,7 @@ class HomeFragment : Fragment() {
     private val viewModel by activityViewModels<HomeViewModel>()
     private val detailViewModel by activityViewModels<DetailFormViewModel>()
     private val themeViewModel by activityViewModels<ThemeViewModel>()
+
     @Inject
     lateinit var session: Session
 
@@ -52,10 +58,16 @@ class HomeFragment : Fragment() {
                         viewModel = viewModel,
                         detailVM = detailViewModel,
                         session = session,
-                        viewLifecycleOwner = viewLifecycleOwner
+                        syncWithServer = { syncWithServer() }
                     )
                 }
             }
         }
+    }
+
+    private fun syncWithServer() {
+        viewModel.uploadSubmissionWork()
+        viewModel.downloadFormTemplate(viewLifecycleOwner)
+        viewModel.downloadSubmissionList(viewLifecycleOwner)
     }
 }

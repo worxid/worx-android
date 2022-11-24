@@ -68,7 +68,7 @@ fun NavigationGraph(
     viewModel: HomeViewModel,
     detailVM: DetailFormViewModel,
     session: Session,
-    viewLifecycleOwner: LifecycleOwner,
+    syncWithServer : () -> Unit,
     modifier: Modifier
 ) {
     NavHost(navController, startDestination = BottomNavItem.Form.screen_route, modifier = modifier) {
@@ -81,6 +81,8 @@ fun NavigationGraph(
                 stringResource(R.string.no_forms),
                 stringResource(R.string.empty_description_form),
                 session
+                session,
+                syncWithServer
             )
         }
         composable(BottomNavItem.Draft.screen_route) {
@@ -91,7 +93,8 @@ fun NavigationGraph(
                 detailVM,
                 stringResource(R.string.no_drafts),
                 stringResource(R.string.empty_description_drafts),
-                session
+                session,
+                syncWithServer
             )
         }
         composable(BottomNavItem.Submission.screen_route) {
@@ -102,7 +105,8 @@ fun NavigationGraph(
                 detailVM,
                 stringResource(R.string.no_submission),
                 stringResource(R.string.empty_description_submission),
-                session
+                session,
+                syncWithServer
             )
         }
     }
@@ -116,7 +120,7 @@ fun HomeScreen(
     viewModel: HomeViewModel,
     detailVM: DetailFormViewModel,
     session: Session,
-    viewLifecycleOwner: LifecycleOwner
+    syncWithServer: () -> Unit
 ) {
     val navController = rememberNavController()
     val notificationType by viewModel.showNotification.collectAsState()
@@ -155,7 +159,7 @@ fun HomeScreen(
                 viewModel = viewModel,
                 detailVM = detailVM,
                 session = session,
-                viewLifecycleOwner = viewLifecycleOwner,
+                syncWithServer = syncWithServer,
                 modifier = modifier
             )
         } else {
@@ -166,7 +170,7 @@ fun HomeScreen(
                 viewModel = viewModel,
                 detailVM = detailVM,
                 session = session,
-                viewLifecycleOwner = viewLifecycleOwner,
+                syncWithServer = syncWithServer,
                 modifier = modifier
             )
         }
