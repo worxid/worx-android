@@ -1,42 +1,38 @@
 package id.worx.device.client.screen.main
 
-import android.util.Log
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material.CircularProgressIndicator
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Text
+import androidx.compose.material.*
+import androidx.compose.material.pullrefresh.pullRefresh
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.LifecycleOwner
-import com.google.accompanist.swiperefresh.SwipeRefresh
-import com.google.accompanist.swiperefresh.SwipeRefreshIndicator
-import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 import id.worx.device.client.R
 import id.worx.device.client.Util.initProgress
 import id.worx.device.client.data.database.Session
 import id.worx.device.client.model.BasicForm
 import id.worx.device.client.model.SubmitForm
+import id.worx.device.client.screen.components.WorxBoxPullRefresh
 import id.worx.device.client.theme.PrimaryMain
 import id.worx.device.client.theme.Typography
 import id.worx.device.client.viewmodel.DetailFormViewModel
 import id.worx.device.client.viewmodel.HomeViewModel
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
+@OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun FormScreen(
     data: List<BasicForm>?,
@@ -46,30 +42,12 @@ fun FormScreen(
     titleForEmpty: String,
     descriptionForEmpty: String,
     session: Session,
-    syncWithServer : () -> Unit
+    syncWithServer: () -> Unit
 ) {
     val searchInput = viewModel.uiState.collectAsState().value.searchInput
     val theme = session.theme
-    val isRefreshing by remember { mutableStateOf(viewModel.isRefresh.value) }
-    val context = LocalContext.current
-    Log.d("TAG", "FormScreen: $isRefreshing")
 
-    SwipeRefresh(
-        state = rememberSwipeRefreshState(isRefreshing),
-        onRefresh = {
-            viewModel.isRefresh.value = true
-            syncWithServer()
-        },
-        indicator = { state, trigger ->
-            SwipeRefreshIndicator(
-                state = state,
-                refreshTriggerDistance = trigger,
-                scale = true,
-                backgroundColor = MaterialTheme.colors.secondary,
-                shape = MaterialTheme.shapes.small,
-            )
-        }
-    ) {
+    WorxBoxPullRefresh(onRefresh = { syncWithServer() }) {
         if (data.isNullOrEmpty()) {
             EmptyList(titleForEmpty, descriptionForEmpty, session)
         } else {

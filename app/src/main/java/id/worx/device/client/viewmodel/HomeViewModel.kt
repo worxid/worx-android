@@ -59,8 +59,6 @@ class HomeViewModel @Inject constructor(
     private val _showBadge = MutableStateFlow(0)
     val showBadge: StateFlow<Int> = _showBadge
 
-    var isRefresh = MutableStateFlow(false)
-
     init {
         refreshData()
     }

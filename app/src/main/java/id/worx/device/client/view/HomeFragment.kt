@@ -66,17 +66,8 @@ class HomeFragment : Fragment() {
     }
 
     private fun syncWithServer() {
-        CoroutineScope(Dispatchers.Main).launch {
-            Log.d("TAG", "FormScreen: ${viewModel.isRefresh.value}")
-
-            if (viewModel.isRefresh.value) {
-                viewModel.uploadSubmissionWork()
-                viewModel.downloadFormTemplate(viewLifecycleOwner)
-                viewModel.downloadSubmissionList(viewLifecycleOwner)
-                delay(2000)
-                viewModel.isRefresh.value = false
-                Log.d("TAG", "syncWithServer: refresh")
-            }
-        }
+        viewModel.uploadSubmissionWork()
+        viewModel.downloadFormTemplate(viewLifecycleOwner)
+        viewModel.downloadSubmissionList(viewLifecycleOwner)
     }
 }
