@@ -34,7 +34,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
-import androidx.lifecycle.LifecycleOwner
 import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
@@ -80,7 +79,6 @@ fun NavigationGraph(
                 detailVM,
                 stringResource(R.string.no_forms),
                 stringResource(R.string.empty_description_form),
-                session
                 session,
                 syncWithServer
             )

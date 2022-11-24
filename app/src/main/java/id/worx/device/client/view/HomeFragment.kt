@@ -1,7 +1,6 @@
 package id.worx.device.client.view
 
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -11,6 +10,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import dagger.hilt.android.AndroidEntryPoint
 import id.worx.device.client.MainScreen
+import id.worx.device.client.data.api.SyncServer.Companion.DOWNLOADFROMSERVER
 import id.worx.device.client.data.database.Session
 import id.worx.device.client.navigate
 import id.worx.device.client.screen.components.WorxThemeStatusBar
@@ -19,10 +19,6 @@ import id.worx.device.client.theme.WorxTheme
 import id.worx.device.client.viewmodel.DetailFormViewModel
 import id.worx.device.client.viewmodel.HomeViewModel
 import id.worx.device.client.viewmodel.ThemeViewModel
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -66,8 +62,6 @@ class HomeFragment : Fragment() {
     }
 
     private fun syncWithServer() {
-        viewModel.uploadSubmissionWork()
-        viewModel.downloadFormTemplate(viewLifecycleOwner)
-        viewModel.downloadSubmissionList(viewLifecycleOwner)
+        viewModel.syncWithServer(DOWNLOADFROMSERVER, viewLifecycleOwner)
     }
 }

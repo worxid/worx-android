@@ -131,9 +131,6 @@ class HomeViewModel @Inject constructor(
     fun syncWithServer(typeData : Int, viewLifecycleOwner: LifecycleOwner){
         viewModelScope.launch {
             syncServerWork.syncWithServer(typeData, viewLifecycleOwner) { refreshData() }
-            withContext(Dispatchers.Main){
-                isRefresh.value = false
-            }
         }
     }
 

@@ -67,8 +67,6 @@ class DetailFormViewModel @Inject constructor(
 
     val offset = mutableStateOf(0)
 
-    var isRefreshData = MutableStateFlow(false)
-
     /**
      * Pass data from Home ViewModel
      * Params : form - EmptyForm / SubmitForm
@@ -345,8 +343,6 @@ class DetailFormViewModel @Inject constructor(
     }
 
     private fun refreshData() {
-        isRefreshData.value = true
-
         viewModelScope.launch {
             val submitForm =
                 uiState.value.detailForm?.id?.let { dataSourceRepo.getSubmissionById(it) }
@@ -360,7 +356,6 @@ class DetailFormViewModel @Inject constructor(
                     it.copy(detailForm = form, values = submitForm.values.toMutableMap())
                 }
             }
-            isRefreshData.value = false
         }
     }
 
@@ -368,9 +363,6 @@ class DetailFormViewModel @Inject constructor(
     fun syncWithServer(typeData : Int, viewLifecycleOwner: LifecycleOwner){
         viewModelScope.launch {
             syncServerWork.syncWithServer(typeData, viewLifecycleOwner) { refreshData() }
-            withContext(Dispatchers.Main){
-                isRefreshData.value = false
-            }
         }
     }
 
