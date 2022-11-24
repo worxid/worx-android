@@ -24,7 +24,6 @@ import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontFamily
@@ -35,7 +34,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
-import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.LifecycleOwner
 import androidx.navigation.NavController
 import androidx.navigation.NavHostController
@@ -43,7 +41,6 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
-import id.worx.device.client.MainActivity
 import id.worx.device.client.R
 import id.worx.device.client.data.database.Session
 import id.worx.device.client.model.EmptyForm
@@ -83,8 +80,7 @@ fun NavigationGraph(
                 detailVM,
                 stringResource(R.string.no_forms),
                 stringResource(R.string.empty_description_form),
-                session,
-                viewLifecycleOwner
+                session
             )
         }
         composable(BottomNavItem.Draft.screen_route) {
@@ -95,8 +91,7 @@ fun NavigationGraph(
                 detailVM,
                 stringResource(R.string.no_drafts),
                 stringResource(R.string.empty_description_drafts),
-                session,
-                viewLifecycleOwner
+                session
             )
         }
         composable(BottomNavItem.Submission.screen_route) {
@@ -107,8 +102,7 @@ fun NavigationGraph(
                 detailVM,
                 stringResource(R.string.no_submission),
                 stringResource(R.string.empty_description_submission),
-                session,
-                viewLifecycleOwner
+                session
             )
         }
     }

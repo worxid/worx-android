@@ -9,12 +9,14 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import id.worx.device.client.Util
 import id.worx.device.client.WorxApplication
+import id.worx.device.client.data.api.SyncServer
 import id.worx.device.client.data.api.WorxApi
 import id.worx.device.client.data.dao.FormDAO
 import id.worx.device.client.data.dao.SubmitFormDAO
 import id.worx.device.client.data.database.FormDB
 import id.worx.device.client.data.database.Session
 import id.worx.device.client.data.database.SubmitFormDB
+import id.worx.device.client.repository.SourceDataRepository
 import javax.inject.Singleton
 
 @Module
@@ -23,6 +25,11 @@ object ApplicationModule {
     @Provides
     fun provideApplication(@ApplicationContext context: Context): WorxApplication =
         context as WorxApplication
+
+    @Provides
+    fun syncServer(repository: SourceDataRepository): SyncServer {
+        return SyncServer(repository)
+    }
 
     @Provides
     fun provideAPIService(@ApplicationContext context: Context): WorxApi {

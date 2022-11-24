@@ -19,7 +19,7 @@ interface SubmitFormDAO {
     suspend fun deleteSubmitForm(id: Int)
 
     @Query("SELECT * FROM submit_form WHERE dbId = :id")
-    fun loadSubmitFormById(id:Int): List<SubmitForm>
+    suspend fun loadSubmitFormById(id:Int): List<SubmitForm>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertOrUpdateForm(form: SubmitForm)

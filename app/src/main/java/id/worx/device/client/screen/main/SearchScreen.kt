@@ -119,8 +119,7 @@ fun SearchScreen(
                         detailVM,
                         stringResource(R.string.no_forms),
                         stringResource(R.string.empty_description_form),
-                        session = session,
-                        viewLifecycleOwner
+                        session = session
                     )
                     1 -> FormScreen(
                         draftData,
@@ -129,8 +128,7 @@ fun SearchScreen(
                         detailVM,
                         stringResource(R.string.no_drafts),
                         stringResource(R.string.empty_description_drafts),
-                        session = session,
-                        viewLifecycleOwner
+                        session = session
                     )
                     2 -> FormScreen(
                         submissionData,
@@ -139,8 +137,7 @@ fun SearchScreen(
                         detailVM,
                         stringResource(R.string.no_submission),
                         stringResource(R.string.empty_description_submission),
-                        session = session,
-                        viewLifecycleOwner
+                        session = session
                     )
                 }
             }

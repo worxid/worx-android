@@ -7,12 +7,10 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
@@ -21,7 +19,11 @@ import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.google.accompanist.swiperefresh.SwipeRefresh
+import com.google.accompanist.swiperefresh.SwipeRefreshIndicator
+import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 import id.worx.device.client.R
+import id.worx.device.client.data.api.SyncServer.Companion.DOWNLOADFROMSERVER
 import id.worx.device.client.data.database.Session
 import id.worx.device.client.screen.components.WorxDialog
 import id.worx.device.client.screen.components.WorxTopAppBar
@@ -48,6 +50,9 @@ fun DetailFormScreen(
     val uistate = viewModel.uiState.collectAsState().value
     val formStatus = viewModel.uiState.collectAsState().value.status
     val showDialogLeaveForm = remember { mutableStateOf(false )}
+    val isRefreshing by remember { mutableStateOf(viewModel.isRefreshData.value) }
+
+    val lifecycleOwner = LocalLifecycleOwner.current
 
     Scaffold(
         topBar = {
@@ -69,25 +74,43 @@ fun DetailFormScreen(
     ) { padding ->
         val componentList = uistate.detailForm!!.fields
 
-        Log.d("TAG", "DetailFormScreen: ${formStatus.name}")
+        Log.d("TAG", "DetailFormScreen: ${formStatus.name} $padding")
 
-        ValidFormBuilder(
-            componentList = componentList,
-            viewModel,
-            cameraViewModel,
-            session,
-            onEvent,
-        )
-
-        if (showDialogLeaveForm.value) {
-            WorxDialog(content = {
-                LeaveForm(
-                    setShowDialog = { showDialogLeaveForm.value = it },
-                    onPositiveButton = {
-                        viewModel.goToHome()
-                    }
+        SwipeRefresh(
+            state = rememberSwipeRefreshState(isRefreshing),
+            onRefresh = {
+                viewModel.isRefreshData.value = true
+                viewModel.syncWithServer(DOWNLOADFROMSERVER, lifecycleOwner)
+            },
+            indicator = { state, trigger ->
+                SwipeRefreshIndicator(
+                    state = state,
+                    refreshTriggerDistance = trigger,
+                    scale = true,
+                    backgroundColor = MaterialTheme.colors.secondary,
+                    shape = MaterialTheme.shapes.medium,
                 )
-            }, setShowDialog = { showDialogLeaveForm.value = it })
+            }
+        ) {
+
+            ValidFormBuilder(
+                componentList = componentList,
+                viewModel,
+                cameraViewModel,
+                session,
+                onEvent,
+            )
+
+            if (showDialogLeaveForm.value) {
+                WorxDialog(content = {
+                    LeaveForm(
+                        setShowDialog = { showDialogLeaveForm.value = it },
+                        onPositiveButton = {
+                            viewModel.goToHome()
+                        }
+                    )
+                }, setShowDialog = { showDialogLeaveForm.value = it })
+            }
         }
     }
 }
