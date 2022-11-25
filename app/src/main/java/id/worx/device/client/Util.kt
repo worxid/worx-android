@@ -10,6 +10,7 @@ import android.os.Build
 import android.provider.Settings
 import id.worx.device.client.data.upload.CustomPlaceholdersProcessor
 import id.worx.device.client.model.Fields
+import id.worx.device.client.model.Type
 import id.worx.device.client.model.Value
 import net.gotev.uploadservice.data.UploadNotificationAction
 import net.gotev.uploadservice.data.UploadNotificationConfig
@@ -92,7 +93,8 @@ object Util {
      * If the form is half filled, set the progress value
      */
     fun initProgress(values: MutableMap<String, Value>, fields: ArrayList<Fields>): Int{
-        val progressBit = 100 / fields.size
+        val separatorCount = fields.count { it.type == Type.Separator.type }
+        val progressBit = 100 / (fields.size - separatorCount)
         if (values.isNotEmpty()) {
             return progressBit * values.size
         }

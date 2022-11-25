@@ -3,9 +3,11 @@ package id.worx.device.client.theme
 import androidx.compose.material.Typography
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
+import id.worx.device.client.R
 
 //val MontserratFontFamily = FontFamily(
 //    listOf(
@@ -14,6 +16,10 @@ import androidx.compose.ui.unit.sp
 //        Font(R.font.montserrat_semibold, FontWeight.SemiBold)
 //    )
 //)
+
+val fontRoboto = FontFamily(
+    Font(R.font.roboto)
+)
 
 val Typography = Typography(
     //defaultFontFamily = MontserratFontFamily,

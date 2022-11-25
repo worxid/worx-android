@@ -3,18 +3,28 @@ package id.worx.device.client.screen.main
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.material.Icon
 import androidx.compose.material.Text
+import androidx.compose.material.TextButton
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Done
+import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.AsyncImage
+import id.worx.device.client.R
 import id.worx.device.client.model.ImageValue
 import id.worx.device.client.theme.WorxTheme
+import id.worx.device.client.theme.fontRoboto
 import id.worx.device.client.viewmodel.CameraViewModel
 import id.worx.device.client.viewmodel.DetailFormViewModel
 import java.io.File
@@ -41,32 +51,56 @@ fun PhotoPreviewScreen(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
-            Text(
-                text = "x",
-                fontSize = 36.sp,
-                color = Color.White,
+            Row(
                 modifier = Modifier
-                    .padding(horizontal = 36.dp, vertical = 20.dp)
-                    .clickable { viewModel.rejectPhoto() }
-            )
-            Text(
-                text = "\u2713",
-                fontSize = 36.sp,
-                color = Color.White,
+                    .padding(start = 24.dp, top = 20.dp, bottom = 20.dp)
+                    .clickable { viewModel.rejectPhoto() },
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Icon(
+                    painter = painterResource(id = R.drawable.ic_retake),
+                    contentDescription = "Retake photo",
+                    tint = Color.White,
+                )
+                Text(
+                    text = stringResource(id = R.string.retake).uppercase(),
+                    fontSize = 16.sp,
+                    color = Color.White,
+                    modifier = Modifier
+                        .padding(start = 8.dp),
+                    fontFamily = fontRoboto,
+                )
+            }
+            Row(
                 modifier = Modifier
-                    .padding(horizontal = 36.dp, vertical = 20.dp)
+                    .padding(end= 24.dp, top = 20.dp, bottom = 20.dp)
                     .clickable {
                         val path = viewModel.photoPath.value!!
                         val index = viewModel.indexForm.value!!
                         val id = detailViewModel.uiState.value.detailForm!!.fields[index].id
                         val value = detailViewModel.uiState.value.values[id] as ImageValue?
-                        val filePath = value?.filePath ?: arrayListOf()
-                        filePath.add(path)
-                        detailViewModel.getPresignedUrl(filePath, index, 2)
+                        var filePath = value?.filePath?.toList() ?: listOf()
+                        ArrayList(filePath).apply { add(path) }.also { array -> filePath = array.toList() }
+                        detailViewModel.getPresignedUrl(ArrayList(filePath), index, 2)
                         addPhotoToGallery(path)
                         viewModel.navigateToDetail()
-                    }
-            )
+                    },
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Icon(
+                    painter = painterResource(id = R.drawable.ic_confirm),
+                    contentDescription = "Confirm photo",
+                    tint = Color.White,
+                )
+                Text(
+                    text = stringResource(id = R.string.done).uppercase(),
+                    fontSize = 16.sp,
+                    color = Color.White,
+                    modifier = Modifier
+                        .padding(start = 8.dp),
+                    fontFamily = fontRoboto
+                )
+            }
         }
     }
 }

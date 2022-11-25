@@ -1,21 +1,19 @@
 package id.worx.device.client.viewmodel
 
+import android.os.Build
 import android.util.Log
 import androidx.lifecycle.*
-import androidx.work.*
 import com.google.gson.Gson
-import com.google.gson.GsonBuilder
 import dagger.hilt.android.lifecycle.HiltViewModel
+import id.worx.device.client.BuildConfig
 import id.worx.device.client.Event
 import id.worx.device.client.MainScreen
-import id.worx.device.client.WorxApplication
-import id.worx.device.client.data.api.FieldsDeserializer
-import id.worx.device.client.data.api.ValueSerialize
-import id.worx.device.client.data.database.FormDownloadWorker
+import id.worx.device.client.data.api.SyncServer
 import id.worx.device.client.data.database.Session
-import id.worx.device.client.data.database.SubmissionDownloadWorker
-import id.worx.device.client.data.database.SubmissionUploadWorker
-import id.worx.device.client.model.*
+import id.worx.device.client.model.DeviceInfo
+import id.worx.device.client.model.EmptyForm
+import id.worx.device.client.model.ResponseDeviceInfo
+import id.worx.device.client.model.SubmitForm
 import id.worx.device.client.repository.DeviceInfoRepository
 import id.worx.device.client.repository.SourceDataRepository
 import kotlinx.coroutines.CoroutineScope
@@ -44,7 +42,8 @@ data class HomeUiState(
 class HomeViewModel @Inject constructor(
     private val savedStateHandle: SavedStateHandle,
     private val deviceInfoRepository: DeviceInfoRepository,
-    private val repository: SourceDataRepository
+    private val repository: SourceDataRepository,
+    private val syncServerWork: SyncServer
 ) : ViewModel() {
 
     val uiState = MutableStateFlow(HomeUiState())
@@ -58,8 +57,6 @@ class HomeViewModel @Inject constructor(
 
     private val _showBadge = MutableStateFlow(0)
     val showBadge: StateFlow<Int> = _showBadge
-
-    var isRefresh = MutableStateFlow(false)
 
     init {
         refreshData()
@@ -80,7 +77,7 @@ class HomeViewModel @Inject constructor(
     /**
      * Refresh data and update the UI state accordingly
      */
-    fun refreshData() {
+    private fun refreshData() {
         // Ui state is refreshing
         uiState.value.isLoading = true
 
@@ -134,69 +131,10 @@ class HomeViewModel @Inject constructor(
         _showBadge.value = typeOfBadge
     }
 
-    private var workManager = WorkManager.getInstance(WorxApplication())
-    private val networkConstraints = Constraints.Builder()
-        .setRequiredNetworkType(NetworkType.CONNECTED)
-        .build()
-
-    private val formTemplateWorkInfoItems: LiveData<List<WorkInfo>> =
-        workManager.getWorkInfosByTagLiveData("form_template")
-
-    internal fun downloadFormTemplate(lifecycleOwner: LifecycleOwner) {
-        val syncTemplateDBRequest = OneTimeWorkRequestBuilder<FormDownloadWorker>()
-            .addTag("form_template")
-            .setConstraints(networkConstraints)
-            .build()
-
-        workManager.enqueue(syncTemplateDBRequest)
-
-        formTemplateWorkInfoItems.observe(lifecycleOwner, Observer { list ->
-            val workInfo = list[0]
-            if (list.isNotEmpty() && workInfo.state.isFinished) {
-                refreshData()
-            }
-        })
-    }
-
-
-    internal fun uploadSubmissionWork() {
+    fun syncWithServer(typeData : Int, viewLifecycleOwner: LifecycleOwner){
         viewModelScope.launch {
-            repository.getAllUnsubmitted().collect {
-
-                val gson = GsonBuilder()
-                    .registerTypeAdapter(Fields::class.java, FieldsDeserializer())
-                    .registerTypeAdapter(Value::class.java, ValueSerialize())
-                    .create()
-                val uploadData: Data = workDataOf("submit_form_list" to gson.toJson(it))
-
-                val uploadSubmisison = OneTimeWorkRequestBuilder<SubmissionUploadWorker>()
-                    .setInputData(uploadData)
-                    .addTag("upload_submission")
-                    .setConstraints(networkConstraints)
-                    .build()
-
-                workManager.enqueue(uploadSubmisison)
-            }
+            syncServerWork.syncWithServer(typeData, viewLifecycleOwner) { refreshData() }
         }
-    }
-
-    private val downloadSubmissionWorkInfoItems: LiveData<List<WorkInfo>> =
-        workManager.getWorkInfosByTagLiveData("submission_list")
-
-    internal fun downloadSubmissionList(lifecycleOwner: LifecycleOwner) {
-        val syncSubmitFormDBRequest = OneTimeWorkRequestBuilder<SubmissionDownloadWorker>()
-            .addTag("submission_list")
-            .setConstraints(networkConstraints)
-            .build()
-
-        workManager.enqueue(syncSubmitFormDBRequest)
-
-        formTemplateWorkInfoItems.observe(lifecycleOwner, Observer { list ->
-            val workInfo = list[0]
-            if (list.isNotEmpty() && workInfo.state.isFinished) {
-                refreshData()
-            }
-        })
     }
 
     fun leaveTeam(
@@ -226,6 +164,8 @@ class HomeViewModel @Inject constructor(
                     val value = response.body()?.value
                     val organization = value?.organizationName
                     val organizationKey = value?.organizationCode
+                    val label = value?.label ?: ""
+                    session.saveDeviceName(label)
                     session.saveOrganization(organization)
                     session.saveOrganizationCode(organizationKey)
                 } else if (response.code() == 404) {
@@ -236,6 +176,23 @@ class HomeViewModel @Inject constructor(
                 } else {
                     val errorMessage = "Error " + response.code().toString()
                     uiHandler.showToast("$errorMessage fetching device info")
+                }
+            }
+        }
+    }
+
+    fun updateDeviceInfo(session: Session) {
+        viewModelScope.launch {
+            val deviceInfo = DeviceInfo(
+                label = session.deviceName,
+                deviceModel = "${Build.MANUFACTURER} ${Build.MODEL}" ,
+                deviceOsVersion = "${Build.VERSION.SDK_INT}",
+                deviceAppVersion = BuildConfig.VERSION_NAME,
+            )
+            val response = deviceInfoRepository.updateDeviceInfo(deviceInfo)
+            withContext(Dispatchers.Main){
+                if (response.code() > 250){
+                    uiHandler.showToast("Error ${response.code()} when update device info to server")
                 }
             }
         }

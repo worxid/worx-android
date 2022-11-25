@@ -58,4 +58,19 @@ class SourceDataRepository @Inject constructor(
     suspend fun addSubmissionFromApiToDb(list: List<SubmitForm>) =
         submitFormDAO.addSubmissionFromApi(list)
 
+    suspend fun getEmptyFormByID (id:Int) : EmptyForm? {
+        val list = dao.loadFormById(id)
+        if (list.isNotEmpty()){
+            return list[0]
+        }
+        return null
+    }
+
+    suspend fun getSubmissionById(id: Int) : SubmitForm? {
+        val list = submitFormDAO.loadSubmitFormById(id)
+        if (list.isNotEmpty()){
+            return list[0]
+        }
+        return null
+    }
 }

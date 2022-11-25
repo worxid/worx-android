@@ -111,8 +111,8 @@ fun DetailForm(
     val listState = rememberLazyListState(viewModel.indexScroll.value, viewModel.offset.value)
     val formStatus = viewModel.uiState.collectAsState().value.status
 
-    LaunchedEffect(key1 = listState.isScrollInProgress) {
-        if (!listState.isScrollInProgress) {
+    LaunchedEffect(key1 = listState.isScrollInProgress){
+        if (!listState.isScrollInProgress){
             viewModel.indexScroll.value = listState.firstVisibleItemIndex
             viewModel.offset.value = listState.firstVisibleItemScrollOffset
         }
@@ -139,6 +139,7 @@ fun DetailForm(
                     WorxTextField(
                         theme = theme,
                         label = item.label ?: "Free Text",
+                        description = item.description ?: "",
                         hint = "Answer",
                         inputType = KeyboardOptions(keyboardType = KeyboardType.Text),
                         initialValue = androidx.compose.ui.text.input.TextFieldValue(
@@ -203,7 +204,7 @@ fun DetailForm(
             }
         }
         val detailForm = viewModel.uiState.value.detailForm
-        if (detailForm is EmptyForm || (detailForm is SubmitForm && detailForm.status == 0)) {
+        if ( detailForm is EmptyForm || (detailForm is SubmitForm && detailForm.status == 0)) {
             item {
                 RedFullWidthButton(
                     onClickCallback = { showSubmitDialog() },
@@ -225,7 +226,8 @@ fun DialogSubmitForm(
     saveDraftForm: () -> Unit
 ) {
     val progress = viewModel.formProgress.value
-    val fieldsNo = viewModel.uiState.collectAsState().value.detailForm!!.fields.size
+    val separatorCount = viewModel.uiState.collectAsState().value.detailForm!!.fields.count { it.type == Type.Separator.type }
+    val fieldsNo = viewModel.uiState.collectAsState().value.detailForm!!.fields.size - separatorCount
     val theme = session.theme
 
     ModalBottomSheetLayout(
@@ -272,9 +274,9 @@ fun DialogSubmitForm(
                         tint = MaterialTheme.colors.onBackground
                     )
                 }
-                val fieldFilled = progress.toDouble() / 100 * fieldsNo
+                val fieldFilled = viewModel.uiState.collectAsState().value.values.count { it.value != null }
                 Text(
-                    text = "${fieldFilled.toInt()} of $fieldsNo Fields Answered",
+                    text = "$fieldFilled of $fieldsNo Fields Answered",
                     style = Typography.body2.copy(MaterialTheme.colors.onSecondary.copy(0.54f))
                 )
                 RedFullWidthButton(
@@ -324,6 +326,7 @@ fun DialogDraftForm(
                 WorxTextField(
                     theme = theme,
                     label = "",
+                    description = "",
                     hint = stringResource(R.string.draft_descr),
                     inputType = KeyboardOptions(keyboardType = KeyboardType.Text),
                     onValueChange = {})
