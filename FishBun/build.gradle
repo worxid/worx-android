@@ -23,6 +23,14 @@ buildscript {
 
 
 android {
+    signingConfigs {
+        release {
+            storeFile file('/Users/andrea/Folders/Upwork/Worx/keystore')
+            storePassword 'WORXWORX'
+            keyAlias 'WORX'
+            keyPassword 'WORXWORX'
+        }
+    }
     namespace 'com.sangcomz.fishbun'
     compileSdkVersion gradle.compileSdk
 
