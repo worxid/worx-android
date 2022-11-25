@@ -6,9 +6,7 @@ import androidx.activity.compose.LocalOnBackPressedDispatcherOwner
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Scaffold
-import androidx.compose.material.Text
+import androidx.compose.material.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableStateOf
@@ -62,7 +60,7 @@ fun DetailFormScreen(
         }
     }
     val dispatcher = LocalOnBackPressedDispatcherOwner.current!!.onBackPressedDispatcher
-    
+
     Scaffold(
         topBar = {
             WorxTopAppBar(
@@ -92,16 +90,15 @@ fun DetailFormScreen(
                 onEvent,
             )
 
-            if (showDialogLeaveForm.value) {
-                WorxDialog(content = {
-                    LeaveForm(
-                        setShowDialog = { showDialogLeaveForm.value = it },
-                        onPositiveButton = {
-                            viewModel.goToHome()
-                        }
-                    )
-                }, setShowDialog = { showDialogLeaveForm.value = it })
-            }
+        if (showDialogLeaveForm.value) {
+            WorxDialog(content = {
+                LeaveForm(
+                    setShowDialog = { showDialogLeaveForm.value = it },
+                    onPositiveButton = {
+                        viewModel.goToHome()
+                    }
+                )
+            }, setShowDialog = { showDialogLeaveForm.value = it })
         }
     }
 }

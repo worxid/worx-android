@@ -13,6 +13,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
@@ -28,7 +29,9 @@ import id.worx.device.client.theme.Typography
 import id.worx.device.client.viewmodel.CameraViewModel
 import id.worx.device.client.viewmodel.DetailFormViewModel
 import id.worx.device.client.viewmodel.EventStatus
+import kotlinx.coroutines.*
 
+@OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun ValidFormBuilder(
     componentList: List<Fields>,
@@ -37,11 +40,17 @@ fun ValidFormBuilder(
     session: Session,
     onEvent: (DetailFormEvent) -> Unit
 ) {
-    var showSubmitDialog by remember { mutableStateOf(false) }
     var showDraftDialog by remember { mutableStateOf(false) }
     var validation by remember { mutableStateOf(false) }
     var isValid by remember { mutableStateOf(false) }
     val theme = session.theme
+    val scope = rememberCoroutineScope()
+    val state = rememberModalBottomSheetState(
+        initialValue = ModalBottomSheetValue.Hidden,
+        confirmStateChange = { true },
+        skipHalfExpanded = true
+    )
+    var showSubmitDialog by remember { mutableStateOf(state.isVisible) }
 
     Box(
         modifier = Modifier
@@ -56,11 +65,17 @@ fun ValidFormBuilder(
             validation,
             { isValid = it }
         )
-        { showSubmitDialog = true }
+        {
+            showSubmitDialog = true
+            scope.launch {
+                state.animateTo(ModalBottomSheetValue.Expanded)
+            }
+        }
         if (showSubmitDialog) {
             DialogSubmitForm(
                 viewModel,
                 session,
+                state,
                 {
                     validation = true
                     if (isValid) {
@@ -141,7 +156,9 @@ fun DetailForm(
                         isRequired = form?.required ?: false,
                         validation = validation,
                         isValid = isValid,
-                        isEnabled  = !arrayListOf(EventStatus.Done, EventStatus.Submitted).contains(formStatus)
+                        isEnabled = !arrayListOf(EventStatus.Done, EventStatus.Submitted).contains(
+                            formStatus
+                        )
                     )
                 }
                 Type.Checkbox.type -> {
@@ -204,6 +221,7 @@ fun DetailForm(
 fun DialogSubmitForm(
     viewModel: DetailFormViewModel,
     session: Session,
+    state: ModalBottomSheetState,
     submitForm: () -> Unit,
     saveDraftForm: () -> Unit
 ) {
@@ -213,7 +231,7 @@ fun DialogSubmitForm(
     val theme = session.theme
 
     ModalBottomSheetLayout(
-        sheetState = ModalBottomSheetState(ModalBottomSheetValue.Expanded),
+        sheetState = state,
         sheetContent = {
             Column(
                 modifier = Modifier
