@@ -33,6 +33,7 @@ android {
         release {
 
         }
+        release {}
     }
 
     compileOptions {

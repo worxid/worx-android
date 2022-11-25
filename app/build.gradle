@@ -99,7 +99,7 @@ dependencies {
     implementation 'com.google.code.gson:gson:2.10'
 
     //image picker custom
-    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    //implementation fileTree(dir: 'libs', include: ['*.jar'])
     implementation project(':Fishbun')
 
     // signature pad
