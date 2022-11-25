@@ -15,11 +15,9 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.LifecycleOwner
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.rememberPagerState
-import id.worx.device.client.MainActivity
 import id.worx.device.client.R
 import id.worx.device.client.data.database.Session
 import id.worx.device.client.model.EmptyForm
@@ -60,7 +58,7 @@ fun SearchScreen(
             modifier = modifier
         ) {
             val (tablayout, tabcontent) = createRefs()
-            val pagerState = rememberPagerState(pageCount = 3)
+            val pagerState = rememberPagerState()
 
             TabRow(
                 selectedTabIndex = pagerState.currentPage,
@@ -106,6 +104,7 @@ fun SearchScreen(
                 }
             }
             HorizontalPager(
+                count = 3,
                 state = pagerState,
                 modifier = Modifier.constrainAs(tabcontent){
                 top.linkTo(tablayout.bottom)
