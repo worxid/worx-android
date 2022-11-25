@@ -76,8 +76,6 @@ fun DetailFormScreen(
     ) { padding ->
         val componentList = uistate.detailForm!!.fields
 
-        Log.d("TAG", "DetailFormScreen: ${formStatus.name} $padding")
-
         WorxBoxPullRefresh(
             onRefresh = {viewModel.syncWithServer(DOWNLOADFROMSERVER, lifecycleOwner)}
         ) {
