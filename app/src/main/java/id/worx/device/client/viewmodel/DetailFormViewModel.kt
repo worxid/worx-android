@@ -327,8 +327,8 @@ class DetailFormViewModel @Inject constructor(
             "${address.getAddressLine(0)}, ${address.subLocality}, " +
                     "${address.locality}, ${address.subAdminArea}, " +
                     "${address.adminArea}, ${address.countryName}",
-            latitude.toDouble().toInt(),
-            longitude.toDouble().toInt()
+            latitude.toDouble(),
+            longitude.toDouble()
         )
 
         return SubmitForm(
