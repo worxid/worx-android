@@ -1,21 +1,30 @@
 apply plugin: 'com.android.library'
-apply plugin: 'org.jetbrains.kotlin.android'
-apply plugin: 'org.sonarqube'
+apply plugin: 'kotlin-android'
+apply plugin: 'com.hiya.jacoco-android'
 
+jacoco {
+    toolVersion = "0.8.7"
+}
 
 buildscript {
     repositories {
-        google()
         mavenCentral()
         maven {
             url "https://plugins.gradle.org/m2/"
         }
     }
+
+    dependencies {
+        classpath 'com.github.dcendents:android-maven-gradle-plugin:2.1'
+        classpath 'com.hiya:jacoco-android:0.2'
+        classpath 'co.riiid:gradle-github-plugin:0.4.2'
+    }
 }
 
 
 android {
-    compileSdkVersion gradle.targetSdk
+    namespace 'com.sangcomz.fishbun'
+    compileSdkVersion gradle.compileSdk
 
     defaultConfig {
         minSdkVersion gradle.minSdk
@@ -23,13 +32,11 @@ android {
         consumerProguardFile('proguard-rules.pro')
         multiDexEnabled true
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
-        versionCode 1
-        versionName '1.0'
     }
 
     buildTypes {
         debug {
-            //testCoverageEnabled true
+            testCoverageEnabled true
         }
         release {
 
@@ -69,4 +76,14 @@ dependencies {
 
 tasks.withType(Javadoc).all {
     enabled = false
+}
+
+configurations.all{
+    resolutionStrategy {
+        eachDependency { details ->
+            if ('org.jacoco' == details.requested.group) {
+                details.useVersion "0.8.7"
+            }
+        }
+    }
 }
