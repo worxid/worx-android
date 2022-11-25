@@ -100,7 +100,7 @@ dependencies {
 
     //image picker custom
     //implementation fileTree(dir: 'libs', include: ['*.jar'])
-    implementation project(':Fishbun')
+    implementation project(':FishBun')
 
     // signature pad
     implementation 'se.warting.signature:signature-pad:0.0.21'
