@@ -437,7 +437,7 @@ fun FormSubmitted(
             ) {
                 Image(
                     modifier = Modifier.padding(top = 20.dp),
-                    painter = painterResource(id = if (theme == SettingTheme.Dark) R.drawable.ic_check_dark else R.drawable.ic_tick_yellow),
+                    painter = painterResource(id = R.drawable.ic_tick_circle),
                     contentDescription = "Tick"
                 )
                 Text(
