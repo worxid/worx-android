@@ -42,6 +42,7 @@ class HomeFragment : Fragment() {
             }
         }
         viewModel.getDeviceInfo(session)
+        viewModel.updateDeviceInfo(session)
         return ComposeView(requireContext()).apply {
             setContent {
                 val theme = themeViewModel.theme.value

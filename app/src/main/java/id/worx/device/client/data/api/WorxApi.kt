@@ -41,6 +41,9 @@ interface WorxApi {
     @POST("/mobile/users/create-new-team")
     suspend fun createNewTeam(@Body newTeamForm: NewTeamForm) : Response<ResponseDeviceInfo>
 
+    @PUT("mobile/devices/update-info")
+    suspend fun updateDeviceInfo(@Body deviceInfo: DeviceInfo) : Response<ResponseBody>
+
     companion object {
         private const val BASE_URL = "https://api.dev.worx.id"
 

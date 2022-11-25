@@ -1,13 +1,16 @@
 package id.worx.device.client.viewmodel
 
+import android.os.Build
 import android.util.Log
 import androidx.lifecycle.*
 import com.google.gson.Gson
 import dagger.hilt.android.lifecycle.HiltViewModel
+import id.worx.device.client.BuildConfig
 import id.worx.device.client.Event
 import id.worx.device.client.MainScreen
 import id.worx.device.client.data.api.SyncServer
 import id.worx.device.client.data.database.Session
+import id.worx.device.client.model.DeviceInfo
 import id.worx.device.client.model.EmptyForm
 import id.worx.device.client.model.ResponseDeviceInfo
 import id.worx.device.client.model.SubmitForm
@@ -161,6 +164,8 @@ class HomeViewModel @Inject constructor(
                     val value = response.body()?.value
                     val organization = value?.organizationName
                     val organizationKey = value?.organizationCode
+                    val label = value?.label ?: ""
+                    session.saveDeviceName(label)
                     session.saveOrganization(organization)
                     session.saveOrganizationCode(organizationKey)
                 } else if (response.code() == 404) {
@@ -171,6 +176,23 @@ class HomeViewModel @Inject constructor(
                 } else {
                     val errorMessage = "Error " + response.code().toString()
                     uiHandler.showToast("$errorMessage fetching device info")
+                }
+            }
+        }
+    }
+
+    fun updateDeviceInfo(session: Session) {
+        viewModelScope.launch {
+            val deviceInfo = DeviceInfo(
+                label = session.deviceName,
+                deviceModel = "${Build.MANUFACTURER} ${Build.MODEL}" ,
+                deviceOsVersion = "${Build.VERSION.SDK_INT}",
+                deviceAppVersion = BuildConfig.VERSION_NAME,
+            )
+            val response = deviceInfoRepository.updateDeviceInfo(deviceInfo)
+            withContext(Dispatchers.Main){
+                if (response.code() > 250){
+                    uiHandler.showToast("Error ${response.code()} when update device info to server")
                 }
             }
         }
