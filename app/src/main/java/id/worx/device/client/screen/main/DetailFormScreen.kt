@@ -1,12 +1,13 @@
 package id.worx.device.client.screen
 
-import android.util.Log
 import androidx.activity.compose.BackHandler
 import androidx.activity.compose.LocalOnBackPressedDispatcherOwner
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.material.*
+import androidx.compose.material.MaterialTheme
+import androidx.compose.material.Scaffold
+import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableStateOf
@@ -97,6 +98,7 @@ fun DetailFormScreen(
                     }
                 )
             }, setShowDialog = { showDialogLeaveForm.value = it })
+        }
         }
     }
 }
