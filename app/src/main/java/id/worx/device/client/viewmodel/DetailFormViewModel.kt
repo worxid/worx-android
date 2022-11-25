@@ -6,6 +6,7 @@ import android.location.Address
 import android.location.Geocoder
 import android.util.Log
 import androidx.compose.runtime.State
+import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.*
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -15,6 +16,7 @@ import id.worx.device.client.Util
 import id.worx.device.client.Util.getCurrentDate
 import id.worx.device.client.Util.initProgress
 import id.worx.device.client.WorxApplication
+import id.worx.device.client.data.api.SyncServer
 import id.worx.device.client.data.database.Session
 import id.worx.device.client.model.*
 import id.worx.device.client.repository.SourceDataRepository
@@ -38,7 +40,7 @@ enum class EventStatus {
  */
 data class DetailUiState(
     val detailForm: BasicForm? = null,
-    val values: MutableMap<String, Value> = mutableMapOf(),
+    val values: Map<String, Value> = mutableStateMapOf(),
     val currentComponent: Int = -1,
     val status: EventStatus = EventStatus.Loading,
     val errorMessages: String = "",
@@ -49,7 +51,8 @@ class DetailFormViewModel @Inject constructor(
     private val application: WorxApplication,
     private val session: Session,
     private val savedStateHandle: SavedStateHandle,
-    private val dataSourceRepo: SourceDataRepository
+    private val dataSourceRepo: SourceDataRepository,
+    private val syncServerWork: SyncServer
 ) : ViewModel() {
 
     var uiState = MutableStateFlow(DetailUiState())
@@ -92,21 +95,22 @@ class DetailFormViewModel @Inject constructor(
         val fields = uiState.value.detailForm!!.fields
         val id = fields[index].id!!
         val values = uiState.value.values.toMutableMap()
-        val progressBit = 100 / fields.size
+        val separatorCount = fields.count { it.type == Type.Separator.type }
+        val progressBit = 100 / (fields.size - separatorCount)
 
         uiState.update {
             if (value == null) {
                 _formProgress.value -= progressBit
                 values.remove(id)
-                it.copy(values = values)
+                it.copy(values = values.toMap())
             } else {
                 if (it.values.contains(fields[index].id)) {
                     values.replace(id, value)
-                    it.copy(values = values)
+                    it.copy(values = values.toMap())
                 } else {
                     _formProgress.value += progressBit
                     values[id] = value
-                    it.copy(values = values)
+                    it.copy(values = values.toMap())
                 }
             }
         }
@@ -229,7 +233,6 @@ class DetailFormViewModel @Inject constructor(
                     fileExplaination
                 )
             }
-            .setAutoDeleteFilesAfterSuccessfulUpload(true)
         request.setFileToUpload(myFile.path)
         request.startUpload()
     }
@@ -324,8 +327,8 @@ class DetailFormViewModel @Inject constructor(
             "${address.getAddressLine(0)}, ${address.subLocality}, " +
                     "${address.locality}, ${address.subAdminArea}, " +
                     "${address.adminArea}, ${address.countryName}",
-            latitude.toDouble().toInt(),
-            longitude.toDouble().toInt()
+            latitude.toDouble(),
+            longitude.toDouble()
         )
 
         return SubmitForm(
@@ -338,6 +341,30 @@ class DetailFormViewModel @Inject constructor(
             lastUpdated = getCurrentDate("dd/MM/yyyy hh:mm a"),
             submitLocation = submitLocation
         )
+    }
+
+    private fun refreshData() {
+        viewModelScope.launch {
+            val submitForm =
+                uiState.value.detailForm?.id?.let { dataSourceRepo.getSubmissionById(it) }
+            val form = uiState.value.detailForm?.id?.let { dataSourceRepo.getEmptyFormByID(it) }
+            if (submitForm == null) {
+                uiState.update {
+                    it.copy(detailForm = form)
+                }
+            } else {
+                uiState.update {
+                    it.copy(detailForm = form, values = submitForm.values.toMutableMap())
+                }
+            }
+        }
+    }
+
+
+    fun syncWithServer(typeData : Int, viewLifecycleOwner: LifecycleOwner){
+        viewModelScope.launch {
+            syncServerWork.syncWithServer(typeData, viewLifecycleOwner) { refreshData() }
+        }
     }
 
     interface UIHandler {

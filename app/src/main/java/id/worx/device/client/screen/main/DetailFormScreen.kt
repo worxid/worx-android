@@ -1,18 +1,19 @@
 package id.worx.device.client.screen
 
 import android.util.Log
+import androidx.activity.compose.BackHandler
+import androidx.activity.compose.LocalOnBackPressedDispatcherOwner
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Scaffold
-import androidx.compose.material.Text
+import androidx.compose.material.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
@@ -22,7 +23,9 @@ import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
 import androidx.hilt.navigation.compose.hiltViewModel
 import id.worx.device.client.R
+import id.worx.device.client.data.api.SyncServer.Companion.DOWNLOADFROMSERVER
 import id.worx.device.client.data.database.Session
+import id.worx.device.client.screen.components.WorxBoxPullRefresh
 import id.worx.device.client.screen.components.WorxDialog
 import id.worx.device.client.screen.components.WorxTopAppBar
 import id.worx.device.client.theme.Typography
@@ -48,16 +51,20 @@ fun DetailFormScreen(
     val uistate = viewModel.uiState.collectAsState().value
     val formStatus = viewModel.uiState.collectAsState().value.status
     val showDialogLeaveForm = remember { mutableStateOf(false )}
+    val lifecycleOwner = LocalLifecycleOwner.current
+
+    BackHandler {
+        showDialogLeaveForm.value = (formStatus == EventStatus.Filling && viewModel.formProgress.value > 0)
+        if (!showDialogLeaveForm.value){
+            onEvent(DetailFormEvent.BackPressed)
+        }
+    }
+    val dispatcher = LocalOnBackPressedDispatcherOwner.current!!.onBackPressedDispatcher
 
     Scaffold(
         topBar = {
             WorxTopAppBar(
-                onBack = {
-                    showDialogLeaveForm.value = (formStatus == EventStatus.Filling && viewModel.formProgress.value > 0)
-                    if (!showDialogLeaveForm.value){
-                        onEvent(DetailFormEvent.BackPressed)
-                    }
-                },
+                onBack = { dispatcher.onBackPressed() },
                 progress = viewModel.formProgress.value,
                 title = if (uistate.detailForm != null) {
                     uistate.detailForm!!.label ?: ""
@@ -69,13 +76,17 @@ fun DetailFormScreen(
     ) { padding ->
         val componentList = uistate.detailForm!!.fields
 
-        ValidFormBuilder(
-            componentList = componentList,
-            viewModel,
-            cameraViewModel,
-            session,
-            onEvent,
-        )
+        WorxBoxPullRefresh(
+            onRefresh = {viewModel.syncWithServer(DOWNLOADFROMSERVER, lifecycleOwner)}
+        ) {
+
+            ValidFormBuilder(
+                componentList = componentList,
+                viewModel,
+                cameraViewModel,
+                session,
+                onEvent,
+            )
 
         if (showDialogLeaveForm.value) {
             WorxDialog(content = {

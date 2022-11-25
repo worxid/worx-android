@@ -17,6 +17,7 @@ import id.worx.device.client.model.RadioButtonValue
 import id.worx.device.client.theme.GrayDivider
 import id.worx.device.client.theme.PrimaryMain
 import id.worx.device.client.theme.Typography
+import id.worx.device.client.theme.textFormDescription
 import id.worx.device.client.viewmodel.DetailFormViewModel
 import id.worx.device.client.viewmodel.EventStatus
 
@@ -60,7 +61,6 @@ fun WorxRadiobutton(indexForm: Int, viewModel: DetailFormViewModel, validation: 
                                     indexForm,
                                     RadioButtonValue(value = onCheck.value)
                                 )
-
                             }
                         },
                         colors = RadioButtonDefaults.colors(

@@ -19,7 +19,8 @@ import androidx.compose.material.Divider
 import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.toArgb
@@ -38,10 +39,7 @@ import id.worx.device.client.R
 import id.worx.device.client.data.database.Session
 import id.worx.device.client.model.ImageField
 import id.worx.device.client.model.ImageValue
-import id.worx.device.client.theme.GrayDivider
-import id.worx.device.client.theme.PrimaryMain
-import id.worx.device.client.theme.Typography
-import id.worx.device.client.theme.WorxTheme
+import id.worx.device.client.theme.*
 import id.worx.device.client.viewmodel.DetailFormViewModel
 import id.worx.device.client.viewmodel.EventStatus
 import java.io.File
@@ -61,22 +59,11 @@ fun WorxAttachImage(
     val theme = session.theme
 
     val fileValue = viewModel.uiState.collectAsState().value.values[form.id] as ImageValue?
-    var filePath by if (fileValue != null) {
-        remember { mutableStateOf(fileValue.filePath.toList()) }
-    } else {
-        remember {
-            mutableStateOf(listOf())
-        }
-    }
+    var filePath = fileValue?.filePath?.toList() ?: listOf()
+
     val warningInfo = if (form.required == true && filePath.isEmpty()) "${form.label} is required" else ""
 
-    var fileIds by if (fileValue != null) {
-        remember { mutableStateOf(fileValue.value.toList()) }
-    } else {
-        remember {
-            mutableStateOf(listOf())
-        }
-    }
+    var fileIds = fileValue?.value?.toList() ?: listOf()
 
     val formStatus = viewModel.uiState.collectAsState().value.status
 
@@ -105,6 +92,13 @@ fun WorxAttachImage(
                 .padding(horizontal = 16.dp)
                 .padding(bottom = 8.dp)
         )
+        if (!form.description.isNullOrBlank()) {
+            Text(
+                text = form.description!!,
+                style = MaterialTheme.typography.body1.copy(textFormDescription),
+                modifier = Modifier.padding(bottom = 8.dp, start = 17.dp)
+            )
+        }
         if (filePath.isNotEmpty()) {
             Column {
                 filePath.forEachIndexed { index, item ->
@@ -187,10 +181,10 @@ private fun ImageDataView(
             .padding(horizontal = 16.dp, vertical = 12.dp)
     ) {
         AsyncImage(
-            model = if (fileSize > 0) {
-                filePath
-            } else {
+            model = if (filePath.contains("File")) {
                 android.R.drawable.ic_menu_gallery
+            } else {
+                filePath
             },
             contentDescription = "Image",
             modifier = Modifier

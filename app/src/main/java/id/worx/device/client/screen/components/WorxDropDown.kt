@@ -21,6 +21,7 @@ import id.worx.device.client.model.DropDownValue
 import id.worx.device.client.theme.GrayDivider
 import id.worx.device.client.theme.PrimaryMain
 import id.worx.device.client.theme.Typography
+import id.worx.device.client.theme.textFormDescription
 import id.worx.device.client.viewmodel.DetailFormViewModel
 import id.worx.device.client.viewmodel.EventStatus
 
@@ -55,6 +56,13 @@ fun WorxDropdown(indexForm: Int, viewModel: DetailFormViewModel, session: Sessio
             style = Typography.body2.copy(MaterialTheme.colors.onSecondary),
             modifier = Modifier.padding(start = 17.dp, bottom = 8.dp)
         )
+        if (!form.description.isNullOrBlank()) {
+            Text(
+                text = form.description!!,
+                style = MaterialTheme.typography.body1.copy(textFormDescription),
+                modifier = Modifier.padding(bottom = 8.dp, start = 17.dp)
+            )
+        }
         Box(
             modifier = Modifier
                 .fillMaxWidth()

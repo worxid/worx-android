@@ -27,7 +27,7 @@ interface Value{
 
 data class SubmitLocation(
     @SerializedName("address") var address: String? = "",
-    @SerializedName("lat") var lat: Int? = 0,
-    @SerializedName("lng") var lng: Int? = 0
+    @SerializedName("lat") var lat: Double? = 0.0,
+    @SerializedName("lng") var lng: Double? = 0.0
 )
 

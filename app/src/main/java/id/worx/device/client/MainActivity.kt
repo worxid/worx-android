@@ -21,9 +21,6 @@ import com.google.android.material.navigation.NavigationView
 import dagger.hilt.android.AndroidEntryPoint
 import id.worx.device.client.data.database.Session
 import id.worx.device.client.viewmodel.HomeViewModel
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 import java.io.IOException
 import javax.inject.Inject
 
@@ -79,11 +76,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun syncWithServer() {
-        CoroutineScope(Dispatchers.Main).launch {
-            viewModel.uploadSubmissionWork()
-            viewModel.downloadFormTemplate(this@MainActivity)
-            viewModel.downloadSubmissionList(this@MainActivity)
-        }
+        viewModel.syncWithServer(0, this@MainActivity)
     }
 
     private fun actionPermissionGranted(){}
