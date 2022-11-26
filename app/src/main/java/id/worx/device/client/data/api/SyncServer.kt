@@ -33,9 +33,9 @@ class SyncServer @Inject constructor(
             downloadFormTemplate(viewLifecycleOwner, onSuccessCallback)
             downloadSubmissionList(viewLifecycleOwner, onSuccessCallback)
         } else {
-            uploadSubmissionWork()
             downloadFormTemplate(viewLifecycleOwner, onSuccessCallback)
             downloadSubmissionList(viewLifecycleOwner, onSuccessCallback)
+            uploadSubmissionWork()
         }
     }
 

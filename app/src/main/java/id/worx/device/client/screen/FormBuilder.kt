@@ -13,7 +13,6 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
@@ -31,7 +30,7 @@ import id.worx.device.client.theme.Typography
 import id.worx.device.client.viewmodel.CameraViewModel
 import id.worx.device.client.viewmodel.DetailFormViewModel
 import id.worx.device.client.viewmodel.EventStatus
-import kotlinx.coroutines.*
+import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
@@ -125,8 +124,18 @@ fun DetailForm(
         modifier = Modifier.fillMaxSize()
     ) {
         val (lazyColumn, btnSubmit) = createRefs()
-        LazyColumn(
-            state = listState,
+        var modifier = Modifier
+            .constrainAs(lazyColumn) {
+                top.linkTo(parent.top)
+                start.linkTo(parent.start)
+                bottom.linkTo(parent.bottom)
+                end.linkTo(parent.end)
+                width = Dimension.fillToConstraints
+                height = Dimension.fillToConstraints
+            }
+            .padding(vertical = 12.dp)
+
+        if (detailForm is EmptyForm || (detailForm is SubmitForm && detailForm.status == 0)) {
             modifier = Modifier
                 .constrainAs(lazyColumn) {
                     top.linkTo(parent.top)
@@ -136,7 +145,11 @@ fun DetailForm(
                     width = Dimension.fillToConstraints
                     height = Dimension.fillToConstraints
                 }
-                .padding(vertical = 12.dp),
+                .padding(vertical = 12.dp)
+        }
+        LazyColumn(
+            state = listState,
+            modifier =  modifier,
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
             itemsIndexed(items = componentList) { index, item ->

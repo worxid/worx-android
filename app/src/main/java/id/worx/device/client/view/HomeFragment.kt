@@ -10,6 +10,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import dagger.hilt.android.AndroidEntryPoint
 import id.worx.device.client.MainScreen
+import id.worx.device.client.Util
 import id.worx.device.client.data.api.SyncServer.Companion.DOWNLOADFROMSERVER
 import id.worx.device.client.data.database.Session
 import id.worx.device.client.navigate
@@ -43,6 +44,10 @@ class HomeFragment : Fragment() {
         }
         viewModel.getDeviceInfo(session)
         viewModel.updateDeviceInfo(session)
+        if (Util.isConnected(requireContext())){
+            viewModel.syncWithServer(0, viewLifecycleOwner)
+        }
+
         return ComposeView(requireContext()).apply {
             setContent {
                 val theme = themeViewModel.theme.value

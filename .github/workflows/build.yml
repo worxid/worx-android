@@ -30,6 +30,8 @@ jobs:
           key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle') }}
           restore-keys: ${{ runner.os }}-gradle
       - name: Write local.properties
+        env:
+          MAPS_API_KEY: ${{ secrets.API_MAP_KEY }}
         run: echo PLACHOLDER="placeholder" > ./local.properties
       - name: Build and analyze
         env:
