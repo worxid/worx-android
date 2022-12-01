@@ -32,7 +32,7 @@ import id.worx.device.client.viewmodel.DetailFormViewModel
 import id.worx.device.client.viewmodel.EventStatus
 
 @Composable
-fun WorxSignature(indexForm: Int, viewModel: DetailFormViewModel, session: Session,validation : Boolean = false,isValid : (Boolean) -> Unit ={}) {
+fun WorxSignature(indexForm: Int, viewModel: DetailFormViewModel, session: Session,validation : Boolean = false) {
     val form = viewModel.uiState.collectAsState().value.detailForm!!.fields[indexForm] as SignatureField
     val theme = session.theme
 
@@ -85,17 +85,19 @@ fun WorxSignature(indexForm: Int, viewModel: DetailFormViewModel, session: Sessi
                 }
             }
         }
-        if (validation && warningInfo.isNotBlank()) {
-            Text(
-                text = warningInfo,
-                modifier = Modifier
-                    .padding(horizontal = 16.dp)
-                    .padding(top = 4.dp),
-                color = PrimaryMain
-            )
-            isValid(false)
+        if (warningInfo.isNotBlank()) {
+            if (validation){
+                Text(
+                    text = warningInfo,
+                    modifier = Modifier
+                        .padding(horizontal = 16.dp)
+                        .padding(top = 4.dp),
+                    color = PrimaryMain
+                )
+            }
+            form.isValid = false
         } else {
-            isValid(true)
+            form.isValid = true
         }
         Divider(color = GrayDivider, modifier = Modifier.padding(top = 12.dp))
     }

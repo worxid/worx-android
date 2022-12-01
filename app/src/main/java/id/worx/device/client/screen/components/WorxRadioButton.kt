@@ -25,7 +25,7 @@ import id.worx.device.client.viewmodel.DetailFormViewModel
 import id.worx.device.client.viewmodel.EventStatus
 
 @Composable
-fun WorxRadiobutton(indexForm: Int, viewModel: DetailFormViewModel, validation: Boolean = false,isValid : (Boolean) -> Unit ={}) {
+fun WorxRadiobutton(indexForm: Int, viewModel: DetailFormViewModel, validation: Boolean = false) {
     val form =
         viewModel.uiState.collectAsState().value.detailForm!!.fields[indexForm] as RadioButtonField
     val formStatus = viewModel.uiState.collectAsState().value.status
@@ -79,17 +79,19 @@ fun WorxRadiobutton(indexForm: Int, viewModel: DetailFormViewModel, validation: 
                 }
             }
         }
-        if (validation && warningInfo.isNotBlank()) {
-            Text(
-                text = warningInfo,
-                modifier = Modifier
-                    .padding(horizontal = 16.dp)
-                    .padding(bottom = 8.dp),
-                color = PrimaryMain
-            )
-            isValid(false)
+        if (warningInfo.isNotBlank()) {
+            if (validation){
+                Text(
+                    text = warningInfo,
+                    modifier = Modifier
+                        .padding(horizontal = 16.dp)
+                        .padding(top = 4.dp),
+                    color = PrimaryMain
+                )
+            }
+            form.isValid = false
         } else {
-            isValid(true)
+            form.isValid = true
         }
         Divider(color = GrayDivider, modifier = Modifier.padding(top = 12.dp))
     }

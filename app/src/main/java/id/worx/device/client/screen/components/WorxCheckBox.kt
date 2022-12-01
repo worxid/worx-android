@@ -23,7 +23,7 @@ import id.worx.device.client.viewmodel.DetailFormViewModel
 import id.worx.device.client.viewmodel.EventStatus
 
 @Composable
-fun WorxCheckBox(indexForm: Int, viewModel: DetailFormViewModel, validation: Boolean = false,isValid : (Boolean) -> Unit ={}) {
+fun WorxCheckBox(indexForm: Int, viewModel: DetailFormViewModel, validation: Boolean = false) {
     val form =
         viewModel.uiState.collectAsState().value.detailForm!!.fields[indexForm] as CheckBoxField
     val formStatus = viewModel.uiState.collectAsState().value.status
@@ -35,20 +35,12 @@ fun WorxCheckBox(indexForm: Int, viewModel: DetailFormViewModel, validation: Boo
     val value = if (checkBoxValue != null) {
         remember { mutableStateOf(checkBoxValue.value.toList()) }
     } else {
-        remember {
-            mutableStateOf(optionTitles.map { false })
-        }
+        remember { mutableStateOf(optionTitles.map { false }) }
     }
-    val totalCheckOptions = remember {
-        mutableStateOf(value.value.count { it })
-    }
-    val warningInfo = if (minChecked > totalCheckOptions.value) {
-        "Select minimum $minChecked options"
-    } else if (form.required == true && totalCheckOptions.value ==0) {
+    val totalCheckOptions = remember { mutableStateOf(value.value.count { it }) }
+    val warningInfo = if (form.required == true && totalCheckOptions.value == 0)
         "$title is required"
-    } else {
-        ""
-    }
+    else if (minChecked > totalCheckOptions.value) "Select minimum $minChecked options" else ""
 
     Column(modifier = Modifier.fillMaxWidth()) {
         Text(
@@ -94,17 +86,19 @@ fun WorxCheckBox(indexForm: Int, viewModel: DetailFormViewModel, validation: Boo
                 }
             }
         }
-        if (validation && warningInfo.isNotBlank()) {
-            Text(
-                text = warningInfo,
-                modifier = Modifier
-                    .padding(horizontal = 16.dp)
-                    .padding(bottom = 8.dp),
-                color = PrimaryMain
-            )
-            isValid(false)
+        if (warningInfo.isNotBlank()) {
+            if (validation){
+                Text(
+                    text = warningInfo,
+                    modifier = Modifier
+                        .padding(horizontal = 16.dp)
+                        .padding(top = 4.dp),
+                    color = PrimaryMain
+                )
+            }
+            form.isValid = false
         } else {
-            isValid(true)
+            form.isValid = true
         }
         Divider(color = GrayDivider, modifier = Modifier.padding(top = 12.dp))
     }
