@@ -106,9 +106,6 @@ fun DetailForm(
     showSubmitDialog: () -> Unit
 ) {
     val theme = session.theme
-    val data = componentList.map { component ->
-        remember { mutableStateOf("") }
-    }.toMutableList()
     val listState = rememberLazyListState(viewModel.indexScroll.value, viewModel.offset.value)
     val formStatus = viewModel.uiState.collectAsState().value.status
     val detailForm = viewModel.uiState.collectAsState().value.detailForm
@@ -174,8 +171,11 @@ fun DetailForm(
                                 value.values ?: ""
                             ),
                             onValueChange = {
-                                data[index].value = it
-                                viewModel.setComponentData(index, TextFieldValue(values = it))
+                                if (it.isNullOrEmpty()){
+                                    viewModel.setComponentData(index, null)
+                                } else {
+                                    viewModel.setComponentData(index, TextFieldValue(values = it))
+                                }
                             },
                             isDeleteTrail = !arrayListOf(
                                 EventStatus.Done,
