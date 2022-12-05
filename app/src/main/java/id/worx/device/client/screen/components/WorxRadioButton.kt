@@ -25,7 +25,12 @@ import id.worx.device.client.viewmodel.DetailFormViewModel
 import id.worx.device.client.viewmodel.EventStatus
 
 @Composable
-fun WorxRadiobutton(indexForm: Int, viewModel: DetailFormViewModel, validation: Boolean = false,isValid : (Boolean) -> Unit ={}) {
+fun WorxRadiobutton(
+    indexForm: Int,
+    viewModel: DetailFormViewModel,
+    validation: Boolean = false,
+    isValid: (Boolean) -> Unit = {}
+) {
     val form =
         viewModel.uiState.collectAsState().value.detailForm!!.fields[indexForm] as RadioButtonField
     val formStatus = viewModel.uiState.collectAsState().value.status
@@ -40,15 +45,21 @@ fun WorxRadiobutton(indexForm: Int, viewModel: DetailFormViewModel, validation: 
     } else {
         remember { mutableStateOf<Int?>(null) }
     }
-    val warningInfo =if (form.required == true && onCheck.value == null) "$title is required" else ""
+    val warningInfo = if (form.required == true && onCheck.value == null) "$title is required" else ""
 
     Column(modifier = Modifier.fillMaxWidth()) {
         Text(
             title,
             style = Typography.body2.copy(MaterialTheme.colors.onSecondary),
-            modifier = Modifier.padding(start = 16.dp)
+            modifier = Modifier.padding(bottom = 8.dp).padding(horizontal = 16.dp)
         )
-
+        if (!form.description.isNullOrBlank()) {
+            Text(
+                text = form.description!!,
+                style = MaterialTheme.typography.body1.copy(textFormDescription),
+                modifier = Modifier.padding(bottom = 8.dp).padding(horizontal = 16.dp)
+            )
+        }
         VerticalGrid {
             optionTitles.forEachIndexed { index, item ->
                 Row(verticalAlignment = Alignment.CenterVertically) {
@@ -70,7 +81,8 @@ fun WorxRadiobutton(indexForm: Int, viewModel: DetailFormViewModel, validation: 
                         colors = RadioButtonDefaults.colors(
                             selectedColor = MaterialTheme.colors.onBackground,
                             unselectedColor = MaterialTheme.colors.onSecondary
-                        )
+                        ),
+                        modifier = Modifier.padding(start = 4.dp)
                     )
                     Text(
                         item.label ?: "",
@@ -83,7 +95,6 @@ fun WorxRadiobutton(indexForm: Int, viewModel: DetailFormViewModel, validation: 
             Text(
                 text = warningInfo,
                 modifier = Modifier
-                    .padding(horizontal = 16.dp)
                     .padding(bottom = 8.dp),
                 color = PrimaryMain
             )
@@ -91,6 +102,6 @@ fun WorxRadiobutton(indexForm: Int, viewModel: DetailFormViewModel, validation: 
         } else {
             isValid(true)
         }
-        Divider(color = GrayDivider, modifier = Modifier.padding(top = 12.dp))
+        Divider(color = GrayDivider, modifier = Modifier.padding(vertical = 16.dp))
     }
 }

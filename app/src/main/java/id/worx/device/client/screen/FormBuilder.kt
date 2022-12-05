@@ -146,7 +146,8 @@ fun DetailForm(
         }
         LazyColumn(
             state = listState,
-            modifier =  modifier,
+            contentPadding = PaddingValues(top = 16.dp),
+            modifier = modifier,
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
             itemsIndexed(items = componentList) { index, item ->
@@ -165,6 +166,7 @@ fun DetailForm(
                         WorxTextField(
                             theme = theme,
                             label = item.label ?: "Free Text",
+                            description = item.description ?: "",
                             hint = "Answer",
                             inputType = KeyboardOptions(keyboardType = KeyboardType.Text),
                             initialValue = androidx.compose.ui.text.input.TextFieldValue(

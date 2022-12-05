@@ -85,24 +85,23 @@ fun WorxDateInput(indexForm: Int, viewModel: DetailFormViewModel, session: Sessi
         year, month, day
     )
 
-    Column(modifier = Modifier.fillMaxWidth()) {
+    Column(modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp)) {
         Text(
             form.label ?: "",
             style = Typography.body2.copy(MaterialTheme.colors.onSecondary),
-            modifier = Modifier.padding(start = 17.dp, bottom = 8.dp)
+            modifier = Modifier.padding(bottom = 8.dp)
         )
         if (!form.description.isNullOrBlank()) {
             Text(
                 text = form.description!!,
                 style = MaterialTheme.typography.body1.copy(textFormDescription),
-                modifier = Modifier.padding(bottom = 8.dp, start = 17.dp)
+                modifier = Modifier.padding(bottom = 8.dp)
             )
         }
         Row(
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 16.dp)
         ) {
             TextField(
                 modifier = Modifier.padding(end = 12.dp),
@@ -163,7 +162,6 @@ fun WorxDateInput(indexForm: Int, viewModel: DetailFormViewModel, session: Sessi
             Text(
                 text = warningInfo,
                 modifier = Modifier
-                    .padding(horizontal = 16.dp)
                     .padding(top = 4.dp),
                 color = PrimaryMain
             )
@@ -178,7 +176,7 @@ fun WorxDateInput(indexForm: Int, viewModel: DetailFormViewModel, session: Sessi
             mDatePickerDialog.setOnCancelListener { showDatePicker = false }
             mDatePickerDialog.show()
         }
-        Divider(color = GrayDivider, modifier = Modifier.padding(top = 12.dp))
+        Divider(color = GrayDivider, modifier = Modifier.padding(vertical = 16.dp))
     }
 }
 

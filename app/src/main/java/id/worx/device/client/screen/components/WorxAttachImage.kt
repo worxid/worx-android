@@ -84,19 +84,18 @@ fun WorxAttachImage(
                 }
             })
 
-    Column(modifier = Modifier.fillMaxWidth()) {
+    Column(modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp)) {
         Text(
             title,
             style = Typography.body2.copy(MaterialTheme.colors.onSecondary),
             modifier = Modifier
-                .padding(horizontal = 16.dp)
                 .padding(bottom = 8.dp)
         )
         if (!form.description.isNullOrBlank()) {
             Text(
                 text = form.description!!,
                 style = MaterialTheme.typography.body1.copy(textFormDescription),
-                modifier = Modifier.padding(bottom = 8.dp, start = 17.dp)
+                modifier = Modifier.padding(bottom = 8.dp)
             )
         }
         if (filePath.isNotEmpty()) {
@@ -146,7 +145,6 @@ fun WorxAttachImage(
             ).contains(formStatus)
         ) {
             Row(
-                modifier = Modifier.padding(horizontal = 16.dp),
                 horizontalArrangement = Arrangement.spacedBy(12.dp)
             ) {
                 TakeImageButton((form.maxFiles ?: 10) > fileIds.size, navigateToPhotoCamera, setIndexData, theme)
@@ -157,7 +155,6 @@ fun WorxAttachImage(
             Text(
                 text = warningInfo,
                 modifier = Modifier
-                    .padding(horizontal = 16.dp)
                     .padding(top = 4.dp),
                 color = PrimaryMain
             )
@@ -165,7 +162,7 @@ fun WorxAttachImage(
         } else {
             isValid(true)
         }
-        Divider(color = GrayDivider, modifier = Modifier.padding(top = 12.dp))
+        Divider(color = GrayDivider, modifier = Modifier.padding(vertical = 16.dp))
     }
 }
 

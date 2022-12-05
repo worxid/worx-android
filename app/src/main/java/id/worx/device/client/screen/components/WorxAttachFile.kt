@@ -81,17 +81,17 @@ fun WorxAttachFile(indexForm: Int, viewModel: DetailFormViewModel, session: Sess
             })
 
 
-    Column(modifier = Modifier.fillMaxWidth()) {
+    Column(modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp)) {
         Text(
             form.label ?: "",
             style = Typography.body2.copy(MaterialTheme.colors.onSecondary),
-            modifier = Modifier.padding(start = 17.dp, bottom = 8.dp, end = 16.dp)
+            modifier = Modifier.padding(bottom = 8.dp)
         )
         if (!form.description.isNullOrBlank()) {
             Text(
                 text = form.description!!,
                 style = MaterialTheme.typography.body1.copy(textFormDescription),
-                modifier = Modifier.padding(bottom = 8.dp, start = 17.dp)
+                modifier = Modifier.padding(bottom = 8.dp)
             )
         }
         if (filePath.isNotEmpty()) {
@@ -144,7 +144,6 @@ fun WorxAttachFile(indexForm: Int, viewModel: DetailFormViewModel, session: Sess
             Text(
                 text = warningInfo,
                 modifier = Modifier
-                    .padding(horizontal = 16.dp)
                     .padding(top = 4.dp),
                 color = PrimaryMain
             )
@@ -152,7 +151,7 @@ fun WorxAttachFile(indexForm: Int, viewModel: DetailFormViewModel, session: Sess
         } else {
             isValid(true)
         }
-        Divider(color = GrayDivider, modifier = Modifier.padding(top = 12.dp))
+        Divider(color = GrayDivider, modifier = Modifier.padding(vertical = 16.dp))
     }
 }
 
@@ -178,7 +177,7 @@ private fun AttachFileButton(
     }
 
     ActionRedButton(
-        modifier = Modifier.padding(horizontal = 16.dp),
+        modifier = Modifier,
         iconRes = R.drawable.ic_baseline_attach_file_24,
         title = stringResource(id = R.string.add_file),
         actionClick = {

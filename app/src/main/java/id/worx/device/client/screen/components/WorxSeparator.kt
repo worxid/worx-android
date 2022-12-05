@@ -30,24 +30,32 @@ fun WorxSeparator(
     Column(
         modifier = Modifier
             .fillMaxWidth()
+            .padding(horizontal = 16.dp)
     ) {
+
+        Divider(
+            thickness = 6.dp,
+            color = GrayDivider,
+            modifier = Modifier.padding(bottom = 8.dp)
+        )
+
+        Text(
+            modifier = Modifier.padding(bottom = 8.dp),
+            text = form.label ?: "",
+            style = Typography.body2.copy(MaterialTheme.colors.onSecondary)
+        )
+        if (!form.description.isNullOrBlank()) {
             Text(
-                modifier = Modifier.padding(bottom = 8.dp, start = 17.dp),
-                text = form.label ?: "",
-                style = Typography.body2.copy(MaterialTheme.colors.onSecondary)
+                text = form.description!!,
+                style = MaterialTheme.typography.body1.copy(textFormDescription),
+                modifier = Modifier.padding(bottom = 8.dp)
             )
-            if (!form.description.isNullOrBlank()) {
-                Text(
-                    text = form.description!!,
-                    style = MaterialTheme.typography.body1.copy(textFormDescription),
-                    modifier = Modifier.padding(bottom = 8.dp, start = 17.dp)
-                )
-            }
+        }
 
 
-            Divider(
-                color = GrayDivider, modifier = Modifier
-                    .padding(vertical = 12.dp)
-            )
+        Divider(
+            color = GrayDivider, modifier = Modifier
+                .padding(vertical = 16.dp)
+        )
     }
 }

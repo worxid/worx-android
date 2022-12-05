@@ -1,10 +1,8 @@
 package id.worx.device.client.screen.components
 
 import android.util.Log
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -12,6 +10,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import id.worx.device.client.model.CheckBoxField
 import id.worx.device.client.model.CheckBoxValue
@@ -54,8 +53,15 @@ fun WorxCheckBox(indexForm: Int, viewModel: DetailFormViewModel, validation: Boo
         Text(
             title,
             style = Typography.body2.copy(MaterialTheme.colors.onSecondary),
-            modifier = Modifier.padding(start = 16.dp)
+            modifier = Modifier.padding(bottom = 8.dp).padding(horizontal = 16.dp)
         )
+        if (!form.description.isNullOrBlank()) {
+            Text(
+                text = form.description!!,
+                style = MaterialTheme.typography.body1.copy(textFormDescription),
+                modifier = Modifier.padding(bottom = 8.dp).padding(horizontal = 16.dp)
+            )
+        }
         Column {
             optionTitles.forEachIndexed() { index, item ->
                 Row(verticalAlignment = Alignment.CenterVertically) {
@@ -85,7 +91,8 @@ fun WorxCheckBox(indexForm: Int, viewModel: DetailFormViewModel, validation: Boo
                             checkedColor = MaterialTheme.colors.onBackground,
                             checkmarkColor = MaterialTheme.colors.secondary,
                             uncheckedColor = MaterialTheme.colors.onSecondary
-                        )
+                        ),
+                        modifier = Modifier.padding(start = 4.dp)
                     )
                     Text(
                         item.label ?: "",
@@ -98,7 +105,6 @@ fun WorxCheckBox(indexForm: Int, viewModel: DetailFormViewModel, validation: Boo
             Text(
                 text = warningInfo,
                 modifier = Modifier
-                    .padding(horizontal = 16.dp)
                     .padding(bottom = 8.dp),
                 color = PrimaryMain
             )
@@ -106,6 +112,6 @@ fun WorxCheckBox(indexForm: Int, viewModel: DetailFormViewModel, validation: Boo
         } else {
             isValid(true)
         }
-        Divider(color = GrayDivider, modifier = Modifier.padding(top = 12.dp))
+        Divider(color = GrayDivider, modifier = Modifier.padding(vertical = 16.dp))
     }
 }

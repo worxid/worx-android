@@ -49,25 +49,23 @@ fun WorxDropdown(indexForm: Int, viewModel: DetailFormViewModel, session: Sessio
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .padding()
+            .padding(horizontal = 16.dp)
     ) {
         Text(
             title,
             style = Typography.body2.copy(MaterialTheme.colors.onSecondary),
-            modifier = Modifier.padding(start = 17.dp, bottom = 8.dp)
+            modifier = Modifier.padding(bottom = 8.dp)
         )
         if (!form.description.isNullOrBlank()) {
             Text(
                 text = form.description!!,
                 style = MaterialTheme.typography.body1.copy(textFormDescription),
-                modifier = Modifier.padding(bottom = 8.dp, start = 17.dp)
+                modifier = Modifier.padding(bottom = 8.dp)
             )
         }
         Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 16.dp)
-                .padding(bottom = 12.dp)
         ) {
             TextField(
                 modifier = Modifier
@@ -129,15 +127,12 @@ fun WorxDropdown(indexForm: Int, viewModel: DetailFormViewModel, session: Sessio
         if (validation && warningInfo.isNotBlank()) {
             Text(
                 text = warningInfo,
-                modifier = Modifier
-                    .padding(horizontal = 16.dp)
-                    .padding(top = 4.dp),
                 color = PrimaryMain
             )
             isValid(false)
         } else {
             isValid(true)
         }
-        Divider(color = GrayDivider, modifier = Modifier.padding(top = 12.dp))
+        Divider(color = GrayDivider, modifier = Modifier.padding(vertical = 16.dp))
     }
 }

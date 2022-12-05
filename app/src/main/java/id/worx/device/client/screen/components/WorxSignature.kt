@@ -49,17 +49,17 @@ fun WorxSignature(indexForm: Int, viewModel: DetailFormViewModel, session: Sessi
     val fileId = value?.value
     val formStatus = viewModel.uiState.collectAsState().value.status
 
-    Column(modifier = Modifier.fillMaxWidth()) {
+    Column(modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp)) {
         Text(
             form.label ?: "Signature",
             style = Typography.body2.copy(MaterialTheme.colors.onSecondary),
-            modifier = Modifier.padding(start = 17.dp, bottom = 8.dp, end = 16.dp)
+            modifier = Modifier.padding(bottom = 8.dp)
         )
         if (!form.description.isNullOrEmpty()) {
             Text(
                 text = form.description!!,
                 style = MaterialTheme.typography.body1.copy(textFormDescription),
-                modifier = Modifier.padding(bottom = 8.dp, start = 17.dp)
+                modifier = Modifier.padding(bottom = 8.dp)
             )
         }
         if (value?.bitmap != null) {
@@ -89,7 +89,6 @@ fun WorxSignature(indexForm: Int, viewModel: DetailFormViewModel, session: Sessi
             Text(
                 text = warningInfo,
                 modifier = Modifier
-                    .padding(horizontal = 16.dp)
                     .padding(top = 4.dp),
                 color = PrimaryMain
             )
@@ -97,7 +96,7 @@ fun WorxSignature(indexForm: Int, viewModel: DetailFormViewModel, session: Sessi
         } else {
             isValid(true)
         }
-        Divider(color = GrayDivider, modifier = Modifier.padding(top = 12.dp))
+        Divider(color = GrayDivider, modifier = Modifier.padding(vertical = 16.dp))
     }
 }
 
@@ -108,7 +107,7 @@ private fun AttachSignatureButton(
 ) {
 
     ActionRedButton(
-        modifier = Modifier.padding(horizontal = 16.dp),
+        modifier = Modifier,
         iconRes = R.drawable.ic_signature_icon,
         title = stringResource(id = R.string.add_signature),
         actionClick = { goToSignaturePad() },
