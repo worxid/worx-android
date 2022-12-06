@@ -146,9 +146,7 @@ fun DetailForm(
         }
         LazyColumn(
             state = listState,
-            contentPadding = PaddingValues(top = 16.dp),
             modifier = modifier,
-            verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
             itemsIndexed(items = componentList) { index, item ->
                 viewModel.currentComponentIndex(index)
