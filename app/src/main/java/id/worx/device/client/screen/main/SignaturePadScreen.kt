@@ -81,7 +81,7 @@ fun SignaturePadScreen(
                 ) {
                     Text(
                         modifier = Modifier.padding(vertical = 12.dp),
-                        text = stringResource(R.string.erase_eng),
+                        text = stringResource(R.string.clear),
                         style = Typography.button
                     )
                 }
