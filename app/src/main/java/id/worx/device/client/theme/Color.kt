@@ -12,6 +12,7 @@ val SurfaceSystem = Color(0xFF646464)
 val BlackFont = Color(0xFF222222)
 val BlackVariantFont = Color(0f, 0f, 0f, 0.54f)
 val textUnfocusColorSystem = Color(0xB3000000)
+val textFormDescription = Color(0xAD000000)
 
 //Dark
 val DarkBackground = Color(0xFF121212)
@@ -22,7 +23,8 @@ val SecondaryMainDark = Color(0xFFF8CA45)
 val BlackDark = Color(0xCC000000)
 val BlackDarkButtonDark = Color(0xFFDA3630)
 val textUnfocusColorDark = Color(0xB3FFFFFF)
-val textFormDescription = Color(0xAD000000)
+val textFormDescriptionDark = Color(0xCCFFFFFF)
+
 
 //Green
 val PrimaryMainGreen = Color(0xFF4CAF50)

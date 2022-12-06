@@ -14,6 +14,7 @@ import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.Divider
 import androidx.compose.material.Icon
@@ -39,6 +40,7 @@ import id.worx.device.client.R
 import id.worx.device.client.data.database.Session
 import id.worx.device.client.model.ImageField
 import id.worx.device.client.model.ImageValue
+import id.worx.device.client.screen.main.SettingTheme
 import id.worx.device.client.theme.*
 import id.worx.device.client.viewmodel.DetailFormViewModel
 import id.worx.device.client.viewmodel.EventStatus
@@ -60,7 +62,8 @@ fun WorxAttachImage(
     val fileValue = viewModel.uiState.collectAsState().value.values[form.id] as ImageValue?
     var filePath = fileValue?.filePath?.toList() ?: listOf()
 
-    val warningInfo = if (form.required == true && filePath.isEmpty()) "${form.label} is required" else ""
+    val warningInfo =
+        if (form.required == true && filePath.isEmpty()) "${form.label} is required" else ""
 
     var fileIds = fileValue?.value?.toList() ?: listOf()
 
@@ -73,29 +76,33 @@ fun WorxAttachImage(
             contract = ActivityResultContracts.StartActivityForResult(),
             onResult = {
                 if (it.resultCode == Activity.RESULT_OK &&
-                    it.data != null) {
+                    it.data != null
+                ) {
                     it.data!!.getParcelableArrayListExtra<Uri>(FishBun.INTENT_PATH)
                         ?.forEach { uri ->
                             val fPath = getRealPathFromURI(context, uri)
-                            ArrayList(filePath).apply { add(fPath) }.also { array -> filePath = array.toList() }
+                            ArrayList(filePath).apply { add(fPath) }
+                                .also { array -> filePath = array.toList() }
                             viewModel.getPresignedUrl(ArrayList(filePath), indexForm, 2)
                         }
                 }
             })
 
-    Column(modifier = Modifier.fillMaxWidth()) {
+    Column(modifier = Modifier
+        .fillMaxWidth()
+        .padding(horizontal = 16.dp)) {
         Text(
             title,
             style = Typography.body2.copy(MaterialTheme.colors.onSecondary),
             modifier = Modifier
-                .padding(horizontal = 16.dp)
                 .padding(bottom = 8.dp)
         )
         if (!form.description.isNullOrBlank()) {
             Text(
                 text = form.description!!,
+                color = if (theme == SettingTheme.Dark) textFormDescriptionDark else textFormDescription,
                 style = MaterialTheme.typography.body1.copy(textFormDescription),
-                modifier = Modifier.padding(bottom = 8.dp, start = 17.dp)
+                modifier = Modifier.padding(bottom = 8.dp)
             )
         }
         if (filePath.isNotEmpty()) {
@@ -110,7 +117,10 @@ fun WorxAttachImage(
                             indexForm, if (filePath.isEmpty()) {
                                 null
                             } else {
-                                ImageValue(value = ArrayList(fileIds), filePath = ArrayList(filePath))
+                                ImageValue(
+                                    value = ArrayList(fileIds),
+                                    filePath = ArrayList(filePath)
+                                )
                             }
                         )
                     }
@@ -145,11 +155,19 @@ fun WorxAttachImage(
             ).contains(formStatus)
         ) {
             Row(
-                modifier = Modifier.padding(horizontal = 16.dp),
                 horizontalArrangement = Arrangement.spacedBy(12.dp)
             ) {
-                TakeImageButton((form.maxFiles ?: 10) > fileIds.size, navigateToPhotoCamera, setIndexData, theme)
-                GalleryImageButton((form.maxFiles ?: 10) > fileIds.size, launcherGallery = launcherGallery, theme)
+                TakeImageButton(
+                    (form.maxFiles ?: 10) > fileIds.size,
+                    navigateToPhotoCamera,
+                    setIndexData,
+                    theme
+                )
+                GalleryImageButton(
+                    (form.maxFiles ?: 10) > fileIds.size,
+                    launcherGallery = launcherGallery,
+                    theme
+                )
             }
         }
         if (warningInfo.isNotBlank()) {
@@ -166,7 +184,7 @@ fun WorxAttachImage(
         } else {
             form.isValid = true
         }
-        Divider(color = GrayDivider, modifier = Modifier.padding(top = 12.dp))
+        Divider(color = GrayDivider, modifier = Modifier.padding(vertical = 16.dp))
     }
 }
 
@@ -197,8 +215,14 @@ private fun ImageDataView(
                 .padding(horizontal = 12.dp)
                 .weight(1f)
         ) {
-            Text(text = filePath.substringAfterLast("/"), style = Typography.body2.copy(MaterialTheme.colors.onSecondary))
-            if (fileSize> 0 ) Text(text = "$fileSize kb", style = Typography.body2.copy(MaterialTheme.colors.onSecondary))
+            Text(
+                text = filePath.substringAfterLast("/"),
+                style = Typography.body2.copy(MaterialTheme.colors.onSecondary)
+            )
+            if (fileSize > 0) Text(
+                text = "$fileSize kb",
+                style = Typography.body2.copy(MaterialTheme.colors.onSecondary)
+            )
         }
         if (showCloseButton) {
             Icon(
@@ -228,7 +252,7 @@ private fun TakeImageButton(
         Manifest.permission.WRITE_EXTERNAL_STORAGE
     )
 
-    if (android.os.Build.VERSION.SDK_INT > 32){
+    if (android.os.Build.VERSION.SDK_INT > 32) {
         requiredPermissions = arrayOf(Manifest.permission.CAMERA)
     }
 
@@ -236,7 +260,11 @@ private fun TakeImageButton(
         ActivityResultContracts.RequestMultiplePermissions()
     ) {
         if (it.containsValue(false)) {
-            Toast.makeText(context, context.getString(R.string.permission_rejected), Toast.LENGTH_LONG).show()
+            Toast.makeText(
+                context,
+                context.getString(R.string.permission_rejected),
+                Toast.LENGTH_LONG
+            ).show()
         } else {
             sendIndexFormData()
             navigateToPhotoCamera()
@@ -248,8 +276,12 @@ private fun TakeImageButton(
         iconRes = R.drawable.ic_photo_camera,
         title = "Camera",
         actionClick = {
-            if (!isMaxFilesNumberNotAchieved){
-                Toast.makeText(context, context.getString(R.string.max_files_message), Toast.LENGTH_LONG).show()
+            if (!isMaxFilesNumberNotAchieved) {
+                Toast.makeText(
+                    context,
+                    context.getString(R.string.max_files_message),
+                    Toast.LENGTH_LONG
+                ).show()
             } else if (
                 requiredPermissions.all {
                     ContextCompat.checkSelfPermission(
@@ -289,7 +321,11 @@ private fun GalleryImageButton(
         ActivityResultContracts.RequestMultiplePermissions()
     ) {
         if (it.containsValue(false)) {
-            Toast.makeText(context, context.getString(R.string.permission_rejected), Toast.LENGTH_LONG).show()
+            Toast.makeText(
+                context,
+                context.getString(R.string.permission_rejected),
+                Toast.LENGTH_LONG
+            ).show()
         } else {
             FishBun.with(context.getActivity()!!)
                 .setImageAdapter(CoilAdapter())
@@ -340,11 +376,11 @@ private fun GalleryImageButton(
 
 @Preview
 @Composable
-fun PreviewImageWorx(){
+fun PreviewImageWorx() {
     val viewModel: DetailFormViewModel = hiltViewModel()
     WorxTheme() {
         WorxAttachImage(
-            indexForm = 0 ,
+            indexForm = 0,
             viewModel = viewModel,
             session = Session(LocalContext.current),
             setIndexData = {}) {

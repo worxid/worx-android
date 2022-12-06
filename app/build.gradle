@@ -26,8 +26,8 @@ android {
         applicationId "id.worx.device.client"
         minSdk 24
         targetSdk 33
-        versionCode 12
-        versionName "1.1.3"
+        versionCode 13
+        versionName "1.1.4"
 
         testInstrumentationRunner  "id.worx.device.client.CustomTestRunner"
     }
