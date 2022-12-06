@@ -3,6 +3,7 @@ package id.worx.device.client.screen.components
 import android.graphics.Bitmap
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Divider
@@ -24,16 +25,21 @@ import id.worx.device.client.R
 import id.worx.device.client.data.database.Session
 import id.worx.device.client.model.SignatureField
 import id.worx.device.client.model.SignatureValue
-import id.worx.device.client.theme.GrayDivider
-import id.worx.device.client.theme.PrimaryMain
-import id.worx.device.client.theme.Typography
-import id.worx.device.client.theme.textFormDescription
+import id.worx.device.client.screen.main.SettingTheme
+import id.worx.device.client.theme.*
 import id.worx.device.client.viewmodel.DetailFormViewModel
 import id.worx.device.client.viewmodel.EventStatus
 
 @Composable
-fun WorxSignature(indexForm: Int, viewModel: DetailFormViewModel, session: Session,validation : Boolean = false,isValid : (Boolean) -> Unit ={}) {
-    val form = viewModel.uiState.collectAsState().value.detailForm!!.fields[indexForm] as SignatureField
+fun WorxSignature(
+    indexForm: Int,
+    viewModel: DetailFormViewModel,
+    session: Session,
+    validation: Boolean = false,
+    isValid: (Boolean) -> Unit = {}
+) {
+    val form =
+        viewModel.uiState.collectAsState().value.detailForm!!.fields[indexForm] as SignatureField
     val theme = session.theme
 
     val value = viewModel.uiState.collectAsState().value.values[form.id] as SignatureValue?
@@ -44,12 +50,15 @@ fun WorxSignature(indexForm: Int, viewModel: DetailFormViewModel, session: Sessi
     } else {
         remember { mutableStateOf(value.bitmap) }
     }
-    val warningInfo = if (form.required == true && bitmap.value == null) "${form.label} is required" else ""
+    val warningInfo =
+        if (form.required == true && bitmap.value == null) "${form.label} is required" else ""
 
     val fileId = value?.value
     val formStatus = viewModel.uiState.collectAsState().value.status
 
-    Column(modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp)) {
+    Column(modifier = Modifier
+        .fillMaxWidth()
+        .padding(horizontal = 16.dp)) {
         Text(
             form.label ?: "Signature",
             style = Typography.body2.copy(MaterialTheme.colors.onSecondary),
@@ -58,6 +67,7 @@ fun WorxSignature(indexForm: Int, viewModel: DetailFormViewModel, session: Sessi
         if (!form.description.isNullOrEmpty()) {
             Text(
                 text = form.description!!,
+                color = if (theme == SettingTheme.Dark) textFormDescriptionDark else textFormDescription,
                 style = MaterialTheme.typography.body1.copy(textFormDescription),
                 modifier = Modifier.padding(bottom = 8.dp)
             )
@@ -102,7 +112,7 @@ fun WorxSignature(indexForm: Int, viewModel: DetailFormViewModel, session: Sessi
 
 @Composable
 private fun AttachSignatureButton(
-    theme : String?,
+    theme: String?,
     goToSignaturePad: () -> Unit,
 ) {
 

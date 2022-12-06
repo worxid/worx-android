@@ -4,6 +4,7 @@ import android.text.BoringLayout
 import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -54,6 +55,7 @@ fun WorxTextField(
         if (description.isNotBlank()) {
             Text(
                 text = description,
+                color = if (theme == SettingTheme.Dark) textFormDescriptionDark else textFormDescription,
                 style = MaterialTheme.typography.body1.copy(textFormDescription),
                 modifier = Modifier.padding(bottom = 8.dp)
             )

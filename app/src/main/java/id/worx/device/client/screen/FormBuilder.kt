@@ -193,10 +193,10 @@ fun DetailForm(
                         )
                     }
                     Type.Checkbox.type -> {
-                        WorxCheckBox(index, viewModel, validation, isValid)
+                        WorxCheckBox(index, viewModel, validation, isValid, session)
                     }
                     Type.RadioGroup.type -> {
-                        WorxRadiobutton(index, viewModel, validation, isValid)
+                        WorxRadiobutton(index, viewModel, validation, isValid, session)
                     }
                     Type.Dropdown.type -> {
                         WorxDropdown(index, viewModel, session, validation, isValid)
@@ -205,7 +205,7 @@ fun DetailForm(
                         WorxDateInput(index, viewModel, session, validation, isValid)
                     }
                     Type.Rating.type -> {
-                        WorxRating(index, viewModel, validation, isValid)
+                        WorxRating(index, viewModel, validation, isValid, session)
                     }
                     Type.File.type -> {
                         WorxAttachFile(index, viewModel, session, validation, isValid)

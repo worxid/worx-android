@@ -1,7 +1,5 @@
 package id.worx.device.client.screen.components
 
-import android.util.Log
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
 import androidx.compose.runtime.Composable
@@ -10,19 +8,25 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import id.worx.device.client.data.database.Session
 import id.worx.device.client.model.CheckBoxField
 import id.worx.device.client.model.CheckBoxValue
-import id.worx.device.client.theme.GrayDivider
-import id.worx.device.client.theme.PrimaryMain
-import id.worx.device.client.theme.Typography
-import id.worx.device.client.theme.textFormDescription
+import id.worx.device.client.screen.main.SettingTheme
+import id.worx.device.client.theme.*
 import id.worx.device.client.viewmodel.DetailFormViewModel
 import id.worx.device.client.viewmodel.EventStatus
 
 @Composable
-fun WorxCheckBox(indexForm: Int, viewModel: DetailFormViewModel, validation: Boolean = false,isValid : (Boolean) -> Unit ={}) {
+fun WorxCheckBox(
+    indexForm: Int,
+    viewModel: DetailFormViewModel,
+    validation: Boolean = false,
+    isValid: (Boolean) -> Unit = {},
+    session: Session
+) {
+    val theme = session.theme
+
     val form =
         viewModel.uiState.collectAsState().value.detailForm!!.fields[indexForm] as CheckBoxField
     val formStatus = viewModel.uiState.collectAsState().value.status
@@ -58,6 +62,7 @@ fun WorxCheckBox(indexForm: Int, viewModel: DetailFormViewModel, validation: Boo
         if (!form.description.isNullOrBlank()) {
             Text(
                 text = form.description!!,
+                color = if (theme == SettingTheme.Dark) textFormDescriptionDark else textFormDescription,
                 style = MaterialTheme.typography.body1.copy(textFormDescription),
                 modifier = Modifier.padding(bottom = 8.dp).padding(horizontal = 16.dp)
             )

@@ -1,5 +1,6 @@
 package id.worx.device.client.screen.components
 
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -12,9 +13,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import id.worx.device.client.data.database.Session
 import id.worx.device.client.model.Separator
+import id.worx.device.client.screen.main.SettingTheme
 import id.worx.device.client.theme.GrayDivider
 import id.worx.device.client.theme.Typography
 import id.worx.device.client.theme.textFormDescription
+import id.worx.device.client.theme.textFormDescriptionDark
 import id.worx.device.client.viewmodel.DetailFormViewModel
 
 @Composable
@@ -47,6 +50,7 @@ fun WorxSeparator(
         if (!form.description.isNullOrBlank()) {
             Text(
                 text = form.description!!,
+                color = if (theme == SettingTheme.Dark) textFormDescriptionDark else textFormDescription,
                 style = MaterialTheme.typography.body1.copy(textFormDescription),
                 modifier = Modifier.padding(bottom = 8.dp)
             )

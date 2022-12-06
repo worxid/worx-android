@@ -10,6 +10,7 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -32,10 +33,8 @@ import id.worx.device.client.Util.getRealPathFromURI
 import id.worx.device.client.data.database.Session
 import id.worx.device.client.model.FileField
 import id.worx.device.client.model.FileValue
-import id.worx.device.client.theme.GrayDivider
-import id.worx.device.client.theme.PrimaryMain
-import id.worx.device.client.theme.Typography
-import id.worx.device.client.theme.textFormDescription
+import id.worx.device.client.screen.main.SettingTheme
+import id.worx.device.client.theme.*
 import id.worx.device.client.viewmodel.DetailFormViewModel
 import id.worx.device.client.viewmodel.EventStatus
 import java.io.File
@@ -90,6 +89,7 @@ fun WorxAttachFile(indexForm: Int, viewModel: DetailFormViewModel, session: Sess
         if (!form.description.isNullOrBlank()) {
             Text(
                 text = form.description!!,
+                color = if (theme == SettingTheme.Dark) textFormDescriptionDark else textFormDescription,
                 style = MaterialTheme.typography.body1.copy(textFormDescription),
                 modifier = Modifier.padding(bottom = 8.dp)
             )

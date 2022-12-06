@@ -1,7 +1,6 @@
 package id.worx.device.client.screen.components
 
 import android.R
-import android.util.Log
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyRow
@@ -17,18 +16,24 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+import id.worx.device.client.data.database.Session
 import id.worx.device.client.model.RatingField
 import id.worx.device.client.model.RatingValue
-import id.worx.device.client.theme.GrayDivider
-import id.worx.device.client.theme.PrimaryMain
-import id.worx.device.client.theme.SecondaryMain
-import id.worx.device.client.theme.Typography
-import id.worx.device.client.theme.textFormDescription
+import id.worx.device.client.screen.main.SettingTheme
+import id.worx.device.client.theme.*
 import id.worx.device.client.viewmodel.DetailFormViewModel
 import id.worx.device.client.viewmodel.EventStatus
 
 @Composable
-fun WorxRating(indexForm: Int, viewModel: DetailFormViewModel,validation : Boolean,isValid : (Boolean) -> Unit ={}) {
+fun WorxRating(
+    indexForm: Int,
+    viewModel: DetailFormViewModel,
+    validation: Boolean,
+    isValid: (Boolean) -> Unit = {},
+    session: Session
+) {
+    val theme = session.theme
+
     val form = viewModel.uiState.collectAsState().value.detailForm!!.fields[indexForm] as RatingField
     val formStatus = viewModel.uiState.collectAsState().value.status
     val title = form.label ?: "Rating"
@@ -62,6 +67,7 @@ fun WorxRating(indexForm: Int, viewModel: DetailFormViewModel,validation : Boole
         if (!form.description.isNullOrBlank()) {
             Text(
                 text = form.description!!,
+                color = if (theme == SettingTheme.Dark) textFormDescriptionDark else textFormDescription,
                 style = MaterialTheme.typography.body1.copy(textFormDescription),
                 modifier = Modifier.padding(bottom = 8.dp, )
             )

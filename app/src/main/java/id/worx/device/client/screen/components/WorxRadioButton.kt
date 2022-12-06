@@ -4,8 +4,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.LazyHorizontalGrid
 import androidx.compose.material.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -14,12 +12,11 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import id.worx.device.client.data.database.Session
 import id.worx.device.client.model.RadioButtonField
 import id.worx.device.client.model.RadioButtonValue
-import id.worx.device.client.theme.GrayDivider
-import id.worx.device.client.theme.PrimaryMain
-import id.worx.device.client.theme.Typography
-import id.worx.device.client.theme.textFormDescription
+import id.worx.device.client.screen.main.SettingTheme
+import id.worx.device.client.theme.*
 import id.worx.device.client.util.VerticalGrid
 import id.worx.device.client.viewmodel.DetailFormViewModel
 import id.worx.device.client.viewmodel.EventStatus
@@ -29,8 +26,11 @@ fun WorxRadiobutton(
     indexForm: Int,
     viewModel: DetailFormViewModel,
     validation: Boolean = false,
-    isValid: (Boolean) -> Unit = {}
+    isValid: (Boolean) -> Unit = {},
+    session: Session
 ) {
+    val theme = session.theme
+
     val form =
         viewModel.uiState.collectAsState().value.detailForm!!.fields[indexForm] as RadioButtonField
     val formStatus = viewModel.uiState.collectAsState().value.status
@@ -51,13 +51,18 @@ fun WorxRadiobutton(
         Text(
             title,
             style = Typography.body2.copy(MaterialTheme.colors.onSecondary),
-            modifier = Modifier.padding(bottom = 8.dp).padding(horizontal = 16.dp)
+            modifier = Modifier
+                .padding(bottom = 8.dp)
+                .padding(horizontal = 16.dp)
         )
         if (!form.description.isNullOrBlank()) {
             Text(
                 text = form.description!!,
+                color = if (theme == SettingTheme.Dark) textFormDescriptionDark else textFormDescription,
                 style = MaterialTheme.typography.body1.copy(textFormDescription),
-                modifier = Modifier.padding(bottom = 8.dp).padding(horizontal = 16.dp)
+                modifier = Modifier
+                    .padding(bottom = 8.dp)
+                    .padding(horizontal = 16.dp)
             )
         }
         VerticalGrid {
