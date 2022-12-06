@@ -14,7 +14,6 @@ import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.Divider
 import androidx.compose.material.Icon
@@ -175,7 +174,6 @@ fun WorxAttachImage(
                 Text(
                     text = warningInfo,
                     modifier = Modifier
-                        .padding(horizontal = 16.dp)
                         .padding(top = 4.dp),
                     color = PrimaryMain
                 )

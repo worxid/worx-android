@@ -10,7 +10,6 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -145,7 +144,6 @@ fun WorxAttachFile(indexForm: Int, viewModel: DetailFormViewModel, session: Sess
                 Text(
                     text = warningInfo,
                     modifier = Modifier
-                        .padding(horizontal = 16.dp)
                         .padding(top = 4.dp),
                     color = PrimaryMain
                 )
