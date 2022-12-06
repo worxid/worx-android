@@ -5,6 +5,8 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableStateOf
@@ -45,7 +47,8 @@ fun WorxRadiobutton(
     } else {
         remember { mutableStateOf<Int?>(null) }
     }
-    val warningInfo = if (form.required == true && onCheck.value == null) "$title is required" else ""
+    val warningInfo =
+        if (form.required == true && onCheck.value == null) "$title is required" else ""
 
     Column(modifier = Modifier.fillMaxWidth()) {
         Text(
@@ -94,6 +97,32 @@ fun WorxRadiobutton(
                         style = Typography.body1.copy(MaterialTheme.colors.onSecondary)
                     )
                 }
+            }
+        }
+        if (!arrayListOf(
+                EventStatus.Done,
+                EventStatus.Submitted
+            ).contains(formStatus)
+        ) {
+            TextButton(
+                onClick = {
+                    onCheck.value = null
+                },
+                modifier = Modifier
+                    .align(Alignment.End)
+                    .padding(top = 8.dp)
+                    .padding(horizontal = 16.dp),
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Refresh,
+                    contentDescription = "Reset Icon",
+                    tint = MaterialTheme.colors.onBackground
+                )
+                Text(
+                    text = "Reset",
+                    style = Typography.body2.copy(MaterialTheme.colors.onBackground),
+                    modifier = Modifier.padding(start = 8.dp)
+                )
             }
         }
         if (validation && warningInfo.isNotBlank()) {
