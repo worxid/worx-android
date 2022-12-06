@@ -25,13 +25,7 @@ import id.worx.device.client.viewmodel.DetailFormViewModel
 import id.worx.device.client.viewmodel.EventStatus
 
 @Composable
-fun WorxRating(
-    indexForm: Int,
-    viewModel: DetailFormViewModel,
-    validation: Boolean,
-    isValid: (Boolean) -> Unit = {},
-    session: Session
-) {
+fun WorxRating(indexForm: Int, viewModel: DetailFormViewModel,validation : Boolean, session: Session) {
     val theme = session.theme
 
     val form = viewModel.uiState.collectAsState().value.detailForm!!.fields[indexForm] as RatingField
@@ -102,16 +96,18 @@ fun WorxRating(
                 )
             }
         }
-        if (validation && warningInfo.isNotBlank()) {
-            Text(
-                text = warningInfo,
-                modifier = Modifier
-                    .padding(top = 4.dp),
-                color = PrimaryMain
-            )
-            isValid(false)
+        if (warningInfo.isNotBlank()) {
+            if (validation){
+                Text(
+                    text = warningInfo,
+                    modifier = Modifier
+                        .padding(top = 4.dp),
+                    color = PrimaryMain
+                )
+            }
+            form.isValid = false
         } else {
-            isValid(true)
+            form.isValid = true
         }
         Divider(color = GrayDivider, modifier = Modifier.padding(vertical = 16.dp))
     }

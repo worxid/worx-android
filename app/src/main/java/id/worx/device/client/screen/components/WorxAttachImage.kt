@@ -14,7 +14,6 @@ import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.Divider
 import androidx.compose.material.Icon
@@ -52,8 +51,7 @@ fun WorxAttachImage(
     viewModel: DetailFormViewModel,
     session: Session,
     setIndexData: () -> Unit,
-    validation: Boolean = false,
-    isValid: (Boolean) -> Unit = {},
+    validation : Boolean = false,
     navigateToPhotoCamera: () -> Unit,
 ) {
     val form = viewModel.uiState.collectAsState().value.detailForm!!.fields[indexForm] as ImageField
@@ -171,16 +169,18 @@ fun WorxAttachImage(
                 )
             }
         }
-        if (validation && warningInfo.isNotBlank()) {
-            Text(
-                text = warningInfo,
-                modifier = Modifier
-                    .padding(top = 4.dp),
-                color = PrimaryMain
-            )
-            isValid(false)
+        if (warningInfo.isNotBlank()) {
+            if (validation){
+                Text(
+                    text = warningInfo,
+                    modifier = Modifier
+                        .padding(top = 4.dp),
+                    color = PrimaryMain
+                )
+            }
+            form.isValid = false
         } else {
-            isValid(true)
+            form.isValid = true
         }
         Divider(color = GrayDivider, modifier = Modifier.padding(vertical = 16.dp))
     }

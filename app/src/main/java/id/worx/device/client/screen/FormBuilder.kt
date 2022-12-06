@@ -52,6 +52,7 @@ fun ValidFormBuilder(
         skipHalfExpanded = true
     )
     var showSubmitDialog by remember { mutableStateOf(state.isVisible) }
+    val totalNonValidData = componentList.filter { !(it.isValid ?: true) }.size
 
     Box(
         modifier = Modifier
@@ -64,7 +65,6 @@ fun ValidFormBuilder(
             cameraViewModel,
             session,
             validation,
-            { isValid = it }
         )
         {
             showSubmitDialog = true
@@ -79,7 +79,7 @@ fun ValidFormBuilder(
                 state,
                 {
                     validation = true
-                    if (isValid) {
+                    if (totalNonValidData==0) {
                         onEvent(DetailFormEvent.SubmitForm)
                     }
                     showSubmitDialog = false
@@ -102,7 +102,6 @@ fun DetailForm(
     cameraViewModel: CameraViewModel,
     session: Session,
     validation: Boolean,
-    isValid: (Boolean) -> Unit,
     showSubmitDialog: () -> Unit
 ) {
     val theme = session.theme
@@ -183,43 +182,44 @@ fun DetailForm(
                             ).contains(formStatus),
                             isRequired = form?.required ?: false,
                             validation = validation,
-                            isValid = isValid,
                             isEnabled = !arrayListOf(
                                 EventStatus.Done,
                                 EventStatus.Submitted
-                            ).contains(formStatus)
+                            ).contains(formStatus),
+                            viewModel = viewModel,
+                            index = index
                         )
                     }
                     Type.Checkbox.type -> {
-                        WorxCheckBox(index, viewModel, validation, isValid, session)
+                        WorxCheckBox(index, viewModel, validation)
                     }
                     Type.RadioGroup.type -> {
-                        WorxRadiobutton(index, viewModel, validation, isValid, session)
+                        WorxRadiobutton(index, viewModel, validation)
                     }
                     Type.Dropdown.type -> {
-                        WorxDropdown(index, viewModel, session, validation, isValid)
+                        WorxDropdown(index, viewModel, session, validation)
                     }
                     Type.Date.type -> {
-                        WorxDateInput(index, viewModel, session, validation, isValid)
+                        WorxDateInput(index, viewModel, session, validation)
                     }
                     Type.Rating.type -> {
-                        WorxRating(index, viewModel, validation, isValid, session)
+                        WorxRating(index, viewModel, validation)
                     }
                     Type.File.type -> {
-                        WorxAttachFile(index, viewModel, session, validation, isValid)
+                        WorxAttachFile(index, viewModel, session, validation)
                     }
                     Type.Photo.type -> {
                         WorxAttachImage(
                             index,
                             viewModel,
                             session,
-                            { cameraViewModel.navigateFromDetailScreen(index) }, validation, isValid
+                            { cameraViewModel.navigateFromDetailScreen(index) }, validation
                         ) {
                             viewModel.goToCameraPhoto(index)
                         }
                     }
                     Type.Signature.type -> {
-                        WorxSignature(index, viewModel, session)
+                        WorxSignature(index, viewModel, session, validation)
                     }
                     Type.Separator.type -> {
                         WorxSeparator(index, viewModel, session)

@@ -24,6 +24,7 @@ import androidx.compose.ui.unit.dp
 import id.worx.device.client.R
 import id.worx.device.client.screen.main.SettingTheme
 import id.worx.device.client.theme.*
+import id.worx.device.client.viewmodel.DetailFormViewModel
 
 @Composable
 fun WorxTextField(
@@ -38,10 +39,12 @@ fun WorxTextField(
     isDeleteTrail: Boolean = false,
     isRequired : Boolean = false,
     validation: Boolean = false,
-    isValid : (Boolean) -> Unit ={},
-    isEnabled: Boolean = true
+    isEnabled: Boolean = true,
+    viewModel:DetailFormViewModel? = null,
+    index: Int =-1
 ) {
     var textValue by remember { mutableStateOf(initialValue) }
+    val data = viewModel?.uiState?.collectAsState()?.value?.detailForm?.fields?.getOrNull(index)
 
     Column(
         modifier = Modifier.padding(horizontal = 16.dp)
@@ -114,16 +117,18 @@ fun WorxTextField(
                 }
             }
         )
-        if (validation && isRequired && textValue.text.isBlank()){
-            Text(
-                text = "$label is required",
-                modifier = Modifier
-                    .padding(bottom = 8.dp),
-                color = PrimaryMain
-            )
-            isValid(false)
+        if (isRequired && textValue.text.isEmpty()){
+            if (validation){
+                Text(
+                    text = "$label is required",
+                    modifier = Modifier
+                        .padding(bottom = 8.dp),
+                    color = PrimaryMain
+                )
+            }
+            data?.isValid = false
         } else {
-            isValid(true)
+            data?.isValid = true
         }
         Divider(
             color = GrayDivider,

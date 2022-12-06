@@ -18,13 +18,7 @@ import id.worx.device.client.viewmodel.DetailFormViewModel
 import id.worx.device.client.viewmodel.EventStatus
 
 @Composable
-fun WorxCheckBox(
-    indexForm: Int,
-    viewModel: DetailFormViewModel,
-    validation: Boolean = false,
-    isValid: (Boolean) -> Unit = {},
-    session: Session
-) {
+fun WorxCheckBox(indexForm: Int, viewModel: DetailFormViewModel, validation: Boolean = false, session: Session) {
     val theme = session.theme
 
     val form =
@@ -45,13 +39,9 @@ fun WorxCheckBox(
     val totalCheckOptions = remember {
         mutableStateOf(value.value.count { it })
     }
-    val warningInfo = if (minChecked > totalCheckOptions.value) {
-        "Select minimum $minChecked options"
-    } else if (form.required == true && totalCheckOptions.value ==0) {
+    val warningInfo = if (form.required == true && totalCheckOptions.value ==0)
         "$title is required"
-    } else {
-        ""
-    }
+        else if (minChecked > totalCheckOptions.value) "Select minimum $minChecked options" else ""
 
     Column(modifier = Modifier.fillMaxWidth()) {
         Text(
@@ -106,16 +96,18 @@ fun WorxCheckBox(
                 }
             }
         }
-        if (validation && warningInfo.isNotBlank()) {
-            Text(
-                text = warningInfo,
-                modifier = Modifier
-                    .padding(bottom = 8.dp),
-                color = PrimaryMain
-            )
-            isValid(false)
+        if (warningInfo.isNotBlank()) {
+            if (validation){
+                Text(
+                    text = warningInfo,
+                    modifier = Modifier
+                        .padding(bottom = 8.dp),
+                    color = PrimaryMain
+                )
+            }
+            form.isValid = false
         } else {
-            isValid(true)
+            form.isValid = true
         }
         Divider(color = GrayDivider, modifier = Modifier.padding(vertical = 16.dp))
     }
