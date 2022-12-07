@@ -26,8 +26,8 @@ android {
         applicationId "id.worx.device.client"
         minSdk 24
         targetSdk 33
-        versionCode 13
-        versionName "1.1.4"
+        versionCode 14
+        versionName "1.5"
 
         testInstrumentationRunner  "id.worx.device.client.CustomTestRunner"
     }
@@ -152,4 +152,7 @@ dependencies {
     kaptAndroidTest 'com.google.dagger:hilt-android-compiler:2.44.2'
     androidTestImplementation "androidx.compose.ui:ui-test-junit4:$compose_version"
     debugImplementation "androidx.compose.ui:ui-test-manifest:$compose_version"
+
+    // gps/ admin
+    implementation "com.google.android.play:app-update-ktx:2.0.1"
 }
