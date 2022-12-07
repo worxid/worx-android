@@ -148,7 +148,6 @@ fun DetailForm(
             modifier = modifier,
         ) {
             itemsIndexed(items = componentList) { index, item ->
-                viewModel.currentComponentIndex(index)
                 when (item.type) {
                     Type.TextField.type -> {
                         val id =
@@ -191,10 +190,10 @@ fun DetailForm(
                         )
                     }
                     Type.Checkbox.type -> {
-                        WorxCheckBox(index, viewModel, validation)
+                        WorxCheckBox(index, viewModel, validation, session)
                     }
                     Type.RadioGroup.type -> {
-                        WorxRadiobutton(index, viewModel, validation)
+                        WorxRadiobutton(index, viewModel, validation, session)
                     }
                     Type.Dropdown.type -> {
                         WorxDropdown(index, viewModel, session, validation)
@@ -203,7 +202,7 @@ fun DetailForm(
                         WorxDateInput(index, viewModel, session, validation)
                     }
                     Type.Rating.type -> {
-                        WorxRating(index, viewModel, validation)
+                        WorxRating(index, viewModel, validation, session)
                     }
                     Type.File.type -> {
                         WorxAttachFile(index, viewModel, session, validation)

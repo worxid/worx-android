@@ -130,11 +130,11 @@ class DetailFormViewModel @Inject constructor(
         _navigateTo.value = Event(MainScreen.SignaturePad)
     }
 
-    fun saveSignature(bitmap: Bitmap) {
+    fun saveSignature(bitmap: Bitmap, index: Int) {
         val fileName =
-            "signature${uiState.value.detailForm!!.fields[uiState.value.currentComponent].id}"
+            "signature${uiState.value.detailForm!!.fields[index].id}"
         val filePath = createFileFromBitmap(fileName, bitmap)
-        getPresignedUrlForSignature(uiState.value.currentComponent, bitmap, filePath)
+        getPresignedUrlForSignature(index, bitmap, filePath)
         _navigateTo.value = Event(MainScreen.Detail)
     }
 

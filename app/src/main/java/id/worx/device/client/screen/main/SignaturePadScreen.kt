@@ -94,7 +94,8 @@ fun SignaturePadScreen(
                     border = BorderStroke(1.5.dp, MaterialTheme.colors.onSecondary),
                     shape = RoundedCornerShape(1),
                     onClick = {
-                        viewModel.saveSignature(signaturePadAdapter!!.getSignatureBitmap())
+                        viewModel.saveSignature(signaturePadAdapter!!.getSignatureBitmap(),
+                            viewModel.uiState.value.currentComponent)
                     }
                 ) {
                     Text(
