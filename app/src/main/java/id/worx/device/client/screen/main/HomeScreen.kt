@@ -34,12 +34,10 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
-import androidx.navigation.NavController
-import androidx.navigation.NavHostController
-import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.composable
-import androidx.navigation.compose.currentBackStackEntryAsState
-import androidx.navigation.compose.rememberNavController
+import com.google.accompanist.pager.ExperimentalPagerApi
+import com.google.accompanist.pager.HorizontalPager
+import com.google.accompanist.pager.PagerState
+import com.google.accompanist.pager.rememberPagerState
 import id.worx.device.client.R
 import id.worx.device.client.data.database.Session
 import id.worx.device.client.model.EmptyForm
@@ -50,6 +48,7 @@ import id.worx.device.client.theme.Typography
 import id.worx.device.client.viewmodel.DetailFormViewModel
 import id.worx.device.client.viewmodel.HomeViewModel
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 
 sealed class BottomNavItem(var title: Int, var icon: Int, var screen_route: String) {
 
@@ -58,58 +57,7 @@ sealed class BottomNavItem(var title: Int, var icon: Int, var screen_route: Stri
     object Submission : BottomNavItem(R.string.submission, R.drawable.ic_tick, "submission")
 }
 
-@Composable
-fun NavigationGraph(
-    navController: NavHostController,
-    formList: List<EmptyForm>,
-    draftList: List<SubmitForm>,
-    submissionList: List<SubmitForm>,
-    viewModel: HomeViewModel,
-    detailVM: DetailFormViewModel,
-    session: Session,
-    syncWithServer : () -> Unit,
-    modifier: Modifier
-) {
-    NavHost(navController, startDestination = BottomNavItem.Form.screen_route, modifier = modifier) {
-        composable(BottomNavItem.Form.screen_route) {
-            FormScreen(
-                formList,
-                0,
-                viewModel,
-                detailVM,
-                stringResource(R.string.no_forms),
-                stringResource(R.string.empty_description_form),
-                session,
-                syncWithServer
-            )
-        }
-        composable(BottomNavItem.Draft.screen_route) {
-            FormScreen(
-                draftList,
-                1,
-                viewModel,
-                detailVM,
-                stringResource(R.string.no_drafts),
-                stringResource(R.string.empty_description_drafts),
-                session,
-                syncWithServer
-            )
-        }
-        composable(BottomNavItem.Submission.screen_route) {
-            FormScreen(
-                submissionList,
-                2,
-                viewModel,
-                detailVM,
-                stringResource(R.string.no_submission),
-                stringResource(R.string.empty_description_submission),
-                session,
-                syncWithServer
-            )
-        }
-    }
-}
-
+@OptIn(ExperimentalPagerApi::class)
 @Composable
 fun HomeScreen(
     formList: List<EmptyForm>,
@@ -120,11 +68,11 @@ fun HomeScreen(
     session: Session,
     syncWithServer: () -> Unit
 ) {
-    val navController = rememberNavController()
     val notificationType by viewModel.showNotification.collectAsState()
     val showBadge by viewModel.showBadge.collectAsState()
     var showSubmittedStatus by remember { mutableStateOf(notificationType == 1) }
     var showBotNav by remember { mutableStateOf(false) }
+    val pagerState = rememberPagerState(0)
 
     Scaffold(
         topBar = {
@@ -140,26 +88,53 @@ fun HomeScreen(
         },
         bottomBar = {
             BottomNavigationView(
-                navController = navController,
                 showBadge = showBadge,
                 showBotNav = showBotNav,
-                theme = session.theme
+                theme = session.theme,
+                pagerState = pagerState
             )
         }
     ) { padding ->
         val modifier = Modifier.padding(bottom = 56.dp)
         if (showBotNav) {
-            NavigationGraph(
-                navController = navController,
-                formList = formList,
-                draftList = draftList,
-                submissionList = submissionList,
-                viewModel = viewModel,
-                detailVM = detailVM,
-                session = session,
-                syncWithServer = syncWithServer,
-                modifier = modifier
-            )
+            HorizontalPager(
+                modifier = Modifier.fillMaxSize(),
+                count = 3,
+                state = pagerState,
+            ) { page ->
+                when (page) {
+                    0 -> FormScreen(
+                        formList,
+                        0,
+                        viewModel,
+                        detailVM,
+                        stringResource(R.string.no_forms),
+                        stringResource(R.string.empty_description_form),
+                        session = session,
+                        syncWithServer
+                    )
+                    1 -> FormScreen(
+                        draftList,
+                        1,
+                        viewModel,
+                        detailVM,
+                        stringResource(R.string.no_drafts),
+                        stringResource(R.string.empty_description_drafts),
+                        session = session,
+                        syncWithServer
+                    )
+                    2 -> FormScreen(
+                        submissionList,
+                        2,
+                        viewModel,
+                        detailVM,
+                        stringResource(R.string.no_submission),
+                        stringResource(R.string.empty_description_submission),
+                        session = session,
+                        syncWithServer
+                    )
+                }
+            }
         } else {
             SearchScreen(
                 formList = formList,
@@ -197,13 +172,15 @@ fun HomeScreen(
     }
 }
 
+@OptIn(ExperimentalPagerApi::class)
 @Composable
-fun BottomNavigationView(navController: NavController, showBadge: Int, showBotNav: Boolean, theme:String?) {
+fun BottomNavigationView(showBadge: Int, showBotNav: Boolean, theme:String?, pagerState: PagerState) {
     val items = listOf(
         BottomNavItem.Form,
         BottomNavItem.Draft,
         BottomNavItem.Submission,
     )
+    val scope = rememberCoroutineScope()
     if (showBotNav) {
         BottomNavigation(
             backgroundColor = Color.White,
@@ -211,9 +188,7 @@ fun BottomNavigationView(navController: NavController, showBadge: Int, showBotNa
                 .border(1.5.dp, MaterialTheme.colors.onSecondary.copy(0.54f))
                 .height(72.dp)
         ) {
-            val navBackStackEntry by navController.currentBackStackEntryAsState()
-            val currentRoute = navBackStackEntry?.destination?.route
-            items.forEach { item ->
+            items.forEachIndexed { index, item  ->
                 var modifierBorder = Modifier.border(0.dp, MaterialTheme.colors.onSecondary.copy(0.54f))
                 if (item.title == R.string.draft) modifierBorder =
                     Modifier.border(1.5.dp, MaterialTheme.colors.onSecondary.copy(0.54f))
@@ -240,7 +215,7 @@ fun BottomNavigationView(navController: NavController, showBadge: Int, showBotNa
                             modifier = Modifier.padding(top = 8.dp),
                             text = stringResource(id = item.title),
                             fontSize = 11.sp, fontFamily = FontFamily.Monospace,
-                            color = if (currentRoute == item.screen_route) {
+                            color = if (index == pagerState.currentPage) {
                                 Color.White
                             } else {
                                 MaterialTheme.colors.onSecondary.copy(0.3f)
@@ -249,24 +224,20 @@ fun BottomNavigationView(navController: NavController, showBadge: Int, showBotNa
                     },
                     selectedContentColor = Color.White,
                     unselectedContentColor = MaterialTheme.colors.onSecondary.copy(alpha = 0.3f),
-                    selected = currentRoute == item.screen_route,
+                    selected = index == pagerState.currentPage,
                     onClick = {
-                        navController.navigate(item.screen_route) {
-
-                            navController.graph.startDestinationRoute?.let { screen_route ->
-                                popUpTo(screen_route) {
-                                    saveState = true
-                                }
-                            }
-                            launchSingleTop = true
-                            restoreState = true
+                        scope.launch {
+                            pagerState.animateScrollToPage(index)
                         }
                     },
-                    modifier = if (currentRoute == item.screen_route) {
+                    modifier = if (index == pagerState.currentPage) {
                         modifierBorder.background(if (theme == SettingTheme.Dark) PrimaryMain else MaterialTheme.colors.primary)
                     } else {
                         modifierBorder.background(color = MaterialTheme.colors.secondary)
-                    }.align(Alignment.CenterVertically).fillMaxHeight().padding(bottom = 4.dp),
+                    }
+                        .align(Alignment.CenterVertically)
+                        .fillMaxHeight()
+                        .padding(bottom = 4.dp),
                 )
             }
         }
@@ -467,8 +438,9 @@ fun FormSubmitted(
 //    HomeScreen(list, arrayListOf(), arrayListOf(), viewModel, detailVM,session,MainActivity())
 //}
 
+@OptIn(ExperimentalPagerApi::class)
 @Preview(showBackground = true)
 @Composable
 private fun BottomNavigationViewPreview(){
-    BottomNavigationView(navController = rememberNavController(), showBadge = 1, showBotNav = true, theme = "")
+    BottomNavigationView(showBadge = 1, showBotNav = true, theme = "", PagerState(1))
 }
