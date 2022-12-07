@@ -26,13 +26,11 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
@@ -45,16 +43,17 @@ import id.worx.device.client.model.SubmitForm
 import id.worx.device.client.screen.components.RedFullWidthButton
 import id.worx.device.client.theme.PrimaryMain
 import id.worx.device.client.theme.Typography
+import id.worx.device.client.theme.backgroundFormList
 import id.worx.device.client.viewmodel.DetailFormViewModel
 import id.worx.device.client.viewmodel.HomeViewModel
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
-sealed class BottomNavItem(var title: Int, var icon: Int, var screen_route: String) {
+sealed class BottomNavItem(var title: Int, var icon: Int, var iconUnselected: Int) {
 
-    object Form : BottomNavItem(R.string.form, R.drawable.ic_form, "form")
-    object Draft : BottomNavItem(R.string.draft, R.drawable.ic_draft, "draft")
-    object Submission : BottomNavItem(R.string.submission, R.drawable.ic_tick, "submission")
+    object Form : BottomNavItem(R.string.form, R.drawable.ic_form, R.drawable.ic_form_gray)
+    object Draft : BottomNavItem(R.string.draft, R.drawable.ic_draft, R.drawable.ic_draft_gray)
+    object Submission : BottomNavItem(R.string.submission, R.drawable.ic_tick, R.drawable.ic_tick_gray)
 }
 
 @OptIn(ExperimentalPagerApi::class)
@@ -95,7 +94,9 @@ fun HomeScreen(
             )
         }
     ) { padding ->
-        val modifier = Modifier.padding(bottom = 56.dp)
+        val modifier = Modifier
+            .padding(bottom = 56.dp)
+            .background(backgroundFormList)
         if (showBotNav) {
             HorizontalPager(
                 modifier = Modifier.fillMaxSize(),
@@ -185,14 +186,10 @@ fun BottomNavigationView(showBadge: Int, showBotNav: Boolean, theme:String?, pag
         BottomNavigation(
             backgroundColor = Color.White,
             modifier = Modifier
-                .border(1.5.dp, MaterialTheme.colors.onSecondary.copy(0.54f))
-                .height(72.dp)
+                .padding(horizontal = 13.5.dp, vertical = 16.dp)
+                .border(2.dp, MaterialTheme.colors.onSecondary, RoundedCornerShape(8.dp))
         ) {
             items.forEachIndexed { index, item  ->
-                var modifierBorder = Modifier.border(0.dp, MaterialTheme.colors.onSecondary.copy(0.54f))
-                if (item.title == R.string.draft) modifierBorder =
-                    Modifier.border(1.5.dp, MaterialTheme.colors.onSecondary.copy(0.54f))
-
                 BottomNavigationItem(
                     icon = {
                         BadgedBox(badge = {
@@ -204,40 +201,22 @@ fun BottomNavigationView(showBadge: Int, showBotNav: Boolean, theme:String?, pag
                             }
                         }) {
                             Icon(
-                                painterResource(id = item.icon),
+                                if (index == pagerState.currentPage) painterResource(id = item.icon)
+                                else painterResource(id = item.iconUnselected),
                                 contentDescription = stringResource(id = item.title),
-                                modifier = Modifier.padding(6.dp)
+                                modifier = Modifier
+                                    .padding(16.dp)
+                                    .height(24.dp),
+                                tint = Color.Unspecified
                             )
                         }
                     },
-                    label = {
-                        Text(
-                            modifier = Modifier.padding(top = 8.dp),
-                            text = stringResource(id = item.title),
-                            fontSize = 11.sp, fontFamily = FontFamily.Monospace,
-                            color = if (index == pagerState.currentPage) {
-                                Color.White
-                            } else {
-                                MaterialTheme.colors.onSecondary.copy(0.3f)
-                            }
-                        )
-                    },
-                    selectedContentColor = Color.White,
-                    unselectedContentColor = MaterialTheme.colors.onSecondary.copy(alpha = 0.3f),
                     selected = index == pagerState.currentPage,
                     onClick = {
                         scope.launch {
                             pagerState.animateScrollToPage(index)
                         }
                     },
-                    modifier = if (index == pagerState.currentPage) {
-                        modifierBorder.background(if (theme == SettingTheme.Dark) PrimaryMain else MaterialTheme.colors.primary)
-                    } else {
-                        modifierBorder.background(color = MaterialTheme.colors.secondary)
-                    }
-                        .align(Alignment.CenterVertically)
-                        .fillMaxHeight()
-                        .padding(bottom = 4.dp),
                 )
             }
         }
@@ -442,5 +421,5 @@ fun FormSubmitted(
 @Preview(showBackground = true)
 @Composable
 private fun BottomNavigationViewPreview(){
-    BottomNavigationView(showBadge = 1, showBotNav = true, theme = "", PagerState(1))
+    BottomNavigationView(showBadge = 1, showBotNav = true, theme = SettingTheme.System, PagerState(1))
 }

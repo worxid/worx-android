@@ -1,9 +1,13 @@
 package id.worx.device.client.screen.main
 
-import androidx.compose.foundation.*
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
@@ -14,6 +18,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -43,33 +48,42 @@ fun FormScreen(
 ) {
     val searchInput = viewModel.uiState.collectAsState().value.searchInput
     val theme = session.theme
+    val title = arrayListOf(R.string.form, R.string.draft, R.string.submission)
 
     WorxBoxPullRefresh(onRefresh = { syncWithServer() }) {
-        if (data.isNullOrEmpty()) {
-            EmptyList(titleForEmpty, descriptionForEmpty, session)
-        } else {
-            LazyColumn(
-                modifier = Modifier
-                    .fillMaxHeight()
-                    .background(MaterialTheme.colors.secondary)
-                    .padding(horizontal = 16.dp, vertical = 12.dp),
-                verticalArrangement = Arrangement.spacedBy(12.dp)
-            ) {
-                when (type) {
-                    0 -> items(items = data, itemContent = { item ->
-                        ListItemValidForm(item, viewModel, detailFormViewModel, theme)
-                    })
-                    1 -> items(items = data, itemContent = { item ->
-                        DraftItemForm(item as SubmitForm, viewModel, detailFormViewModel, theme)
-                    })
-                    2 -> items(items = data, itemContent = { item ->
-                        SubmissionItemForm(
-                            item as SubmitForm,
-                            viewModel,
-                            detailFormViewModel,
-                            theme
-                        )
-                    })
+        Column(
+            modifier = Modifier
+                .fillMaxHeight()
+                .background(MaterialTheme.colors.secondary)
+                .padding(horizontal = 16.dp, vertical = 16.dp),
+        ) {
+            Text(
+                text = stringResource(id = title[type]),
+                style = Typography.subtitle2.copy(MaterialTheme.colors.onSecondary),
+                modifier = Modifier.padding(bottom = 16.dp)
+            )
+            if (data.isNullOrEmpty()) {
+                EmptyList(type, titleForEmpty, descriptionForEmpty, session)
+            } else {
+                LazyColumn(
+                    verticalArrangement = Arrangement.spacedBy(12.dp)
+                ) {
+                    when (type) {
+                        0 -> items(items = data, itemContent = { item ->
+                            ListItemValidForm(item, viewModel, detailFormViewModel, theme)
+                        })
+                        1 -> items(items = data, itemContent = { item ->
+                            DraftItemForm(item as SubmitForm, viewModel, detailFormViewModel, theme)
+                        })
+                        2 -> items(items = data, itemContent = { item ->
+                            SubmissionItemForm(
+                                item as SubmitForm,
+                                viewModel,
+                                detailFormViewModel,
+                                theme
+                            )
+                        })
+                    }
                 }
             }
         }
@@ -86,7 +100,7 @@ fun ListItemValidForm(
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .border(1.5.dp, color = MaterialTheme.colors.onSecondary)
+            .border(1.dp, color = MaterialTheme.colors.onSecondary, RoundedCornerShape(8.dp))
             .clickable(
                 onClick = {
                     viewModel.goToDetailScreen()
@@ -126,7 +140,7 @@ fun DraftItemForm(
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .border(1.5.dp, color = MaterialTheme.colors.onSecondary)
+            .border(1.dp, color = MaterialTheme.colors.onSecondary, RoundedCornerShape(8.dp))
             .clickable(
                 onClick = {
                     viewModel.goToDetailScreen()
@@ -137,7 +151,7 @@ fun DraftItemForm(
         Image(
             modifier = Modifier
                 .padding(horizontal = 16.dp),
-            painter = painterResource(id = if (theme == SettingTheme.Dark) R.drawable.ic_form_white else R.drawable.ic_form_red),
+            painter = painterResource(id = if (theme == SettingTheme.Dark) R.drawable.ic_form_white else R.drawable.ic_form_gray),
             contentDescription = "Form Icon",
         )
         Column(modifier = Modifier.padding(vertical = 13.dp)) {
@@ -188,7 +202,7 @@ fun SubmissionItemForm(
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .border(1.5.dp, color = MaterialTheme.colors.onSecondary)
+            .border(1.dp, color = MaterialTheme.colors.onSecondary, RoundedCornerShape(8.dp))
             .clickable(
                 onClick = {
                     viewModel.goToDetailScreen()
@@ -216,23 +230,22 @@ fun SubmissionItemForm(
 }
 
 @Composable
-fun EmptyList(text: String, description: String, session: Session) {
+fun EmptyList(type: Int, text: String, description: String, session: Session) {
     val theme = session.theme
+    val icon = arrayListOf(R.drawable.ic_emptylist_form, R.drawable.ic_emptylist_draft, R.drawable.ic_emptylist_submission)
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(MaterialTheme.colors.secondary)
-            .verticalScroll(rememberScrollState())
-            .padding(48.dp),
+            .padding(bottom = 48.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
         Image(
-            painter = painterResource(id = if (theme == SettingTheme.Dark) R.drawable.ic_empty_list_icon_dark else R.drawable.ic_empty_list_icon),
+            painter = painterResource(id = icon[type]),
             contentDescription = "Empty Icon"
         )
         Text(
-            modifier = Modifier.padding(top = 28.dp, bottom = 16.dp),
+            modifier = Modifier.padding(top = 28.dp, bottom = 12.dp),
             text = text,
             style = Typography.subtitle1.copy(MaterialTheme.colors.onSecondary)
         )
