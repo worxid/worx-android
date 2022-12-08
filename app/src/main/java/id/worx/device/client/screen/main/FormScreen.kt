@@ -1,5 +1,8 @@
 package id.worx.device.client.screen.main
 
+import android.content.Context
+import android.net.ConnectivityManager
+import android.net.NetworkCapabilities
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -8,12 +11,12 @@ import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontFamily
@@ -49,22 +52,29 @@ fun FormScreen(
 ) {
     val searchInput = viewModel.uiState.collectAsState().value.searchInput
     val theme = session.theme
+    val context = LocalContext.current
+    var networkStatus by remember { mutableStateOf(isNetworkAvailable(context)) }
 
-    WorxBoxPullRefresh(onRefresh = { syncWithServer() }) {
+    WorxBoxPullRefresh(onRefresh = {
+        syncWithServer()
+        networkStatus = isNetworkAvailable(context)
+    }) {
         ConstraintLayout(
             modifier = Modifier
                 .fillMaxSize()
                 .background(MaterialTheme.colors.secondary)
         ) {
             val (clNoInternet, content) = createRefs()
-            NoConnectionFound(modifier = Modifier
-                .background(MaterialTheme.colors.primary.copy(alpha = 0.16f))
-                .constrainAs(clNoInternet) {
-                    top.linkTo(parent.top)
-                    start.linkTo(parent.start)
-                    end.linkTo(parent.end)
-                    width = Dimension.fillToConstraints
-                })
+            if (!networkStatus){
+                NoConnectionFound(modifier = Modifier
+                    .background(MaterialTheme.colors.primary.copy(alpha = 0.16f))
+                    .constrainAs(clNoInternet) {
+                        top.linkTo(parent.top)
+                        start.linkTo(parent.start)
+                        end.linkTo(parent.end)
+                        width = Dimension.fillToConstraints
+                    })
+            }
             if (data.isNullOrEmpty()) {
                 EmptyList(Modifier.constrainAs(content) {
                     top.linkTo(clNoInternet.bottom)
@@ -327,5 +337,18 @@ fun EmptyList(modifier: Modifier, text: String, description: String, session: Se
             )
         )
     }
+}
+
+fun isNetworkAvailable(context: Context): Boolean {
+    val connectivityManager =
+        context.getSystemService(ConnectivityManager::class.java) as ConnectivityManager
+
+    val network = connectivityManager.activeNetwork
+    val connection = connectivityManager.getNetworkCapabilities(network)
+    return connection != null && (
+            connection.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR) ||
+                    connection.hasTransport(
+                        NetworkCapabilities.TRANSPORT_WIFI
+                    ))
 }
 
