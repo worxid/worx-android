@@ -21,6 +21,10 @@ val fontRoboto = FontFamily(
     Font(R.font.roboto)
 )
 
+val openSans = FontFamily(
+    Font(R.font.opensans)
+)
+
 val Typography = Typography(
     //defaultFontFamily = MontserratFontFamily,
     h1 = TextStyle(

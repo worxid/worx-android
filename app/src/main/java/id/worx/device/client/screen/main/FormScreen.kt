@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.CircularProgressIndicator
+import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
@@ -14,11 +15,15 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.constraintlayout.compose.ConstraintLayout
+import androidx.constraintlayout.compose.Dimension
 import id.worx.device.client.R
 import id.worx.device.client.Util.initProgress
 import id.worx.device.client.data.database.Session
@@ -27,6 +32,7 @@ import id.worx.device.client.model.SubmitForm
 import id.worx.device.client.screen.components.WorxBoxPullRefresh
 import id.worx.device.client.theme.PrimaryMain
 import id.worx.device.client.theme.Typography
+import id.worx.device.client.theme.openSans
 import id.worx.device.client.viewmodel.DetailFormViewModel
 import id.worx.device.client.viewmodel.HomeViewModel
 
@@ -45,34 +51,111 @@ fun FormScreen(
     val theme = session.theme
 
     WorxBoxPullRefresh(onRefresh = { syncWithServer() }) {
-        if (data.isNullOrEmpty()) {
-            EmptyList(titleForEmpty, descriptionForEmpty, session)
-        } else {
-            LazyColumn(
-                modifier = Modifier
-                    .fillMaxHeight()
-                    .background(MaterialTheme.colors.secondary)
-                    .padding(horizontal = 16.dp, vertical = 12.dp),
-                verticalArrangement = Arrangement.spacedBy(12.dp)
-            ) {
-                when (type) {
-                    0 -> items(items = data, itemContent = { item ->
-                        ListItemValidForm(item, viewModel, detailFormViewModel, theme)
-                    })
-                    1 -> items(items = data, itemContent = { item ->
-                        DraftItemForm(item as SubmitForm, viewModel, detailFormViewModel, theme)
-                    })
-                    2 -> items(items = data, itemContent = { item ->
-                        SubmissionItemForm(
-                            item as SubmitForm,
-                            viewModel,
-                            detailFormViewModel,
-                            theme
-                        )
-                    })
+        ConstraintLayout(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(MaterialTheme.colors.secondary)
+        ) {
+            val (clNoInternet, content) = createRefs()
+            NoConnectionFound(modifier = Modifier
+                .background(MaterialTheme.colors.primary.copy(alpha = 0.16f))
+                .constrainAs(clNoInternet) {
+                    top.linkTo(parent.top)
+                    start.linkTo(parent.start)
+                    end.linkTo(parent.end)
+                    width = Dimension.fillToConstraints
+                })
+            if (data.isNullOrEmpty()) {
+                EmptyList(Modifier.constrainAs(content) {
+                    top.linkTo(clNoInternet.bottom)
+                    start.linkTo(parent.start)
+                    end.linkTo(parent.end)
+                    width = Dimension.fillToConstraints
+                }, titleForEmpty, descriptionForEmpty, session)
+            } else {
+                LazyColumn(
+                    modifier = Modifier
+                        .fillMaxHeight()
+                        .constrainAs(content) {
+                            top.linkTo(clNoInternet.bottom)
+                            start.linkTo(parent.start)
+                            end.linkTo(parent.end)
+                            width = Dimension.fillToConstraints
+                        }
+                        .background(MaterialTheme.colors.secondary)
+                        .padding(horizontal = 16.dp, vertical = 12.dp),
+                    verticalArrangement = Arrangement.spacedBy(12.dp)
+                ) {
+                    when (type) {
+                        0 -> items(items = data, itemContent = { item ->
+                            ListItemValidForm(item, viewModel, detailFormViewModel, theme)
+                        })
+                        1 -> items(items = data, itemContent = { item ->
+                            DraftItemForm(item as SubmitForm, viewModel, detailFormViewModel, theme)
+                        })
+                        2 -> items(items = data, itemContent = { item ->
+                            SubmissionItemForm(
+                                item as SubmitForm,
+                                viewModel,
+                                detailFormViewModel,
+                                theme
+                            )
+                        })
+                    }
                 }
             }
         }
+    }
+}
+
+@Composable
+fun NoConnectionFound(modifier: Modifier) {
+    ConstraintLayout(
+        modifier = modifier
+            .height(54.dp)
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp, vertical = 8.dp)
+    ) {
+        val (icNoInternet, tvTitle, tvSubtitle) = createRefs()
+        Icon(
+            painter = painterResource(id = R.drawable.ic_no_internet),
+            contentDescription = "Icon No Connection",
+            tint = MaterialTheme.colors.primary,
+            modifier = Modifier.constrainAs(icNoInternet) {
+                top.linkTo(parent.top)
+                start.linkTo(parent.start)
+                bottom.linkTo(parent.bottom)
+                width = Dimension.fillToConstraints
+            })
+        Text(
+            text = stringResource(id = R.string.no_connection),
+            style = Typography.body2.copy(
+                fontFamily = openSans,
+                fontWeight = FontWeight.W600,
+                color = MaterialTheme.colors.primary
+            ),
+            modifier = Modifier.constrainAs(tvTitle) {
+                top.linkTo(parent.top)
+                start.linkTo(icNoInternet.end, 11.dp)
+                end.linkTo(parent.end)
+                width = Dimension.fillToConstraints
+            }
+        )
+        Text(
+            text = stringResource(id = R.string.check_network),
+            style = Typography.body1.copy(
+                fontFamily = openSans,
+                fontSize = 10.sp,
+                color = MaterialTheme.colors.onSecondary.copy(alpha = 0.7f)
+            ),
+            modifier = Modifier.constrainAs(tvSubtitle) {
+                top.linkTo(tvTitle.bottom)
+                start.linkTo(tvTitle.start)
+                end.linkTo(tvTitle.end)
+                bottom.linkTo(parent.bottom)
+                width = Dimension.fillToConstraints
+            }
+        )
     }
 }
 
@@ -216,10 +299,10 @@ fun SubmissionItemForm(
 }
 
 @Composable
-fun EmptyList(text: String, description: String, session: Session) {
+fun EmptyList(modifier: Modifier, text: String, description: String, session: Session) {
     val theme = session.theme
     Column(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxSize()
             .background(MaterialTheme.colors.secondary)
             .verticalScroll(rememberScrollState())
