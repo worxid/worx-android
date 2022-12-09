@@ -1,8 +1,5 @@
 package id.worx.device.client.screen.main
 
-import android.content.Context
-import android.net.ConnectivityManager
-import android.net.NetworkCapabilities
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -22,13 +19,13 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
 import id.worx.device.client.R
 import id.worx.device.client.Util.initProgress
+import id.worx.device.client.Util.isNetworkAvailable
 import id.worx.device.client.data.database.Session
 import id.worx.device.client.model.BasicForm
 import id.worx.device.client.model.SubmitForm
@@ -337,18 +334,5 @@ fun EmptyList(modifier: Modifier, text: String, description: String, session: Se
             )
         )
     }
-}
-
-fun isNetworkAvailable(context: Context): Boolean {
-    val connectivityManager =
-        context.getSystemService(ConnectivityManager::class.java) as ConnectivityManager
-
-    val network = connectivityManager.activeNetwork
-    val connection = connectivityManager.getNetworkCapabilities(network)
-    return connection != null && (
-            connection.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR) ||
-                    connection.hasTransport(
-                        NetworkCapabilities.TRANSPORT_WIFI
-                    ))
 }
 
