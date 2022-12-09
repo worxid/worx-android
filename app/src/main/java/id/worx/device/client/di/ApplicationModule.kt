@@ -34,8 +34,14 @@ object ApplicationModule {
     @Provides
     fun provideAPIService(@ApplicationContext context: Context): WorxApi {
     val deviceCode = Util.getDeviceCode(context)
+//        val listener = provideSocketException(context)
      return WorxApi.create(deviceCode)
 }
+
+//    @Provides
+//    fun provideSocketException(@ApplicationContext context: Context): SocketExceptionHandler {
+//        return EntryPointAccessors.fromApplication(context, SocketExceptionHandler::class.java)
+//    }
 
     @Provides
     @Singleton

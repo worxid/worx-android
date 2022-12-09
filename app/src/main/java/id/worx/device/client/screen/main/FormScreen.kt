@@ -48,7 +48,8 @@ fun FormScreen(
     titleForEmpty: String,
     descriptionForEmpty: String,
     session: Session,
-    syncWithServer: () -> Unit
+    syncWithServer: () -> Unit,
+    onSocketTimeout : () -> Unit = {}
 ) {
     val searchInput = viewModel.uiState.collectAsState().value.searchInput
     val theme = session.theme
@@ -58,6 +59,7 @@ fun FormScreen(
     WorxBoxPullRefresh(onRefresh = {
         syncWithServer()
         networkStatus = isNetworkAvailable(context)
+        onSocketTimeout()
     }) {
         ConstraintLayout(
             modifier = Modifier
