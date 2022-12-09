@@ -19,6 +19,7 @@ import androidx.compose.material.icons.filled.Settings
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
@@ -49,11 +50,11 @@ import id.worx.device.client.viewmodel.HomeViewModel
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
-sealed class BottomNavItem(var title: Int, var icon: Int, var iconUnselected: Int) {
+sealed class BottomNavItem(var title: Int, var icon: Int) {
 
-    object Form : BottomNavItem(R.string.form, R.drawable.ic_form, R.drawable.ic_form_gray)
-    object Draft : BottomNavItem(R.string.draft, R.drawable.ic_draft, R.drawable.ic_draft_gray)
-    object Submission : BottomNavItem(R.string.submission, R.drawable.ic_tick, R.drawable.ic_tick_gray)
+    object Form : BottomNavItem(R.string.form, R.drawable.ic_form)
+    object Draft : BottomNavItem(R.string.draft, R.drawable.ic_draft)
+    object Submission : BottomNavItem(R.string.submission, R.drawable.ic_tick)
 }
 
 @OptIn(ExperimentalPagerApi::class)
@@ -182,6 +183,8 @@ fun BottomNavigationView(showBadge: Int, showBotNav: Boolean, theme:String?, pag
         BottomNavItem.Submission,
     )
     val scope = rememberCoroutineScope()
+    var selectedColor = if (theme == SettingTheme.Dark) PrimaryMain else MaterialTheme.colors.primary
+    var unselectedColor = Color.Black.copy(0.64f)
     if (showBotNav) {
         BottomNavigation(
             backgroundColor = Color.White,
@@ -200,15 +203,19 @@ fun BottomNavigationView(showBadge: Int, showBotNav: Boolean, theme:String?, pag
                                 )
                             }
                         }) {
-                            Icon(
-                                if (index == pagerState.currentPage) painterResource(id = item.icon)
-                                else painterResource(id = item.iconUnselected),
-                                contentDescription = stringResource(id = item.title),
-                                modifier = Modifier
-                                    .padding(16.dp)
-                                    .height(24.dp),
-                                tint = Color.Unspecified
-                            )
+                            Box( modifier = Modifier
+                                .padding(16.dp)
+                                .height(24.dp)
+                                ) {
+                                Icon(
+                                    modifier = Modifier
+                                        .clip(RoundedCornerShape(4.dp))
+                                        .background(if (index == pagerState.currentPage) selectedColor else unselectedColor),
+                                    tint = Color.Unspecified,
+                                    painter = painterResource(id = item.icon),
+                                    contentDescription = stringResource(id = item.title),
+                                )
+                            }
                         }
                     },
                     selected = index == pagerState.currentPage,
