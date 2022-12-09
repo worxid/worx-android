@@ -1,9 +1,13 @@
 package id.worx.device.client.screen.main
 
-import androidx.compose.foundation.*
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
@@ -49,6 +53,7 @@ fun FormScreen(
 ) {
     val searchInput = viewModel.uiState.collectAsState().value.searchInput
     val theme = session.theme
+    val title = arrayListOf(R.string.form, R.string.draft, R.string.submission)
     val context = LocalContext.current
     var isConnected by remember { mutableStateOf(isNetworkAvailable(context)) }
 
@@ -56,41 +61,27 @@ fun FormScreen(
         syncWithServer()
         isConnected = isNetworkAvailable(context)
     }) {
-        ConstraintLayout(
+        Column(
             modifier = Modifier
-                .fillMaxSize()
+                .fillMaxHeight()
                 .background(MaterialTheme.colors.secondary)
+                .padding(horizontal = 16.dp, vertical = 16.dp),
         ) {
-            val (clNoInternet, content) = createRefs()
-            if (!isConnected){
-                NoConnectionFound(modifier = Modifier
-                    .background(MaterialTheme.colors.primary.copy(alpha = 0.16f))
-                    .constrainAs(clNoInternet) {
-                        top.linkTo(parent.top)
-                        start.linkTo(parent.start)
-                        end.linkTo(parent.end)
-                        width = Dimension.fillToConstraints
-                    })
+            if (!isConnected) {
+                NoConnectionFound(
+                    modifier = Modifier
+                        .background(MaterialTheme.colors.primary.copy(alpha = 0.16f))
+                )
             }
+            Text(
+                text = stringResource(id = title[type]),
+                style = Typography.subtitle2.copy(MaterialTheme.colors.onSecondary),
+                modifier = Modifier.padding(bottom = 16.dp)
+            )
             if (data.isNullOrEmpty()) {
-                EmptyList(Modifier.constrainAs(content) {
-                    top.linkTo(clNoInternet.bottom)
-                    start.linkTo(parent.start)
-                    end.linkTo(parent.end)
-                    width = Dimension.fillToConstraints
-                }, titleForEmpty, descriptionForEmpty, session)
+                EmptyList(type, titleForEmpty, descriptionForEmpty, session)
             } else {
                 LazyColumn(
-                    modifier = Modifier
-                        .fillMaxHeight()
-                        .constrainAs(content) {
-                            top.linkTo(clNoInternet.bottom)
-                            start.linkTo(parent.start)
-                            end.linkTo(parent.end)
-                            width = Dimension.fillToConstraints
-                        }
-                        .background(MaterialTheme.colors.secondary)
-                        .padding(horizontal = 16.dp, vertical = 12.dp),
                     verticalArrangement = Arrangement.spacedBy(12.dp)
                 ) {
                     when (type) {
@@ -176,7 +167,7 @@ fun ListItemValidForm(
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .border(1.5.dp, color = MaterialTheme.colors.onSecondary)
+            .border(1.dp, color = MaterialTheme.colors.onSecondary, RoundedCornerShape(8.dp))
             .clickable(
                 onClick = {
                     viewModel.goToDetailScreen()
@@ -216,7 +207,7 @@ fun DraftItemForm(
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .border(1.5.dp, color = MaterialTheme.colors.onSecondary)
+            .border(1.dp, color = MaterialTheme.colors.onSecondary, RoundedCornerShape(8.dp))
             .clickable(
                 onClick = {
                     viewModel.goToDetailScreen()
@@ -227,7 +218,7 @@ fun DraftItemForm(
         Image(
             modifier = Modifier
                 .padding(horizontal = 16.dp),
-            painter = painterResource(id = if (theme == SettingTheme.Dark) R.drawable.ic_form_white else R.drawable.ic_form_red),
+            painter = painterResource(id = if (theme == SettingTheme.Dark) R.drawable.ic_form_white else R.drawable.ic_form_gray),
             contentDescription = "Form Icon",
         )
         Column(modifier = Modifier.padding(vertical = 13.dp)) {
@@ -278,7 +269,7 @@ fun SubmissionItemForm(
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .border(1.5.dp, color = MaterialTheme.colors.onSecondary)
+            .border(1.dp, color = MaterialTheme.colors.onSecondary, RoundedCornerShape(8.dp))
             .clickable(
                 onClick = {
                     viewModel.goToDetailScreen()
@@ -306,23 +297,22 @@ fun SubmissionItemForm(
 }
 
 @Composable
-fun EmptyList(modifier: Modifier, text: String, description: String, session: Session) {
+fun EmptyList(type: Int, text: String, description: String, session: Session) {
     val theme = session.theme
+    val icon = arrayListOf(R.drawable.ic_emptylist_form, R.drawable.ic_emptylist_draft, R.drawable.ic_emptylist_submission)
     Column(
-        modifier = modifier
+        modifier = Modifier
             .fillMaxSize()
-            .background(MaterialTheme.colors.secondary)
-            .verticalScroll(rememberScrollState())
-            .padding(48.dp),
+            .padding(bottom = 48.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
         Image(
-            painter = painterResource(id = if (theme == SettingTheme.Dark) R.drawable.ic_empty_list_icon_dark else R.drawable.ic_empty_list_icon),
+            painter = painterResource(id = icon[type]),
             contentDescription = "Empty Icon"
         )
         Text(
-            modifier = Modifier.padding(top = 28.dp, bottom = 16.dp),
+            modifier = Modifier.padding(top = 28.dp, bottom = 12.dp),
             text = text,
             style = Typography.subtitle1.copy(MaterialTheme.colors.onSecondary)
         )

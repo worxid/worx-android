@@ -13,6 +13,7 @@ val BlackFont = Color(0xFF222222)
 val BlackVariantFont = Color(0f, 0f, 0f, 0.54f)
 val textUnfocusColorSystem = Color(0xB3000000)
 val textFormDescription = Color(0xAD000000)
+val backgroundFormList = Color (0xFFF9F9F9)
 
 //Dark
 val DarkBackground = Color(0xFF121212)
