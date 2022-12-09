@@ -1,6 +1,5 @@
 package id.worx.device.client.viewmodel
 
-import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -38,6 +37,14 @@ class WelcomeViewModel @Inject constructor(
 
     fun submitNewTeam() {
         _navigateTo.value = Event(WelcomeScreen.CreateTeamSubmitted)
+    }
+
+    fun goToAdvancedSetting() {
+        _navigateTo.value = Event(WelcomeScreen.AdvancedSetting)
+    }
+
+    fun saveServerUrl() {
+
     }
 
     fun resendEmail() {}

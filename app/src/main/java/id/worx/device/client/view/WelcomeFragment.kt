@@ -49,6 +49,7 @@ class WelcomeFragment : Fragment() {
                             when (event) {
                                 is WelcomeEvent.CreateTeam -> viewModel.createNewTeam()
                                 is WelcomeEvent.JoinTeam -> viewModel.joinExistingTeam()
+                                is WelcomeEvent.AdvancedSettings -> viewModel.goToAdvancedSetting()
                                 WelcomeEvent.MainScreen -> gotoMainScreen()
                             }
                         },

@@ -5,7 +5,7 @@ import androidx.navigation.fragment.findNavController
 import java.security.InvalidParameterException
 
 enum class WelcomeScreen {
-    Splash, Welcome, CreateTeam, CreateTeamSubmitted,
+    Splash, Welcome, AdvancedSetting, CreateTeam, CreateTeamSubmitted,
     JoinTeam, WaitingVerification, VerificationRejected }
 
 enum class MainScreen {
@@ -35,6 +35,9 @@ fun Fragment.navigate(to: WelcomeScreen, from: WelcomeScreen) {
         }
         WelcomeScreen.VerificationRejected -> {
             findNavController().navigate(R.id.verification_rejected_fragment)
+        }
+        WelcomeScreen.AdvancedSetting -> {
+            findNavController().navigate(R.id.advanced_settings_fragment)
         }
         else -> {}
     }

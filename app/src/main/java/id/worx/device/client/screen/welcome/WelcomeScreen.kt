@@ -1,15 +1,14 @@
 package id.worx.device.client.screen.welcome
 
 import android.content.res.Configuration
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
+import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Divider
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Settings
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -33,6 +32,7 @@ sealed class WelcomeEvent {
     object CreateTeam : WelcomeEvent()
     object JoinTeam : WelcomeEvent()
     object MainScreen : WelcomeEvent()
+    object AdvancedSettings: WelcomeEvent()
 }
 
 @Composable
@@ -48,7 +48,7 @@ fun WelcomeScreen(onEvent: (WelcomeEvent) -> Unit, session: Session) {
                 .background(MaterialTheme.colors.secondary)
                 .verticalScroll(rememberScrollState())
         ) {
-            WelcomeHeader(session)
+            WelcomeHeader(session, onEvent)
             CreateTeamButton(session, onEvent = onEvent)
             JoinTeamButton(session, onEvent)
         }
@@ -56,11 +56,11 @@ fun WelcomeScreen(onEvent: (WelcomeEvent) -> Unit, session: Session) {
 }
 
 @Composable
-private fun WelcomeHeader(session: Session) {
+private fun WelcomeHeader(session: Session, onEvent: (WelcomeEvent) -> Unit) {
     val theme = session.theme
     Surface(
         modifier = Modifier.wrapContentSize(),
-        color = if (theme == SettingTheme.Dark) MaterialTheme.colors.secondary else MaterialTheme.colors.primary
+        color = MaterialTheme.colors.secondary
     ) {
         Box() {
             Image(
@@ -74,6 +74,16 @@ private fun WelcomeHeader(session: Session) {
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.Center,
             ) {
+                Image(
+                    modifier = Modifier
+                        .padding(18.dp)
+                        .clickable {
+                            onEvent(WelcomeEvent.AdvancedSettings)
+                        },
+                    imageVector = Icons.Filled.Settings,
+                    alignment = Alignment.CenterEnd,
+                    contentDescription = "Settings"
+                )
                 Image(
                     modifier = Modifier
                         .fillMaxWidth(),
