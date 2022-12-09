@@ -1,12 +1,7 @@
 package id.worx.device.client.data.api
 
-import android.content.Context
 import android.util.Log
 import com.google.gson.*
-import dagger.hilt.EntryPoint
-import dagger.hilt.InstallIn
-import dagger.hilt.android.EntryPointAccessors
-import dagger.hilt.components.SingletonComponent
 import id.worx.device.client.model.*
 import id.worx.device.client.util.ConnectionTimeoutInterceptor
 import okhttp3.OkHttpClient
@@ -81,13 +76,6 @@ interface WorxApi {
                 .build()
                 .create(WorxApi::class.java)
         }
-    }
-}
-
-interface SocketExceptionHandler {
-    fun onSocketTimeout()
-    companion object {
-
     }
 }
 

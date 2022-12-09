@@ -48,18 +48,16 @@ fun FormScreen(
     titleForEmpty: String,
     descriptionForEmpty: String,
     session: Session,
-    syncWithServer: () -> Unit,
-    onSocketTimeout : () -> Unit = {}
+    syncWithServer: () -> Unit
 ) {
     val searchInput = viewModel.uiState.collectAsState().value.searchInput
     val theme = session.theme
     val context = LocalContext.current
-    var networkStatus by remember { mutableStateOf(isNetworkAvailable(context)) }
+    var isConnected by remember { mutableStateOf(isNetworkAvailable(context)) }
 
     WorxBoxPullRefresh(onRefresh = {
         syncWithServer()
-        networkStatus = isNetworkAvailable(context)
-        onSocketTimeout()
+        isConnected = isNetworkAvailable(context)
     }) {
         ConstraintLayout(
             modifier = Modifier
@@ -67,7 +65,7 @@ fun FormScreen(
                 .background(MaterialTheme.colors.secondary)
         ) {
             val (clNoInternet, content) = createRefs()
-            if (!networkStatus){
+            if (!isConnected){
                 NoConnectionFound(modifier = Modifier
                     .background(MaterialTheme.colors.primary.copy(alpha = 0.16f))
                     .constrainAs(clNoInternet) {
