@@ -3,6 +3,7 @@ package id.worx.device.client.data.api
 import android.util.Log
 import com.google.gson.*
 import id.worx.device.client.model.*
+import id.worx.device.client.util.ConnectionTimeoutInterceptor
 import okhttp3.OkHttpClient
 import okhttp3.ResponseBody
 import okhttp3.logging.HttpLoggingInterceptor
@@ -10,6 +11,7 @@ import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.http.*
+import javax.inject.Singleton
 
 
 /**
@@ -59,6 +61,7 @@ interface WorxApi {
                     chain.proceed(newRequest)
                 }
                 .addInterceptor(logger)
+                .addInterceptor(ConnectionTimeoutInterceptor())
                 .build()
 
             val gson = GsonBuilder()
@@ -86,7 +89,7 @@ class FieldsDeserializer : JsonDeserializer<Fields?>, JsonSerializer<Fields?> {
         val gson = Gson()
         val entry = json!!.asJsonObject
         val type = entry.get("type").toString()
-        return when  {
+        return when {
             type.contains(Type.TextField.type) -> gson.fromJson(json, TextField::class.java)
             type.contains(Type.Separator.type) -> gson.fromJson(json, Separator::class.java)
             type.contains(Type.Checkbox.type) -> gson.fromJson(json, CheckBoxField::class.java)
@@ -110,7 +113,7 @@ class FieldsDeserializer : JsonDeserializer<Fields?>, JsonSerializer<Fields?> {
     }
 }
 
-class ValueSerialize: JsonSerializer<Value>, JsonDeserializer<Value> {
+class ValueSerialize : JsonSerializer<Value>, JsonDeserializer<Value> {
     override fun serialize(
         src: Value?,
         typeOfSrc: java.lang.reflect.Type?,
@@ -155,7 +158,7 @@ class ValueSerialize: JsonSerializer<Value>, JsonDeserializer<Value> {
 }
 
 
-class SubmitLocationSerialize: JsonSerializer<SubmitLocation> {
+class SubmitLocationSerialize : JsonSerializer<SubmitLocation> {
     override fun serialize(
         src: SubmitLocation?,
         typeOfSrc: java.lang.reflect.Type?,
@@ -166,7 +169,7 @@ class SubmitLocationSerialize: JsonSerializer<SubmitLocation> {
     }
 }
 
-class OptionsSerialize: JsonSerializer<Options> {
+class OptionsSerialize : JsonSerializer<Options> {
     override fun serialize(
         src: Options?,
         typeOfSrc: java.lang.reflect.Type?,

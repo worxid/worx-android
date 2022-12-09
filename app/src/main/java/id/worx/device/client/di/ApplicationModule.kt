@@ -33,9 +33,9 @@ object ApplicationModule {
 
     @Provides
     fun provideAPIService(@ApplicationContext context: Context): WorxApi {
-    val deviceCode = Util.getDeviceCode(context)
-     return WorxApi.create(deviceCode)
-}
+        val deviceCode = Util.getDeviceCode(context)
+        return WorxApi.create(deviceCode)
+    }
 
     @Provides
     @Singleton

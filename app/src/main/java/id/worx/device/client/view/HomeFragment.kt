@@ -42,9 +42,10 @@ class HomeFragment : Fragment() {
                 navigate(navigateTo, MainScreen.Home)
             }
         }
-        viewModel.getDeviceInfo(session)
-        viewModel.updateDeviceInfo(session)
-        if (Util.isConnected(requireContext())){
+
+        if (Util.isNetworkAvailable(requireContext())){
+            viewModel.getDeviceInfo(session)
+            viewModel.updateDeviceInfo(session)
             viewModel.syncWithServer(0, viewLifecycleOwner)
         }
 

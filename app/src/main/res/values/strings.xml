@@ -74,6 +74,8 @@
     <string name="upload_error">Upload Error</string>
     <string name="upload_success">Upload Success</string>
     <string name="uploading">Uploading</string>
+    <string name="no_connection">No connection found.</string>
+    <string name="check_network">Please check your network connection</string>
 
 <!--    list error/notification message-->
     <string name="sync_form_message">Sync Empty Form DB with server is done</string>
