@@ -49,7 +49,7 @@ class SplashViewModel @Inject constructor(
         viewModelScope.launch {
             sourceDataRepository.getAllFormFromDB().collect {
                 if (it.isNotEmpty()){
-                    _deviceStatus.postValue("ONLINE")
+                    _deviceStatus.postValue("APPROVED")
                 }
             }
         }
