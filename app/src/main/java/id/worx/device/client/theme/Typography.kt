@@ -1,7 +1,6 @@
 package id.worx.device.client.theme
 
 import androidx.compose.material.Typography
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
@@ -47,6 +46,12 @@ val Typography = Typography(
         fontWeight = FontWeight.W600,
         fontSize = 24.sp,
         letterSpacing = 0.sp
+    ),
+    subtitle2 = TextStyle(
+        fontWeight = FontWeight.W700,
+        fontSize = 20.sp,
+        fontFamily = FontFamily.Monospace,
+        letterSpacing = 0.15.sp
     ),
     // app bar title
     h6 = TextStyle(
