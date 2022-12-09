@@ -17,6 +17,7 @@ import id.worx.device.client.data.database.FormDB
 import id.worx.device.client.data.database.Session
 import id.worx.device.client.data.database.SubmitFormDB
 import id.worx.device.client.repository.SourceDataRepository
+import net.gotev.uploadservice.extensions.isValidHttpUrl
 import javax.inject.Singleton
 
 @Module
@@ -32,9 +33,13 @@ object ApplicationModule {
     }
 
     @Provides
-    fun provideAPIService(@ApplicationContext context: Context): WorxApi {
-    val deviceCode = Util.getDeviceCode(context)
-     return WorxApi.create(deviceCode)
+    fun provideAPIService(@ApplicationContext context: Context, session: Session): WorxApi {
+        val deviceCode = Util.getDeviceCode(context)
+        var baseUrl = "https://api.dev.worx.id"
+        if (!session.serverUrl.isNullOrEmpty() && session.serverUrl!!.isValidHttpUrl()) {
+            baseUrl = session.serverUrl!!
+        }
+     return WorxApi.create(deviceCode, baseUrl)
 }
 
     @Provides

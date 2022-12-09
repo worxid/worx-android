@@ -43,8 +43,10 @@ class WelcomeViewModel @Inject constructor(
         _navigateTo.value = Event(WelcomeScreen.AdvancedSetting)
     }
 
-    fun saveServerUrl() {
-
+    fun saveServerUrl(session: Session, url: String) {
+        viewModelScope.launch {
+            session.saveServerUrl(url)
+        }
     }
 
     fun resendEmail() {}

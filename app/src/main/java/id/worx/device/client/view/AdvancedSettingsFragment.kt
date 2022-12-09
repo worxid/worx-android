@@ -48,7 +48,7 @@ class AdvancedSettingsFragment : Fragment() {
                         session,
                         onEvent = { event ->
                             when (event) {
-                                is AdvanceSettingsEvent.SaveUrl -> viewModel.saveServerUrl()
+                                is AdvanceSettingsEvent.SaveUrl -> viewModel.saveServerUrl(session, event.urlServer)
                                 AdvanceSettingsEvent.NavigateBack -> findNavController().navigateUp()
                             }
                         }
