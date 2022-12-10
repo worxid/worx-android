@@ -46,6 +46,7 @@ class WelcomeViewModel @Inject constructor(
     fun saveServerUrl(session: Session, url: String) {
         viewModelScope.launch {
             session.saveServerUrl(url)
+            _navigateTo.value = Event(WelcomeScreen.Welcome)
         }
     }
 
