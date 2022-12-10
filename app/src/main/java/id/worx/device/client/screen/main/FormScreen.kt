@@ -23,6 +23,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
@@ -187,10 +188,12 @@ fun ListItemValidForm(
                 fontSize = 14.sp,
                 fontFamily = FontFamily.Monospace,
                 color = MaterialTheme.colors.onSecondary,
+                overflow = TextOverflow.Ellipsis,
                 fontWeight = FontWeight.W400
             )
             Text(
                 text = item.description ?: "",
+                overflow = TextOverflow.Ellipsis,
                 style = Typography.body1.copy(color = MaterialTheme.colors.onSecondary.copy(alpha = 0.54f))
             )
         }
@@ -225,6 +228,7 @@ fun DraftItemForm(
             Row() {
                 Text(
                     text = "${item.label} - ",
+                    overflow = TextOverflow.Ellipsis,
                     style = Typography.button.copy(MaterialTheme.colors.onSecondary),
                 )
                 Text(
@@ -234,6 +238,7 @@ fun DraftItemForm(
             }
             Text(
                 text = "Saved on ${item.lastUpdated}",
+                overflow = TextOverflow.Ellipsis,
                 style = Typography.body1.copy(color = MaterialTheme.colors.onSecondary.copy(alpha = 0.54f))
             )
         }
@@ -286,10 +291,12 @@ fun SubmissionItemForm(
         Column(modifier = Modifier.padding(vertical = 13.dp)) {
             Text(
                 text = item.label ?: "",
+                overflow = TextOverflow.Ellipsis,
                 style = Typography.button.copy(MaterialTheme.colors.onSecondary)
             )
             Text(
                 text = "Submitted on ${item.lastUpdated}",
+                overflow = TextOverflow.Ellipsis,
                 style = Typography.body1.copy(color = MaterialTheme.colors.onSecondary.copy(alpha = 0.54f))
             )
         }
