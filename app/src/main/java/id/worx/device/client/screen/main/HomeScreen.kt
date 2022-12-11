@@ -184,10 +184,10 @@ fun BottomNavigationView(showBadge: Int, showBotNav: Boolean, theme:String?, pag
     )
     val scope = rememberCoroutineScope()
     var selectedColor = if (theme == SettingTheme.Dark) PrimaryMain else MaterialTheme.colors.primary
-    var unselectedColor = Color.Black.copy(0.64f)
+    var unselectedColor = if (theme == SettingTheme.Dark) MaterialTheme.colors.primary else Color.Black.copy(0.64f)
     if (showBotNav) {
         BottomNavigation(
-            backgroundColor = Color.White,
+            backgroundColor = MaterialTheme.colors.secondary,
             modifier = Modifier
                 .padding(horizontal = 13.5.dp, vertical = 16.dp)
                 .border(2.dp, MaterialTheme.colors.onSecondary, RoundedCornerShape(8.dp))
