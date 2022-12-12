@@ -26,7 +26,7 @@ import id.worx.device.client.theme.PrimaryMain
 import id.worx.device.client.theme.Typography
 import id.worx.device.client.theme.WorxTheme
 import id.worx.device.client.viewmodel.DetailFormViewModel
-import id.worx.device.client.viewmodel.HomeViewModel
+import id.worx.device.client.viewmodel.HomeViewModelImpl
 import kotlinx.coroutines.launch
 
 val tabItems = listOf(
@@ -41,7 +41,7 @@ fun SearchScreen(
     formList: List<EmptyForm>,
     draftList: List<SubmitForm>,
     submissionList: List<SubmitForm>,
-    viewModel: HomeViewModel,
+    viewModel: HomeViewModelImpl,
     detailVM: DetailFormViewModel,
     session: Session,
     syncWithServer: () -> Unit,

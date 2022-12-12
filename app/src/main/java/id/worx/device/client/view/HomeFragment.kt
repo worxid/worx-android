@@ -18,16 +18,16 @@ import id.worx.device.client.screen.components.WorxThemeStatusBar
 import id.worx.device.client.screen.main.HomeScreen
 import id.worx.device.client.theme.WorxTheme
 import id.worx.device.client.viewmodel.DetailFormViewModel
-import id.worx.device.client.viewmodel.HomeViewModel
-import id.worx.device.client.viewmodel.ThemeViewModel
+import id.worx.device.client.viewmodel.HomeViewModelImpl
+import id.worx.device.client.viewmodel.ThemeViewModelImpl
 import javax.inject.Inject
 
 @AndroidEntryPoint
 class HomeFragment : Fragment() {
 
-    private val viewModel by activityViewModels<HomeViewModel>()
+    private val viewModel by activityViewModels<HomeViewModelImpl>()
     private val detailViewModel by activityViewModels<DetailFormViewModel>()
-    private val themeViewModel by activityViewModels<ThemeViewModel>()
+    private val themeViewModel by activityViewModels<ThemeViewModelImpl>()
 
     @Inject
     lateinit var session: Session

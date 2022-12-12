@@ -15,12 +15,12 @@ import id.worx.device.client.screen.components.WorxThemeStatusBar
 import id.worx.device.client.screen.main.SignaturePadScreen
 import id.worx.device.client.theme.WorxTheme
 import id.worx.device.client.viewmodel.DetailFormViewModel
-import id.worx.device.client.viewmodel.ThemeViewModel
+import id.worx.device.client.viewmodel.ThemeViewModelImpl
 
 @AndroidEntryPoint
 class SignaturePadFragment : Fragment() {
     private val viewModel by activityViewModels<DetailFormViewModel>()
-    private val themeViewModel by activityViewModels<ThemeViewModel>()
+    private val themeViewModel by activityViewModels<ThemeViewModelImpl>()
 
     override fun onCreateView(
         inflater: LayoutInflater,

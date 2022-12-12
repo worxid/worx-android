@@ -60,4 +60,8 @@
         android:id="@+id/licencesFragment"
         android:name="id.worx.device.client.view.LicencesFragment"
         android:label="LicencesFragment" />
+    <fragment
+        android:id="@+id/advanced_settings_fragment"
+        android:name="id.worx.device.client.view.HomeAdvancedSettingsFragment"
+        android:label="AdvancedSettingsFragment" />
 </navigation>

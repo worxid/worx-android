@@ -26,6 +26,12 @@
     <string name="verification_rejected">Your verification was rejected</string>
     <string name="make_new_request">Make A New Request</string>
     <string name="title_activity_main">MainActivity</string>
+    <string name="advance_settings">Advance Settings</string>
+    <string name="switch_to_server">Switch to server URL</string>
+    <string name="configure_server_url">Configure Server URL</string>
+    <string name="configure_server_descr">Access to different server, default is Worx.</string>
+    <string name="connect">Connect</string>
+    <string name="server_url">Server URL</string>
 
     <string name="form">Forms</string>
     <string name="draft">Drafts</string>

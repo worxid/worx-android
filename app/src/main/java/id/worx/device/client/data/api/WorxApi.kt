@@ -47,9 +47,7 @@ interface WorxApi {
     suspend fun updateDeviceInfo(@Body deviceInfo: DeviceInfo) : Response<ResponseBody>
 
     companion object {
-        private const val BASE_URL = "https://api.dev.worx.id"
-
-        fun create(deviceCode: String): WorxApi {
+        fun create(deviceCode: String, baseUrl: String): WorxApi {
             val logger = HttpLoggingInterceptor { Log.d("WORX-API", it) }
             logger.setLevel(HttpLoggingInterceptor.Level.BODY)
 
@@ -70,7 +68,7 @@ interface WorxApi {
                 .create()
 
             return Retrofit.Builder()
-                .baseUrl(BASE_URL)
+                .baseUrl(baseUrl)
                 .client(client)
                 .addConverterFactory(GsonConverterFactory.create(gson))
                 .build()

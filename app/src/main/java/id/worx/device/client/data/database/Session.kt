@@ -16,6 +16,8 @@ class Session(context: Context) {
     val organizationKey get() = pref.getString(ORGANIZATION_KEY, "")
     val deviceName get() = pref.getString(DEVICE_NAME, "")
 
+    val serverUrl get() = pref.getString(SERVER_URL, "")
+
     companion object{
         val SHARED_NAME = "id.worx"
         val SETTING_THEME = "SETTING_THEME"
@@ -26,6 +28,8 @@ class Session(context: Context) {
         val ORGANIZATION = "ORGANIZATION"
         val ORGANIZATION_KEY = "ORGANIZATION_KEY"
         val DEVICE_NAME = "DEVICE_NAME"
+
+        val SERVER_URL = "SERVER_URL"
     }
 
     init {
@@ -73,6 +77,11 @@ class Session(context: Context) {
 
     fun saveDeviceName(deviceName : String){
         editor.putString(DEVICE_NAME, deviceName)
+        editor.commit()
+    }
+
+    fun saveServerUrl(url : String?){
+        editor.putString(SERVER_URL, url)
         editor.commit()
     }
 

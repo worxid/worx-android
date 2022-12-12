@@ -1,67 +1,67 @@
 package id.worx.device.client.view
 
-import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.compose.ui.platform.ComposeView
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.viewModels
+import androidx.fragment.app.activityViewModels
+import androidx.navigation.findNavController
 import dagger.hilt.android.AndroidEntryPoint
-import id.worx.device.client.MainActivity
 import id.worx.device.client.WelcomeScreen
 import id.worx.device.client.data.database.Session
 import id.worx.device.client.navigate
 import id.worx.device.client.screen.components.WorxThemeStatusBar
-import id.worx.device.client.screen.welcome.WelcomeEvent
-import id.worx.device.client.screen.welcome.WelcomeScreen
+import id.worx.device.client.screen.welcome.AdvanceSettingsEvent
+import id.worx.device.client.screen.welcome.AdvanceSettingsScreen
 import id.worx.device.client.theme.WorxTheme
 import id.worx.device.client.viewmodel.ThemeViewModelImpl
 import id.worx.device.client.viewmodel.WelcomeViewModel
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class WelcomeFragment : Fragment() {
+class AdvancedSettingsFragment : Fragment(), WelcomeViewModel.UIHandler {
 
-    private val viewModel by viewModels<WelcomeViewModel>()
-    private val themeViewModel by viewModels<ThemeViewModelImpl>()
-    @Inject lateinit var session: Session
+    private val viewModel by activityViewModels<WelcomeViewModel>()
+    private val themeViewModel by activityViewModels<ThemeViewModelImpl>()
+
+    @Inject
+    lateinit var session: Session
 
     override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
+        inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
+        viewModel.uiHandler = this
         viewModel.navigateTo.observe(viewLifecycleOwner) { navigateToEvent ->
             navigateToEvent.getContentIfNotHandled()?.let { navigateTo ->
-                navigate(navigateTo, WelcomeScreen.Welcome)
+                navigate(navigateTo, WelcomeScreen.AdvancedSetting)
             }
         }
 
-        return ComposeView(requireContext()).apply {
+        return ComposeView(requireActivity()).apply {
             setContent {
                 val theme = themeViewModel.theme.value
                 WorxTheme(theme = theme) {
-                    WorxThemeStatusBar(theme)
-                    WelcomeScreen(
+                    WorxThemeStatusBar()
+                    AdvanceSettingsScreen(
+                        session,
                         onEvent = { event ->
                             when (event) {
-                                is WelcomeEvent.CreateTeam -> viewModel.createNewTeam()
-                                is WelcomeEvent.JoinTeam -> viewModel.joinExistingTeam()
-                                is WelcomeEvent.AdvancedSettings -> viewModel.goToAdvancedSetting()
-                                WelcomeEvent.MainScreen -> gotoMainScreen()
+                                is AdvanceSettingsEvent.SaveUrl -> viewModel.saveServerUrl(session, event.urlServer)
+                                AdvanceSettingsEvent.NavigateBack -> findNavController().navigateUp()
                             }
-                        },
-                        session
+                        }
                     )
                 }
             }
         }
     }
 
-    private fun gotoMainScreen() {
-        val intent = Intent(requireContext(), MainActivity::class.java)
-        startActivity(intent)
+    override fun showToast(text: String) {
+        Toast.makeText(this.requireActivity().applicationContext, text, Toast.LENGTH_SHORT).show()
     }
+
 }

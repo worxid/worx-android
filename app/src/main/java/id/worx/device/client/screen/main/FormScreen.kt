@@ -39,13 +39,13 @@ import id.worx.device.client.theme.PrimaryMain
 import id.worx.device.client.theme.Typography
 import id.worx.device.client.theme.openSans
 import id.worx.device.client.viewmodel.DetailFormViewModel
-import id.worx.device.client.viewmodel.HomeViewModel
+import id.worx.device.client.viewmodel.HomeViewModelImpl
 
 @Composable
 fun FormScreen(
     data: List<BasicForm>?,
     type: Int,
-    viewModel: HomeViewModel,
+    viewModel: HomeViewModelImpl,
     detailFormViewModel: DetailFormViewModel,
     titleForEmpty: String,
     descriptionForEmpty: String,
@@ -161,7 +161,7 @@ fun NoConnectionFound(modifier: Modifier) {
 @Composable
 fun ListItemValidForm(
     item: BasicForm,
-    viewModel: HomeViewModel,
+    viewModel: HomeViewModelImpl,
     detailFormViewModel: DetailFormViewModel,
     theme: String?
 ) {
@@ -203,7 +203,7 @@ fun ListItemValidForm(
 @Composable
 fun DraftItemForm(
     item: SubmitForm,
-    viewModel: HomeViewModel,
+    viewModel: HomeViewModelImpl,
     detailFormViewModel: DetailFormViewModel,
     theme: String?
 ) {
@@ -267,7 +267,7 @@ fun DraftItemForm(
 @Composable
 fun SubmissionItemForm(
     item: SubmitForm,
-    viewModel: HomeViewModel,
+    viewModel: HomeViewModelImpl,
     detailFormViewModel: DetailFormViewModel,
     theme: String?
 ) {
