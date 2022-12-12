@@ -68,7 +68,6 @@ fun HomeScreen(
     session: Session,
     syncWithServer: () -> Unit
 ) {
-    val navController = rememberNavController()
     val notificationType by viewModel.showNotification.collectAsState()
     val showBadge by viewModel.showBadge.collectAsState()
     var showSubmittedStatus by remember { mutableStateOf(notificationType == 1) }
