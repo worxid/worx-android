@@ -10,21 +10,21 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.findNavController
 import dagger.hilt.android.AndroidEntryPoint
-import id.worx.device.client.WelcomeScreen
+import id.worx.device.client.MainScreen
 import id.worx.device.client.data.database.Session
 import id.worx.device.client.navigate
 import id.worx.device.client.screen.components.WorxThemeStatusBar
 import id.worx.device.client.screen.welcome.AdvanceSettingsEvent
 import id.worx.device.client.screen.welcome.AdvanceSettingsScreen
 import id.worx.device.client.theme.WorxTheme
+import id.worx.device.client.viewmodel.HomeViewModelImpl
 import id.worx.device.client.viewmodel.ThemeViewModelImpl
-import id.worx.device.client.viewmodel.WelcomeViewModel
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class AdvancedSettingsFragment : Fragment(), WelcomeViewModel.UIHandler {
+class HomeAdvancedSettingsFragment : Fragment(), HomeViewModelImpl.UIHandler {
 
-    private val viewModel by activityViewModels<WelcomeViewModel>()
+    private val viewModel by activityViewModels<HomeViewModelImpl>()
     private val themeViewModel by activityViewModels<ThemeViewModelImpl>()
 
     @Inject
@@ -37,7 +37,7 @@ class AdvancedSettingsFragment : Fragment(), WelcomeViewModel.UIHandler {
         viewModel.uiHandler = this
         viewModel.navigateTo.observe(viewLifecycleOwner) { navigateToEvent ->
             navigateToEvent.getContentIfNotHandled()?.let { navigateTo ->
-                navigate(navigateTo, WelcomeScreen.AdvancedSetting)
+                navigate(navigateTo, MainScreen.AdvanceSettings)
             }
         }
 

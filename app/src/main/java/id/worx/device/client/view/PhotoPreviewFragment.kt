@@ -23,7 +23,7 @@ import id.worx.device.client.screen.main.PhotoPreviewScreen
 import id.worx.device.client.theme.WorxTheme
 import id.worx.device.client.viewmodel.CameraViewModel
 import id.worx.device.client.viewmodel.DetailFormViewModel
-import id.worx.device.client.viewmodel.ThemeViewModel
+import id.worx.device.client.viewmodel.ThemeViewModelImpl
 import java.io.File
 import javax.inject.Inject
 
@@ -32,7 +32,7 @@ class PhotoPreviewFragment: Fragment() {
 
     private val viewModel by activityViewModels<CameraViewModel>()
     private val detailViewModel by activityViewModels<DetailFormViewModel>()
-    private val themeViewModel by activityViewModels<ThemeViewModel>()
+    private val themeViewModel by activityViewModels<ThemeViewModelImpl>()
 
     @Inject
     lateinit var session: Session

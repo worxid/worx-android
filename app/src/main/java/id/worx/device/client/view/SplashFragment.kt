@@ -19,7 +19,7 @@ import id.worx.device.client.screen.components.WorxThemeStatusBar
 import id.worx.device.client.screen.welcome.SplashScreen
 import id.worx.device.client.theme.WorxTheme
 import id.worx.device.client.viewmodel.SplashViewModel
-import id.worx.device.client.viewmodel.ThemeViewModel
+import id.worx.device.client.viewmodel.ThemeViewModelImpl
 import javax.inject.Inject
 
 /**
@@ -28,7 +28,7 @@ import javax.inject.Inject
 @AndroidEntryPoint
 class SplashFragment : Fragment(), SplashViewModel.UIHandler {
 
-    private val themeViewModel by viewModels<ThemeViewModel>()
+    private val themeViewModel by viewModels<ThemeViewModelImpl>()
     private val splashViewModel by viewModels<SplashViewModel>()
     @Inject lateinit var session : Session
 

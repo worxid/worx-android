@@ -23,7 +23,7 @@ import com.google.android.play.core.install.model.AppUpdateType
 import com.google.android.play.core.install.model.UpdateAvailability
 import dagger.hilt.android.AndroidEntryPoint
 import id.worx.device.client.data.database.Session
-import id.worx.device.client.viewmodel.HomeViewModel
+import id.worx.device.client.viewmodel.HomeViewModelImpl
 import java.io.IOException
 import javax.inject.Inject
 
@@ -43,7 +43,7 @@ class MainActivity : AppCompatActivity() {
         Manifest.permission.ACCESS_COARSE_LOCATION,
     )
 
-    private val viewModel by viewModels<HomeViewModel>()
+    private val viewModel by viewModels<HomeViewModelImpl>()
 
     override fun onResume() {
         super.onResume()

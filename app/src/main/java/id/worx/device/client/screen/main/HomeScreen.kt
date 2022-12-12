@@ -48,7 +48,7 @@ import id.worx.device.client.screen.components.RedFullWidthButton
 import id.worx.device.client.theme.PrimaryMain
 import id.worx.device.client.theme.Typography
 import id.worx.device.client.viewmodel.DetailFormViewModel
-import id.worx.device.client.viewmodel.HomeViewModel
+import id.worx.device.client.viewmodel.HomeViewModelImpl
 import kotlinx.coroutines.flow.update
 
 sealed class BottomNavItem(var title: Int, var icon: Int, var screen_route: String) {
@@ -64,7 +64,7 @@ fun NavigationGraph(
     formList: List<EmptyForm>,
     draftList: List<SubmitForm>,
     submissionList: List<SubmitForm>,
-    viewModel: HomeViewModel,
+    viewModel: HomeViewModelImpl,
     detailVM: DetailFormViewModel,
     session: Session,
     syncWithServer : () -> Unit,
@@ -115,7 +115,7 @@ fun HomeScreen(
     formList: List<EmptyForm>,
     draftList: List<SubmitForm>,
     submissionList: List<SubmitForm>,
-    viewModel: HomeViewModel,
+    viewModel: HomeViewModelImpl,
     detailVM: DetailFormViewModel,
     session: Session,
     syncWithServer: () -> Unit
@@ -277,7 +277,7 @@ fun BottomNavigationView(navController: NavController, showBadge: Int, showBotNa
 fun MainTopAppBar(
     title: String,
     onSearchMode: (Boolean) -> Unit,
-    viewModel: HomeViewModel,
+    viewModel: HomeViewModelImpl,
     searchAction: (String) -> Unit,
 ) {
     var searchMode by remember { mutableStateOf(false) }
@@ -340,7 +340,7 @@ fun MainTopAppBar(
 fun SearchBar(
     backButton: () -> Unit,
     inputSearch: (String) -> Unit,
-    viewModel: HomeViewModel
+    viewModel: HomeViewModelImpl
 ) {
     val searchData = viewModel.uiState.collectAsState().value.searchInput
     var searchInput by remember { mutableStateOf(TextFieldValue(searchData)) }

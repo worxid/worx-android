@@ -17,6 +17,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import net.gotev.uploadservice.extensions.isValidHttpUrl
 import javax.inject.Inject
 
 @HiltViewModel
@@ -45,8 +46,12 @@ class WelcomeViewModel @Inject constructor(
 
     fun saveServerUrl(session: Session, url: String) {
         viewModelScope.launch {
-            session.saveServerUrl(url)
-            _navigateTo.value = Event(WelcomeScreen.Welcome)
+            if (url.isEmpty() || !url.isValidHttpUrl()){
+                uiHandler.showToast("Url is not valid")
+            } else {
+                session.saveServerUrl(url)
+                _navigateTo.value = Event(WelcomeScreen.Welcome)
+            }
         }
     }
 

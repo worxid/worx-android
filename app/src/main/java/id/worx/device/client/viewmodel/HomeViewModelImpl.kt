@@ -23,6 +23,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import net.gotev.uploadservice.extensions.isValidHttpUrl
 import javax.inject.Inject
 
 // Const to view dialog/notification on the screen
@@ -38,13 +39,32 @@ data class HomeUiState(
     var searchInput: String = ""
 )
 
+abstract class HomeViewModel() : ViewModel() {
+    abstract fun goToDetailScreen()
+    abstract fun goToSettingScreen()
+    abstract fun goToLicencesScreen()
+    abstract fun goToAdvanceSettings()
+    abstract fun onSearchInputChanged(searchInput: String)
+    abstract fun showNotification(typeOfNotification: Int)
+    abstract fun showBadge(typeOfBadge: Int)
+    abstract fun syncWithServer(typeData : Int, viewLifecycleOwner: LifecycleOwner)
+    abstract fun leaveTeam(
+        onSuccess: () -> Unit,
+        onError: () -> Unit,
+        deviceCode: String
+    )
+    abstract fun getDeviceInfo(session: Session)
+    abstract fun updateDeviceInfo(session: Session)
+    abstract fun saveServerUrl(session: Session, url: String)
+    }
+
 @HiltViewModel
-class HomeViewModel @Inject constructor(
+class HomeViewModelImpl @Inject constructor(
     private val savedStateHandle: SavedStateHandle,
     private val deviceInfoRepository: DeviceInfoRepository,
     private val repository: SourceDataRepository,
     private val syncServerWork: SyncServer
-) : ViewModel() {
+) : HomeViewModel() {
 
     val uiState = MutableStateFlow(HomeUiState())
     lateinit var uiHandler: UIHandler
@@ -62,16 +82,20 @@ class HomeViewModel @Inject constructor(
         refreshData()
     }
 
-    fun goToDetailScreen() {
+    override fun goToDetailScreen() {
         _navigateTo.value = Event(MainScreen.Detail)
     }
 
-    fun goToSettingScreen() {
+    override fun goToSettingScreen() {
         _navigateTo.value = Event(MainScreen.Settings)
     }
 
-    fun goToLicencesScreen() {
+    override fun goToLicencesScreen() {
         _navigateTo.value = Event(MainScreen.Licences)
+    }
+
+    override fun goToAdvanceSettings() {
+        _navigateTo.value = Event(MainScreen.AdvanceSettings)
     }
 
     /**
@@ -111,7 +135,7 @@ class HomeViewModel @Inject constructor(
     /**
      * Notify that the user updated the search query
      */
-    fun onSearchInputChanged(searchInput: String) {
+    override fun onSearchInputChanged(searchInput: String) {
         uiState.value.searchInput = searchInput
     }
 
@@ -119,7 +143,7 @@ class HomeViewModel @Inject constructor(
      * Show dialog of notification on the screen
      * Params : typeOfNotification that need to be shown
      */
-    fun showNotification(typeOfNotification: Int) {
+    override fun showNotification(typeOfNotification: Int) {
         _showNotification.value = typeOfNotification
     }
 
@@ -127,17 +151,17 @@ class HomeViewModel @Inject constructor(
      * Show badge if there is new draft or submission saved
      * Params : string resources R.String.draft or R.string.submission
      */
-    fun showBadge(typeOfBadge: Int) {
+    override fun showBadge(typeOfBadge: Int) {
         _showBadge.value = typeOfBadge
     }
 
-    fun syncWithServer(typeData : Int, viewLifecycleOwner: LifecycleOwner){
+    override fun syncWithServer(typeData : Int, viewLifecycleOwner: LifecycleOwner){
         viewModelScope.launch {
             syncServerWork.syncWithServer(typeData, viewLifecycleOwner) { refreshData() }
         }
     }
 
-    fun leaveTeam(
+    override fun leaveTeam(
         onSuccess: () -> Unit,
         onError: () -> Unit,
         deviceCode: String
@@ -156,7 +180,7 @@ class HomeViewModel @Inject constructor(
         }
     }
 
-    fun getDeviceInfo(session: Session) {
+    override fun getDeviceInfo(session: Session) {
         viewModelScope.launch {
             val response = deviceInfoRepository.getDeviceStatus()
             withContext(Dispatchers.Main) {
@@ -181,7 +205,7 @@ class HomeViewModel @Inject constructor(
         }
     }
 
-    fun updateDeviceInfo(session: Session) {
+    override fun updateDeviceInfo(session: Session) {
         viewModelScope.launch {
             val deviceInfo = DeviceInfo(
                 label = session.deviceName,
@@ -198,7 +222,34 @@ class HomeViewModel @Inject constructor(
         }
     }
 
+    override fun saveServerUrl(session: Session, url: String) {
+        viewModelScope.launch {
+            if (url.isEmpty() || !url.isValidHttpUrl()){
+                uiHandler.showToast("Url is not valid")
+            } else {
+                session.saveServerUrl(url)
+                _navigateTo.value = Event(MainScreen.Home)
+            }
+        }
+    }
+
     interface UIHandler {
         fun showToast(text: String)
     }
+}
+
+
+class HomeVMPrev: HomeViewModel(){
+    override fun goToDetailScreen() {}
+    override fun goToSettingScreen() {}
+    override fun goToLicencesScreen() {}
+    override fun goToAdvanceSettings() {}
+    override fun onSearchInputChanged(searchInput: String) {}
+    override fun showNotification(typeOfNotification: Int) {}
+    override fun showBadge(typeOfBadge: Int) {}
+    override fun syncWithServer(typeData: Int, viewLifecycleOwner: LifecycleOwner) {}
+    override fun leaveTeam(onSuccess: () -> Unit, onError: () -> Unit, deviceCode: String) {}
+    override fun getDeviceInfo(session: Session) {}
+    override fun updateDeviceInfo(session: Session) {}
+    override fun saveServerUrl(session: Session, url: String) {}
 }
