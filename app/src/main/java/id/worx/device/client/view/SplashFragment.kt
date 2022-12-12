@@ -52,7 +52,7 @@ class SplashFragment : Fragment(), SplashViewModel.UIHandler {
         super.onViewCreated(view, savedInstanceState)
         splashViewModel.uiHandler = this
 
-        if (Util.isConnected(requireContext())) {
+        if (Util.isNetworkAvailable(requireContext())) {
             splashViewModel.getDeviceStatus()
         } else {
             splashViewModel.checkDatabase()

@@ -33,9 +33,9 @@
     <string name="connect">Connect</string>
     <string name="server_url">Server URL</string>
 
-    <string name="form">Form</string>
-    <string name="draft">Draft</string>
-    <string name="submission">Submission</string>
+    <string name="form">Forms</string>
+    <string name="draft">Drafts</string>
+    <string name="submission">Submissions</string>
     <string name="add_file">Add File</string>
     <string name="gallery">Gallery</string>
     <string name="camera">Camera</string>
@@ -45,11 +45,11 @@
     <string name="save">Simpan</string>
     <string name="save_eng">Save</string>
     <string name="draft_descr">Draft description</string>
-    <string name="empty_description_form">You currently aren’t any forms. Please contact your admin too add forms to tour device</string>
+    <string name="empty_description_form">You currently not signed to any forms. Please contact your admin to add forms to your device.</string>
     <string name="no_forms">No Forms</string>
     <string name="no_drafts">No Saved Drafts</string>
-    <string name="empty_description_drafts">You currently haven’t saved any drafts. You can save a draft after starting a new form</string>
-    <string name="empty_description_submission">You haven’t submitted any forms recently. Visit settings to change how long submissions are stored</string>
+    <string name="empty_description_drafts">You currently not saving any forms.</string>
+    <string name="empty_description_submission">You currently not submit any forms.</string>
     <string name="no_submission">No Recent Submission</string>
     <string name="settings">Settings</string>
     <string name="open_source_licences_cap">Open Source Licences</string>
@@ -80,6 +80,8 @@
     <string name="upload_error">Upload Error</string>
     <string name="upload_success">Upload Success</string>
     <string name="uploading">Uploading</string>
+    <string name="no_connection">No connection found.</string>
+    <string name="check_network">Please check your network connection</string>
 
 <!--    list error/notification message-->
     <string name="sync_form_message">Sync Empty Form DB with server is done</string>

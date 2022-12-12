@@ -53,7 +53,7 @@ class WaitingVerificationFragment : Fragment(), WelcomeViewModel.UIHandler {
         }
 
         viewModel.uiHandler = this
-        if (Util.isConnected(requireContext())) { mHandlerTask.run() }
+        if (Util.isNetworkAvailable(requireContext())) { mHandlerTask.run() }
 
         viewModel.deviceStatus.observe(viewLifecycleOwner){
             if (it == "APPROVED"){
