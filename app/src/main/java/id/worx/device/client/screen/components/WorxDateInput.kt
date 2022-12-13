@@ -56,9 +56,10 @@ fun WorxDateInput(indexForm: Int, viewModel: DetailFormViewModel, session: Sessi
     if (value.value != null) {
         val dateVM: Date =
             SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).parse(value.value!!) as Date
-        year = dateVM.year
-        month = dateVM.month
-        day = dateVM.day
+        c.time = dateVM
+        year = c.get(Calendar.YEAR)
+        month = c.get(Calendar.MONTH)
+        day = c.get(Calendar.DAY_OF_MONTH)
     }
 
     val datePickerCallback = DatePickerDialog.OnDateSetListener { datePicker, yr, mo, date ->
@@ -67,7 +68,7 @@ fun WorxDateInput(indexForm: Int, viewModel: DetailFormViewModel, session: Sessi
         val newDate = calendar.time
         val dateString = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(newDate)
         viewModel.setComponentData(indexForm, DateValue(value = dateString))
-        value.value = SimpleDateFormat("dd/MM/yy", Locale.getDefault()).format(newDate)
+        value.value = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(newDate)
         showDatePicker = false
     }
 
