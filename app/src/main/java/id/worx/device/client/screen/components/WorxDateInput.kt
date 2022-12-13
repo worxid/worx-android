@@ -49,18 +49,13 @@ fun WorxDateInput(indexForm: Int, viewModel: DetailFormViewModel, session: Sessi
     val context = LocalContext.current
     val warningInfo = if (form.required == true && value.value == null) "${form.label} is required" else ""
     val c = Calendar.getInstance()
-    var year = c.get(Calendar.YEAR)
-    var month = c.get(Calendar.MONTH)
-    var day = c.get(Calendar.DAY_OF_MONTH)
 
     if (value.value != null) {
-        val dateVM: Date =
-            SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).parse(value.value!!) as Date
-        c.time = dateVM
-        year = c.get(Calendar.YEAR)
-        month = c.get(Calendar.MONTH)
-        day = c.get(Calendar.DAY_OF_MONTH)
+        c.time = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).parse(value.value!!) as Date
     }
+    val year = c.get(Calendar.YEAR)
+    val month = c.get(Calendar.MONTH)
+    val day = c.get(Calendar.DAY_OF_MONTH)
 
     val datePickerCallback = DatePickerDialog.OnDateSetListener { datePicker, yr, mo, date ->
         val calendar = Calendar.getInstance()
