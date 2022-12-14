@@ -12,6 +12,8 @@ data class SubmitForm(
     @SerializedName("description") override var description: String? = null,
     @SerializedName("fields") override var fields: ArrayList<Fields> = arrayListOf(),
     @SerializedName("values") var values: Map<String, Value> = mapOf(),
+    @SerializedName("source") var source: Source? = Source(),
+    @SerializedName("attachments") var attachments : ArrayList<Attachment>? = arrayListOf(),
     @SerializedName("template_id") var templateId: Int? = 0,
     @SerializedName("submit_in_zone") override var submitInZone: Boolean? = true,
     @SerializedName("submit_location") var submitLocation: SubmitLocation? = SubmitLocation(),
@@ -31,3 +33,14 @@ data class SubmitLocation(
     @SerializedName("lng") var lng: Double? = 0.0
 )
 
+data class Source(
+    @SerializedName("type")     var type: String? = "",
+    @SerializedName("label")    var label: String? = "",
+)
+
+data class Attachment(
+    @SerializedName("name")     var name: String? = null,
+    @SerializedName("path")     var path: String? = null,
+    @SerializedName("file_id")  var fileId: Int? = 0,
+    @SerializedName("media_id") var mediaId: String? = null,
+)
