@@ -42,6 +42,7 @@ import id.worx.device.client.data.database.Session
 import id.worx.device.client.model.EmptyForm
 import id.worx.device.client.model.SubmitForm
 import id.worx.device.client.screen.components.RedFullWidthButton
+import id.worx.device.client.theme.DarkBackground
 import id.worx.device.client.theme.PrimaryMain
 import id.worx.device.client.theme.Typography
 import id.worx.device.client.theme.backgroundFormList
@@ -183,11 +184,11 @@ fun BottomNavigationView(showBadge: Int, showBotNav: Boolean, theme:String?, pag
         BottomNavItem.Submission,
     )
     val scope = rememberCoroutineScope()
-    var selectedColor = if (theme == SettingTheme.Dark) PrimaryMain else MaterialTheme.colors.primary
-    var unselectedColor = if (theme == SettingTheme.Dark) MaterialTheme.colors.primary else Color.Black.copy(0.64f)
+    val selectedColor = if (theme == SettingTheme.Dark) PrimaryMain else MaterialTheme.colors.primary
+    val unselectedColor = if (theme == SettingTheme.Dark) Color.White else Color.Black.copy(0.64f)
     if (showBotNav) {
         BottomNavigation(
-            backgroundColor = MaterialTheme.colors.secondary,
+            backgroundColor = if (theme == SettingTheme.Dark) MaterialTheme.colors.secondary else Color.White,
             modifier = Modifier
                 .padding(horizontal = 13.5.dp, vertical = 16.dp)
                 .border(2.dp, MaterialTheme.colors.onSecondary, RoundedCornerShape(8.dp))
@@ -211,7 +212,7 @@ fun BottomNavigationView(showBadge: Int, showBotNav: Boolean, theme:String?, pag
                                     modifier = Modifier
                                         .clip(RoundedCornerShape(4.dp))
                                         .background(if (index == pagerState.currentPage) selectedColor else unselectedColor),
-                                    tint = Color.Unspecified,
+                                    tint = if (theme == SettingTheme.Dark && index != pagerState.currentPage) DarkBackground.copy(0.64f) else Color.Unspecified,
                                     painter = painterResource(id = item.icon),
                                     contentDescription = stringResource(id = item.title),
                                 )
