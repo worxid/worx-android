@@ -50,13 +50,14 @@ data class DetailUiState(
 class DetailFormViewModel @Inject constructor(
     private val application: WorxApplication,
     private val session: Session,
-    private val savedStateHandle: SavedStateHandle,
     private val dataSourceRepo: SourceDataRepository,
     private val syncServerWork: SyncServer
 ) : ViewModel() {
 
     var uiState = MutableStateFlow(DetailUiState())
-    lateinit var uiHandler: UIHandler
+
+    private val _toastMessage = MutableLiveData<Event<String>>()
+    val toastMessage : LiveData<Event<String>> = _toastMessage
 
     private val _navigateTo = MutableLiveData<Event<MainScreen>>()
     val navigateTo: LiveData<Event<MainScreen>> = _navigateTo
@@ -245,7 +246,7 @@ class DetailFormViewModel @Inject constructor(
                 if (result.isSuccessful) {
                     dataSourceRepo.insertOrUpdateSubmitForm(form.copy(status = 2)) //insertSubmission to db
                 } else {
-                    uiHandler.showToast("Submit Form Error ${result.code()}")
+                    _toastMessage.value = Event("Submit Form Error ${result.code()}")
                 }
             } else {
                 dataSourceRepo.insertOrUpdateSubmitForm(form.copy(status = 1)) //insertSubmission to db
@@ -290,7 +291,7 @@ class DetailFormViewModel @Inject constructor(
         if (unFilledFields.isEmpty()) {
             submitForm { actionAfterSubmitted() }
         } else {
-            uiHandler.showToast("Form is not complete!")
+            _toastMessage.value = Event("Form is not complete!")
             uiState.update { it.copy(status = EventStatus.Filling,)
             }
         }
@@ -368,9 +369,5 @@ class DetailFormViewModel @Inject constructor(
         viewModelScope.launch {
             syncServerWork.syncWithServer(typeData, viewLifecycleOwner) { refreshData() }
         }
-    }
-
-    interface UIHandler {
-        fun showToast(text: String)
     }
 }

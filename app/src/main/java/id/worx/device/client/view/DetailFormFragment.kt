@@ -25,7 +25,7 @@ import id.worx.device.client.viewmodel.ThemeViewModelImpl
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class DetailFormFragment : Fragment(), DetailFormViewModel.UIHandler {
+class DetailFormFragment : Fragment() {
 
     private val viewModel by activityViewModels<DetailFormViewModel>()
     private val cameraViewModel by activityViewModels<CameraViewModel>()
@@ -38,7 +38,11 @@ class DetailFormFragment : Fragment(), DetailFormViewModel.UIHandler {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        viewModel.uiHandler = this
+        viewModel.toastMessage.observe(viewLifecycleOwner) {
+            it.getContentIfNotHandled()?.let { text ->
+                Toast.makeText(requireContext(), text, Toast.LENGTH_LONG).show()
+            }
+        }
 
         viewModel.navigateTo.observe(viewLifecycleOwner) { navigateToEvent ->
             navigateToEvent.getContentIfNotHandled()?.let { navigateTo ->
@@ -77,11 +81,5 @@ class DetailFormFragment : Fragment(), DetailFormViewModel.UIHandler {
                 }
             }
         }
-    }
-
-
-
-    override fun showToast(text: String) {
-        Toast.makeText(activity?.applicationContext, text, Toast.LENGTH_SHORT).show()
     }
 }
