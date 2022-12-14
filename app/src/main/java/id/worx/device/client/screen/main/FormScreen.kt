@@ -17,6 +17,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontFamily
@@ -66,6 +68,7 @@ fun FormScreen(
                 EmptyList(type, titleForEmpty, descriptionForEmpty, session)
             } else {
                 LazyColumn(
+                    modifier = Modifier.padding(bottom = 88.dp),
                     verticalArrangement = Arrangement.spacedBy(12.dp)
                 ) {
                     when (type) {
@@ -100,7 +103,17 @@ fun ListItemValidForm(
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .border(1.dp, color = MaterialTheme.colors.onSecondary, RoundedCornerShape(8.dp))
+            .background(
+                if (theme == SettingTheme.Dark
+                ) Color.Unspecified else Color.White
+            )
+            .border(
+                1.dp,
+                color = if (theme == SettingTheme.Dark)
+                    MaterialTheme.colors.onSecondary
+                else MaterialTheme.colors.onSecondary.copy(0.1f),
+                RoundedCornerShape(8.dp)
+            )
             .clickable(
                 onClick = {
                     viewModel.goToDetailScreen()
@@ -140,7 +153,16 @@ fun DraftItemForm(
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .border(1.dp, color = MaterialTheme.colors.onSecondary, RoundedCornerShape(8.dp))
+            .background(
+                if (theme == SettingTheme.Dark
+                ) Color.Unspecified else Color.White
+            )
+            .border(
+                1.dp,
+                color = if (theme == SettingTheme.Dark)
+                    MaterialTheme.colors.onSecondary
+                else MaterialTheme.colors.onSecondary.copy(0.1f),
+                RoundedCornerShape(8.dp))
             .clickable(
                 onClick = {
                     viewModel.goToDetailScreen()
@@ -202,7 +224,16 @@ fun SubmissionItemForm(
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .border(1.dp, color = MaterialTheme.colors.onSecondary, RoundedCornerShape(8.dp))
+            .background(
+                if (theme == SettingTheme.Dark
+                ) Color.Unspecified else Color.White
+            )
+            .border(
+                1.dp,
+                color = if (theme == SettingTheme.Dark)
+                    MaterialTheme.colors.onSecondary
+                else MaterialTheme.colors.onSecondary.copy(0.1f),
+                RoundedCornerShape(8.dp))
             .clickable(
                 onClick = {
                     viewModel.goToDetailScreen()
@@ -232,7 +263,8 @@ fun SubmissionItemForm(
 @Composable
 fun EmptyList(type: Int, text: String, description: String, session: Session) {
     val theme = session.theme
-    val icon = arrayListOf(R.drawable.ic_emptylist_form, R.drawable.ic_emptylist_draft, R.drawable.ic_emptylist_submission)
+    val bg = arrayListOf(R.drawable.bg_emptylist_form, R.drawable.bg_emptylist_draft, R.drawable.bg_emptylist_submission)
+    val icon = arrayListOf(R.drawable.ic_form, R.drawable.ic_draft, R.drawable.ic_tick)
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -240,10 +272,22 @@ fun EmptyList(type: Int, text: String, description: String, session: Session) {
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
-        Image(
-            painter = painterResource(id = icon[type]),
-            contentDescription = "Empty Icon"
-        )
+        Box(contentAlignment = Alignment.Center){
+            Image(
+                painter = painterResource(id = bg[type]),
+                colorFilter = ColorFilter.tint(
+                    if (theme == SettingTheme.Dark) PrimaryMain else MaterialTheme.colors.primary
+                ) ,
+                contentDescription = "Empty Icon"
+            )
+            Image(
+                modifier = Modifier.height(56.dp)
+                    .width(56.dp),
+                contentScale = ContentScale.Fit,
+                painter = painterResource(id = icon[type]),
+                contentDescription = "Empty Icon"
+            )
+        }
         Text(
             modifier = Modifier.padding(top = 28.dp, bottom = 12.dp),
             text = text,

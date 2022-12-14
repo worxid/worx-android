@@ -25,6 +25,7 @@ val BlackDark = Color(0xCC000000)
 val BlackDarkButtonDark = Color(0xFFDA3630)
 val textUnfocusColorDark = Color(0xB3FFFFFF)
 val textFormDescriptionDark = Color(0xCCFFFFFF)
+val backgroundDark = Color(0xFF323232)
 
 
 //Green
