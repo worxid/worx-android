@@ -16,7 +16,7 @@ interface FormDAO {
     fun getAllForm(): Flow<List<EmptyForm>>
 
     @Query("SELECT * FROM form WHERE id IN (:id)")
-    fun loadFormById(id:Int): List<EmptyForm>
+    suspend fun loadFormById(id:Int): List<EmptyForm>
 
     @Delete
     fun deleteForm(form: EmptyForm)

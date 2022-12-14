@@ -81,7 +81,7 @@ fun SignaturePadScreen(
                 ) {
                     Text(
                         modifier = Modifier.padding(vertical = 12.dp),
-                        text = stringResource(R.string.erase_eng),
+                        text = stringResource(R.string.clear),
                         style = Typography.button
                     )
                 }
@@ -94,7 +94,8 @@ fun SignaturePadScreen(
                     border = BorderStroke(1.5.dp, MaterialTheme.colors.onSecondary),
                     shape = RoundedCornerShape(1),
                     onClick = {
-                        viewModel.saveSignature(signaturePadAdapter!!.getSignatureBitmap())
+                        viewModel.saveSignature(signaturePadAdapter!!.getSignatureBitmap(),
+                            viewModel.uiState.value.currentComponent)
                     }
                 ) {
                     Text(

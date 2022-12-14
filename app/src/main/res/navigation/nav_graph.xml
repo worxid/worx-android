@@ -33,4 +33,8 @@
         android:id="@+id/verification_rejected_fragment"
         android:name="id.worx.device.client.view.VerificationRejectedFragment"
         android:label="VerificationRejectedFragment" />
+    <fragment
+        android:id="@+id/advanced_settings_fragment"
+        android:name="id.worx.device.client.view.AdvancedSettingsFragment"
+        android:label="AdvancedSettingsFragment" />
 </navigation>

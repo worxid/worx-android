@@ -2,7 +2,9 @@ package id.worx.device.client.screen.components
 
 import android.text.BoringLayout
 import android.util.Log
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -22,11 +24,13 @@ import androidx.compose.ui.unit.dp
 import id.worx.device.client.R
 import id.worx.device.client.screen.main.SettingTheme
 import id.worx.device.client.theme.*
+import id.worx.device.client.viewmodel.DetailFormViewModel
 
 @Composable
 fun WorxTextField(
     theme: String?,
     label: String,
+    description: String = "",
     hint: String? = null,
     inputType: KeyboardOptions,
     initialValue: TextFieldValue = TextFieldValue(),
@@ -35,21 +39,30 @@ fun WorxTextField(
     isDeleteTrail: Boolean = false,
     isRequired : Boolean = false,
     validation: Boolean = false,
-    isValid : (Boolean) -> Unit ={},
-    isEnabled: Boolean = true
+    isEnabled: Boolean = true,
+    viewModel:DetailFormViewModel? = null,
+    index: Int =-1
 ) {
     var textValue by remember { mutableStateOf(initialValue) }
+    val data = viewModel?.uiState?.collectAsState()?.value?.detailForm?.fields?.getOrNull(index)
 
     Column(
-        modifier = Modifier
-            .padding(top = 16.dp)
+        modifier = Modifier.padding(horizontal = 16.dp)
     ) {
         var passwordVisible by rememberSaveable { mutableStateOf(false) }
         Text(
-            modifier = Modifier.padding(bottom = 8.dp, start = 17.dp),
+            modifier = Modifier.padding(bottom = 8.dp),
             text = label,
             style = Typography.body2.copy(MaterialTheme.colors.onSecondary)
         )
+        if (description.isNotBlank()) {
+            Text(
+                text = description,
+                color = if (theme == SettingTheme.Dark) textFormDescriptionDark else textFormDescription,
+                style = MaterialTheme.typography.body1.copy(textFormDescription),
+                modifier = Modifier.padding(bottom = 8.dp)
+            )
+        }
         TextField(
             colors = TextFieldDefaults.textFieldColors(
                 backgroundColor = Color.Black.copy(0.06f),
@@ -57,9 +70,7 @@ fun WorxTextField(
 //                unfocusedLabelColor = if (theme == SettingTheme.Dark) textUnfocusColorDark else textUnfocusColorSystem
             ),
             modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 16.dp)
-                .padding(bottom = 4.dp),
+                .fillMaxWidth(),
             shape = RoundedCornerShape(4.dp),
             value = textValue,
             onValueChange = {
@@ -106,20 +117,22 @@ fun WorxTextField(
                 }
             }
         )
-        if (validation && isRequired && textValue.text.isBlank()){
-            Text(
-                text = "$label is required",
-                modifier = Modifier
-                    .padding(horizontal = 16.dp)
-                    .padding(bottom = 8.dp),
-                color = PrimaryMain
-            )
-            isValid(false)
+        if (isRequired && textValue.text.isEmpty()){
+            if (validation){
+                Text(
+                    text = "$label is required",
+                    modifier = Modifier
+                        .padding(bottom = 8.dp),
+                    color = PrimaryMain
+                )
+            }
+            data?.isValid = false
         } else {
-            isValid(true)
+            data?.isValid = true
         }
         Divider(
-            color = GrayDivider
+            color = GrayDivider,
+            modifier = Modifier.padding(vertical = 16.dp)
         )
     }
 }

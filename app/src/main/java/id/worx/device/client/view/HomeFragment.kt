@@ -10,22 +10,25 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import dagger.hilt.android.AndroidEntryPoint
 import id.worx.device.client.MainScreen
+import id.worx.device.client.Util
+import id.worx.device.client.data.api.SyncServer.Companion.DOWNLOADFROMSERVER
 import id.worx.device.client.data.database.Session
 import id.worx.device.client.navigate
 import id.worx.device.client.screen.components.WorxThemeStatusBar
 import id.worx.device.client.screen.main.HomeScreen
 import id.worx.device.client.theme.WorxTheme
 import id.worx.device.client.viewmodel.DetailFormViewModel
-import id.worx.device.client.viewmodel.HomeViewModel
-import id.worx.device.client.viewmodel.ThemeViewModel
+import id.worx.device.client.viewmodel.HomeViewModelImpl
+import id.worx.device.client.viewmodel.ThemeViewModelImpl
 import javax.inject.Inject
 
 @AndroidEntryPoint
 class HomeFragment : Fragment() {
 
-    private val viewModel by activityViewModels<HomeViewModel>()
+    private val viewModel by activityViewModels<HomeViewModelImpl>()
     private val detailViewModel by activityViewModels<DetailFormViewModel>()
-    private val themeViewModel by activityViewModels<ThemeViewModel>()
+    private val themeViewModel by activityViewModels<ThemeViewModelImpl>()
+
     @Inject
     lateinit var session: Session
 
@@ -39,7 +42,13 @@ class HomeFragment : Fragment() {
                 navigate(navigateTo, MainScreen.Home)
             }
         }
-        viewModel.getDeviceInfo(session)
+
+        if (Util.isNetworkAvailable(requireContext())){
+            viewModel.getDeviceInfo(session)
+            viewModel.updateDeviceInfo(session)
+            viewModel.syncWithServer(0, viewLifecycleOwner)
+        }
+
         return ComposeView(requireContext()).apply {
             setContent {
                 val theme = themeViewModel.theme.value
@@ -52,10 +61,14 @@ class HomeFragment : Fragment() {
                         viewModel = viewModel,
                         detailVM = detailViewModel,
                         session = session,
-                        viewLifecycleOwner = viewLifecycleOwner
+                        syncWithServer = { syncWithServer() }
                     )
                 }
             }
         }
+    }
+
+    private fun syncWithServer() {
+        viewModel.syncWithServer(DOWNLOADFROMSERVER, viewLifecycleOwner)
     }
 }

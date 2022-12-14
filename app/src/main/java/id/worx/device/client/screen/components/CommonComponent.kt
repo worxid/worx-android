@@ -16,6 +16,9 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import id.worx.device.client.screen.main.SettingTheme
@@ -97,42 +100,50 @@ fun WorxTopAppBar(
         backgroundColor = MaterialTheme.colors.primary,
         contentColor = MaterialTheme.colors.onPrimary
     ) {
-        Box(
+        Row(
             modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
         ) {
             IconButton(
                 onClick = onBack,
-                modifier = Modifier.align(Alignment.CenterStart),
             ) {
                 Icon(Icons.Default.ArrowBack, contentDescription = "Back Button")
             }
             Text(
-                modifier = Modifier.align(Alignment.Center),
                 text = title,
                 style = Typography.h6,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+                modifier = Modifier
+                    .weight(1f, fill = true),
+                textAlign = TextAlign.Center
             )
-            if (progress != null) {
-                CircularProgressIndicator(
-                    progress = progress / 100.toFloat(),
-                    modifier = Modifier
-                        .padding(horizontal = 16.dp)
-                        .align(Alignment.CenterEnd)
-                        .scale(0.75f),
-                    color = Color.White,
-                    strokeWidth = 3.dp,
-                )
+            Box {
+                if (progress != null) {
+                    CircularProgressIndicator(
+                        progress = progress / 100.toFloat(),
+                        modifier = Modifier
+                            .padding(horizontal = 16.dp)
+                            .align(Alignment.CenterEnd)
+                            .scale(0.75f),
+                        color = Color.White,
+                        strokeWidth = 3.dp,
+                    )
+                }
+                if (useProgressBar) {
+                    CircularProgressIndicator(
+                        progress = 1f,
+                        modifier = Modifier
+                            .padding(horizontal = 16.dp)
+                            .align(Alignment.CenterEnd)
+                            .scale(0.75f),
+                        color = Color.White.copy(0.3f),
+                        strokeWidth = 3.dp,
+                    )
+                }
             }
-            if (useProgressBar) {
-                CircularProgressIndicator(
-                    progress = 1f,
-                    modifier = Modifier
-                        .padding(horizontal = 16.dp)
-                        .align(Alignment.CenterEnd)
-                        .scale(0.75f),
-                    color = Color.White.copy(0.3f),
-                    strokeWidth = 3.dp,
-                )
-            }
+
         }
     }
 }

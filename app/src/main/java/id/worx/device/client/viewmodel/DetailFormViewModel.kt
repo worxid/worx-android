@@ -16,6 +16,7 @@ import id.worx.device.client.Util
 import id.worx.device.client.Util.getCurrentDate
 import id.worx.device.client.Util.initProgress
 import id.worx.device.client.WorxApplication
+import id.worx.device.client.data.api.SyncServer
 import id.worx.device.client.data.database.Session
 import id.worx.device.client.model.*
 import id.worx.device.client.repository.SourceDataRepository
@@ -50,7 +51,8 @@ class DetailFormViewModel @Inject constructor(
     private val application: WorxApplication,
     private val session: Session,
     private val savedStateHandle: SavedStateHandle,
-    private val dataSourceRepo: SourceDataRepository
+    private val dataSourceRepo: SourceDataRepository,
+    private val syncServerWork: SyncServer
 ) : ViewModel() {
 
     var uiState = MutableStateFlow(DetailUiState())
@@ -128,11 +130,11 @@ class DetailFormViewModel @Inject constructor(
         _navigateTo.value = Event(MainScreen.SignaturePad)
     }
 
-    fun saveSignature(bitmap: Bitmap) {
+    fun saveSignature(bitmap: Bitmap, index: Int) {
         val fileName =
-            "signature${uiState.value.detailForm!!.fields[uiState.value.currentComponent].id}"
+            "signature${uiState.value.detailForm!!.fields[index].id}"
         val filePath = createFileFromBitmap(fileName, bitmap)
-        getPresignedUrlForSignature(uiState.value.currentComponent, bitmap, filePath)
+        getPresignedUrlForSignature(index, bitmap, filePath)
         _navigateTo.value = Event(MainScreen.Detail)
     }
 
@@ -238,7 +240,7 @@ class DetailFormViewModel @Inject constructor(
     private fun submitForm(actionAfterSubmitted: () -> Unit) {
         viewModelScope.launch {
             val form = createSubmitForm()
-            if (Util.isConnected(application.applicationContext)) {
+            if (Util.isNetworkAvailable(application.applicationContext)) {
                 val result = dataSourceRepo.submitForm(form)
                 if (result.isSuccessful) {
                     dataSourceRepo.insertOrUpdateSubmitForm(form.copy(status = 2)) //insertSubmission to db
@@ -325,8 +327,8 @@ class DetailFormViewModel @Inject constructor(
             "${address.getAddressLine(0)}, ${address.subLocality}, " +
                     "${address.locality}, ${address.subAdminArea}, " +
                     "${address.adminArea}, ${address.countryName}",
-            latitude.toDouble().toInt(),
-            longitude.toDouble().toInt()
+            latitude.toDouble(),
+            longitude.toDouble()
         )
 
         return SubmitForm(
@@ -339,6 +341,30 @@ class DetailFormViewModel @Inject constructor(
             lastUpdated = getCurrentDate("dd/MM/yyyy hh:mm a"),
             submitLocation = submitLocation
         )
+    }
+
+    private fun refreshData() {
+        viewModelScope.launch {
+            val submitForm =
+                uiState.value.detailForm?.id?.let { dataSourceRepo.getSubmissionById(it) }
+            val form = uiState.value.detailForm?.id?.let { dataSourceRepo.getEmptyFormByID(it) }
+            if (submitForm == null) {
+                uiState.update {
+                    it.copy(detailForm = form)
+                }
+            } else {
+                uiState.update {
+                    it.copy(detailForm = form, values = submitForm.values.toMutableMap())
+                }
+            }
+        }
+    }
+
+
+    fun syncWithServer(typeData : Int, viewLifecycleOwner: LifecycleOwner){
+        viewModelScope.launch {
+            syncServerWork.syncWithServer(typeData, viewLifecycleOwner) { refreshData() }
+        }
     }
 
     interface UIHandler {

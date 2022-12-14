@@ -15,11 +15,9 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.LifecycleOwner
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.rememberPagerState
-import id.worx.device.client.MainActivity
 import id.worx.device.client.R
 import id.worx.device.client.data.database.Session
 import id.worx.device.client.model.EmptyForm
@@ -28,7 +26,7 @@ import id.worx.device.client.theme.PrimaryMain
 import id.worx.device.client.theme.Typography
 import id.worx.device.client.theme.WorxTheme
 import id.worx.device.client.viewmodel.DetailFormViewModel
-import id.worx.device.client.viewmodel.HomeViewModel
+import id.worx.device.client.viewmodel.HomeViewModelImpl
 import kotlinx.coroutines.launch
 
 val tabItems = listOf(
@@ -43,10 +41,10 @@ fun SearchScreen(
     formList: List<EmptyForm>,
     draftList: List<SubmitForm>,
     submissionList: List<SubmitForm>,
-    viewModel: HomeViewModel,
+    viewModel: HomeViewModelImpl,
     detailVM: DetailFormViewModel,
     session: Session,
-    viewLifecycleOwner: LifecycleOwner,
+    syncWithServer: () -> Unit,
     modifier: Modifier
 ) {
     val searchInput = viewModel.uiState.collectAsState().value.searchInput
@@ -60,7 +58,7 @@ fun SearchScreen(
             modifier = modifier
         ) {
             val (tablayout, tabcontent) = createRefs()
-            val pagerState = rememberPagerState(pageCount = 3)
+            val pagerState = rememberPagerState()
 
             TabRow(
                 selectedTabIndex = pagerState.currentPage,
@@ -106,6 +104,7 @@ fun SearchScreen(
                 }
             }
             HorizontalPager(
+                count = 3,
                 state = pagerState,
                 modifier = Modifier.constrainAs(tabcontent){
                 top.linkTo(tablayout.bottom)
@@ -120,7 +119,7 @@ fun SearchScreen(
                         stringResource(R.string.no_forms),
                         stringResource(R.string.empty_description_form),
                         session = session,
-                        viewLifecycleOwner
+                        syncWithServer
                     )
                     1 -> FormScreen(
                         draftData,
@@ -130,7 +129,7 @@ fun SearchScreen(
                         stringResource(R.string.no_drafts),
                         stringResource(R.string.empty_description_drafts),
                         session = session,
-                        viewLifecycleOwner
+                        syncWithServer
                     )
                     2 -> FormScreen(
                         submissionData,
@@ -140,7 +139,7 @@ fun SearchScreen(
                         stringResource(R.string.no_submission),
                         stringResource(R.string.empty_description_submission),
                         session = session,
-                        viewLifecycleOwner
+                        syncWithServer
                     )
                 }
             }
@@ -159,7 +158,7 @@ fun PreviewSearchScreen() {
             viewModel = hiltViewModel(),
             detailVM = hiltViewModel(),
             session = Session(LocalContext.current),
-            MainActivity(),
+            {  },
             modifier = Modifier
         )
     }

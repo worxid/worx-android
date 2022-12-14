@@ -47,6 +47,7 @@ abstract class Fields (
     @SerializedName("description" ) open var description : String?          = null,
     @SerializedName("type"        ) open var type        : String?          = null,
     @SerializedName("required"    ) open var required    : Boolean?         = null,
+                                    open var isValid     : Boolean?         = null,
 )
 
 data class Group (

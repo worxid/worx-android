@@ -33,7 +33,9 @@ import id.worx.device.client.screen.components.WorxDialog
 import id.worx.device.client.screen.components.WorxTopAppBar
 import id.worx.device.client.screen.components.getActivity
 import id.worx.device.client.theme.*
+import id.worx.device.client.viewmodel.HomeVMPrev
 import id.worx.device.client.viewmodel.HomeViewModel
+import id.worx.device.client.viewmodel.ThemeVMMock
 import id.worx.device.client.viewmodel.ThemeViewModel
 
 object SettingTheme {
@@ -121,6 +123,14 @@ fun SettingScreen(
                 subtitle = stringResource(id = R.string.save_image_in_gallery_sub),
                 iconRes = R.drawable.ic_baseline_collections_24,
                 toggleActive = true,
+                session = session
+            )
+            TileItemSetting(
+                title = stringResource(id = R.string.advance_settings),
+                subtitle = stringResource(id = R.string.switch_to_server),
+                iconRes = R.drawable.ic_settings,
+                onPress = { viewModel.goToAdvanceSettings() },
+                toggleActive = false,
                 session = session
             )
             HeaderTileSetting(title = stringResource(id = R.string.about_this_app))
@@ -425,5 +435,17 @@ fun HeaderTileSetting(
             .padding(horizontal = 60.dp, vertical = 20.dp)
     ) {
         Text(text = title, style = Typography.body1, color = MaterialTheme.colors.onSecondary)
+    }
+}
+
+@Preview (showSystemUi = true)
+@Composable
+fun PreviewSettingScreen(){
+    WorxTheme() {
+        SettingScreen(
+            viewModel = HomeVMPrev(),
+            session = Session(LocalContext.current),
+            themeViewModel =ThemeVMMock() ) {
+        }
     }
 }

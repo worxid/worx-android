@@ -1,6 +1,5 @@
 package id.worx.device.client.viewmodel
 
-import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -18,6 +17,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import net.gotev.uploadservice.extensions.isValidHttpUrl
 import javax.inject.Inject
 
 @HiltViewModel
@@ -38,6 +38,21 @@ class WelcomeViewModel @Inject constructor(
 
     fun submitNewTeam() {
         _navigateTo.value = Event(WelcomeScreen.CreateTeamSubmitted)
+    }
+
+    fun goToAdvancedSetting() {
+        _navigateTo.value = Event(WelcomeScreen.AdvancedSetting)
+    }
+
+    fun saveServerUrl(session: Session, url: String) {
+        viewModelScope.launch {
+            if (url.isEmpty() || !url.isValidHttpUrl()){
+                uiHandler.showToast("Url is not valid")
+            } else {
+                session.saveServerUrl(url)
+                _navigateTo.value = Event(WelcomeScreen.Welcome)
+            }
+        }
     }
 
     fun resendEmail() {}

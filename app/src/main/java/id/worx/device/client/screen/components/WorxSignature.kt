@@ -3,6 +3,7 @@ package id.worx.device.client.screen.components
 import android.graphics.Bitmap
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Divider
@@ -24,14 +25,13 @@ import id.worx.device.client.R
 import id.worx.device.client.data.database.Session
 import id.worx.device.client.model.SignatureField
 import id.worx.device.client.model.SignatureValue
-import id.worx.device.client.theme.GrayDivider
-import id.worx.device.client.theme.PrimaryMain
-import id.worx.device.client.theme.Typography
+import id.worx.device.client.screen.main.SettingTheme
+import id.worx.device.client.theme.*
 import id.worx.device.client.viewmodel.DetailFormViewModel
 import id.worx.device.client.viewmodel.EventStatus
 
 @Composable
-fun WorxSignature(indexForm: Int, viewModel: DetailFormViewModel, session: Session,validation : Boolean = false,isValid : (Boolean) -> Unit ={}) {
+fun WorxSignature(indexForm: Int, viewModel: DetailFormViewModel, session: Session,validation : Boolean = false) {
     val form = viewModel.uiState.collectAsState().value.detailForm!!.fields[indexForm] as SignatureField
     val theme = session.theme
 
@@ -43,17 +43,28 @@ fun WorxSignature(indexForm: Int, viewModel: DetailFormViewModel, session: Sessi
     } else {
         remember { mutableStateOf(value.bitmap) }
     }
-    val warningInfo = if (form.required == true && bitmap.value == null) "${form.label} is required" else ""
+    val warningInfo =
+        if (form.required == true && bitmap.value == null) "${form.label} is required" else ""
 
     val fileId = value?.value
     val formStatus = viewModel.uiState.collectAsState().value.status
 
-    Column(modifier = Modifier.fillMaxWidth()) {
+    Column(modifier = Modifier
+        .fillMaxWidth()
+        .padding(horizontal = 16.dp)) {
         Text(
             form.label ?: "Signature",
             style = Typography.body2.copy(MaterialTheme.colors.onSecondary),
-            modifier = Modifier.padding(start = 17.dp, bottom = 8.dp, end = 16.dp)
+            modifier = Modifier.padding(bottom = 8.dp)
         )
+        if (!form.description.isNullOrEmpty()) {
+            Text(
+                text = form.description!!,
+                color = if (theme == SettingTheme.Dark) textFormDescriptionDark else textFormDescription,
+                style = MaterialTheme.typography.body1.copy(textFormDescription),
+                modifier = Modifier.padding(bottom = 8.dp)
+            )
+        }
         if (value?.bitmap != null) {
             SignatureView(bitmap.value) {
                 viewModel.setComponentData(indexForm, null)
@@ -77,30 +88,31 @@ fun WorxSignature(indexForm: Int, viewModel: DetailFormViewModel, session: Sessi
                 }
             }
         }
-        if (validation && warningInfo.isNotBlank()) {
-            Text(
-                text = warningInfo,
-                modifier = Modifier
-                    .padding(horizontal = 16.dp)
-                    .padding(top = 4.dp),
-                color = PrimaryMain
-            )
-            isValid(false)
+        if (warningInfo.isNotBlank()) {
+            if (validation){
+                Text(
+                    text = warningInfo,
+                    modifier = Modifier
+                        .padding(top = 4.dp),
+                    color = PrimaryMain
+                )
+            }
+            form.isValid = false
         } else {
-            isValid(true)
+            form.isValid = true
         }
-        Divider(color = GrayDivider, modifier = Modifier.padding(top = 12.dp))
+        Divider(color = GrayDivider, modifier = Modifier.padding(vertical = 16.dp))
     }
 }
 
 @Composable
 private fun AttachSignatureButton(
-    theme : String?,
+    theme: String?,
     goToSignaturePad: () -> Unit,
 ) {
 
     ActionRedButton(
-        modifier = Modifier.padding(horizontal = 16.dp),
+        modifier = Modifier,
         iconRes = R.drawable.ic_signature_icon,
         title = stringResource(id = R.string.add_signature),
         actionClick = { goToSignaturePad() },

@@ -13,7 +13,7 @@ import id.worx.device.client.screen.components.WorxThemeStatusBar
 import id.worx.device.client.screen.welcome.VerificationEvent
 import id.worx.device.client.screen.welcome.VerificationRejectedScreen
 import id.worx.device.client.theme.WorxTheme
-import id.worx.device.client.viewmodel.ThemeViewModel
+import id.worx.device.client.viewmodel.ThemeViewModelImpl
 import id.worx.device.client.viewmodel.WelcomeViewModel
 import javax.inject.Inject
 
@@ -21,7 +21,7 @@ import javax.inject.Inject
 class VerificationRejectedFragment : Fragment() {
 
     private val viewModel by viewModels<WelcomeViewModel>()
-    private val themeViewModel by viewModels<ThemeViewModel>()
+    private val themeViewModel by viewModels<ThemeViewModelImpl>()
     @Inject lateinit var session: Session
 
     override fun onCreateView(

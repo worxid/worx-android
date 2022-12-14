@@ -1,21 +1,20 @@
 package id.worx.device.client.viewmodel
 
+import android.os.Build
 import android.util.Log
+import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.*
-import androidx.work.*
 import com.google.gson.Gson
-import com.google.gson.GsonBuilder
 import dagger.hilt.android.lifecycle.HiltViewModel
+import id.worx.device.client.BuildConfig
 import id.worx.device.client.Event
 import id.worx.device.client.MainScreen
-import id.worx.device.client.WorxApplication
-import id.worx.device.client.data.api.FieldsDeserializer
-import id.worx.device.client.data.api.ValueSerialize
-import id.worx.device.client.data.database.FormDownloadWorker
+import id.worx.device.client.data.api.SyncServer
 import id.worx.device.client.data.database.Session
-import id.worx.device.client.data.database.SubmissionDownloadWorker
-import id.worx.device.client.data.database.SubmissionUploadWorker
-import id.worx.device.client.model.*
+import id.worx.device.client.model.DeviceInfo
+import id.worx.device.client.model.EmptyForm
+import id.worx.device.client.model.ResponseDeviceInfo
+import id.worx.device.client.model.SubmitForm
 import id.worx.device.client.repository.DeviceInfoRepository
 import id.worx.device.client.repository.SourceDataRepository
 import kotlinx.coroutines.CoroutineScope
@@ -25,6 +24,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import net.gotev.uploadservice.extensions.isValidHttpUrl
 import javax.inject.Inject
 
 // Const to view dialog/notification on the screen
@@ -40,12 +40,32 @@ data class HomeUiState(
     var searchInput: String = ""
 )
 
+abstract class HomeViewModel() : ViewModel() {
+    abstract fun goToDetailScreen()
+    abstract fun goToSettingScreen()
+    abstract fun goToLicencesScreen()
+    abstract fun goToAdvanceSettings()
+    abstract fun onSearchInputChanged(searchInput: String)
+    abstract fun showNotification(typeOfNotification: Int)
+    abstract fun showBadge(typeOfBadge: Int)
+    abstract fun syncWithServer(typeData : Int, viewLifecycleOwner: LifecycleOwner)
+    abstract fun leaveTeam(
+        onSuccess: () -> Unit,
+        onError: () -> Unit,
+        deviceCode: String
+    )
+    abstract fun getDeviceInfo(session: Session)
+    abstract fun updateDeviceInfo(session: Session)
+    abstract fun saveServerUrl(session: Session, url: String)
+    }
+
 @HiltViewModel
-class HomeViewModel @Inject constructor(
+class HomeViewModelImpl @Inject constructor(
     private val savedStateHandle: SavedStateHandle,
     private val deviceInfoRepository: DeviceInfoRepository,
-    private val repository: SourceDataRepository
-) : ViewModel() {
+    private val repository: SourceDataRepository,
+    private val syncServerWork: SyncServer
+) : HomeViewModel() {
 
     val uiState = MutableStateFlow(HomeUiState())
     lateinit var uiHandler: UIHandler
@@ -59,28 +79,30 @@ class HomeViewModel @Inject constructor(
     private val _showBadge = MutableStateFlow(0)
     val showBadge: StateFlow<Int> = _showBadge
 
-    var isRefresh = MutableStateFlow(false)
-
     init {
         refreshData()
     }
 
-    fun goToDetailScreen() {
+    override fun goToDetailScreen() {
         _navigateTo.value = Event(MainScreen.Detail)
     }
 
-    fun goToSettingScreen() {
+    override fun goToSettingScreen() {
         _navigateTo.value = Event(MainScreen.Settings)
     }
 
-    fun goToLicencesScreen() {
+    override fun goToLicencesScreen() {
         _navigateTo.value = Event(MainScreen.Licences)
+    }
+
+    override fun goToAdvanceSettings() {
+        _navigateTo.value = Event(MainScreen.AdvanceSettings)
     }
 
     /**
      * Refresh data and update the UI state accordingly
      */
-    fun refreshData() {
+    private fun refreshData() {
         // Ui state is refreshing
         uiState.value.isLoading = true
 
@@ -114,7 +136,7 @@ class HomeViewModel @Inject constructor(
     /**
      * Notify that the user updated the search query
      */
-    fun onSearchInputChanged(searchInput: String) {
+    override fun onSearchInputChanged(searchInput: String) {
         uiState.value.searchInput = searchInput
     }
 
@@ -122,7 +144,7 @@ class HomeViewModel @Inject constructor(
      * Show dialog of notification on the screen
      * Params : typeOfNotification that need to be shown
      */
-    fun showNotification(typeOfNotification: Int) {
+    override fun showNotification(typeOfNotification: Int) {
         _showNotification.value = typeOfNotification
     }
 
@@ -130,76 +152,17 @@ class HomeViewModel @Inject constructor(
      * Show badge if there is new draft or submission saved
      * Params : string resources R.String.draft or R.string.submission
      */
-    fun showBadge(typeOfBadge: Int) {
+    override fun showBadge(typeOfBadge: Int) {
         _showBadge.value = typeOfBadge
     }
 
-    private var workManager = WorkManager.getInstance(WorxApplication())
-    private val networkConstraints = Constraints.Builder()
-        .setRequiredNetworkType(NetworkType.CONNECTED)
-        .build()
-
-    private val formTemplateWorkInfoItems: LiveData<List<WorkInfo>> =
-        workManager.getWorkInfosByTagLiveData("form_template")
-
-    internal fun downloadFormTemplate(lifecycleOwner: LifecycleOwner) {
-        val syncTemplateDBRequest = OneTimeWorkRequestBuilder<FormDownloadWorker>()
-            .addTag("form_template")
-            .setConstraints(networkConstraints)
-            .build()
-
-        workManager.enqueue(syncTemplateDBRequest)
-
-        formTemplateWorkInfoItems.observe(lifecycleOwner, Observer { list ->
-            val workInfo = list[0]
-            if (list.isNotEmpty() && workInfo.state.isFinished) {
-                refreshData()
-            }
-        })
-    }
-
-
-    internal fun uploadSubmissionWork() {
+    override fun syncWithServer(typeData : Int, viewLifecycleOwner: LifecycleOwner){
         viewModelScope.launch {
-            repository.getAllUnsubmitted().collect {
-
-                val gson = GsonBuilder()
-                    .registerTypeAdapter(Fields::class.java, FieldsDeserializer())
-                    .registerTypeAdapter(Value::class.java, ValueSerialize())
-                    .create()
-                val uploadData: Data = workDataOf("submit_form_list" to gson.toJson(it))
-
-                val uploadSubmisison = OneTimeWorkRequestBuilder<SubmissionUploadWorker>()
-                    .setInputData(uploadData)
-                    .addTag("upload_submission")
-                    .setConstraints(networkConstraints)
-                    .build()
-
-                workManager.enqueue(uploadSubmisison)
-            }
+            syncServerWork.syncWithServer(typeData, viewLifecycleOwner) { refreshData() }
         }
     }
 
-    private val downloadSubmissionWorkInfoItems: LiveData<List<WorkInfo>> =
-        workManager.getWorkInfosByTagLiveData("submission_list")
-
-    internal fun downloadSubmissionList(lifecycleOwner: LifecycleOwner) {
-        val syncSubmitFormDBRequest = OneTimeWorkRequestBuilder<SubmissionDownloadWorker>()
-            .addTag("submission_list")
-            .setConstraints(networkConstraints)
-            .build()
-
-        workManager.enqueue(syncSubmitFormDBRequest)
-
-        formTemplateWorkInfoItems.observe(lifecycleOwner, Observer { list ->
-            val workInfo = list[0]
-            if (list.isNotEmpty() && workInfo.state.isFinished) {
-                refreshData()
-            }
-        })
-    }
-
-    fun leaveTeam(
+    override fun leaveTeam(
         onSuccess: () -> Unit,
         onError: () -> Unit,
         deviceCode: String
@@ -218,7 +181,7 @@ class HomeViewModel @Inject constructor(
         }
     }
 
-    fun getDeviceInfo(session: Session) {
+    override fun getDeviceInfo(session: Session) {
         viewModelScope.launch {
             val response = deviceInfoRepository.getDeviceStatus()
             withContext(Dispatchers.Main) {
@@ -226,6 +189,8 @@ class HomeViewModel @Inject constructor(
                     val value = response.body()?.value
                     val organization = value?.organizationName
                     val organizationKey = value?.organizationCode
+                    val label = value?.label ?: ""
+                    session.saveDeviceName(label)
                     session.saveOrganization(organization)
                     session.saveOrganizationCode(organizationKey)
                 } else if (response.code() == 404) {
@@ -241,7 +206,51 @@ class HomeViewModel @Inject constructor(
         }
     }
 
+    override fun updateDeviceInfo(session: Session) {
+        viewModelScope.launch {
+            val deviceInfo = DeviceInfo(
+                label = session.deviceName,
+                deviceModel = "${Build.MANUFACTURER} ${Build.MODEL}" ,
+                deviceOsVersion = "${Build.VERSION.SDK_INT}",
+                deviceAppVersion = BuildConfig.VERSION_NAME,
+            )
+            val response = deviceInfoRepository.updateDeviceInfo(deviceInfo)
+            withContext(Dispatchers.Main){
+                if (response.code() > 250){
+                    uiHandler.showToast("Error ${response.code()} when update device info to server")
+                }
+            }
+        }
+    }
+
+    override fun saveServerUrl(session: Session, url: String) {
+        viewModelScope.launch {
+            if (url.isEmpty() || !url.isValidHttpUrl()){
+                uiHandler.showToast("Url is not valid")
+            } else {
+                session.saveServerUrl(url)
+                _navigateTo.value = Event(MainScreen.Home)
+            }
+        }
+    }
+
     interface UIHandler {
         fun showToast(text: String)
     }
+}
+
+
+class HomeVMPrev: HomeViewModel(){
+    override fun goToDetailScreen() {}
+    override fun goToSettingScreen() {}
+    override fun goToLicencesScreen() {}
+    override fun goToAdvanceSettings() {}
+    override fun onSearchInputChanged(searchInput: String) {}
+    override fun showNotification(typeOfNotification: Int) {}
+    override fun showBadge(typeOfBadge: Int) {}
+    override fun syncWithServer(typeData: Int, viewLifecycleOwner: LifecycleOwner) {}
+    override fun leaveTeam(onSuccess: () -> Unit, onError: () -> Unit, deviceCode: String) {}
+    override fun getDeviceInfo(session: Session) {}
+    override fun updateDeviceInfo(session: Session) {}
+    override fun saveServerUrl(session: Session, url: String) {}
 }

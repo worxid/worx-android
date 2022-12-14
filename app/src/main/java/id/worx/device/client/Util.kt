@@ -5,6 +5,7 @@ import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.Color
 import android.net.ConnectivityManager
+import android.net.NetworkCapabilities
 import android.net.Uri
 import android.os.Build
 import android.provider.Settings
@@ -27,9 +28,17 @@ import java.util.*
 
 
 object Util {
-    fun isConnected(context: Context): Boolean {
-        val cm = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
-        return cm.activeNetwork != null
+    fun isNetworkAvailable(context: Context): Boolean {
+        val connectivityManager =
+            context.getSystemService(ConnectivityManager::class.java) as ConnectivityManager
+
+        val network = connectivityManager.activeNetwork
+        val connection = connectivityManager.getNetworkCapabilities(network)
+        return connection != null && (
+                connection.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR) ||
+                        connection.hasTransport(
+                            NetworkCapabilities.TRANSPORT_WIFI
+                        ))
     }
 
     fun getCurrentDate(dateFormat: String): String {
