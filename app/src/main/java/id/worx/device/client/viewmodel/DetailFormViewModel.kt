@@ -245,7 +245,7 @@ class DetailFormViewModel @Inject constructor(
                 if (result.isSuccessful) {
                     dataSourceRepo.insertOrUpdateSubmitForm(form.copy(status = 2)) //insertSubmission to db
                 } else {
-                    dataSourceRepo.insertOrUpdateSubmitForm(form.copy(status = 1)) //insertSubmission to db
+                    uiHandler.showToast("Submit Form Error ${result.code()}")
                 }
             } else {
                 dataSourceRepo.insertOrUpdateSubmitForm(form.copy(status = 1)) //insertSubmission to db
@@ -298,6 +298,9 @@ class DetailFormViewModel @Inject constructor(
 
     fun saveFormAsDraft(actionAfterSaved: () -> Unit) {
         viewModelScope.launch {
+            if (uiState.value.detailForm is SubmitForm) {
+                (uiState.value.detailForm as SubmitForm).dbId?.let { dbId -> dataSourceRepo.deleteSubmitFormById(dbId) }
+            }
             val form = createSubmitForm()
             dataSourceRepo.insertOrUpdateSubmitForm(form.copy(status = 0))
             actionAfterSaved()
