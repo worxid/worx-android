@@ -15,15 +15,15 @@ import id.worx.device.client.navigate
 import id.worx.device.client.screen.components.WorxThemeStatusBar
 import id.worx.device.client.screen.main.SettingScreen
 import id.worx.device.client.theme.WorxTheme
-import id.worx.device.client.viewmodel.HomeViewModel
-import id.worx.device.client.viewmodel.ThemeViewModel
+import id.worx.device.client.viewmodel.HomeViewModelImpl
+import id.worx.device.client.viewmodel.ThemeViewModelImpl
 import javax.inject.Inject
 
 @AndroidEntryPoint
 class SettingsFragment : Fragment() {
 
-    private val viewModel by activityViewModels<HomeViewModel>()
-    private val themeViewModel by activityViewModels<ThemeViewModel>()
+    private val viewModel by activityViewModels<HomeViewModelImpl>()
+    private val themeViewModel by activityViewModels<ThemeViewModelImpl>()
 
     @Inject
     lateinit var session: Session
@@ -32,6 +32,7 @@ class SettingsFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
+
         viewModel.navigateTo.observe(viewLifecycleOwner) { navigateToEvent ->
             navigateToEvent.getContentIfNotHandled()?.let { navigateTo ->
                 navigate(navigateTo, MainScreen.Settings)

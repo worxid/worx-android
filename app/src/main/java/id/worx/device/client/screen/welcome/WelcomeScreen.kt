@@ -2,19 +2,20 @@ package id.worx.device.client.screen.welcome
 
 import android.content.res.Configuration
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Divider
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Settings
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
@@ -26,6 +27,7 @@ import id.worx.device.client.data.database.Session
 import id.worx.device.client.screen.components.RedFullWidthButton
 import id.worx.device.client.screen.components.WhiteFullWidthButton
 import id.worx.device.client.screen.main.SettingTheme
+import id.worx.device.client.theme.PrimaryMain
 import id.worx.device.client.theme.Typography
 import id.worx.device.client.theme.WorxTheme
 
@@ -33,92 +35,104 @@ sealed class WelcomeEvent {
     object CreateTeam : WelcomeEvent()
     object JoinTeam : WelcomeEvent()
     object MainScreen : WelcomeEvent()
+    object AdvancedSettings: WelcomeEvent()
 }
 
 @Composable
 fun WelcomeScreen(onEvent: (WelcomeEvent) -> Unit, session: Session) {
     val theme = session.theme
     Surface(
-        modifier = Modifier
-            .fillMaxSize()
+        modifier = Modifier.fillMaxSize(),
+        color = MaterialTheme.colors.secondary
     ) {
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .background(MaterialTheme.colors.secondary)
-                .verticalScroll(rememberScrollState())
-        ) {
-            WelcomeHeader(session)
-            CreateTeamButton(session, onEvent = onEvent)
-            JoinTeamButton(session, onEvent)
+        Box(modifier = Modifier.fillMaxSize()) {
+            Image(
+                modifier = Modifier.fillMaxSize(),
+                contentScale = ContentScale.Crop,
+                painter = painterResource(id = R.drawable.grid_bg),
+                colorFilter = ColorFilter.tint(
+                    color = PrimaryMain
+                ),
+                contentDescription = "Grid Background"
+            )
+            Column {
+                WelcomeHeader(session, onEvent)
+                CreateTeamButton(session, onEvent = onEvent)
+                JoinTeamButton(session, onEvent)
+            }
         }
     }
 }
 
 @Composable
-private fun WelcomeHeader(session: Session) {
+private fun WelcomeHeader(session: Session, onEvent: (WelcomeEvent) -> Unit) {
     val theme = session.theme
-    Surface(
-        modifier = Modifier.wrapContentSize(),
-        color = if (theme == SettingTheme.Dark) MaterialTheme.colors.secondary else MaterialTheme.colors.primary
-    ) {
-        Box() {
+        Column(
+            modifier = Modifier.padding(horizontal = 16.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center,
+        ) {
             Image(
-                modifier = Modifier.height(260.dp),
-                contentScale = ContentScale.Crop,
-                painter = painterResource(id = R.drawable.grid_bg),
-                contentDescription = "Grid Background"
+                modifier = Modifier
+                    .padding(top = 16.dp)
+                    .fillMaxWidth()
+                    .clickable {
+                        onEvent(WelcomeEvent.AdvancedSettings)
+                    },
+                imageVector = Icons.Filled.Settings,
+                alignment = Alignment.CenterEnd,
+                colorFilter = ColorFilter.tint(PrimaryMain),
+                contentDescription = "Settings"
             )
-            Column(
-                modifier = Modifier.padding(vertical = 26.dp, horizontal = 48.dp),
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.Center,
+            Image(
+                modifier = Modifier.padding(top = 90.dp),
+                painter = painterResource(id = R.drawable.worx_logo),
+                colorFilter = ColorFilter.tint(
+                    color = PrimaryMain
+                ),
+                contentDescription = "Worx Logo"
+            )
+            Row(
+                modifier = Modifier.padding(top = 50.dp),
+                horizontalArrangement = Arrangement.Center
             ) {
                 Image(
-                    modifier = Modifier
-                        .fillMaxWidth(),
+                    modifier = Modifier.padding(top = 12.dp, end = 16.dp),
                     painter = painterResource(id = R.drawable.ic_star),
-                    alignment = Alignment.CenterEnd,
                     contentDescription = "Decoration"
                 )
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Text(
+                        modifier = Modifier.padding(bottom = 12.dp),
+                        text = stringResource(id = R.string.welcome),
+                        style = Typography.subtitle1,
+                        color = Color.Black
+                    )
+                    Text(
+                        text = stringResource(id = R.string.welcome_messg_1),
+                        style = Typography.body1
+                    )
+                    Text(
+                        text = stringResource(id = R.string.welcome_messg_2),
+                        style = Typography.body1
+                    )
+                    Divider(
+                        modifier = Modifier.padding(top = 31.dp)
+                            .width(15.dp),
+                        color = Color.Black,
+                        thickness = 1.5.dp
+                    )
+                }
                 Image(
-                    painter = painterResource(id = R.drawable.worx_logo),
-                    contentDescription = "Worx Logo"
-                )
-                Image(
-                    modifier = Modifier
-                        .padding(top = 12.dp)
-                        .scale(scaleX = -1f, scaleY = 1f)
-                        .fillMaxWidth(),
+                    modifier = Modifier.padding(start = 12.dp, top = 16.dp)
+                        .scale(scaleX = -1f, scaleY = 1f),
                     painter = painterResource(id = R.drawable.ic_star),
-                    alignment = Alignment.CenterEnd,
                     contentDescription = "Decoration"
-                )
-                Text(
-                    modifier = Modifier.padding(12.dp),
-                    text = stringResource(id = R.string.welcome),
-                    style = Typography.subtitle1,
-                    color = Color.White
-                )
-                Text(
-                    text = stringResource(id = R.string.welcome_messg_1),
-                    style = Typography.body1
-                )
-                Text(
-                    text = stringResource(id = R.string.welcome_messg_2),
-                    style = Typography.body1
-                )
-                Divider(
-                    modifier = Modifier
-                        .align(Alignment.End)
-                        .padding(top = 16.dp, end = 24.dp),
-                    color = Color.White,
-                    thickness = 1.5.dp,
-                    startIndent = 240.dp
                 )
             }
         }
-    }
 }
 
 @Composable

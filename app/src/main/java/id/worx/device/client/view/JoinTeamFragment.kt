@@ -25,7 +25,7 @@ import id.worx.device.client.screen.components.WorxThemeStatusBar
 import id.worx.device.client.screen.welcome.JoinTeamEvent
 import id.worx.device.client.screen.welcome.JoinTeamScreen
 import id.worx.device.client.theme.WorxTheme
-import id.worx.device.client.viewmodel.ThemeViewModel
+import id.worx.device.client.viewmodel.ThemeViewModelImpl
 import id.worx.device.client.viewmodel.WelcomeViewModel
 import java.util.*
 import javax.inject.Inject
@@ -34,7 +34,7 @@ import javax.inject.Inject
 class JoinTeamFragment : Fragment() {
 
     private val viewModel by viewModels<WelcomeViewModel>()
-    private val themeViewModel by viewModels<ThemeViewModel>()
+    private val themeViewModel by viewModels<ThemeViewModelImpl>()
     @Inject lateinit var session: Session
 
     override fun onCreateView(

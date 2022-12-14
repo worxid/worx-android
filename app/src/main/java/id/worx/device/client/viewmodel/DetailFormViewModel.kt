@@ -240,7 +240,7 @@ class DetailFormViewModel @Inject constructor(
     private fun submitForm(actionAfterSubmitted: () -> Unit) {
         viewModelScope.launch {
             val form = createSubmitForm()
-            if (Util.isConnected(application.applicationContext)) {
+            if (Util.isNetworkAvailable(application.applicationContext)) {
                 val result = dataSourceRepo.submitForm(form)
                 if (result.isSuccessful) {
                     dataSourceRepo.insertOrUpdateSubmitForm(form.copy(status = 2)) //insertSubmission to db

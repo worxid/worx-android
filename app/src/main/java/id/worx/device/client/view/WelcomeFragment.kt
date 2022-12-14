@@ -17,7 +17,7 @@ import id.worx.device.client.screen.components.WorxThemeStatusBar
 import id.worx.device.client.screen.welcome.WelcomeEvent
 import id.worx.device.client.screen.welcome.WelcomeScreen
 import id.worx.device.client.theme.WorxTheme
-import id.worx.device.client.viewmodel.ThemeViewModel
+import id.worx.device.client.viewmodel.ThemeViewModelImpl
 import id.worx.device.client.viewmodel.WelcomeViewModel
 import javax.inject.Inject
 
@@ -25,7 +25,7 @@ import javax.inject.Inject
 class WelcomeFragment : Fragment() {
 
     private val viewModel by viewModels<WelcomeViewModel>()
-    private val themeViewModel by viewModels<ThemeViewModel>()
+    private val themeViewModel by viewModels<ThemeViewModelImpl>()
     @Inject lateinit var session: Session
 
     override fun onCreateView(
@@ -49,6 +49,7 @@ class WelcomeFragment : Fragment() {
                             when (event) {
                                 is WelcomeEvent.CreateTeam -> viewModel.createNewTeam()
                                 is WelcomeEvent.JoinTeam -> viewModel.joinExistingTeam()
+                                is WelcomeEvent.AdvancedSettings -> viewModel.goToAdvancedSetting()
                                 WelcomeEvent.MainScreen -> gotoMainScreen()
                             }
                         },

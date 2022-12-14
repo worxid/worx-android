@@ -20,7 +20,7 @@ import id.worx.device.client.screen.components.WorxThemeStatusBar
 import id.worx.device.client.screen.welcome.VerificationEvent
 import id.worx.device.client.screen.welcome.WaitingVerificationScreen
 import id.worx.device.client.theme.WorxTheme
-import id.worx.device.client.viewmodel.ThemeViewModel
+import id.worx.device.client.viewmodel.ThemeViewModelImpl
 import id.worx.device.client.viewmodel.WelcomeViewModel
 import javax.inject.Inject
 
@@ -28,7 +28,7 @@ import javax.inject.Inject
 class WaitingVerificationFragment : Fragment(), WelcomeViewModel.UIHandler {
 
     private val viewModel by viewModels<WelcomeViewModel>()
-    private val themeViewModel by viewModels<ThemeViewModel>()
+    private val themeViewModel by viewModels<ThemeViewModelImpl>()
     @Inject
     lateinit var session: Session
 
@@ -53,7 +53,7 @@ class WaitingVerificationFragment : Fragment(), WelcomeViewModel.UIHandler {
         }
 
         viewModel.uiHandler = this
-        if (Util.isConnected(requireContext())) { mHandlerTask.run() }
+        if (Util.isNetworkAvailable(requireContext())) { mHandlerTask.run() }
 
         viewModel.deviceStatus.observe(viewLifecycleOwner){
             if (it == "APPROVED"){

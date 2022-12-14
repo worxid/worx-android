@@ -2,4 +2,5 @@
 <resources>
     <color name="status_bar_color">#AE2B27</color>
     <color name="primary_main">#DA3630</color>
+    <color name="ic_launcher_background">#FFFFFF</color>
 </resources>
