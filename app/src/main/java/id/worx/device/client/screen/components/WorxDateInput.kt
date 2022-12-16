@@ -9,7 +9,6 @@ import androidx.annotation.Nullable
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
@@ -99,7 +98,8 @@ fun WorxDateInput(indexForm: Int, viewModel: DetailFormViewModel, session: Sessi
                 .fillMaxWidth()
         ) {
             TextField(
-                modifier = Modifier.padding(end = 12.dp),
+                modifier = Modifier.padding(end = 12.dp)
+                    .weight(1f),
                 enabled = false,
                 colors = TextFieldDefaults.textFieldColors(
                     backgroundColor = Color.Black.copy(0.06f)
@@ -142,13 +142,13 @@ fun WorxDateInput(indexForm: Int, viewModel: DetailFormViewModel, session: Sessi
                     )
                 )
                 .clickable { showDatePicker = true }
-                .fillMaxSize()
                 .height(TextFieldDefaults.MinHeight)) {
                 Icon(
                     painter = painterResource(id = R.drawable.ic_date_icon),
                     contentDescription = "Date Picker",
                     modifier = Modifier
-                        .align(Alignment.Center),
+                        .align(Alignment.Center)
+                        .padding(16.dp),
                     tint = MaterialTheme.colors.onBackground
                 )
             }

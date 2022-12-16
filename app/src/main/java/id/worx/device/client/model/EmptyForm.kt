@@ -14,7 +14,8 @@ enum class Type(val type: String){
     File("file"),
     Photo("photo"),
     Signature("signature"),
-    Separator("separator")
+    Separator("separator"),
+    Time("time")
 }
 
 @Entity(tableName = "form")
