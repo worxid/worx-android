@@ -223,6 +223,9 @@ fun DetailForm(
                     Type.Separator.type -> {
                         WorxSeparator(index, viewModel, session)
                     }
+                    Type.Time.type -> {
+                        WorxTimeInput(index, viewModel, session)
+                    }
                     else -> {
                         Text(
                             text = "Unknown component",

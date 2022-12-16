@@ -1,8 +1,10 @@
 package id.worx.device.client.screen.components
 
+import android.app.AlertDialog
+import android.app.Dialog
 import android.app.TimePickerDialog
 import android.content.Context
-import androidx.annotation.Nullable
+import android.widget.TextView
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -25,23 +27,25 @@ import id.worx.device.client.theme.*
 import id.worx.device.client.viewmodel.DetailFormViewModel
 import id.worx.device.client.viewmodel.EventStatus
 
+
 @Composable
 fun WorxTimeInput(indexForm: Int, viewModel: DetailFormViewModel, session: Session, validation : Boolean = false) {
     val theme = session.theme
-    val form = TimeField(time = "19:00")
+    val form = viewModel.uiState.collectAsState().value.detailForm?.fields?.get(indexForm)!! as TimeField
     val formStatus = viewModel.uiState.collectAsState().value.status
-    val timeValue = TimeValue(value = "19:00")
+    val timeValue = viewModel.uiState.collectAsState().value.values[form.id] as TimeValue?
     val value = if (timeValue != null) {
         remember { mutableStateOf(timeValue.value) }
     } else {
-        remember { mutableStateOf<String?>(null) }
+        remember { mutableStateOf<id.worx.device.client.model.LocalTime?>(null) }
     }
     var showTimePicker by remember { mutableStateOf(false) }
     val context = LocalContext.current
     val warningInfo = if (form.required == true && value.value == null) "${form.label} is required" else ""
 
     val timePickerCallback = TimePickerDialog.OnTimeSetListener { timePicker, hr, min ->
-        value.value = "$hr:$min"
+        value.value = id.worx.device.client.model.LocalTime(hour = hr, minute = min)
+        viewModel.setComponentData(indexForm, TimeValue(value = value.value))
         showTimePicker = false
     }
 
@@ -50,14 +54,15 @@ fun WorxTimeInput(indexForm: Int, viewModel: DetailFormViewModel, session: Sessi
         SettingTheme.Green -> R.style.GreenCalenderViewCustom
         else -> R.style.CalenderViewCustom
     }
-    val mDatePickerDialog = WorxTimePickerDialog(
+    val mTimeSliderDialog = WorxTimeSliderDialog(
         context,
         style,
-        timePickerCallback,
-        0, 0, true
+        value.value?.hour ?: 0, value.value?.minute ?: 0
     )
 
-    Column(modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp)) {
+    Column(modifier = Modifier
+        .fillMaxWidth()
+        .padding(horizontal = 16.dp)) {
         Text(
             form.label ?: "",
             style = Typography.body2.copy(MaterialTheme.colors.onSecondary),
@@ -77,39 +82,22 @@ fun WorxTimeInput(indexForm: Int, viewModel: DetailFormViewModel, session: Sessi
                 .fillMaxWidth()
         ) {
             TextField(
-                modifier = Modifier.padding(end = 12.dp),
+                modifier = Modifier.padding(end = 12.dp)
+                    .weight(1f),
                 enabled = false,
                 colors = TextFieldDefaults.textFieldColors(
                     backgroundColor = Color.Black.copy(0.06f)
                 ),
-                textStyle = if (value.value.isNullOrEmpty()) {
+                textStyle = if (value.value == null) {
                     Typography.body2.copy(color = MaterialTheme.colors.onSecondary.copy(0.54f))
                 } else {
                     Typography.body2.copy(MaterialTheme.colors.onSecondary)
                 },
                 shape = RoundedCornerShape(4.dp),
-                trailingIcon = {
-                    if (!arrayListOf(
-                            EventStatus.Done,
-                            EventStatus.Submitted
-                        ).contains(formStatus)
-                    ) {
-                        Icon(
-                            painterResource(id = R.drawable.ic_delete_circle),
-                            contentDescription = "Clear Text",
-                            modifier = Modifier
-                                .clickable {
-                                    viewModel.setComponentData(indexForm, null)
-                                    value.value = null
-                                },
-                            tint = MaterialTheme.colors.onSecondary
-                        )
-                    }
-                },
                 value = if (value.value == null) {
                     "Answer"
                 } else {
-                    value.value ?: ""
+                    String.format("%02d:%02d", value.value!!.hour, value.value!!.minute)
                 },
                 onValueChange = {})
             Box(modifier = Modifier
@@ -120,13 +108,13 @@ fun WorxTimeInput(indexForm: Int, viewModel: DetailFormViewModel, session: Sessi
                     )
                 )
                 .clickable { showTimePicker = true }
-                .fillMaxSize()
                 .height(TextFieldDefaults.MinHeight)) {
                 Icon(
-                    painter = painterResource(id = R.drawable.ic_date_icon),
-                    contentDescription = "Date Picker",
+                    painter = painterResource(id = R.drawable.ic_clock),
+                    contentDescription = "Time Picker",
                     modifier = Modifier
-                        .align(Alignment.Center),
+                        .align(Alignment.Center)
+                        .padding(16.dp),
                     tint = MaterialTheme.colors.onBackground
                 )
             }
@@ -148,62 +136,20 @@ fun WorxTimeInput(indexForm: Int, viewModel: DetailFormViewModel, session: Sessi
                 EventStatus.Done,
                 EventStatus.Submitted
             ).contains(formStatus)) {
-            mDatePickerDialog.setOnCancelListener { showTimePicker = false }
-            mDatePickerDialog.show()
+            mTimeSliderDialog.setOnCancelListener { showTimePicker = false }
+            mTimeSliderDialog.showDialog()
         }
         Divider(color = GrayDivider, modifier = Modifier.padding(vertical = 16.dp))
     }
 }
 
-class WorxTimePickerDialog : TimePickerDialog {
-
-    constructor(
-        context: Context,
-        @Nullable listener: OnTimeSetListener?,
-        hr: Int,
-        min: Int,
-        is24HrView: Boolean
-    ) : super(context, listener, hr, min, is24HrView) {
-       // init(context)
+class WorxTimeSliderDialog(context: Context, style:Int, hr: Int, min: Int) : AlertDialog(context) {
+    fun showDialog(){
+        val dialog = Dialog(context)
+        dialog.setContentView(R.layout.time_picker_dialog)
+        val cancel = dialog.findViewById<TextView>(
+            R.id.btn_cancel
+        ).apply { setOnClickListener { dialog.dismiss() } }
+        dialog.show()
     }
-
-    constructor(
-        context: Context,
-        themeResId: Int,
-        @Nullable listener: OnTimeSetListener?,
-        hr: Int,
-        min: Int,
-        is24HrView: Boolean
-    ) : super(context, themeResId, listener, hr, min, is24HrView) {
-        //init(context)
-    }
-
-//    private fun init(context: Context) {
-//        val headerView: ViewGroup? = timer.findViewById(
-//            context.resources.getIdentifier(
-//                "android:id/date_picker_header",
-//                "id",
-//                context.packageName
-//            )
-//        )
-//        headerView?.setBackgroundColor(0xFFFFFF)
-//
-//        val year: TextView? = datePicker.findViewById(
-//            context.resources.getIdentifier(
-//                "android:id/date_picker_header_year",
-//                "id",
-//                context.packageName
-//            )
-//        )
-//        year?.setTextColor(Color(0x99000000).toArgb())
-//
-//        val date: TextView? = datePicker.findViewById(
-//            context.resources.getIdentifier(
-//                "android:id/date_picker_header_date",
-//                "id",
-//                context.packageName
-//            )
-//        )
-//        date?.setTextColor(android.graphics.Color.BLACK)
-   // }
 }
