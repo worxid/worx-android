@@ -82,6 +82,7 @@
     <string name="uploading">Uploading</string>
     <string name="no_connection">No connection found.</string>
     <string name="check_network">Please check your network connection</string>
+    <string name="number_picker_formatter">%02d</string>
 
 <!--    list error/notification message-->
     <string name="sync_form_message">Sync Empty Form DB with server is done</string>
