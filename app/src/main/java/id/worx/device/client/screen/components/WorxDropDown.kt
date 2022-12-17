@@ -1,13 +1,9 @@
 package id.worx.device.client.screen.components
 
-import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
@@ -19,8 +15,7 @@ import androidx.compose.ui.unit.dp
 import id.worx.device.client.data.database.Session
 import id.worx.device.client.model.DropDownField
 import id.worx.device.client.model.DropDownValue
-import id.worx.device.client.screen.main.SettingTheme
-import id.worx.device.client.theme.*
+import id.worx.device.client.theme.Typography
 import id.worx.device.client.viewmodel.DetailFormViewModel
 import id.worx.device.client.viewmodel.EventStatus
 
@@ -45,24 +40,13 @@ fun WorxDropdown(indexForm: Int, viewModel: DetailFormViewModel, session: Sessio
 
     var expanded by remember { mutableStateOf(false) }
 
-    Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 16.dp)
+    WorxBaseField(
+        indexForm = indexForm,
+        viewModel = viewModel,
+        validation = validation,
+        session = session,
+        warningInfo = warningInfo
     ) {
-        Text(
-            title,
-            style = Typography.body2.copy(MaterialTheme.colors.onSecondary),
-            modifier = Modifier.padding(bottom = 8.dp)
-        )
-        if (!form.description.isNullOrBlank()) {
-            Text(
-                text = form.description!!,
-                color = if (theme == SettingTheme.Dark) textFormDescriptionDark else textFormDescription,
-                style = MaterialTheme.typography.body1.copy(textFormDescription),
-                modifier = Modifier.padding(bottom = 8.dp)
-            )
-        }
         Box(
             modifier = Modifier
                 .fillMaxWidth()
@@ -96,12 +80,12 @@ fun WorxDropdown(indexForm: Int, viewModel: DetailFormViewModel, session: Sessio
                 onValueChange = {})
             DropdownMenu(
                 expanded =
-                    if (!arrayListOf(EventStatus.Done, EventStatus.Submitted).contains(formStatus)
-                    ) {
-                        expanded
-                    } else {
-                        false
-                    },
+                if (!arrayListOf(EventStatus.Done, EventStatus.Submitted).contains(formStatus)
+                ) {
+                    expanded
+                } else {
+                    false
+                },
                 onDismissRequest = { expanded = false },
                 modifier = Modifier
                     .fillMaxWidth(0.94f)
@@ -124,17 +108,5 @@ fun WorxDropdown(indexForm: Int, viewModel: DetailFormViewModel, session: Sessio
                 }
             }
         }
-        if (warningInfo.isNotBlank()) {
-            if (validation){
-                Text(
-                    text = warningInfo,
-                    color = PrimaryMain
-                )
-            }
-            form.isValid = false
-        } else {
-            form.isValid = true
-        }
-        Divider(color = GrayDivider, modifier = Modifier.padding(vertical = 16.dp))
     }
 }

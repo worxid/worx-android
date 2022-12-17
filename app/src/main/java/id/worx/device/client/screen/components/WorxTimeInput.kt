@@ -9,7 +9,10 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.*
+import androidx.compose.material.Icon
+import androidx.compose.material.MaterialTheme
+import androidx.compose.material.TextField
+import androidx.compose.material.TextFieldDefaults
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -25,7 +28,8 @@ import id.worx.device.client.data.database.Session
 import id.worx.device.client.model.TimeField
 import id.worx.device.client.model.TimeValue
 import id.worx.device.client.screen.main.SettingTheme
-import id.worx.device.client.theme.*
+import id.worx.device.client.theme.PrimaryMain
+import id.worx.device.client.theme.Typography
 import id.worx.device.client.viewmodel.DetailFormViewModel
 import id.worx.device.client.viewmodel.EventStatus
 
@@ -51,11 +55,6 @@ fun WorxTimeInput(indexForm: Int, viewModel: DetailFormViewModel, session: Sessi
         showTimePicker = false
     }
 
-    val style = when(theme){
-        SettingTheme.Blue -> R.style.BlueCalenderViewCustom
-        SettingTheme.Green -> R.style.GreenCalenderViewCustom
-        else -> R.style.CalenderViewCustom
-    }
     val mTimeSliderDialog = WorxTimeSliderDialog(
         context,
         colorTheme = if (theme == SettingTheme.Dark) PrimaryMain else MaterialTheme.colors.primary,
@@ -64,22 +63,13 @@ fun WorxTimeInput(indexForm: Int, viewModel: DetailFormViewModel, session: Sessi
         onTimePickerListener = timePickerCallback
     )
 
-    Column(modifier = Modifier
-        .fillMaxWidth()
-        .padding(horizontal = 16.dp)) {
-        Text(
-            form.label ?: "",
-            style = Typography.body2.copy(MaterialTheme.colors.onSecondary),
-            modifier = Modifier.padding(bottom = 8.dp)
-        )
-        if (!form.description.isNullOrBlank()) {
-            Text(
-                text = form.description!!,
-                color = if (theme == SettingTheme.Dark) textFormDescriptionDark else textFormDescription,
-                style = MaterialTheme.typography.body1.copy(textFormDescription),
-                modifier = Modifier.padding(bottom = 8.dp)
-            )
-        }
+    WorxBaseField(
+        indexForm = indexForm,
+        viewModel = viewModel,
+        validation = validation,
+        session = session,
+        warningInfo = warningInfo
+    ) {
         Row(
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier
@@ -124,19 +114,7 @@ fun WorxTimeInput(indexForm: Int, viewModel: DetailFormViewModel, session: Sessi
                 )
             }
         }
-        if (warningInfo.isNotBlank()) {
-            if (validation){
-                Text(
-                    text = warningInfo,
-                    modifier = Modifier
-                         .padding(top = 4.dp),
-                    color = PrimaryMain
-                )
-            }
-            form.isValid = false
-        } else {
-            form.isValid = true
-        }
+    }
         if (showTimePicker && !arrayListOf(
                 EventStatus.Done,
                 EventStatus.Submitted
@@ -144,8 +122,6 @@ fun WorxTimeInput(indexForm: Int, viewModel: DetailFormViewModel, session: Sessi
             mTimeSliderDialog.setOnCancelListener { showTimePicker = false }
             mTimeSliderDialog.showDialog()
         }
-        Divider(color = GrayDivider, modifier = Modifier.padding(vertical = 16.dp))
-    }
 }
 
 class WorxTimeSliderDialog(
