@@ -29,6 +29,8 @@ class SubmitFormTypeConverter {
             type.contains(Type.File.type) -> returnArray.add(gson.fromJson(jsonElement, FileField::class.java))
             type.contains(Type.Photo.type) -> returnArray.add(gson.fromJson(jsonElement, ImageField::class.java))
             type.contains(Type.Signature.type) -> returnArray.add(gson.fromJson(jsonElement, SignatureField::class.java))
+            type.contains(Type.TimeField.type) -> returnArray.add(gson.fromJson(jsonElement, TimeField::class.java))
+            type.contains(Type.IntegerField.type) -> returnArray.add(gson.fromJson(jsonElement, IntegerField::class.java))
                 else -> throw IllegalArgumentException("Can't deserialize $entry")
             }
         }
@@ -67,6 +69,10 @@ class SubmitFormTypeConverter {
                     gson.fromJson(map.value, ImageValue::class.java)
                 type.contains(Type.Signature.type) -> returnMap[map.key] =
                     gson.fromJson(map.value, SignatureValue::class.java)
+                type.contains(Type.TimeField.type) -> returnMap[map.key] =
+                    gson.fromJson(map.value, TimeFieldValue::class.java)
+                type.contains(Type.IntegerField.type) -> returnMap[map.key] =
+                    gson.fromJson(map.value, IntegerFieldValue::class.java)
                 else -> throw IllegalArgumentException("Can't deserialize ${map.key} ${map.value}")
                  }
         }

@@ -79,7 +79,7 @@ fun ValidFormBuilder(
                 state,
                 {
                     validation = true
-                    if (totalNonValidData==0) {
+                    if (totalNonValidData == 0) {
                         onEvent(DetailFormEvent.SubmitForm)
                     }
                     showSubmitDialog = false
@@ -169,7 +169,7 @@ fun DetailForm(
                                 value.values ?: ""
                             ),
                             onValueChange = {
-                                if (it.isNullOrEmpty()){
+                                if (it.isNullOrEmpty()) {
                                     viewModel.setComponentData(index, null)
                                 } else {
                                     viewModel.setComponentData(index, TextFieldValue(values = it))
@@ -223,6 +223,9 @@ fun DetailForm(
                     Type.Separator.type -> {
                         WorxSeparator(index, viewModel, session)
                     }
+                    Type.BarcodeField.type -> {
+                        WorxBarcodeField(index, viewModel, session,validation)
+                    }
                     else -> {
                         Text(
                             text = "Unknown component",
@@ -261,8 +264,10 @@ fun DialogSubmitForm(
     saveDraftForm: () -> Unit
 ) {
     val progress = viewModel.formProgress.value
-    val separatorCount = viewModel.uiState.collectAsState().value.detailForm!!.fields.count { it.type == Type.Separator.type }
-    val fieldsNo = viewModel.uiState.collectAsState().value.detailForm!!.fields.size - separatorCount
+    val separatorCount =
+        viewModel.uiState.collectAsState().value.detailForm!!.fields.count { it.type == Type.Separator.type }
+    val fieldsNo =
+        viewModel.uiState.collectAsState().value.detailForm!!.fields.size - separatorCount
     val theme = session.theme
 
     ModalBottomSheetLayout(
@@ -309,7 +314,8 @@ fun DialogSubmitForm(
                         tint = MaterialTheme.colors.onBackground
                     )
                 }
-                val fieldFilled = viewModel.uiState.collectAsState().value.values.count { it.value != null }
+                val fieldFilled =
+                    viewModel.uiState.collectAsState().value.values.count { it.value != null }
                 Text(
                     text = "$fieldFilled of $fieldsNo Fields Answered",
                     style = Typography.body2.copy(MaterialTheme.colors.onSecondary.copy(0.54f))

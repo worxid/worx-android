@@ -79,7 +79,7 @@ fun FormScreen(
             Text(
                 text = stringResource(id = title[type]),
                 style = Typography.subtitle2.copy(MaterialTheme.colors.onSecondary),
-                modifier = Modifier.padding(bottom = 16.dp)
+                modifier = Modifier.padding(bottom = 16.dp).clickable { viewModel.goToScannerScreen() }
             )
             if (data.isNullOrEmpty()) {
                 EmptyList(type, titleForEmpty, descriptionForEmpty, session)

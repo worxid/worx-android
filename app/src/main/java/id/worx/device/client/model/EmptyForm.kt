@@ -14,7 +14,10 @@ enum class Type(val type: String){
     File("file"),
     Photo("photo"),
     Signature("signature"),
-    Separator("separator")
+    Separator("separator"),
+    BarcodeField("barcode"),
+    TimeField("time"),
+    IntegerField("integer")
 }
 
 @Entity(tableName = "form")

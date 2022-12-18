@@ -64,4 +64,16 @@
         android:id="@+id/advanced_settings_fragment"
         android:name="id.worx.device.client.view.HomeAdvancedSettingsFragment"
         android:label="AdvancedSettingsFragment" />
+    <fragment
+        android:id="@+id/scannerFragment"
+        android:name="id.worx.device.client.view.ScannerFragment"
+        android:label="ScannerFragment" >
+        <action
+            android:id="@+id/action_scannerFragment_to_detail_form_fragment"
+            app:destination="@id/detail_form_fragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/barcodePreviewFragment"
+        android:name="id.worx.device.client.view.BarcodePreviewFragment"
+        android:label="BarcodePreviewFragment" />
 </navigation>
