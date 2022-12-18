@@ -100,6 +100,7 @@ class FieldsDeserializer : JsonDeserializer<Fields?>, JsonSerializer<Fields?> {
             type.contains(Type.Signature.type) -> gson.fromJson(json, SignatureField::class.java)
             type.contains(Type.TimeField.type) -> gson.fromJson(json, TimeField::class.java)
             type.contains(Type.IntegerField.type) -> gson.fromJson(json, IntegerField::class.java)
+            type.contains(Type.BarcodeField.type) -> gson.fromJson(json, BarcodeField::class.java)
             else -> throw IllegalArgumentException("Can't deserialize $entry ")
         }
     }
@@ -154,6 +155,7 @@ class ValueSerialize : JsonSerializer<Value>, JsonDeserializer<Value> {
                 gson.fromJson(json, SignatureValue::class.java)
             type.contains(Type.TimeField.type) -> gson.fromJson(json, TimeFieldValue::class.java)
             type.contains(Type.IntegerField.type) -> gson.fromJson(json, IntegerFieldValue::class.java)
+            type.contains(Type.BarcodeField.type) -> gson.fromJson(json, BarcodeFieldValue::class.java)
             else -> throw IllegalArgumentException("Can't deserialize $value")
         }
     }

@@ -58,7 +58,7 @@ class ScannerFragment : Fragment() {
                     WorxThemeStatusBar()
                     ScannerScreen(
                         viewModel = detailViewModel,
-                        scannerViewModel = viewModel
+                        scannerViewModel = viewModel,
                     )
                 }
             }

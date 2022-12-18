@@ -31,6 +31,7 @@ class SubmitFormTypeConverter {
             type.contains(Type.Signature.type) -> returnArray.add(gson.fromJson(jsonElement, SignatureField::class.java))
             type.contains(Type.TimeField.type) -> returnArray.add(gson.fromJson(jsonElement, TimeField::class.java))
             type.contains(Type.IntegerField.type) -> returnArray.add(gson.fromJson(jsonElement, IntegerField::class.java))
+                type.contains(Type.BarcodeField.type) -> returnArray.add(gson.fromJson(jsonElement, BarcodeField::class.java))
                 else -> throw IllegalArgumentException("Can't deserialize $entry")
             }
         }
@@ -73,6 +74,8 @@ class SubmitFormTypeConverter {
                     gson.fromJson(map.value, TimeFieldValue::class.java)
                 type.contains(Type.IntegerField.type) -> returnMap[map.key] =
                     gson.fromJson(map.value, IntegerFieldValue::class.java)
+                type.contains(Type.BarcodeField.type) -> returnMap[map.key] =
+                    gson.fromJson(map.value, BarcodeFieldValue::class.java)
                 else -> throw IllegalArgumentException("Can't deserialize ${map.key} ${map.value}")
                  }
         }

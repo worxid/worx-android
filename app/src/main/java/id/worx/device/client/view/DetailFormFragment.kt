@@ -18,10 +18,7 @@ import id.worx.device.client.screen.DetailFormEvent
 import id.worx.device.client.screen.DetailFormScreen
 import id.worx.device.client.screen.components.WorxThemeStatusBar
 import id.worx.device.client.theme.WorxTheme
-import id.worx.device.client.viewmodel.CameraViewModel
-import id.worx.device.client.viewmodel.DetailFormViewModel
-import id.worx.device.client.viewmodel.HomeViewModelImpl
-import id.worx.device.client.viewmodel.ThemeViewModelImpl
+import id.worx.device.client.viewmodel.*
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -29,6 +26,7 @@ class DetailFormFragment : Fragment(), DetailFormViewModel.UIHandler {
 
     private val viewModel by activityViewModels<DetailFormViewModel>()
     private val cameraViewModel by activityViewModels<CameraViewModel>()
+    private val scannerViewModel by activityViewModels<ScannerViewModel>()
     private val homeViewModel by activityViewModels<HomeViewModelImpl>()
     private val themeViewModel by activityViewModels<ThemeViewModelImpl>()
     @Inject lateinit var session: Session
@@ -54,6 +52,7 @@ class DetailFormFragment : Fragment(), DetailFormViewModel.UIHandler {
                     DetailFormScreen(
                         viewModel,
                         cameraViewModel,
+                        scannerViewModel,
                         session
                     ) { event ->
                         when (event) {

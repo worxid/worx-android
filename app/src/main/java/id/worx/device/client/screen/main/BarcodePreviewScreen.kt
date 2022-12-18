@@ -26,35 +26,23 @@ import coil.compose.AsyncImage
 import com.google.mlkit.vision.barcode.BarcodeScanning
 import com.google.mlkit.vision.common.InputImage
 import id.worx.device.client.R
+import id.worx.device.client.model.BarcodeFieldValue
 import id.worx.device.client.theme.Typography
 import id.worx.device.client.theme.fontRoboto
 import id.worx.device.client.util.BarcodeAnalyzer
+import id.worx.device.client.viewmodel.DetailFormViewModel
 import id.worx.device.client.viewmodel.ScannerViewModel
 import java.io.File
 
 @Composable
 fun BarcodePreviewScreen(
-    filePath: String?,
-    scannerViewModel: ScannerViewModel,
-    onScanDone: () -> Unit
+    viewModel: DetailFormViewModel,
+    scannerViewModel: ScannerViewModel
 ) {
-
+    val index = scannerViewModel.indexForm.value
+    val filePath = scannerViewModel.photoPath.value
     val context = LocalContext.current
-
-    val barcodeAnalyzer = BarcodeAnalyzer(
-        typeImage = 1,
-        filePath = filePath,
-        context = context
-    ) { barcodes ->
-        barcodes.forEach { barcode ->
-            barcode.rawValue?.let { value ->
-
-            }
-        }
-    }
-
     val barcodeScanner = BarcodeScanning.getClient()
-    Log.d("TAG", "BarcodePreviewScreen: $filePath")
     val inputImage = InputImage.fromFilePath(context, Uri.fromFile(File(filePath!!)))
 
     Scaffold(
@@ -156,11 +144,13 @@ fun BarcodePreviewScreen(
                                 if (barcodes.isNotEmpty()) {
                                     barcodes.forEach { it ->
                                         it.rawValue?.let {
-                                            scannerViewModel.setResult(it)
-                                            Log.d("TAG", "BarcodePreviewScreen: $it")
+                                            if (index != null) {
+                                                viewModel.setComponentData(index, BarcodeFieldValue(value = it))
+                                                scannerViewModel.setResult(it)
+                                                scannerViewModel.navigateToDetail()
+                                            }
                                         }
                                     }
-                                    onScanDone()
                                 } else {
                                     Log.e("Barocde Analyzer", "analyze: No barcode scanned")
                                 }

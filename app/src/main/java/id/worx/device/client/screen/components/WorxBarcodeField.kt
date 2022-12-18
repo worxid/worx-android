@@ -20,11 +20,13 @@ import id.worx.device.client.screen.main.SettingTheme
 import id.worx.device.client.theme.*
 import id.worx.device.client.viewmodel.DetailFormViewModel
 import id.worx.device.client.viewmodel.EventStatus
+import id.worx.device.client.viewmodel.ScannerViewModel
 
 @Composable
 fun WorxBarcodeField(
     indexForm: Int,
     viewModel: DetailFormViewModel,
+    scannerViewModel: ScannerViewModel,
     session: Session,
     validation: Boolean = false
 ) {
@@ -39,9 +41,13 @@ fun WorxBarcodeField(
             barcodeValue?.value
         )
     }
-    val warningInfo = if (true == true && value == null) {
+    if (barcodeValue?.value != null){
+        viewModel.setComponentData(indexForm, BarcodeFieldValue(value = barcodeValue.value))
+    }
+    val warningInfo = if (form.required == true && value == null) {
         "${form.label} is required"
-    } else if (form.is1DBarcode == true) {
+    } else if (form.barcodeType == "all") {
+//        TODO("barcodeType need to refactor")
         "Limited to 1D barcodes only"
     } else {
         ""
@@ -109,7 +115,8 @@ fun WorxBarcodeField(
                     )
                 )
                 .clickable {
-                    TODO("TO SCANNER SCREEN")
+                    scannerViewModel.navigateFromDetailScreen(indexForm)
+                    viewModel.goToScannerBarcode(indexForm)
                 }
                 .fillMaxSize()
                 .height(TextFieldDefaults.MinHeight)

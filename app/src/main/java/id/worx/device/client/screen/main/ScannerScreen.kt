@@ -74,7 +74,6 @@ import java.util.concurrent.Executors
 @OptIn(ExperimentalPermissionsApi::class)
 @Composable
 fun ScannerScreen(
-    indexForm: Int = 2, //change later
     viewModel: DetailFormViewModel,
     scannerViewModel: ScannerViewModel
 ) {
@@ -106,7 +105,6 @@ fun ScannerScreen(
                 Log.i("Permission", "Camera permission granted")
                 ScannerView(
                     context = context,
-                    indexForm = indexForm,
                     viewModel = viewModel,
                     scannerViewModel = scannerViewModel,
                     lifecycleOwner = lifecycleOwner,
@@ -114,6 +112,7 @@ fun ScannerScreen(
                 ) {
 //                    resultNavigator.navigateBack(result = barcodeValue.value)
                     scannerViewModel.setResult(barcodeValue.value)
+                    scannerViewModel.navigateToDetail()
                     Log.d("TAG", "ScannerScreen: ${scannerViewModel.value}")
                 }
             }
@@ -128,8 +127,7 @@ fun ScannerScreen(
 @Composable
 fun ScannerView(
     context: Context,
-    indexForm: Int,
-    viewModel : DetailFormViewModel,
+    viewModel: DetailFormViewModel,
     scannerViewModel : ScannerViewModel,
     lifecycleOwner: LifecycleOwner,
     barcodeValue: MutableState<String>,
@@ -153,6 +151,7 @@ fun ScannerView(
     val cameraExecutor = Executors.newSingleThreadExecutor()
     val cameraProviderFuture = ProcessCameraProvider.getInstance(context)
     val cameraProvider = cameraProviderFuture.get()
+    val index = scannerViewModel.indexForm.value!!
 
     var requiredPermissions = arrayOf(
         Manifest.permission.READ_EXTERNAL_STORAGE,
@@ -163,6 +162,7 @@ fun ScannerView(
         barcodes.forEach { barcode ->
             barcode.rawValue?.let { value ->
                 barcodeValue.value = value
+                viewModel.setComponentData(index, BarcodeFieldValue(value = value))
                 onScanDone()
             }
         }
@@ -178,7 +178,7 @@ fun ScannerView(
                     it.data!!.getParcelableArrayListExtra<Uri>(FishBun.INTENT_PATH)
                         ?.forEach { uri ->
                             val fPath = getRealPathFromURI(context, uri)
-                            scannerViewModel.goToPreviewBarcode(fPath)
+                            scannerViewModel.goToPreviewBarcode(fPath, index)
                         }
                 }
             })

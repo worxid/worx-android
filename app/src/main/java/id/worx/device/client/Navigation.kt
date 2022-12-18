@@ -1,5 +1,6 @@
 package id.worx.device.client
 
+import android.util.Log
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import java.security.InvalidParameterException
@@ -63,8 +64,10 @@ fun Fragment.navigate(to: MainScreen, from: MainScreen) {
                     findNavController().navigate(R.id.action_previewfragment_to_detailfragment)
                 MainScreen.ScannerScreen ->
                     findNavController().navigate(R.id.action_scannerFragment_to_detail_form_fragment)
-                MainScreen.BarcodePreview ->
+                MainScreen.BarcodePreview -> {
                     findNavController().navigate(R.id.action_barcodePreviewFragment_to_detail_form_fragment)
+                    Log.d("TAG", "navigate: barcode")
+                }
                 else -> findNavController().navigate(R.id.detail_form_fragment)
             }
         }

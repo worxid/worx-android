@@ -30,6 +30,7 @@ import id.worx.device.client.theme.Typography
 import id.worx.device.client.viewmodel.CameraViewModel
 import id.worx.device.client.viewmodel.DetailFormViewModel
 import id.worx.device.client.viewmodel.EventStatus
+import id.worx.device.client.viewmodel.ScannerViewModel
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterialApi::class)
@@ -38,6 +39,7 @@ fun ValidFormBuilder(
     componentList: List<Fields>,
     viewModel: DetailFormViewModel,
     cameraViewModel: CameraViewModel,
+    scannerViewModel: ScannerViewModel,
     session: Session,
     onEvent: (DetailFormEvent) -> Unit
 ) {
@@ -63,6 +65,7 @@ fun ValidFormBuilder(
             componentList,
             viewModel,
             cameraViewModel,
+            scannerViewModel,
             session,
             validation,
         )
@@ -100,6 +103,7 @@ fun DetailForm(
     componentList: List<Fields>,
     viewModel: DetailFormViewModel,
     cameraViewModel: CameraViewModel,
+    scannerViewModel: ScannerViewModel,
     session: Session,
     validation: Boolean,
     showSubmitDialog: () -> Unit
@@ -224,7 +228,7 @@ fun DetailForm(
                         WorxSeparator(index, viewModel, session)
                     }
                     Type.BarcodeField.type -> {
-                        WorxBarcodeField(index, viewModel, session,validation)
+                        WorxBarcodeField(index, viewModel, scannerViewModel, session,validation)
                     }
                     else -> {
                         Text(

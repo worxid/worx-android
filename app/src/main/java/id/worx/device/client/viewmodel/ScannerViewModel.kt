@@ -1,5 +1,6 @@
 package id.worx.device.client.viewmodel
 
+import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -31,13 +32,18 @@ class ScannerViewModel @Inject constructor() : ViewModel() {
         _value.value = value
     }
 
+    fun navigateFromDetailScreen(indexForm : Int){
+        _indexForm.value = indexForm
+    }
+
     fun navigateToDetail() {
         _photoPath.value = null
         _indexForm.value = null
         _navigateTo.value = Event(MainScreen.Detail)
     }
 
-    fun goToPreviewBarcode(photoPath: String) {
+    fun goToPreviewBarcode(photoPath: String, indexForm: Int) {
+        _indexForm.value = indexForm
         _photoPath.value = photoPath
         _navigateTo.value = Event(MainScreen.BarcodePreview)
     }

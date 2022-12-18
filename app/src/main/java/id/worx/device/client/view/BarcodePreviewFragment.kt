@@ -1,6 +1,7 @@
 package id.worx.device.client.view
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -13,13 +14,15 @@ import id.worx.device.client.screen.components.WorxThemeStatusBar
 import id.worx.device.client.screen.main.BarcodePreviewScreen
 import id.worx.device.client.screen.main.ScannerScreen
 import id.worx.device.client.theme.WorxTheme
+import id.worx.device.client.viewmodel.DetailFormViewModel
 import id.worx.device.client.viewmodel.ScannerViewModel
 import id.worx.device.client.viewmodel.ThemeViewModelImpl
 
 class BarcodePreviewFragment : Fragment() {
 
-    private val viewModel by activityViewModels<ScannerViewModel>()
+    private val scannerViewModel by activityViewModels<ScannerViewModel>()
     private val themeViewModel by activityViewModels<ThemeViewModelImpl>()
+    private val viewModel by activityViewModels<DetailFormViewModel>()
 
 
     override fun onCreateView(
@@ -27,7 +30,7 @@ class BarcodePreviewFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        viewModel.navigateTo.observe(viewLifecycleOwner) { navigateToEvent ->
+        scannerViewModel.navigateTo.observe(viewLifecycleOwner) { navigateToEvent ->
             navigateToEvent.getContentIfNotHandled()?.let { navigateTo ->
                 navigate(navigateTo, MainScreen.BarcodePreview)
             }
@@ -38,10 +41,7 @@ class BarcodePreviewFragment : Fragment() {
                 val theme = themeViewModel.theme.value
                 WorxTheme(theme = theme) {
                     WorxThemeStatusBar()
-                    BarcodePreviewScreen(
-                        viewModel.photoPath.value,
-                        viewModel
-                    ) { viewModel.navigateToDetail() }
+                    BarcodePreviewScreen(viewModel, scannerViewModel)
                 }
             }
         }
