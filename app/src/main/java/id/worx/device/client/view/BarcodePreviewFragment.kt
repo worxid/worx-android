@@ -29,7 +29,7 @@ class BarcodePreviewFragment : Fragment() {
     ): View? {
         viewModel.navigateTo.observe(viewLifecycleOwner) { navigateToEvent ->
             navigateToEvent.getContentIfNotHandled()?.let { navigateTo ->
-                navigate(navigateTo, MainScreen.ScannerScreen)
+                navigate(navigateTo, MainScreen.BarcodePreview)
             }
         }
 
@@ -38,7 +38,10 @@ class BarcodePreviewFragment : Fragment() {
                 val theme = themeViewModel.theme.value
                 WorxTheme(theme = theme) {
                     WorxThemeStatusBar()
-                    BarcodePreviewScreen(viewModel.photoPath.value)
+                    BarcodePreviewScreen(
+                        viewModel.photoPath.value,
+                        viewModel
+                    ) { viewModel.navigateToDetail() }
                 }
             }
         }

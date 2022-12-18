@@ -1,14 +1,18 @@
 package id.worx.device.client.screen.main
 
-import android.icu.text.ListFormatter.Width
+import android.net.Uri
+import android.util.Log
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -19,14 +23,40 @@ import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
 import coil.compose.AsyncImage
+import com.google.mlkit.vision.barcode.BarcodeScanning
+import com.google.mlkit.vision.common.InputImage
 import id.worx.device.client.R
 import id.worx.device.client.theme.Typography
 import id.worx.device.client.theme.fontRoboto
+import id.worx.device.client.util.BarcodeAnalyzer
+import id.worx.device.client.viewmodel.ScannerViewModel
+import java.io.File
 
 @Composable
 fun BarcodePreviewScreen(
-    filePath: String?
+    filePath: String?,
+    scannerViewModel: ScannerViewModel,
+    onScanDone: () -> Unit
 ) {
+
+    val context = LocalContext.current
+
+    val barcodeAnalyzer = BarcodeAnalyzer(
+        typeImage = 1,
+        filePath = filePath,
+        context = context
+    ) { barcodes ->
+        barcodes.forEach { barcode ->
+            barcode.rawValue?.let { value ->
+
+            }
+        }
+    }
+
+    val barcodeScanner = BarcodeScanning.getClient()
+    Log.d("TAG", "BarcodePreviewScreen: $filePath")
+    val inputImage = InputImage.fromFilePath(context, Uri.fromFile(File(filePath!!)))
+
     Scaffold(
         topBar = {
             TopAppBar(
@@ -77,7 +107,9 @@ fun BarcodePreviewScreen(
         }
     ) { _ ->
         ConstraintLayout(
-            modifier = Modifier.fillMaxSize().background(MaterialTheme.colors.onError)
+            modifier = Modifier
+                .fillMaxSize()
+                .background(MaterialTheme.colors.onError)
         ) {
             val (image, container) = createRefs()
             AsyncImage(
@@ -117,7 +149,29 @@ fun BarcodePreviewScreen(
 
                 Row(
                     horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier.clickable {
+                        barcodeScanner.process(inputImage)
+                            .addOnSuccessListener { barcodes ->
+                                if (barcodes.isNotEmpty()) {
+                                    barcodes.forEach { it ->
+                                        it.rawValue?.let {
+                                            scannerViewModel.setResult(it)
+                                            Log.d("TAG", "BarcodePreviewScreen: $it")
+                                        }
+                                    }
+                                    onScanDone()
+                                } else {
+                                    Log.e("Barocde Analyzer", "analyze: No barcode scanned")
+                                }
+                            }
+                            .addOnFailureListener { e ->
+                                Log.e(
+                                    "Barocde Analyzer",
+                                    "Barocde Analyzer: Something went wrong $e"
+                                )
+                            }
+                    }
                 ) {
                     Icon(
                         painter = painterResource(id = R.drawable.ic_confirm),

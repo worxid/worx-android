@@ -31,8 +31,10 @@ class ScannerViewModel @Inject constructor() : ViewModel() {
         _value.value = value
     }
 
-    fun navigateFromDetailScreen(indexForm : Int){
-        _indexForm.value = indexForm
+    fun navigateToDetail() {
+        _photoPath.value = null
+        _indexForm.value = null
+        _navigateTo.value = Event(MainScreen.Detail)
     }
 
     fun goToPreviewBarcode(photoPath: String) {

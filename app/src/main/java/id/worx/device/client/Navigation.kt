@@ -61,6 +61,10 @@ fun Fragment.navigate(to: MainScreen, from: MainScreen) {
                     findNavController().navigate(R.id.action_signaturepad_to_detail)
                 MainScreen.PhotoPreview ->
                     findNavController().navigate(R.id.action_previewfragment_to_detailfragment)
+                MainScreen.ScannerScreen ->
+                    findNavController().navigate(R.id.action_scannerFragment_to_detail_form_fragment)
+                MainScreen.BarcodePreview ->
+                    findNavController().navigate(R.id.action_barcodePreviewFragment_to_detail_form_fragment)
                 else -> findNavController().navigate(R.id.detail_form_fragment)
             }
         }

@@ -158,8 +158,15 @@ fun ScannerView(
         Manifest.permission.READ_EXTERNAL_STORAGE,
         Manifest.permission.WRITE_EXTERNAL_STORAGE
     )
-//    val form = viewModel.uiState.collectAsState().value.detailForm!!.fields[indexForm] as BarcodeField
-//    val value = viewModel.uiState.collectAsState().value.values[form.id] as BarcodeFieldValue?
+
+    val barcodeAnalyzer = BarcodeAnalyzer { barcodes ->
+        barcodes.forEach { barcode ->
+            barcode.rawValue?.let { value ->
+                barcodeValue.value = value
+                onScanDone()
+            }
+        }
+    }
 
     val launcherGallery =
         rememberLauncherForActivityResult(
@@ -191,15 +198,6 @@ fun ScannerView(
                 .setMaxCount(1)
                 .setThemeColor(PrimaryMain.toArgb())
                 .startAlbumWithActivityResultCallback(launcherGallery)
-        }
-    }
-
-    val barcodeAnalyzer = BarcodeAnalyzer { barcodes ->
-        barcodes.forEach { barcode ->
-            barcode.rawValue?.let { value ->
-                barcodeValue.value = value
-                onScanDone()
-            }
         }
     }
 
