@@ -115,7 +115,7 @@ fun WorxBarcodeField(
                     )
                 )
                 .clickable {
-                    scannerViewModel.navigateFromDetailScreen(indexForm)
+                    scannerViewModel.navigateFromDetailScreen(indexForm, type = form.barcodeType ?: "")
                     viewModel.goToScannerBarcode(indexForm)
                 }
                 .fillMaxSize()

@@ -2,6 +2,7 @@ package id.worx.device.client.screen.main
 
 import android.net.Uri
 import android.util.Log
+import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -23,7 +24,9 @@ import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
 import coil.compose.AsyncImage
+import com.google.mlkit.vision.barcode.BarcodeScannerOptions
 import com.google.mlkit.vision.barcode.BarcodeScanning
+import com.google.mlkit.vision.barcode.common.Barcode
 import com.google.mlkit.vision.common.InputImage
 import id.worx.device.client.R
 import id.worx.device.client.model.BarcodeFieldValue
@@ -33,6 +36,7 @@ import id.worx.device.client.util.BarcodeAnalyzer
 import id.worx.device.client.viewmodel.DetailFormViewModel
 import id.worx.device.client.viewmodel.ScannerViewModel
 import java.io.File
+import kotlin.math.log
 
 @Composable
 fun BarcodePreviewScreen(
@@ -42,7 +46,27 @@ fun BarcodePreviewScreen(
     val index = scannerViewModel.indexForm.value
     val filePath = scannerViewModel.photoPath.value
     val context = LocalContext.current
-    val barcodeScanner = BarcodeScanning.getClient()
+    val options = BarcodeScannerOptions.Builder()
+    val barcodeType = scannerViewModel.type.value
+
+    Log.d("TAG", "BarcodePreviewScreen: $barcodeType")
+    if (barcodeType == "all") {
+        options.setBarcodeFormats(Barcode.FORMAT_ALL_FORMATS)
+    } else {
+        options.setBarcodeFormats(
+            Barcode.FORMAT_UPC_E,
+            Barcode.FORMAT_UPC_A,
+            Barcode.FORMAT_EAN_13,
+            Barcode.FORMAT_EAN_8,
+            Barcode.TYPE_ISBN,
+            Barcode.FORMAT_CODE_39,
+            Barcode.FORMAT_CODE_128,
+            Barcode.FORMAT_ITF,
+            Barcode.FORMAT_CODE_93,
+            Barcode.FORMAT_CODABAR
+        )
+    }
+    val barcodeScanner = BarcodeScanning.getClient(options.build())
     val inputImage = InputImage.fromFilePath(context, Uri.fromFile(File(filePath!!)))
 
     Scaffold(
@@ -152,7 +176,12 @@ fun BarcodePreviewScreen(
                                         }
                                     }
                                 } else {
-                                    Log.e("Barocde Analyzer", "analyze: No barcode scanned")
+                                    val typeBarcode = if (barcodeType == "1d"){ " ${context.getString(R.string.only_1d)}" } else ""
+                                    Toast.makeText(
+                                        context,
+                                        context.getString(R.string.no_barcode) + typeBarcode.ifBlank { "" },
+                                        Toast.LENGTH_LONG
+                                    ).show()
                                 }
                             }
                             .addOnFailureListener { e ->

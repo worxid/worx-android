@@ -83,6 +83,8 @@
     <string name="upload_success">Upload Success</string>
     <string name="uploading">Uploading</string>
     <string name="no_connection">No connection found.</string>
+    <string name="no_barcode">No barcode scanned</string>
+    <string name="only_1d">only 1d type can be scan</string>
     <string name="check_network">Please check your network connection</string>
 
 <!--    list error/notification message-->

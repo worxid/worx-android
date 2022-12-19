@@ -25,6 +25,9 @@ class ScannerViewModel @Inject constructor() : ViewModel() {
     private var _value = mutableStateOf("")
     val value = _value
 
+    private var _type = mutableStateOf("")
+    val type = _type
+
     private var _indexForm = MutableLiveData<Int?>()
     val indexForm: LiveData<Int?> = _indexForm
 
@@ -32,8 +35,9 @@ class ScannerViewModel @Inject constructor() : ViewModel() {
         _value.value = value
     }
 
-    fun navigateFromDetailScreen(indexForm : Int){
+    fun navigateFromDetailScreen(indexForm : Int, type: String){
         _indexForm.value = indexForm
+        _type.value = type
     }
 
     fun navigateToDetail() {

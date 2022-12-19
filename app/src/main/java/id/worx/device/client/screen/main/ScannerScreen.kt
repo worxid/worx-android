@@ -140,6 +140,7 @@ fun ScannerView(
         if (flashStatus) R.drawable.ic_flash_on  else R.drawable.ic_flash_off
     val backgroundColorFlash =
         if (flashStatus) MaterialTheme.colors.onBackground else Color.Black.copy(alpha = 0.54f)
+    val typeBarcode by remember { mutableStateOf(scannerViewModel.type.value) }
 
     val cameraSelector = CameraSelector.Builder()
         .requireLensFacing(lensFacing)
@@ -155,7 +156,7 @@ fun ScannerView(
         Manifest.permission.WRITE_EXTERNAL_STORAGE
     )
 
-    val barcodeAnalyzer = BarcodeAnalyzer { barcodes ->
+    val barcodeAnalyzer = BarcodeAnalyzer(barcodeType = typeBarcode) { barcodes ->
         barcodes.forEach { barcode ->
             barcode.rawValue?.let { value ->
                 barcodeValue.value = value

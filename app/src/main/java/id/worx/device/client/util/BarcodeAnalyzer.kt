@@ -15,9 +15,7 @@ import java.io.File
 import java.util.concurrent.TimeUnit
 
 class BarcodeAnalyzer(
-    private var typeImage: Int = 0,
-    private var context: Context? = null,
-    private var filePath : String? = null,
+    private val barcodeType: String,
     private val onBarcodeDetected: (barcodes: List<Barcode>) -> Unit,
 ) : ImageAnalysis.Analyzer {
     private var lastAnalyzedTimeStamp = 0L
@@ -28,31 +26,41 @@ class BarcodeAnalyzer(
         if (currentTimeStamp - lastAnalyzedTimeStamp >= TimeUnit.SECONDS.toMillis(1)) {
             image.image?.let { imageToAnalyze ->
                 val options = BarcodeScannerOptions.Builder()
-                    .setBarcodeFormats(Barcode.FORMAT_ALL_FORMATS)
-                    .build()
-                val barcodeScanner = BarcodeScanning.getClient(options)
-                val imageToProcess = if (typeImage == 0) {
-                    InputImage.fromMediaImage(imageToAnalyze, image.imageInfo.rotationDegrees)
+                Log.d("TAG", "analyze: $barcodeType")
+                if (barcodeType == "all") {
+                    options.setBarcodeFormats(Barcode.FORMAT_ALL_FORMATS)
                 } else {
-                    context?.let { InputImage.fromFilePath(it, Uri.fromFile(File(filePath!!))) }
+                    options.setBarcodeFormats(
+                        Barcode.FORMAT_UPC_E,
+                        Barcode.FORMAT_UPC_A,
+                        Barcode.FORMAT_EAN_13,
+                        Barcode.FORMAT_EAN_8,
+                        Barcode.TYPE_ISBN,
+                        Barcode.FORMAT_CODE_39,
+                        Barcode.FORMAT_CODE_128,
+                        Barcode.FORMAT_ITF,
+                        Barcode.FORMAT_CODE_93,
+                        Barcode.FORMAT_CODABAR
+                    )
                 }
+                val barcodeScanner = BarcodeScanning.getClient(options.build())
+                val imageToProcess =
+                    InputImage.fromMediaImage(imageToAnalyze, image.imageInfo.rotationDegrees)
 
-                if (imageToProcess != null) {
-                    barcodeScanner.process(imageToProcess)
-                        .addOnSuccessListener { barcodes ->
-                            if (barcodes.isNotEmpty()) {
-                                onBarcodeDetected(barcodes)
-                            } else {
-                                Log.e("Barocde Analyzer", "analyze: No barcode scanned")
-                            }
+                barcodeScanner.process(imageToProcess)
+                    .addOnSuccessListener { barcodes ->
+                        if (barcodes.isNotEmpty()) {
+                            onBarcodeDetected(barcodes)
+                        } else {
+                            Log.e("Barocde Analyzer", "analyze: No barcode scanned")
                         }
-                        .addOnFailureListener { e ->
-                            Log.e("Barocde Analyzer", "Barocde Analyzer: Something went wrong $e")
-                        }
-                        .addOnCompleteListener {
-                            image.close()
-                        }
-                }
+                    }
+                    .addOnFailureListener { e ->
+                        Log.e("Barocde Analyzer", "Barocde Analyzer: Something went wrong $e")
+                    }
+                    .addOnCompleteListener {
+                        image.close()
+                    }
             }
             lastAnalyzedTimeStamp = currentTimeStamp
         } else {
