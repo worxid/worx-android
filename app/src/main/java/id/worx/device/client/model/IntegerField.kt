@@ -1,9 +1,12 @@
 package id.worx.device.client.model
 
-class IntegerField(id: String, label: String, descri: String) : Fields(id = id, label= label, description = descri) {
-}
+import com.google.gson.annotations.SerializedName
 
-class IntegerValue(
-    override var type: String? = Type.TextField.type,
-    var values: String? = null
+data class IntegerField (
+    @Transient var time : String? = null,
+) : Fields()
+
+data class IntegerValue(
+    @SerializedName("type") override var type: String? = Type.Integer.type,
+    @SerializedName("value") var value: Int? = null
 ) : Value

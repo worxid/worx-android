@@ -226,6 +226,9 @@ fun DetailForm(
                     Type.Time.type -> {
                         WorxTimeInput(index, viewModel, session)
                     }
+                    Type.Integer.type -> {
+                        WorxIntegerField(index, viewModel, session)
+                    }
                     else -> {
                         Text(
                             text = "Unknown component",
