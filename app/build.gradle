@@ -26,8 +26,8 @@ android {
         applicationId "id.worx.device.client"
         minSdk 24
         targetSdk 33
-        versionCode 16
-        versionName "1.6"
+        versionCode 18
+        versionName "1.8"
 
         testInstrumentationRunner  "id.worx.device.client.CustomTestRunner"
     }
@@ -155,4 +155,6 @@ dependencies {
 
     // gps/ admin
     implementation "com.google.android.play:app-update-ktx:2.0.1"
+
+    implementation 'io.github.ShawnLin013:number-picker:2.4.13'
 }
