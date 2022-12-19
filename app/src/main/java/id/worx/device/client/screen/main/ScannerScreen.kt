@@ -102,7 +102,6 @@ fun ScannerScreen(
     Column(modifier = Modifier.fillMaxSize()) {
         when {
             permissionState.status.isGranted -> {
-                Log.i("Permission", "Camera permission granted")
                 ScannerView(
                     context = context,
                     viewModel = viewModel,
@@ -110,10 +109,8 @@ fun ScannerScreen(
                     lifecycleOwner = lifecycleOwner,
                     barcodeValue = barcodeValue
                 ) {
-//                    resultNavigator.navigateBack(result = barcodeValue.value)
                     scannerViewModel.setResult(barcodeValue.value)
                     scannerViewModel.navigateToDetail()
-                    Log.d("TAG", "ScannerScreen: ${scannerViewModel.value}")
                 }
             }
             permissionState.status.shouldShowRationale -> {
