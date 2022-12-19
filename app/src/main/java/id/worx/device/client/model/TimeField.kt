@@ -9,7 +9,7 @@ data class TimeField (
 //    @SerializedName("label"          ) override var label         : String?  = null,
 //    @SerializedName("description"    ) override var description   : String?  = null,
 //    @SerializedName("required"       ) override var required      : Boolean? = null,
-    @SerializedName("" ) var time : String? = null,
+    @Transient var time : String? = null,
     ) : Fields()
 
 data class TimeValue(
@@ -20,6 +20,5 @@ data class TimeValue(
 data class LocalTime(
     @SerializedName("hour") var hour: Int = 0,
     @SerializedName("minute") var minute: Int = 0,
-    @SerializedName("second") var second: Int = 0,
-    @SerializedName("nano") var nano: Int = 0
+    @SerializedName("second") var second: Int = 0
 )
