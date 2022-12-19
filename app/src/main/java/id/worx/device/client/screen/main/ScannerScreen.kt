@@ -137,9 +137,9 @@ fun ScannerView(
     }
     var flashStatus by remember { mutableStateOf(false) }
     val flashIcon =
-        if (flashStatus) R.drawable.ic_flash_off else R.drawable.ic_flash_on
+        if (flashStatus) R.drawable.ic_flash_on  else R.drawable.ic_flash_off
     val backgroundColorFlash =
-        if (flashStatus) Color.Black.copy(alpha = 0.54f) else MaterialTheme.colors.onBackground
+        if (flashStatus) MaterialTheme.colors.onBackground else Color.Black.copy(alpha = 0.54f)
 
     val cameraSelector = CameraSelector.Builder()
         .requireLensFacing(lensFacing)
