@@ -3,6 +3,7 @@ package id.worx.device.client.screen.components
 import android.app.AlertDialog
 import android.app.Dialog
 import android.content.Context
+import android.os.Build
 import android.widget.Button
 import android.widget.TextView
 import androidx.compose.foundation.background
@@ -32,6 +33,7 @@ import id.worx.device.client.theme.PrimaryMain
 import id.worx.device.client.theme.Typography
 import id.worx.device.client.viewmodel.DetailFormViewModel
 import id.worx.device.client.viewmodel.EventStatus
+import java.time.LocalTime
 
 
 @Composable
@@ -43,23 +45,32 @@ fun WorxTimeInput(indexForm: Int, viewModel: DetailFormViewModel, session: Sessi
     val value = if (timeValue != null) {
         remember { mutableStateOf(timeValue.value) }
     } else {
-        remember { mutableStateOf<id.worx.device.client.model.LocalTime?>(null) }
+        remember { mutableStateOf<String?>(null) }
     }
     var showTimePicker by remember { mutableStateOf(false) }
     val context = LocalContext.current
     val warningInfo = if (form.required == true && value.value == null) "${form.label} is required" else ""
 
     val timePickerCallback = { hr: Int, min: Int ->
-        value.value = id.worx.device.client.model.LocalTime(hour = hr, minute = min)
+        value.value = String.format("%02d:%02d:00", hr, min)
         viewModel.setComponentData(indexForm, TimeValue(value = value.value))
         showTimePicker = false
+    }
+
+    val timeArray = value.value?.split(":")
+    var hour = timeArray?.get(0)?.toInt() ?: 0
+    var  min = timeArray?.get(1)?.toInt() ?: 0
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && value.value!=null ){
+        val time = LocalTime.parse(value.value)
+        hour = time.hour
+        min = time.minute
     }
 
     val mTimeSliderDialog = WorxTimeSliderDialog(
         context,
         colorTheme = if (theme == SettingTheme.Dark) PrimaryMain else MaterialTheme.colors.primary,
-        hr =value.value?.hour ?: 0,
-        min = value.value?.minute ?: 0,
+        hr = hour,
+        min = min,
         onTimePickerListener = timePickerCallback
     )
 
@@ -92,7 +103,7 @@ fun WorxTimeInput(indexForm: Int, viewModel: DetailFormViewModel, session: Sessi
                 value = if (value.value == null) {
                     "Answer"
                 } else {
-                    String.format("%02d:%02d", value.value!!.hour, value.value!!.minute)
+                    value.value!!
                 },
                 onValueChange = {})
             Box(modifier = Modifier

@@ -14,11 +14,5 @@ data class TimeField (
 
 data class TimeValue(
     @SerializedName("type") override var type: String? = Type.Time.type,
-    @SerializedName("value") var value: id.worx.device.client.model.LocalTime? = null
+    @SerializedName("value") var value: String? = null
 ) : Value
-
-data class LocalTime(
-    @SerializedName("hour") var hour: Int = 0,
-    @SerializedName("minute") var minute: Int = 0,
-    @SerializedName("second") var second: Int = 0
-)
