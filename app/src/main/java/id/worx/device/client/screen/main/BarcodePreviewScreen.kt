@@ -194,14 +194,12 @@ fun BarcodePreviewScreen(
                                 if (barcodes.isNotEmpty()) {
                                     barcodes.forEach { it ->
                                         it.rawValue?.let {
-                                            if (index != null) {
-                                                viewModel.setComponentData(
-                                                    index,
-                                                    BarcodeFieldValue(value = it)
-                                                )
-                                                scannerViewModel.setResult(it)
-                                                scannerViewModel.navigateToDetail()
-                                            }
+                                            viewModel.setComponentData(
+                                                index,
+                                                BarcodeFieldValue(value = it)
+                                            )
+                                            scannerViewModel.setResult(it)
+                                            scannerViewModel.navigateToDetail()
                                         }
                                     }
                                 } else {

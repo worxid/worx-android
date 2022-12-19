@@ -66,7 +66,6 @@ fun Fragment.navigate(to: MainScreen, from: MainScreen) {
                     findNavController().navigate(R.id.action_scannerFragment_to_detail_form_fragment)
                 MainScreen.BarcodePreview -> {
                     findNavController().navigate(R.id.action_barcodePreviewFragment_to_detail_form_fragment)
-                    Log.d("TAG", "navigate: barcode")
                 }
                 else -> findNavController().navigate(R.id.detail_form_fragment)
             }
