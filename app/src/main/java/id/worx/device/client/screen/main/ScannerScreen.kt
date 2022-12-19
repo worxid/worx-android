@@ -66,6 +66,7 @@ import id.worx.device.client.theme.PrimaryMain
 import id.worx.device.client.theme.Typography
 import id.worx.device.client.theme.fontRoboto
 import id.worx.device.client.util.BarcodeAnalyzer
+import id.worx.device.client.util.navigateToGallery
 import id.worx.device.client.viewmodel.DetailFormViewModel
 import id.worx.device.client.viewmodel.ScannerViewModel
 import kotlinx.coroutines.flow.update
@@ -125,7 +126,7 @@ fun ScannerScreen(
 fun ScannerView(
     context: Context,
     viewModel: DetailFormViewModel,
-    scannerViewModel : ScannerViewModel,
+    scannerViewModel: ScannerViewModel,
     lifecycleOwner: LifecycleOwner,
     barcodeValue: MutableState<String>,
     onScanDone: () -> Unit
@@ -137,7 +138,7 @@ fun ScannerView(
     }
     var flashStatus by remember { mutableStateOf(false) }
     val flashIcon =
-        if (flashStatus) R.drawable.ic_flash_on  else R.drawable.ic_flash_off
+        if (flashStatus) R.drawable.ic_flash_on else R.drawable.ic_flash_off
     val backgroundColorFlash =
         if (flashStatus) MaterialTheme.colors.onBackground else Color.Black.copy(alpha = 0.54f)
     val typeBarcode by remember { mutableStateOf(scannerViewModel.type.value) }
@@ -191,11 +192,7 @@ fun ScannerView(
                 Toast.LENGTH_LONG
             ).show()
         } else {
-            FishBun.with(context.getActivity()!!)
-                .setImageAdapter(CoilAdapter())
-                .setMaxCount(1)
-                .setThemeColor(PrimaryMain.toArgb())
-                .startAlbumWithActivityResultCallback(launcherGallery)
+            context.getActivity()?.navigateToGallery(launcherGallery)
         }
     }
 
@@ -247,7 +244,7 @@ fun ScannerView(
                 .fillMaxSize()
                 .background(Color.Black.copy(alpha = 0.54f))
         ) {
-            val (icFlash, icBarcodeArea, icUpload) = createRefs()
+            val (icFlash, icBarcodeArea, icUpload, tvPointBarcode) = createRefs()
             Box(
                 contentAlignment = Alignment.Center,
                 modifier = Modifier
@@ -282,6 +279,15 @@ fun ScannerView(
                     tint = Color.White
                 )
             }
+            Text(
+                text = stringResource(id = R.string.point_barcode),
+                modifier = Modifier.constrainAs(tvPointBarcode) {
+                    start.linkTo(icBarcodeArea.start)
+                    top.linkTo(icBarcodeArea.bottom,16.dp)
+                    end.linkTo(icBarcodeArea.end)
+                },
+                style = Typography.subtitle1.copy(color = Color.White)
+            )
             Row(
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically,

@@ -19,8 +19,8 @@ class ScannerViewModel @Inject constructor() : ViewModel() {
     private val _navigateTo = MutableLiveData<Event<MainScreen>>()
     val navigateTo: LiveData<Event<MainScreen>> = _navigateTo
 
-    private var _photoPath = MutableLiveData<String?>()
-    val photoPath: LiveData<String?> = _photoPath
+    private var _photoPath = mutableStateOf<String?>("")
+    val photoPath = _photoPath
 
     private var _value = mutableStateOf("")
     val value = _value

@@ -1,14 +1,16 @@
 package id.worx.device.client.screen.main
 
+import android.app.Activity
 import android.net.Uri
 import android.util.Log
 import android.widget.Toast
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -28,11 +30,16 @@ import com.google.mlkit.vision.barcode.BarcodeScannerOptions
 import com.google.mlkit.vision.barcode.BarcodeScanning
 import com.google.mlkit.vision.barcode.common.Barcode
 import com.google.mlkit.vision.common.InputImage
+import com.sangcomz.fishbun.FishBun
+import com.sangcomz.fishbun.util.getRealPathFromURI
 import id.worx.device.client.R
 import id.worx.device.client.model.BarcodeFieldValue
+import id.worx.device.client.screen.components.BarcodeType
+import id.worx.device.client.screen.components.getActivity
 import id.worx.device.client.theme.Typography
 import id.worx.device.client.theme.fontRoboto
 import id.worx.device.client.util.BarcodeAnalyzer
+import id.worx.device.client.util.navigateToGallery
 import id.worx.device.client.viewmodel.DetailFormViewModel
 import id.worx.device.client.viewmodel.ScannerViewModel
 import java.io.File
@@ -43,14 +50,26 @@ fun BarcodePreviewScreen(
     viewModel: DetailFormViewModel,
     scannerViewModel: ScannerViewModel
 ) {
-    val index = scannerViewModel.indexForm.value
-    val filePath = scannerViewModel.photoPath.value
+    val index = scannerViewModel.indexForm.value!!
+    var filePath by remember { mutableStateOf(scannerViewModel.photoPath.value) }
     val context = LocalContext.current
     val options = BarcodeScannerOptions.Builder()
     val barcodeType = scannerViewModel.type.value
+    val launcherGallery =
+        rememberLauncherForActivityResult(
+            contract = ActivityResultContracts.StartActivityForResult(),
+            onResult = {
+                if (it.resultCode == Activity.RESULT_OK &&
+                    it.data != null
+                ) {
+                    it.data!!.getParcelableArrayListExtra<Uri>(FishBun.INTENT_PATH)
+                        ?.forEach { uri ->
+                            filePath = getRealPathFromURI(context, uri)
+                        }
+                }
+            })
 
-    Log.d("TAG", "BarcodePreviewScreen: $barcodeType")
-    if (barcodeType == "all") {
+    if (barcodeType == BarcodeType.All.type) {
         options.setBarcodeFormats(Barcode.FORMAT_ALL_FORMATS)
     } else {
         options.setBarcodeFormats(
@@ -90,11 +109,15 @@ fun BarcodePreviewScreen(
                         ),
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis,
-                        modifier = Modifier.constrainAs(tvCancel) {
-                            start.linkTo(parent.start)
-                            top.linkTo(parent.top)
-                            bottom.linkTo(parent.bottom)
-                        },
+                        modifier = Modifier
+                            .constrainAs(tvCancel) {
+                                start.linkTo(parent.start)
+                                top.linkTo(parent.top)
+                                bottom.linkTo(parent.bottom)
+                            }
+                            .clickable {
+                                scannerViewModel.navigateToDetail()
+                            },
                         textAlign = TextAlign.Center
                     )
                     Text(
@@ -125,7 +148,7 @@ fun BarcodePreviewScreen(
         ) {
             val (image, container) = createRefs()
             AsyncImage(
-                model = if (filePath?.contains("File") == true) {
+                model = if (filePath!!.contains("File")) {
                     android.R.drawable.ic_menu_gallery
                 } else {
                     filePath
@@ -156,7 +179,10 @@ fun BarcodePreviewScreen(
                 Icon(
                     painter = painterResource(id = R.drawable.ic_image),
                     tint = Color.White,
-                    contentDescription = "Collection Image"
+                    contentDescription = "Collection Image",
+                    modifier = Modifier.clickable {
+                        context.getActivity()?.navigateToGallery(launcherGallery)
+                    }
                 )
 
                 Row(
@@ -169,14 +195,19 @@ fun BarcodePreviewScreen(
                                     barcodes.forEach { it ->
                                         it.rawValue?.let {
                                             if (index != null) {
-                                                viewModel.setComponentData(index, BarcodeFieldValue(value = it))
+                                                viewModel.setComponentData(
+                                                    index,
+                                                    BarcodeFieldValue(value = it)
+                                                )
                                                 scannerViewModel.setResult(it)
                                                 scannerViewModel.navigateToDetail()
                                             }
                                         }
                                     }
                                 } else {
-                                    val typeBarcode = if (barcodeType == "1d"){ " ${context.getString(R.string.only_1d)}" } else ""
+                                    val typeBarcode = if (barcodeType == BarcodeType.D1.type) {
+                                        " ${context.getString(R.string.only_1d)}"
+                                    } else ""
                                     Toast.makeText(
                                         context,
                                         context.getString(R.string.no_barcode) + typeBarcode.ifBlank { "" },

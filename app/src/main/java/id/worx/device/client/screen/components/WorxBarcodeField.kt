@@ -22,6 +22,12 @@ import id.worx.device.client.viewmodel.DetailFormViewModel
 import id.worx.device.client.viewmodel.EventStatus
 import id.worx.device.client.viewmodel.ScannerViewModel
 
+enum class BarcodeType(val type: String){
+    All("all"),
+    D1("1d"),
+    D2("2d")
+}
+
 @Composable
 fun WorxBarcodeField(
     indexForm: Int,
@@ -46,8 +52,7 @@ fun WorxBarcodeField(
     }
     val warningInfo = if (form.required == true && value == null) {
         "${form.label} is required"
-    } else if (form.barcodeType == "all") {
-//        TODO("barcodeType need to refactor")
+    } else if (form.barcodeType == BarcodeType.All.type) {
         "Limited to 1D barcodes only"
     } else {
         ""
