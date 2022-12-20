@@ -30,6 +30,7 @@ import id.worx.device.client.model.SubmitForm
 import id.worx.device.client.model.Type
 import id.worx.device.client.model.fieldmodel.TextFieldValue
 import id.worx.device.client.screen.components.*
+import id.worx.device.client.theme.GrayDivider
 import id.worx.device.client.theme.Typography
 import id.worx.device.client.viewmodel.CameraViewModel
 import id.worx.device.client.viewmodel.DetailFormViewModel
@@ -237,10 +238,13 @@ fun DetailForm(
                         WorxIntegerField(index, viewModel, session)
                     }
                     else -> {
-                        Text(
-                            text = "Unknown component",
-                            style = Typography.body1.copy(color = Color.Black)
-                        )
+                        Column(modifier = Modifier.padding(horizontal = 16.dp, vertical = 6.dp)) {
+                            Text(
+                                text = "Unknown component ${item.type}",
+                                style = Typography.body1.copy(color = Color.Black)
+                            )
+                            Divider(color = GrayDivider, modifier = Modifier.padding(vertical = 16.dp))
+                        }
                     }
                 }
             }

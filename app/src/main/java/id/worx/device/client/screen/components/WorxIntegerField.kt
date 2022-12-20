@@ -18,7 +18,7 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import id.worx.device.client.data.database.Session
-import id.worx.device.client.model.TextFieldValue
+import id.worx.device.client.model.fieldmodel.TextFieldValue
 import id.worx.device.client.screen.main.SettingTheme
 import id.worx.device.client.theme.Typography
 import id.worx.device.client.theme.textUnfocusColorDark
@@ -52,8 +52,8 @@ fun WorxIntegerField(
         warningInfo = warningInfo
     ) {
         TextField(
-            modifier = Modifier.padding(horizontal = 16.dp)
-                .fillMaxWidth(),
+            modifier = Modifier.fillMaxWidth()
+                .padding(horizontal = 16.dp),
             enabled = !arrayListOf(EventStatus.Done, EventStatus.Submitted).contains(formStatus),
             colors = TextFieldDefaults.textFieldColors(
                 backgroundColor = Color.Black.copy(0.06f)

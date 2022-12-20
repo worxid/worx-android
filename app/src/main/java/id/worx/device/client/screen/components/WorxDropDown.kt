@@ -4,6 +4,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
@@ -54,7 +55,8 @@ fun WorxDropdown(indexForm: Int, viewModel: DetailFormViewModel, session: Sessio
             TextField(
                 modifier = Modifier
                     .clickable { expanded = true }
-                    .fillMaxWidth(),
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp),
                 enabled = false,
                 colors = TextFieldDefaults.textFieldColors(
                     backgroundColor = Color.Black.copy(0.06f)

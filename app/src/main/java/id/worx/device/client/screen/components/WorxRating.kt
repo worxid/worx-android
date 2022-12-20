@@ -3,6 +3,7 @@ package id.worx.device.client.screen.components
 import android.R
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.material.Icon
@@ -57,6 +58,7 @@ fun WorxRating(indexForm: Int, viewModel: DetailFormViewModel,validation : Boole
         warningInfo = warningInfo
     ) {
         LazyRow(
+            modifier = Modifier.padding(horizontal = 16.dp),
             horizontalArrangement = Arrangement.spacedBy(12.dp)
         ) {
             items(form.maxStars ?: 5) { index ->

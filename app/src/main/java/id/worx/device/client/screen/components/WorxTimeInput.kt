@@ -85,6 +85,7 @@ fun WorxTimeInput(indexForm: Int, viewModel: DetailFormViewModel, session: Sessi
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier
                 .fillMaxWidth()
+                .padding(horizontal = 16.dp)
         ) {
             TextField(
                 modifier = Modifier

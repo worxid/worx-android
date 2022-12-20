@@ -126,6 +126,18 @@ class SubmitFormTypeConverter {
                         IntegerField::class.java
                     )
                 )
+                type.contains(Type.BarcodeField.type) -> returnArray.add(
+                    gson.fromJson(
+                        jsonElement,
+                        BarcodeField::class.java
+                    )
+                )
+                type.contains(Type.Sketch.type) -> returnArray.add(
+                    gson.fromJson(
+                        jsonElement,
+                        SketchField::class.java
+                    )
+                )
                 else -> throw IllegalArgumentException("Can't deserialize $entry")
             }
         }
@@ -170,6 +182,10 @@ class SubmitFormTypeConverter {
                     gson.fromJson(map.value, IntegerValue::class.java)
                 type.contains(Type.Boolean.type) -> returnMap[map.key] =
                     gson.fromJson(map.value, BooleanValue::class.java)
+                type.contains(Type.BarcodeField.type) -> returnMap[map.key] =
+                    gson.fromJson(map.value, BarcodeFieldValue::class.java)
+                type.contains(Type.Sketch.type) -> returnMap[map.key] =
+                    gson.fromJson(map.value, SketchValue::class.java)
                 else -> throw IllegalArgumentException("Can't deserialize ${map.key} ${map.value}")
             }
         }
