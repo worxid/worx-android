@@ -37,8 +37,8 @@ import com.sangcomz.fishbun.adapter.image.impl.CoilAdapter
 import com.sangcomz.fishbun.util.getRealPathFromURI
 import id.worx.device.client.R
 import id.worx.device.client.data.database.Session
-import id.worx.device.client.model.ImageField
-import id.worx.device.client.model.ImageValue
+import id.worx.device.client.model.fieldmodel.ImageField
+import id.worx.device.client.model.fieldmodel.ImageValue
 import id.worx.device.client.screen.main.SettingTheme
 import id.worx.device.client.theme.*
 import id.worx.device.client.viewmodel.DetailFormViewModel

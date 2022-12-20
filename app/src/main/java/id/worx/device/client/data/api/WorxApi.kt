@@ -3,6 +3,7 @@ package id.worx.device.client.data.api
 import android.util.Log
 import com.google.gson.*
 import id.worx.device.client.model.*
+import id.worx.device.client.model.fieldmodel.*
 import id.worx.device.client.util.ConnectionTimeoutInterceptor
 import okhttp3.OkHttpClient
 import okhttp3.ResponseBody
@@ -100,6 +101,8 @@ class FieldsDeserializer : JsonDeserializer<Fields?>, JsonSerializer<Fields?> {
             type.contains(Type.Time.type) -> gson.fromJson(json, TimeField::class.java)
             type.contains(Type.Boolean.type) -> gson.fromJson(json, BooleanField::class.java)
             type.contains(Type.Integer.type) -> gson.fromJson(json, IntegerField::class.java)
+            type.contains(Type.BarcodeField.type) -> gson.fromJson(json, BarcodeField::class.java)
+            type.contains(Type.Sketch.type) -> gson.fromJson(json, SketchField::class.java)
             else -> throw IllegalArgumentException("Can't deserialize $entry ")
         }
     }
@@ -156,7 +159,12 @@ class ValueSerialize : JsonSerializer<Value>, JsonDeserializer<Value> {
                 gson.fromJson(json, TimeValue::class.java)
             type.contains(Type.Integer.type) ->
                 gson.fromJson(json, IntegerValue::class.java)
-            type.contains(Type.Boolean.type) -> gson.fromJson(json, BooleanValue::class.java)
+            type.contains(Type.Boolean.type) ->
+                gson.fromJson(json, BooleanValue::class.java)
+            type.contains(Type.BarcodeField.type) ->
+                gson.fromJson(json, BarcodeFieldValue::class.java)
+            type.contains(Type.Sketch.type) ->
+                gson.fromJson(json, SketchValue::class.java)
             else -> throw IllegalArgumentException("Can't deserialize $value")
         }
     }

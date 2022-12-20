@@ -15,8 +15,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import id.worx.device.client.data.database.Session
-import id.worx.device.client.model.RatingField
-import id.worx.device.client.model.RatingValue
+import id.worx.device.client.model.fieldmodel.RatingField
+import id.worx.device.client.model.fieldmodel.RatingValue
 import id.worx.device.client.theme.SecondaryMain
 import id.worx.device.client.viewmodel.DetailFormViewModel
 import id.worx.device.client.viewmodel.EventStatus

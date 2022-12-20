@@ -30,8 +30,8 @@ import androidx.core.content.ContextCompat
 import id.worx.device.client.R
 import id.worx.device.client.Util.getRealPathFromURI
 import id.worx.device.client.data.database.Session
-import id.worx.device.client.model.FileField
-import id.worx.device.client.model.FileValue
+import id.worx.device.client.model.fieldmodel.FileField
+import id.worx.device.client.model.fieldmodel.FileValue
 import id.worx.device.client.screen.main.SettingTheme
 import id.worx.device.client.theme.*
 import id.worx.device.client.viewmodel.DetailFormViewModel

@@ -26,8 +26,8 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import id.worx.device.client.R
 import id.worx.device.client.data.database.Session
-import id.worx.device.client.model.DateField
-import id.worx.device.client.model.DateValue
+import id.worx.device.client.model.fieldmodel.DateField
+import id.worx.device.client.model.fieldmodel.DateValue
 import id.worx.device.client.screen.main.SettingTheme
 import id.worx.device.client.theme.Typography
 import id.worx.device.client.viewmodel.DetailFormViewModel

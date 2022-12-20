@@ -14,8 +14,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import id.worx.device.client.data.database.Session
-import id.worx.device.client.model.RadioButtonField
-import id.worx.device.client.model.RadioButtonValue
+import id.worx.device.client.model.fieldmodel.RadioButtonField
+import id.worx.device.client.model.fieldmodel.RadioButtonValue
 import id.worx.device.client.theme.Typography
 import id.worx.device.client.util.VerticalGrid
 import id.worx.device.client.viewmodel.DetailFormViewModel

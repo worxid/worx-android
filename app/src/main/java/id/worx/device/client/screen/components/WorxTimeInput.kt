@@ -26,8 +26,8 @@ import androidx.compose.ui.unit.dp
 import androidx.core.content.res.ResourcesCompat
 import id.worx.device.client.R
 import id.worx.device.client.data.database.Session
-import id.worx.device.client.model.TimeField
-import id.worx.device.client.model.TimeValue
+import id.worx.device.client.model.fieldmodel.TimeField
+import id.worx.device.client.model.fieldmodel.TimeValue
 import id.worx.device.client.screen.main.SettingTheme
 import id.worx.device.client.theme.PrimaryMain
 import id.worx.device.client.theme.Typography

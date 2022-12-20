@@ -15,12 +15,9 @@ import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
 import id.worx.device.client.data.database.Session
-import id.worx.device.client.model.BooleanField
-import id.worx.device.client.model.BooleanValue
-import id.worx.device.client.model.RadioButtonField
-import id.worx.device.client.model.RadioButtonValue
+import id.worx.device.client.model.fieldmodel.BooleanField
+import id.worx.device.client.model.fieldmodel.BooleanValue
 import id.worx.device.client.theme.Typography
-import id.worx.device.client.util.VerticalGrid
 import id.worx.device.client.viewmodel.DetailFormViewModel
 import id.worx.device.client.viewmodel.EventStatus
 

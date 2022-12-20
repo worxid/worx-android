@@ -1,6 +1,9 @@
-package id.worx.device.client.model
+package id.worx.device.client.model.fieldmodel
 
 import com.google.gson.annotations.SerializedName
+import id.worx.device.client.model.Fields
+import id.worx.device.client.model.Type
+import id.worx.device.client.model.Value
 
 data class ImageField (
 

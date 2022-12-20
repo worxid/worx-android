@@ -17,7 +17,9 @@ enum class Type(val type: String){
     Separator("separator"),
     Time("time"),
     Boolean("boolean"),
-    Integer("integer")
+    Integer("integer"),
+    BarcodeField("barcode"),
+    Sketch("sketch")
 }
 
 @Entity(tableName = "form")

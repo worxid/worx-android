@@ -13,8 +13,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import id.worx.device.client.data.database.Session
-import id.worx.device.client.model.DropDownField
-import id.worx.device.client.model.DropDownValue
+import id.worx.device.client.model.fieldmodel.DropDownField
+import id.worx.device.client.model.fieldmodel.DropDownValue
 import id.worx.device.client.theme.Typography
 import id.worx.device.client.viewmodel.DetailFormViewModel
 import id.worx.device.client.viewmodel.EventStatus

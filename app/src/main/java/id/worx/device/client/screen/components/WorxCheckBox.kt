@@ -15,8 +15,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import id.worx.device.client.data.database.Session
-import id.worx.device.client.model.CheckBoxField
-import id.worx.device.client.model.CheckBoxValue
+import id.worx.device.client.model.fieldmodel.CheckBoxField
+import id.worx.device.client.model.fieldmodel.CheckBoxValue
 import id.worx.device.client.theme.Typography
 import id.worx.device.client.viewmodel.DetailFormViewModel
 import id.worx.device.client.viewmodel.EventStatus

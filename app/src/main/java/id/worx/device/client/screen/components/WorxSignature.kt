@@ -3,7 +3,6 @@ package id.worx.device.client.screen.components
 import android.graphics.Bitmap
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Divider
@@ -23,8 +22,8 @@ import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import id.worx.device.client.R
 import id.worx.device.client.data.database.Session
-import id.worx.device.client.model.SignatureField
-import id.worx.device.client.model.SignatureValue
+import id.worx.device.client.model.fieldmodel.SignatureField
+import id.worx.device.client.model.fieldmodel.SignatureValue
 import id.worx.device.client.screen.main.SettingTheme
 import id.worx.device.client.theme.*
 import id.worx.device.client.viewmodel.DetailFormViewModel

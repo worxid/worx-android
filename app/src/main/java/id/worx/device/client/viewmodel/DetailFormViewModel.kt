@@ -19,6 +19,7 @@ import id.worx.device.client.WorxApplication
 import id.worx.device.client.data.api.SyncServer
 import id.worx.device.client.data.database.Session
 import id.worx.device.client.model.*
+import id.worx.device.client.model.fieldmodel.*
 import id.worx.device.client.repository.SourceDataRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow

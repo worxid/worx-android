@@ -24,7 +24,11 @@ import androidx.constraintlayout.compose.Dimension
 import androidx.hilt.navigation.compose.hiltViewModel
 import id.worx.device.client.R
 import id.worx.device.client.data.database.Session
-import id.worx.device.client.model.*
+import id.worx.device.client.model.EmptyForm
+import id.worx.device.client.model.Fields
+import id.worx.device.client.model.SubmitForm
+import id.worx.device.client.model.Type
+import id.worx.device.client.model.fieldmodel.TextFieldValue
 import id.worx.device.client.screen.components.*
 import id.worx.device.client.theme.Typography
 import id.worx.device.client.viewmodel.CameraViewModel
