@@ -229,6 +229,9 @@ fun DetailForm(
                     Type.Boolean.type -> {
                         WorxBooleanField(index, viewModel, validation, session)
                     }
+                    Type.Integer.type -> {
+                        WorxIntegerField(index, viewModel, session)
+                    }
                     else -> {
                         Text(
                             text = "Unknown component",

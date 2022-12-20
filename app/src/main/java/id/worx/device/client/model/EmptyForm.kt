@@ -16,7 +16,8 @@ enum class Type(val type: String){
     Signature("signature"),
     Separator("separator"),
     Time("time"),
-    Boolean("boolean")
+    Boolean("boolean"),
+    Integer("integer")
 }
 
 @Entity(tableName = "form")

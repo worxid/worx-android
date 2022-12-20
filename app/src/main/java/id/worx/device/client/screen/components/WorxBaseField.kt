@@ -37,14 +37,16 @@ fun WorxBaseField(
                 .padding(bottom = 8.dp)
                 .padding(horizontal = 16.dp)
         )
-        Text(
-            text = description,
-            color = if (theme == SettingTheme.Dark) textFormDescriptionDark else textFormDescription,
-            style = MaterialTheme.typography.body1.copy(textFormDescription),
-            modifier = Modifier
-                .padding(bottom = 8.dp)
-                .padding(horizontal = 16.dp)
-        )
+        if (description.isNotBlank()) {
+            Text(
+                text = description,
+                color = if (theme == SettingTheme.Dark) textFormDescriptionDark else textFormDescription,
+                style = MaterialTheme.typography.body1.copy(textFormDescription),
+                modifier = Modifier
+                    .padding(bottom = 8.dp)
+                    .padding(horizontal = 16.dp)
+            )
+        }
         content()
         if (warningInfo.isNotBlank()) {
             if (validation){

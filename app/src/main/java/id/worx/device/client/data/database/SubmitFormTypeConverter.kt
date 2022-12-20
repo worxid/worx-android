@@ -119,6 +119,12 @@ class SubmitFormTypeConverter {
                         BooleanField::class.java
                     )
                 )
+                type.contains(Type.Integer.type) -> returnArray.add(
+                    gson.fromJson(
+                        jsonElement,
+                        IntegerField::class.java
+                    )
+                )
                 else -> throw IllegalArgumentException("Can't deserialize $entry")
             }
         }
@@ -159,6 +165,8 @@ class SubmitFormTypeConverter {
                     gson.fromJson(map.value, SignatureValue::class.java)
                 type.contains(Type.Time.type) -> returnMap[map.key] =
                     gson.fromJson(map.value, TimeValue::class.java)
+                type.contains(Type.Integer.type) -> returnMap[map.key] =
+                    gson.fromJson(map.value, IntegerValue::class.java)
                 type.contains(Type.Boolean.type) -> returnMap[map.key] =
                     gson.fromJson(map.value, BooleanValue::class.java)
                 else -> throw IllegalArgumentException("Can't deserialize ${map.key} ${map.value}")
