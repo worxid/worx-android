@@ -26,6 +26,7 @@ import id.worx.device.client.R
 import id.worx.device.client.data.database.Session
 import id.worx.device.client.model.*
 import id.worx.device.client.screen.components.*
+import id.worx.device.client.screen.main.SketchScreen
 import id.worx.device.client.theme.Typography
 import id.worx.device.client.viewmodel.CameraViewModel
 import id.worx.device.client.viewmodel.DetailFormViewModel
@@ -222,6 +223,9 @@ fun DetailForm(
                     }
                     Type.Separator.type -> {
                         WorxSeparator(index, viewModel, session)
+                    }
+                    Type.Sketch.type -> {
+                        WorxSketch(indexForm = index, viewModel = viewModel, session = session, validation = validation)
                     }
                     else -> {
                         Text(

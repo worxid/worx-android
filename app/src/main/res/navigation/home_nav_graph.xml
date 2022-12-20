@@ -64,4 +64,15 @@
         android:id="@+id/advanced_settings_fragment"
         android:name="id.worx.device.client.view.HomeAdvancedSettingsFragment"
         android:label="AdvancedSettingsFragment" />
+    <fragment
+        android:id="@+id/sketchFragment"
+        android:name="id.worx.device.client.view.SketchFragment"
+        android:label="SketchFragment" >
+        <action
+            android:id="@+id/action_sketchFragment_to_detail_form_fragment"
+            app:destination="@id/detail_form_fragment"
+            app:launchSingleTop="true"
+            app:popUpTo="@id/home_nav_graph"
+            app:popUpToInclusive="true" />
+    </fragment>
 </navigation>

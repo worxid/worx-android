@@ -130,6 +130,13 @@ class DetailFormViewModel @Inject constructor(
         _navigateTo.value = Event(MainScreen.SignaturePad)
     }
 
+    fun goToSketch(index: Int){
+        uiState.update {
+            it.copy(currentComponent = index)
+        }
+        _navigateTo.value = Event(MainScreen.Sketch)
+    }
+
     fun saveSignature(bitmap: Bitmap, index: Int) {
         val fileName =
             "signature${uiState.value.detailForm!!.fields[index].id}"

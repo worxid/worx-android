@@ -14,7 +14,8 @@ enum class Type(val type: String){
     File("file"),
     Photo("photo"),
     Signature("signature"),
-    Separator("separator")
+    Separator("separator"),
+    Sketch("sketch")
 }
 
 @Entity(tableName = "form")
@@ -41,7 +42,7 @@ sealed interface BasicForm {
     var lastUpdated: String?
 }
 
-abstract class Fields (
+abstract class Fields   (
     @SerializedName("id"          ) open var id          : String?          = null,
     @SerializedName("label"       ) open var label       : String?          = null,
     @SerializedName("description" ) open var description : String?          = null,

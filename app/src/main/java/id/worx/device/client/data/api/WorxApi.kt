@@ -98,6 +98,7 @@ class FieldsDeserializer : JsonDeserializer<Fields?>, JsonSerializer<Fields?> {
             type.contains(Type.File.type) -> gson.fromJson(json, FileField::class.java)
             type.contains(Type.Photo.type) -> gson.fromJson(json, ImageField::class.java)
             type.contains(Type.Signature.type) -> gson.fromJson(json, SignatureField::class.java)
+            type.contains(Type.Sketch.type) -> gson.fromJson(json, SketchField::class.java)
             else -> throw IllegalArgumentException("Can't deserialize $entry ")
         }
     }

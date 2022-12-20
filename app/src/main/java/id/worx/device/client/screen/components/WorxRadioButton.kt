@@ -13,13 +13,13 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.layout.Layout
 import androidx.compose.ui.unit.dp
 import id.worx.device.client.data.database.Session
 import id.worx.device.client.model.RadioButtonField
 import id.worx.device.client.model.RadioButtonValue
 import id.worx.device.client.screen.main.SettingTheme
 import id.worx.device.client.theme.*
-import id.worx.device.client.util.VerticalGrid
 import id.worx.device.client.viewmodel.DetailFormViewModel
 import id.worx.device.client.viewmodel.EventStatus
 
@@ -132,5 +132,52 @@ fun WorxRadiobutton(indexForm: Int, viewModel: DetailFormViewModel, validation: 
             form.isValid = true
         }
         Divider(color = GrayDivider, modifier = Modifier.padding(vertical = 16.dp))
+    }
+}
+
+/**
+ * A simple grid which lays elements out vertically in evenly sized [columns].
+ */
+@Composable
+private fun VerticalGrid(
+    modifier: Modifier = Modifier,
+    columns: Int = 2,
+    content: @Composable () -> Unit
+) {
+    Layout(
+        content = content,
+        modifier = modifier
+    ) { measurables, constraints ->
+        val itemWidth = constraints.maxWidth / columns
+        // Keep given height constraints, but set an exact width
+        val itemConstraints = constraints.copy(
+            minWidth = itemWidth,
+            maxWidth = itemWidth
+        )
+        // Measure each item with these constraints
+        val placeables = measurables.map { it.measure(itemConstraints) }
+        // Track each columns height so we can calculate the overall height
+        val columnHeights = Array(columns) { 0 }
+        placeables.forEachIndexed { index, placeable ->
+            val column = index % columns
+            columnHeights[column] += placeable.height
+        }
+        val height = (columnHeights.maxOrNull() ?: constraints.minHeight)
+            .coerceAtMost(constraints.maxHeight)
+        layout(
+            width = constraints.maxWidth,
+            height = height
+        ) {
+            // Track the Y co-ord per column we have placed up to
+            val columnY = Array(columns) { 0 }
+            placeables.forEachIndexed { index, placeable ->
+                val column = index % columns
+                placeable.placeRelative(
+                    x = column * itemWidth,
+                    y = columnY[column]
+                )
+                columnY[column] += placeable.height
+            }
+        }
     }
 }
