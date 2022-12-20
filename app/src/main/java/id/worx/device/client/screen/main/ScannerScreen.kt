@@ -286,7 +286,7 @@ fun ScannerView(
                     top.linkTo(icBarcodeArea.bottom,16.dp)
                     end.linkTo(icBarcodeArea.end)
                 },
-                style = Typography.subtitle1.copy(color = Color.White)
+                style = Typography.subtitle1.copy(color = Color.White.copy(alpha = 0.8f), fontFamily = fontRoboto)
             )
             Row(
                 horizontalArrangement = Arrangement.SpaceBetween,

@@ -11,6 +11,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import id.worx.device.client.R
 import id.worx.device.client.data.database.Session
@@ -22,7 +23,7 @@ import id.worx.device.client.viewmodel.DetailFormViewModel
 import id.worx.device.client.viewmodel.EventStatus
 import id.worx.device.client.viewmodel.ScannerViewModel
 
-enum class BarcodeType(val type: String){
+enum class BarcodeType(val type: String) {
     All("all"),
     D1("1d"),
     D2("2d")
@@ -39,18 +40,20 @@ fun WorxBarcodeField(
     val theme = session.theme
     val form =
         viewModel.uiState.collectAsState().value.detailForm?.fields?.get(indexForm) as BarcodeField
-    val barcodeValue =
+    val barcodeFieldValue =
         viewModel.uiState.collectAsState().value.values[form.id] as BarcodeFieldValue?
     val formStatus = viewModel.uiState.collectAsState().value.status
+    val manuallyOverride = form.manuallyOverride
+    val barcodeValue = barcodeFieldValue?.value ?: ""
     var value by remember {
         mutableStateOf(
-            barcodeValue?.value
+            TextFieldValue(barcodeValue)
         )
     }
-    if (barcodeValue?.value != null){
-        viewModel.setComponentData(indexForm, BarcodeFieldValue(value = barcodeValue.value))
+    if (barcodeFieldValue?.value != null) {
+        viewModel.setComponentData(indexForm, BarcodeFieldValue(value = barcodeFieldValue.value))
     }
-    val warningInfo = if (form.required == true && value == null) {
+    val warningInfo = if (form.required == true && value.text.isEmpty()) {
         "${form.label} is required"
     } else if (form.barcodeType == BarcodeType.All.type) {
         "Limited to 1D barcodes only"
@@ -81,13 +84,14 @@ fun WorxBarcodeField(
             modifier = Modifier.fillMaxWidth()
         ) {
             TextField(
-                value = if (value == null) "Scan Barcode" else value ?: "",
+                placeholder = { Text(text = "Scan Barcode")},
+                value = value,
                 modifier = Modifier.padding(end = 12.dp),
-                enabled = false,
+                enabled = manuallyOverride ?: false,
                 colors = TextFieldDefaults.textFieldColors(
                     backgroundColor = Color.Black.copy(0.06f)
                 ),
-                textStyle = if (value.isNullOrEmpty()) {
+                textStyle = if (value.text.isEmpty()) {
                     Typography.body2.copy(color = MaterialTheme.colors.onSecondary.copy(0.54f))
                 } else {
                     Typography.body2.copy(MaterialTheme.colors.onSecondary)
@@ -105,13 +109,14 @@ fun WorxBarcodeField(
                             modifier = Modifier
                                 .clickable {
                                     viewModel.setComponentData(indexForm, null)
-                                    value = null
+                                    value = TextFieldValue("")
                                 },
                             tint = MaterialTheme.colors.onSecondary,
                         )
                     }
                 },
-                onValueChange = {})
+                onValueChange = { value = it }
+            )
             Box(modifier = Modifier
                 .clip(RoundedCornerShape(4.dp))
                 .background(
@@ -120,7 +125,10 @@ fun WorxBarcodeField(
                     )
                 )
                 .clickable {
-                    scannerViewModel.navigateFromDetailScreen(indexForm, type = form.barcodeType ?: BarcodeType.All.type)
+                    scannerViewModel.navigateFromDetailScreen(
+                        indexForm,
+                        type = form.barcodeType ?: BarcodeType.All.type
+                    )
                     viewModel.goToScannerBarcode(indexForm)
                 }
                 .fillMaxSize()
@@ -139,7 +147,7 @@ fun WorxBarcodeField(
             if (validation) {
                 Text(
                     text = warningInfo,
-                    modifier = Modifier.padding(top = 4.dp),
+                    modifier = Modifier.padding(top = 8.dp),
                     color = PrimaryMain
                 )
             }
@@ -147,5 +155,9 @@ fun WorxBarcodeField(
         } else {
             form.isValid = true
         }
+        Divider(
+            color = GrayDivider,
+            modifier = Modifier.padding(vertical = 16.dp)
+        )
     }
 }

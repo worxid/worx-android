@@ -182,7 +182,7 @@ fun BarcodePreviewScreen(
                     contentDescription = "Collection Image",
                     modifier = Modifier.clickable {
                         context.getActivity()?.navigateToGallery(launcherGallery)
-                    }
+                    }.size(28.dp)
                 )
 
                 Row(

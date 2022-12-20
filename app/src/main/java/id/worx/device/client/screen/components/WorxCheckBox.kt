@@ -101,7 +101,7 @@ fun WorxCheckBox(indexForm: Int, viewModel: DetailFormViewModel, validation: Boo
                 Text(
                     text = warningInfo,
                     modifier = Modifier
-                        .padding(bottom = 8.dp),
+                        .padding(top = 4.dp).padding(horizontal = 16.dp),
                     color = PrimaryMain
                 )
             }
