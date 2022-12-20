@@ -34,16 +34,16 @@ interface WorxApi {
     suspend fun getDeviceInfo(): Response<ResponseDeviceInfo>
 
     @POST("/mobile/devices/register")
-    suspend fun joinTeam(@Body joinTeamForm: JoinTeamForm) : Response<ResponseBody>
+    suspend fun joinTeam(@Body joinTeamForm: JoinTeamForm): Response<ResponseBody>
 
     @PUT("/mobile/devices/leave")
-    suspend fun leaveTeam() : Response<ResponseBody>
+    suspend fun leaveTeam(): Response<ResponseBody>
 
     @POST("/mobile/users/create-new-team")
-    suspend fun createNewTeam(@Body newTeamForm: NewTeamForm) : Response<ResponseDeviceInfo>
+    suspend fun createNewTeam(@Body newTeamForm: NewTeamForm): Response<ResponseDeviceInfo>
 
     @PUT("mobile/devices/update-info")
-    suspend fun updateDeviceInfo(@Body deviceInfo: DeviceInfo) : Response<ResponseBody>
+    suspend fun updateDeviceInfo(@Body deviceInfo: DeviceInfo): Response<ResponseBody>
 
     companion object {
         fun create(deviceCode: String, baseUrl: String): WorxApi {
@@ -98,6 +98,7 @@ class FieldsDeserializer : JsonDeserializer<Fields?>, JsonSerializer<Fields?> {
             type.contains(Type.Photo.type) -> gson.fromJson(json, ImageField::class.java)
             type.contains(Type.Signature.type) -> gson.fromJson(json, SignatureField::class.java)
             type.contains(Type.Time.type) -> gson.fromJson(json, TimeField::class.java)
+            type.contains(Type.Boolean.type) -> gson.fromJson(json, BooleanField::class.java)
             else -> throw IllegalArgumentException("Can't deserialize $entry ")
         }
     }
@@ -152,6 +153,7 @@ class ValueSerialize : JsonSerializer<Value>, JsonDeserializer<Value> {
                 gson.fromJson(json, SignatureValue::class.java)
             type.contains(Type.Time.type) ->
                 gson.fromJson(json, TimeValue::class.java)
+            type.contains(Type.Boolean.type) -> gson.fromJson(json, BooleanValue::class.java)
             else -> throw IllegalArgumentException("Can't deserialize $value")
         }
     }
