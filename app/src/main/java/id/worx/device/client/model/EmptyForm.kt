@@ -16,6 +16,7 @@ enum class Type(val type: String){
     Signature("signature"),
     Separator("separator"),
     Time("time"),
+    Boolean("boolean"),
     Integer("integer")
 }
 

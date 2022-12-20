@@ -98,6 +98,7 @@ class FieldsDeserializer : JsonDeserializer<Fields?>, JsonSerializer<Fields?> {
             type.contains(Type.Photo.type) -> gson.fromJson(json, ImageField::class.java)
             type.contains(Type.Signature.type) -> gson.fromJson(json, SignatureField::class.java)
             type.contains(Type.Time.type) -> gson.fromJson(json, TimeField::class.java)
+            type.contains(Type.Boolean.type) -> gson.fromJson(json, BooleanField::class.java)
             type.contains(Type.Integer.type) -> gson.fromJson(json, IntegerField::class.java)
             else -> throw IllegalArgumentException("Can't deserialize $entry ")
         }
@@ -155,6 +156,7 @@ class ValueSerialize : JsonSerializer<Value>, JsonDeserializer<Value> {
                 gson.fromJson(json, TimeValue::class.java)
             type.contains(Type.Integer.type) ->
                 gson.fromJson(json, IntegerValue::class.java)
+            type.contains(Type.Boolean.type) -> gson.fromJson(json, BooleanValue::class.java)
             else -> throw IllegalArgumentException("Can't deserialize $value")
         }
     }

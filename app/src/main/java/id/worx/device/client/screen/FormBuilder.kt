@@ -226,6 +226,9 @@ fun DetailForm(
                     Type.Time.type -> {
                         WorxTimeInput(index, viewModel, session)
                     }
+                    Type.Boolean.type -> {
+                        WorxBooleanField(index, viewModel, validation, session)
+                    }
                     Type.Integer.type -> {
                         WorxIntegerField(index, viewModel, session)
                     }
