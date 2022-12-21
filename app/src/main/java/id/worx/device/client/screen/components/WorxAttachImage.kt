@@ -15,12 +15,10 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
-import androidx.compose.material.Divider
 import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.toArgb
@@ -39,11 +37,9 @@ import id.worx.device.client.R
 import id.worx.device.client.data.database.Session
 import id.worx.device.client.model.fieldmodel.ImageField
 import id.worx.device.client.model.fieldmodel.ImageValue
-import id.worx.device.client.screen.main.SettingTheme
 import id.worx.device.client.theme.*
 import id.worx.device.client.viewmodel.DetailFormViewModel
 import id.worx.device.client.viewmodel.EventStatus
-import java.io.File
 
 @Composable
 fun WorxAttachImage(
@@ -54,118 +50,58 @@ fun WorxAttachImage(
     validation: Boolean = false,
     navigateToPhotoCamera: () -> Unit,
 ) {
-    val form = viewModel.uiState.collectAsState().value.detailForm!!.fields[indexForm] as ImageField
-    val title = form.label ?: ""
-    val theme = session.theme
+//    val theme = session.theme
+//    val uiState = viewModel.uiState.collectAsState().value
+//    val form = uiState.detailForm!!.fields[indexForm] as ImageField
+//    val fileValue = uiState.values[form.id] as ImageValue?
+//    var filePath by if (fileValue != null) {
+//        remember { mutableStateOf(fileValue.filePath.toList()) }
+//    } else {
+//        remember {
+//            mutableStateOf(listOf())
+//        }
+//    }
+//    val warningInfo =
+//        if (form.required == true && filePath.isEmpty()) "${form.label} is required" else ""
+//    var fileIds by if (fileValue != null) {
+//        remember { mutableStateOf(fileValue.value.toList()) }
+//    } else {
+//        remember {
+//            mutableStateOf(listOf())
+//        }
+//    }
+//    val formStatus = viewModel.uiState.collectAsState().value.status
+//    val context = LocalContext.current
 
-    val fileValue = viewModel.uiState.collectAsState().value.values[form.id] as ImageValue?
-    var filePath = fileValue?.filePath?.toList() ?: listOf()
-
-    val warningInfo =
-        if (form.required == true && filePath.isEmpty()) "${form.label} is required" else ""
-
-    var fileIds = fileValue?.value?.toList() ?: listOf()
-
-    val formStatus = viewModel.uiState.collectAsState().value.status
-
-    val context = LocalContext.current
-
-    val launcherGallery =
-        rememberLauncherForActivityResult(
-            contract = ActivityResultContracts.StartActivityForResult(),
-            onResult = {
-                if (it.resultCode == Activity.RESULT_OK &&
-                    it.data != null
-                ) {
-                    it.data!!.getParcelableArrayListExtra<Uri>(FishBun.INTENT_PATH)
-                        ?.forEach { uri ->
-                            val fPath = getRealPathFromURI(context, uri)
-                            ArrayList(filePath).apply { add(fPath) }
-                                .also { array -> filePath = array.toList() }
-                            viewModel.getPresignedUrl(ArrayList(filePath), indexForm, 2)
-                        }
-                }
-            })
-
-    WorxBaseField(
+    WorxBaseAttach(
         indexForm = indexForm,
         viewModel = viewModel,
-        validation = validation,
+        typeValue = 2,
         session = session,
-        warningInfo = warningInfo
-    ) {
-        if (filePath.isNotEmpty()) {
-            Column {
-                filePath.forEachIndexed { index, item ->
-                    val file = File(item)
-                    val fileSize = (file.length() / 1024).toInt()
-                    ImageDataView(filePath = item, fileSize = fileSize) {
-                        ArrayList(filePath).apply { remove(item) }.also { filePath = it.toList() }
-                        ArrayList(fileIds).apply { remove(index) }.also { fileIds = it.toList() }
-                        viewModel.setComponentData(
-                            indexForm, if (filePath.isEmpty()) {
-                                null
-                            } else {
-                                ImageValue(
-                                    value = ArrayList(fileIds),
-                                    filePath = ArrayList(filePath)
-                                )
-                            }
-                        )
-                    }
-                }
-            }
-        } else if (fileIds.isNotEmpty()) {
-            fileIds.forEach {
-                ImageDataView(
-                    filePath = "File $it",
-                    fileSize = 0,
-                    showCloseButton = !arrayListOf(
-                        EventStatus.Done,
-                        EventStatus.Submitted
-                    ).contains(formStatus)
-                ) {
-                    ArrayList(fileIds).apply { remove(it) }.also { ids -> fileIds = ids.toList() }
-                    viewModel.setComponentData(
-                        indexForm,
-                        if (fileIds.isEmpty()) {
-                            null
-                        } else {
-                            ImageValue(value = ArrayList(fileIds), filePath = ArrayList(filePath))
-                        }
-                    )
-                }
-            }
-        }
-        if (arrayListOf(
-                EventStatus.Loading,
-                EventStatus.Filling,
-                EventStatus.Saved,
-            ).contains(formStatus)
+        validation = validation
+    ) { fileIds, theme, forms, launcher ->
+        val form = forms as ImageField
+        Row(
+            modifier = Modifier.padding(horizontal = 16.dp),
+            horizontalArrangement = Arrangement.spacedBy(12.dp)
         ) {
-            Row(
-                modifier = Modifier.padding(horizontal = 16.dp),
-                horizontalArrangement = Arrangement.spacedBy(12.dp)
-            ) {
-                TakeImageButton(
-                    (form.maxFiles ?: 10) > fileIds.size,
-                    navigateToPhotoCamera,
-                    setIndexData,
-                    theme
-                )
-                GalleryImageButton(
-                    (form.maxFiles ?: 10) > fileIds.size,
-                    launcherGallery = launcherGallery,
-                    theme
-                )
-            }
+            TakeImageButton(
+                (form.maxFiles ?: 10) > fileIds.size,
+                navigateToPhotoCamera,
+                setIndexData,
+                theme
+            )
+            GalleryImageButton(
+                (form.maxFiles ?: 10) > fileIds.size,
+                launcherGallery = launcher,
+                theme
+            )
         }
     }
-
 }
 
 @Composable
-private fun ImageDataView(
+fun ImageDataView(
     filePath: String,
     fileSize: Int,
     showCloseButton: Boolean = true,
