@@ -84,7 +84,26 @@ fun WorxCheckBox(
                 ) {
                     Checkbox(
                         checked = value.value[index],
-                        onCheckedChange = {},
+                        onCheckedChange = {
+                            if (!arrayListOf(
+                                    EventStatus.Done,
+                                    EventStatus.Submitted
+                                ).contains(formStatus)
+                            ) {
+                                value.value = value.value.mapIndexed { indexlist, b ->
+                                    if (index == indexlist) {
+                                        it
+                                    } else {
+                                        b
+                                    }
+                                }
+                                viewModel.setComponentData(
+                                    indexForm,
+                                    CheckBoxValue(value = ArrayList(value.value))
+                                )
+                                totalCheckOptions.value = value.value.count { it }
+                            }
+                        },
                         colors = CheckboxDefaults.colors(
                             checkedColor = MaterialTheme.colors.onBackground,
                             checkmarkColor = MaterialTheme.colors.secondary,
