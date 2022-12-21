@@ -39,7 +39,12 @@ import id.worx.device.client.viewmodel.EventStatus
 import java.io.File
 
 @Composable
-fun WorxAttachFile(indexForm: Int, viewModel: DetailFormViewModel, session: Session, validation : Boolean = false) {
+fun WorxAttachFile(
+    indexForm: Int,
+    viewModel: DetailFormViewModel,
+    session: Session,
+    validation: Boolean = false
+) {
     val theme = session.theme
     val uiState = viewModel.uiState.collectAsState().value
     val form = uiState.detailForm!!.fields[indexForm] as FileField
@@ -51,7 +56,8 @@ fun WorxAttachFile(indexForm: Int, viewModel: DetailFormViewModel, session: Sess
             mutableStateOf(listOf())
         }
     }
-    val warningInfo = if (form.required == true && filePath.isEmpty()) "${form.label} is required" else ""
+    val warningInfo =
+        if (form.required == true && filePath.isEmpty()) "${form.label} is required" else ""
 
     var fileIds by if (fileValue != null) {
         remember { mutableStateOf(fileValue.value.toList()) }
@@ -79,20 +85,13 @@ fun WorxAttachFile(indexForm: Int, viewModel: DetailFormViewModel, session: Sess
             })
 
 
-    Column(modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp)) {
-        Text(
-            form.label ?: "",
-            style = Typography.body2.copy(MaterialTheme.colors.onSecondary),
-            modifier = Modifier.padding(bottom = 8.dp)
-        )
-        if (!form.description.isNullOrBlank()) {
-            Text(
-                text = form.description!!,
-                color = if (theme == SettingTheme.Dark) textFormDescriptionDark else textFormDescription,
-                style = MaterialTheme.typography.body1.copy(textFormDescription),
-                modifier = Modifier.padding(bottom = 8.dp)
-            )
-        }
+    WorxBaseField(
+        indexForm = indexForm,
+        viewModel = viewModel,
+        validation = validation,
+        session = session,
+        warningInfo = warningInfo
+    ) {
         if (filePath.isNotEmpty()) {
             Column {
                 filePath.forEachIndexed { index, item ->
@@ -115,50 +114,52 @@ fun WorxAttachFile(indexForm: Int, viewModel: DetailFormViewModel, session: Sess
                     }
                 }
             }
-        } else if (fileIds.isNotEmpty()){
+        } else if (fileIds.isNotEmpty()) {
             Column {
                 fileIds.forEach {
                     FileDataView(
                         filePath = "File $it",
                         fileSize = 0,
-                        showCloseButton = !arrayListOf(EventStatus.Done, EventStatus.Submitted).contains(formStatus)
+                        showCloseButton = !arrayListOf(
+                            EventStatus.Done,
+                            EventStatus.Submitted
+                        ).contains(formStatus)
                     ) {
-                        ArrayList(fileIds).apply { remove(it) }.also { ids -> fileIds = ids.toList() }
+                        ArrayList(fileIds).apply { remove(it) }
+                            .also { ids -> fileIds = ids.toList() }
                         viewModel.setComponentData(
                             indexForm,
                             if (fileIds.isEmpty()) {
                                 null
                             } else {
-                                FileValue(value = ArrayList(fileIds), filePath = ArrayList(filePath))
+                                FileValue(
+                                    value = ArrayList(fileIds),
+                                    filePath = ArrayList(filePath)
+                                )
                             }
                         )
                     }
                 }
             }
         }
-        if (arrayListOf(EventStatus.Loading, EventStatus.Filling, EventStatus.Saved).contains(formStatus)) {
-            AttachFileButton((form.maxFiles ?: 10) > fileIds.size, launcherFile, theme = theme)
+        if (arrayListOf(EventStatus.Loading, EventStatus.Filling, EventStatus.Saved).contains(
+                formStatus
+            )
+        ) {
+            AttachFileButton(
+                Modifier.padding(horizontal = 16.dp),
+                (form.maxFiles ?: 10) > fileIds.size,
+                launcherFile,
+                theme = theme
+            )
         }
-        if (warningInfo.isNotBlank()) {
-            if (validation){
-                Text(
-                    text = warningInfo,
-                    modifier = Modifier
-                        .padding(top = 4.dp),
-                    color = PrimaryMain
-                )
-            }
-            form.isValid = false
-        } else {
-            form.isValid = true
-        }
-        Divider(color = GrayDivider, modifier = Modifier.padding(vertical = 16.dp))
     }
 }
 
 @Composable
 private fun AttachFileButton(
-    isMaxFilesNotAchieved:Boolean,
+    modifier: Modifier,
+    isMaxFilesNotAchieved: Boolean,
     launcherFile: ManagedActivityResultLauncher<Intent, ActivityResult>,
     theme: String?
 ) {
@@ -173,19 +174,27 @@ private fun AttachFileButton(
         if (isGranted) {
             launcherFile.launch(intent)
         } else {
-            Toast.makeText(context, context.getString(R.string.permission_rejected), Toast.LENGTH_LONG).show()
+            Toast.makeText(
+                context,
+                context.getString(R.string.permission_rejected),
+                Toast.LENGTH_LONG
+            ).show()
         }
     }
 
     ActionRedButton(
-        modifier = Modifier,
+        modifier = modifier,
         iconRes = R.drawable.ic_baseline_attach_file_24,
         title = stringResource(id = R.string.add_file),
         actionClick = {
-            if (!isMaxFilesNotAchieved){
-                Toast.makeText(context, context.getString(R.string.max_files_message), Toast.LENGTH_LONG).show()
+            if (!isMaxFilesNotAchieved) {
+                Toast.makeText(
+                    context,
+                    context.getString(R.string.max_files_message),
+                    Toast.LENGTH_LONG
+                ).show()
             } else {
-                if (android.os.Build.VERSION.SDK_INT > 32){
+                if (android.os.Build.VERSION.SDK_INT > 32) {
                     launcherFile.launch(intent)
                 } else {
                     when (PackageManager.PERMISSION_GRANTED) {
@@ -227,8 +236,14 @@ fun FileDataView(
                 .padding(horizontal = 12.dp)
                 .weight(1f)
         ) {
-            Text(text = filePath.substringAfterLast("/"), style = Typography.body2.copy(MaterialTheme.colors.onSecondary))
-            if(fileSize > 0) Text(text = "$fileSize kb", style = Typography.body2.copy(MaterialTheme.colors.onSecondary))
+            Text(
+                text = filePath.substringAfterLast("/"),
+                style = Typography.body2.copy(MaterialTheme.colors.onSecondary)
+            )
+            if (fileSize > 0) Text(
+                text = "$fileSize kb",
+                style = Typography.body2.copy(MaterialTheme.colors.onSecondary)
+            )
         }
         if (showCloseButton) {
             Icon(
