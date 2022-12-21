@@ -2,11 +2,11 @@ package id.worx.device.client.model
 
 import com.google.gson.annotations.SerializedName
 
-data class IntegerField(
-    val data: String
+data class IntegerField (
+    @Transient var time : String? = null,
 ) : Fields()
 
-data class IntegerFieldValue(
-    @SerializedName("type") override var type: String? = Type.IntegerField.type,
+data class IntegerValue(
+    @SerializedName("type") override var type: String? = Type.Integer.type,
     @SerializedName("value") var value: Int? = null
 ) : Value

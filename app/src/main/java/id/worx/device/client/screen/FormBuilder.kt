@@ -24,8 +24,13 @@ import androidx.constraintlayout.compose.Dimension
 import androidx.hilt.navigation.compose.hiltViewModel
 import id.worx.device.client.R
 import id.worx.device.client.data.database.Session
-import id.worx.device.client.model.*
+import id.worx.device.client.model.EmptyForm
+import id.worx.device.client.model.Fields
+import id.worx.device.client.model.SubmitForm
+import id.worx.device.client.model.Type
+import id.worx.device.client.model.fieldmodel.TextFieldValue
 import id.worx.device.client.screen.components.*
+import id.worx.device.client.theme.GrayDivider
 import id.worx.device.client.theme.Typography
 import id.worx.device.client.viewmodel.CameraViewModel
 import id.worx.device.client.viewmodel.DetailFormViewModel
@@ -230,11 +235,23 @@ fun DetailForm(
                     Type.BarcodeField.type -> {
                         WorxBarcodeField(index, viewModel, scannerViewModel, session,validation)
                     }
+                    Type.Time.type -> {
+                        WorxTimeInput(index, viewModel, session)
+                    }
+                    Type.Boolean.type -> {
+                        WorxBooleanField(index, viewModel, validation, session)
+                    }
+                    Type.Integer.type -> {
+                        WorxIntegerField(index, viewModel, session)
+                    }
                     else -> {
-                        Text(
-                            text = "Unknown component",
-                            style = Typography.body1.copy(color = Color.Black)
-                        )
+                        Column(modifier = Modifier.padding(horizontal = 16.dp, vertical = 6.dp)) {
+                            Text(
+                                text = "Unknown component ${item.type}",
+                                style = Typography.body1.copy(color = Color.Black)
+                            )
+                            Divider(color = GrayDivider, modifier = Modifier.padding(vertical = 16.dp))
+                        }
                     }
                 }
             }
@@ -268,10 +285,8 @@ fun DialogSubmitForm(
     saveDraftForm: () -> Unit
 ) {
     val progress = viewModel.formProgress.value
-    val separatorCount =
-        viewModel.uiState.collectAsState().value.detailForm!!.fields.count { it.type == Type.Separator.type }
-    val fieldsNo =
-        viewModel.uiState.collectAsState().value.detailForm!!.fields.size - separatorCount
+    val separatorCount = viewModel.uiState.collectAsState().value.detailForm!!.fields.count { it.type == Type.Separator.type }
+    val fieldsNo = viewModel.uiState.collectAsState().value.detailForm!!.fields.size - separatorCount
     val theme = session.theme
 
     ModalBottomSheetLayout(
@@ -318,8 +333,7 @@ fun DialogSubmitForm(
                         tint = MaterialTheme.colors.onBackground
                     )
                 }
-                val fieldFilled =
-                    viewModel.uiState.collectAsState().value.values.count { it.value != null }
+                val fieldFilled = viewModel.uiState.collectAsState().value.values.count { it.value != null }
                 Text(
                     text = "$fieldFilled of $fieldsNo Fields Answered",
                     style = Typography.body2.copy(MaterialTheme.colors.onSecondary.copy(0.54f))

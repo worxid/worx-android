@@ -11,7 +11,6 @@ import android.os.Looper
 import android.util.Log
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.navigation.findNavController
@@ -23,7 +22,6 @@ import com.google.android.play.core.install.model.AppUpdateType
 import com.google.android.play.core.install.model.UpdateAvailability
 import dagger.hilt.android.AndroidEntryPoint
 import id.worx.device.client.data.database.Session
-import id.worx.device.client.viewmodel.HomeViewModelImpl
 import java.io.IOException
 import javax.inject.Inject
 
@@ -42,8 +40,6 @@ class MainActivity : AppCompatActivity() {
         Manifest.permission.ACCESS_FINE_LOCATION,
         Manifest.permission.ACCESS_COARSE_LOCATION,
     )
-
-    private val viewModel by viewModels<HomeViewModelImpl>()
 
     override fun onResume() {
         super.onResume()

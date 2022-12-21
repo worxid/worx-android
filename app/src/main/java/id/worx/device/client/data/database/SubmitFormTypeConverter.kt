@@ -4,9 +4,38 @@ import androidx.room.TypeConverter
 import com.google.gson.Gson
 import com.google.gson.JsonParser
 import id.worx.device.client.model.*
+import id.worx.device.client.model.fieldmodel.*
 
 
 class SubmitFormTypeConverter {
+    @TypeConverter
+    fun sourceToJson(value: Source?): String = Gson().toJson(value)
+
+    @TypeConverter
+    fun jsonToSource(value: String): Source = Gson().fromJson(value, Source::class.java)
+
+    @TypeConverter
+    fun fromAttachments(value: ArrayList<Attachment>?): String = Gson().toJson(value)
+
+    @TypeConverter
+    fun toAttachments(value: String?) : ArrayList<Attachment>? {
+        var returnAttachment : ArrayList<Attachment>? = null
+        if (!value.equals("null")){
+            returnAttachment = arrayListOf()
+            val array = JsonParser.parseString(value).asJsonArray
+            array.forEach { jsonElement ->
+                val jsonObject = jsonElement.asJsonObject
+                val name = jsonObject.get("name").toString()
+                val path = jsonObject.get("path").toString()
+                val fileId = jsonObject.get("file_id").toString().toInt()
+                val mediaId = jsonObject.get("media_id").toString()
+                val attachment = Attachment(name, path, fileId,mediaId)
+                returnAttachment.add(attachment)
+            }
+        }
+        return returnAttachment
+    }
+
     @TypeConverter
     fun fieldToJson(value: ArrayList<Fields>?): String = Gson().toJson(value)
 
@@ -18,20 +47,97 @@ class SubmitFormTypeConverter {
         array.forEach { jsonElement ->
             val entry = jsonElement.asJsonObject
             val type = entry.get("type").toString()
-            when  {
-                type.contains(Type.TextField.type) -> returnArray.add(gson.fromJson(jsonElement, TextField::class.java))
-                type.contains(Type.Separator.type) -> returnArray.add(gson.fromJson(jsonElement, Separator::class.java))
-                type.contains(Type.Checkbox.type) -> returnArray.add(gson.fromJson(jsonElement, CheckBoxField::class.java))
-            type.contains(Type.RadioGroup.type) -> returnArray.add(gson.fromJson(jsonElement, RadioButtonField::class.java))
-            type.contains(Type.Rating.type) -> returnArray.add(gson.fromJson(jsonElement, RatingField::class.java))
-            type.contains(Type.Date.type) -> returnArray.add(gson.fromJson(jsonElement, DateField::class.java))
-            type.contains(Type.Dropdown.type) -> returnArray.add(gson.fromJson(jsonElement, DropDownField::class.java))
-            type.contains(Type.File.type) -> returnArray.add(gson.fromJson(jsonElement, FileField::class.java))
-            type.contains(Type.Photo.type) -> returnArray.add(gson.fromJson(jsonElement, ImageField::class.java))
-            type.contains(Type.Signature.type) -> returnArray.add(gson.fromJson(jsonElement, SignatureField::class.java))
-            type.contains(Type.TimeField.type) -> returnArray.add(gson.fromJson(jsonElement, TimeField::class.java))
-            type.contains(Type.IntegerField.type) -> returnArray.add(gson.fromJson(jsonElement, IntegerField::class.java))
-                type.contains(Type.BarcodeField.type) -> returnArray.add(gson.fromJson(jsonElement, BarcodeField::class.java))
+            when {
+                type.contains(Type.TextField.type) -> returnArray.add(
+                    gson.fromJson(
+                        jsonElement,
+                        TextField::class.java
+                    )
+                )
+                type.contains(Type.Separator.type) -> returnArray.add(
+                    gson.fromJson(
+                        jsonElement,
+                        Separator::class.java
+                    )
+                )
+                type.contains(Type.Checkbox.type) -> returnArray.add(
+                    gson.fromJson(
+                        jsonElement,
+                        CheckBoxField::class.java
+                    )
+                )
+                type.contains(Type.RadioGroup.type) -> returnArray.add(
+                    gson.fromJson(
+                        jsonElement,
+                        RadioButtonField::class.java
+                    )
+                )
+                type.contains(Type.Rating.type) -> returnArray.add(
+                    gson.fromJson(
+                        jsonElement,
+                        RatingField::class.java
+                    )
+                )
+                type.contains(Type.Date.type) -> returnArray.add(
+                    gson.fromJson(
+                        jsonElement,
+                        DateField::class.java
+                    )
+                )
+                type.contains(Type.Dropdown.type) -> returnArray.add(
+                    gson.fromJson(
+                        jsonElement,
+                        DropDownField::class.java
+                    )
+                )
+                type.contains(Type.File.type) -> returnArray.add(
+                    gson.fromJson(
+                        jsonElement,
+                        FileField::class.java
+                    )
+                )
+                type.contains(Type.Photo.type) -> returnArray.add(
+                    gson.fromJson(
+                        jsonElement,
+                        ImageField::class.java
+                    )
+                )
+                type.contains(Type.Signature.type) -> returnArray.add(
+                    gson.fromJson(
+                        jsonElement,
+                        SignatureField::class.java
+                    )
+                )
+                type.contains(Type.Time.type) -> returnArray.add(
+                    gson.fromJson(
+                        jsonElement,
+                        TimeField::class.java
+                    )
+                )
+                type.contains(Type.Boolean.type) -> returnArray.add(
+                    gson.fromJson(
+                        jsonElement,
+                        BooleanField::class.java
+                    )
+                )
+                type.contains(Type.Integer.type) -> returnArray.add(
+                    gson.fromJson(
+                        jsonElement,
+                        IntegerField::class.java
+                    )
+                )
+                type.contains(Type.BarcodeField.type) -> returnArray.add(
+                    gson.fromJson(
+                        jsonElement,
+                        BarcodeField::class.java
+                    )
+                )
+                type.contains(Type.Sketch.type) -> returnArray.add(
+                    gson.fromJson(
+                        jsonElement,
+                        SketchField::class.java
+                    )
+                )
                 else -> throw IllegalArgumentException("Can't deserialize $entry")
             }
         }
@@ -70,12 +176,16 @@ class SubmitFormTypeConverter {
                     gson.fromJson(map.value, ImageValue::class.java)
                 type.contains(Type.Signature.type) -> returnMap[map.key] =
                     gson.fromJson(map.value, SignatureValue::class.java)
-                type.contains(Type.TimeField.type) -> returnMap[map.key] =
-                    gson.fromJson(map.value, TimeFieldValue::class.java)
-                type.contains(Type.IntegerField.type) -> returnMap[map.key] =
-                    gson.fromJson(map.value, IntegerFieldValue::class.java)
+                type.contains(Type.Time.type) -> returnMap[map.key] =
+                    gson.fromJson(map.value, TimeValue::class.java)
+                type.contains(Type.Integer.type) -> returnMap[map.key] =
+                    gson.fromJson(map.value, IntegerValue::class.java)
+                type.contains(Type.Boolean.type) -> returnMap[map.key] =
+                    gson.fromJson(map.value, BooleanValue::class.java)
                 type.contains(Type.BarcodeField.type) -> returnMap[map.key] =
                     gson.fromJson(map.value, BarcodeFieldValue::class.java)
+                type.contains(Type.Sketch.type) -> returnMap[map.key] =
+                    gson.fromJson(map.value, SketchValue::class.java)
                 else -> throw IllegalArgumentException("Can't deserialize ${map.key} ${map.value}")
                  }
         }

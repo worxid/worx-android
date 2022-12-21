@@ -70,6 +70,7 @@
     <string name="legal">Legal</string>
     <string name="open_source_licenses">Open source licenses</string>
     <string name="yes">Yes</string>
+    <string name="no">No</string>
     <string name="cancel">Cancel</string>
     <string name="leave_organization">Are you sure you want to leave the organization?</string>
     <string name="leave_form">Leave This Form?</string>
@@ -87,6 +88,7 @@
     <string name="only_1d">only 1d type can be scan</string>
     <string name="point_barcode">Point the barcode in the scan area</string>
     <string name="check_network">Please check your network connection</string>
+    <string name="number_picker_formatter">%02d</string>
 
 <!--    list error/notification message-->
     <string name="sync_form_message">Sync Empty Form DB with server is done</string>

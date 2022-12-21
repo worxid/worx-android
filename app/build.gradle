@@ -26,8 +26,8 @@ android {
         applicationId "id.worx.device.client"
         minSdk 24
         targetSdk 33
-        versionCode 16
-        versionName "1.6"
+        versionCode 19
+        versionName "1.9"
 
         testInstrumentationRunner  "id.worx.device.client.CustomTestRunner"
     }
@@ -163,4 +163,6 @@ dependencies {
 
     //barcode scanner
     implementation 'com.google.mlkit:barcode-scanning:17.0.3'
+
+    implementation 'io.github.ShawnLin013:number-picker:2.4.13'
 }

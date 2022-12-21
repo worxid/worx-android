@@ -8,7 +8,7 @@ import androidx.room.TypeConverters
 import id.worx.device.client.data.dao.FormDAO
 import id.worx.device.client.model.EmptyForm
 
-@Database(entities = [EmptyForm::class], version = 1, exportSchema = true)
+@Database(entities = [EmptyForm::class], version = 2, exportSchema = true)
 @TypeConverters(SubmitFormTypeConverter::class)
 abstract class FormDB : RoomDatabase() {
 
