@@ -50,29 +50,6 @@ fun WorxAttachImage(
     validation: Boolean = false,
     navigateToPhotoCamera: () -> Unit,
 ) {
-//    val theme = session.theme
-//    val uiState = viewModel.uiState.collectAsState().value
-//    val form = uiState.detailForm!!.fields[indexForm] as ImageField
-//    val fileValue = uiState.values[form.id] as ImageValue?
-//    var filePath by if (fileValue != null) {
-//        remember { mutableStateOf(fileValue.filePath.toList()) }
-//    } else {
-//        remember {
-//            mutableStateOf(listOf())
-//        }
-//    }
-//    val warningInfo =
-//        if (form.required == true && filePath.isEmpty()) "${form.label} is required" else ""
-//    var fileIds by if (fileValue != null) {
-//        remember { mutableStateOf(fileValue.value.toList()) }
-//    } else {
-//        remember {
-//            mutableStateOf(listOf())
-//        }
-//    }
-//    val formStatus = viewModel.uiState.collectAsState().value.status
-//    val context = LocalContext.current
-
     WorxBaseAttach(
         indexForm = indexForm,
         viewModel = viewModel,

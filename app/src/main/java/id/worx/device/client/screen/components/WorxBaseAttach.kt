@@ -90,18 +90,6 @@ fun WorxBaseAttach(
             }
         )
 
-//    val launcher = rememberLauncherForActivityResult(
-//        contract = ActivityResultContracts.StartActivityForResult(),
-//        onResult = {
-//            if (it.resultCode == Activity.RESULT_OK && it.data != null) {
-//                it.data?.data?.let { uri ->
-//                    val path = Util.getRealPathFromURI(context, uri)
-//                    filePath = ArrayList(filePath).apply { add(path) }.toList()
-//                    viewModel.getPresignedUrl(ArrayList(filePath), indexForm, 1)
-//                }
-//            }
-//        })
-
     WorxBaseField(
         indexForm = indexForm,
         viewModel = viewModel,
