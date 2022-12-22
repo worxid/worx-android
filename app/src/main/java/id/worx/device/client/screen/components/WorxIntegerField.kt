@@ -18,7 +18,7 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import id.worx.device.client.data.database.Session
-import id.worx.device.client.model.fieldmodel.TextFieldValue
+import id.worx.device.client.model.IntegerValue
 import id.worx.device.client.screen.main.SettingTheme
 import id.worx.device.client.theme.Typography
 import id.worx.device.client.theme.textUnfocusColorDark
@@ -35,9 +35,9 @@ fun WorxIntegerField(
 ) {
     val form = viewModel.uiState.collectAsState().value.detailForm!!.fields.getOrNull(index)
     val formStatus = viewModel.uiState.collectAsState().value.status
-    val integerValue = viewModel.uiState.collectAsState().value.values[form?.id] as TextFieldValue?
+    val integerValue = viewModel.uiState.collectAsState().value.values[form?.id] as IntegerValue?
     val value = if (integerValue != null) {
-        remember { mutableStateOf(integerValue.values) }
+        remember { mutableStateOf<String?>(integerValue.value.toString()) }
     } else {
         remember { mutableStateOf<String?>(null) }
     }
@@ -68,7 +68,11 @@ fun WorxIntegerField(
             value = value.value ?: "",
             onValueChange = {
                 value.value = it
-                viewModel.setComponentData(index, integerValue)
+                if (value.value?.toInt() != null) {
+                    viewModel.setComponentData(index, IntegerValue(value = value.value!!.toInt()))
+                } else {
+                    viewModel.setComponentData(index, null)
+                }
             },
             label = {
                 Text(
