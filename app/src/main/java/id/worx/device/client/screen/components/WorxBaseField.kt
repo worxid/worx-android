@@ -53,6 +53,7 @@ fun WorxBaseField(
                 Text(
                     text = warningInfo,
                     modifier = Modifier
+                        .padding(horizontal = 16.dp)
                         .padding(bottom = 8.dp),
                     color = PrimaryMain
                 )

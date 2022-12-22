@@ -1,5 +1,6 @@
 package id.worx.device.client.screen.components
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
@@ -22,7 +23,12 @@ import id.worx.device.client.viewmodel.DetailFormViewModel
 import id.worx.device.client.viewmodel.EventStatus
 
 @Composable
-fun WorxCheckBox(indexForm: Int, viewModel: DetailFormViewModel, validation: Boolean = false, session: Session) {
+fun WorxCheckBox(
+    indexForm: Int,
+    viewModel: DetailFormViewModel,
+    validation: Boolean = false,
+    session: Session
+) {
     val form =
         viewModel.uiState.collectAsState().value.detailForm!!.fields[indexForm] as CheckBoxField
     val formStatus = viewModel.uiState.collectAsState().value.status
@@ -41,19 +47,41 @@ fun WorxCheckBox(indexForm: Int, viewModel: DetailFormViewModel, validation: Boo
     val totalCheckOptions = remember {
         mutableStateOf(value.value.count { it })
     }
-    val warningInfo = if (form.required == true && totalCheckOptions.value ==0)
+    val warningInfo = if (form.required == true && totalCheckOptions.value == 0)
         "$title is required"
-        else if (minChecked > totalCheckOptions.value) "Select minimum $minChecked options" else ""
+    else if (minChecked > totalCheckOptions.value) "Select minimum $minChecked options" else ""
 
     WorxBaseField(
         indexForm = indexForm,
         viewModel = viewModel,
         validation = validation,
         session = session,
-        warningInfo = warningInfo) {
+        warningInfo = warningInfo
+    ) {
         Column {
             optionTitles.forEachIndexed() { index, item ->
-                Row(verticalAlignment = Alignment.CenterVertically) {
+                Row(verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier.clickable {
+                        if (!arrayListOf(
+                                EventStatus.Done,
+                                EventStatus.Submitted
+                            ).contains(formStatus)
+                        ) {
+                            value.value = value.value.mapIndexed { indexlist, b ->
+                                if (index == indexlist) {
+                                    !b
+                                } else {
+                                    b
+                                }
+                            }
+                            viewModel.setComponentData(
+                                indexForm,
+                                CheckBoxValue(value = ArrayList(value.value))
+                            )
+                            totalCheckOptions.value = value.value.count { it }
+                        }
+                    }
+                ) {
                     Checkbox(
                         checked = value.value[index],
                         onCheckedChange = {
