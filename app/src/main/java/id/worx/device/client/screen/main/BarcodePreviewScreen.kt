@@ -24,7 +24,6 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
-import androidx.constraintlayout.compose.Dimension
 import coil.compose.AsyncImage
 import com.google.mlkit.vision.barcode.BarcodeScannerOptions
 import com.google.mlkit.vision.barcode.BarcodeScanning
@@ -33,17 +32,15 @@ import com.google.mlkit.vision.common.InputImage
 import com.sangcomz.fishbun.FishBun
 import com.sangcomz.fishbun.util.getRealPathFromURI
 import id.worx.device.client.R
-import id.worx.device.client.model.BarcodeFieldValue
+import id.worx.device.client.model.fieldmodel.BarcodeFieldValue
 import id.worx.device.client.screen.components.BarcodeType
 import id.worx.device.client.screen.components.getActivity
 import id.worx.device.client.theme.Typography
 import id.worx.device.client.theme.fontRoboto
-import id.worx.device.client.util.BarcodeAnalyzer
 import id.worx.device.client.util.navigateToGallery
 import id.worx.device.client.viewmodel.DetailFormViewModel
 import id.worx.device.client.viewmodel.ScannerViewModel
 import java.io.File
-import kotlin.math.log
 
 @Composable
 fun BarcodePreviewScreen(

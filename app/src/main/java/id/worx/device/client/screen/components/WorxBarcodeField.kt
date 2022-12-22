@@ -15,8 +15,8 @@ import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import id.worx.device.client.R
 import id.worx.device.client.data.database.Session
-import id.worx.device.client.model.BarcodeField
-import id.worx.device.client.model.BarcodeFieldValue
+import id.worx.device.client.model.fieldmodel.BarcodeField
+import id.worx.device.client.model.fieldmodel.BarcodeFieldValue
 import id.worx.device.client.screen.main.SettingTheme
 import id.worx.device.client.theme.*
 import id.worx.device.client.viewmodel.DetailFormViewModel

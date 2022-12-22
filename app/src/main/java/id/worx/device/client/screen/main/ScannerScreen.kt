@@ -2,11 +2,8 @@ package id.worx.device.client.screen.main
 
 import android.Manifest
 import android.app.Activity
-import android.app.StatusBarManager
 import android.content.Context
-import android.icu.text.ListFormatter.Width
 import android.net.Uri
-import android.os.Build
 import android.util.Log
 import android.view.ViewGroup
 import android.widget.Toast
@@ -19,21 +16,17 @@ import androidx.camera.core.Preview
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.camera.view.PreviewView
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.painterResource
@@ -42,7 +35,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.core.content.ContextCompat
-import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.LifecycleOwner
@@ -50,26 +42,17 @@ import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.isGranted
 import com.google.accompanist.permissions.rememberPermissionState
 import com.google.accompanist.permissions.shouldShowRationale
-import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.sangcomz.fishbun.FishBun
-import com.sangcomz.fishbun.adapter.image.impl.CoilAdapter
 import com.sangcomz.fishbun.util.getRealPathFromURI
 import id.worx.device.client.R
-import id.worx.device.client.model.BarcodeField
-import id.worx.device.client.model.BarcodeFieldValue
-import id.worx.device.client.model.ImageField
-import id.worx.device.client.model.ImageValue
-import id.worx.device.client.screen.components.WorxThemeStatusBar
+import id.worx.device.client.model.fieldmodel.BarcodeFieldValue
 import id.worx.device.client.screen.components.getActivity
-import id.worx.device.client.theme.DarkBackgroundStatusBar
-import id.worx.device.client.theme.PrimaryMain
 import id.worx.device.client.theme.Typography
 import id.worx.device.client.theme.fontRoboto
 import id.worx.device.client.util.BarcodeAnalyzer
 import id.worx.device.client.util.navigateToGallery
 import id.worx.device.client.viewmodel.DetailFormViewModel
 import id.worx.device.client.viewmodel.ScannerViewModel
-import kotlinx.coroutines.flow.update
 import java.util.concurrent.Executors
 
 @OptIn(ExperimentalPermissionsApi::class)
