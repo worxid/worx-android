@@ -45,11 +45,6 @@ fun WorxBarcodeField(
     val formStatus = viewModel.uiState.collectAsState().value.status
     val manuallyOverride = form.manuallyOverride
     var barcodeValue by remember { mutableStateOf(barcodeFieldValue?.value ?: "") }
-    var value by remember {
-        mutableStateOf(
-            BarcodeFieldValue(barcodeValue)
-        )
-    }
     if (barcodeFieldValue?.value != null) {
         viewModel.setComponentData(indexForm, BarcodeFieldValue(value = barcodeFieldValue.value))
     }
@@ -103,7 +98,7 @@ fun WorxBarcodeField(
                                 modifier = Modifier
                                     .clickable {
                                         viewModel.setComponentData(indexForm, null)
-                                        value = BarcodeFieldValue("")
+                                        barcodeValue = ""
                                     },
                                 tint = MaterialTheme.colors.onSecondary,
                             )
