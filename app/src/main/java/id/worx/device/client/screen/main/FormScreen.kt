@@ -17,9 +17,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontFamily
@@ -202,11 +202,13 @@ fun ListItemValidForm(
                 fontFamily = FontFamily.Monospace,
                 color = MaterialTheme.colors.onSecondary,
                 overflow = TextOverflow.Ellipsis,
+                maxLines = 1,
                 fontWeight = FontWeight.W400
             )
             Text(
                 text = item.description ?: "",
                 overflow = TextOverflow.Ellipsis,
+                maxLines = 1,
                 style = Typography.body1.copy(color = MaterialTheme.colors.onSecondary.copy(alpha = 0.54f))
             )
         }
@@ -251,6 +253,7 @@ fun DraftItemForm(
                 Text(
                     text = "${item.label} - ",
                     overflow = TextOverflow.Ellipsis,
+                    maxLines = 1,
                     style = Typography.button.copy(MaterialTheme.colors.onSecondary),
                 )
                 Text(
@@ -261,6 +264,7 @@ fun DraftItemForm(
             Text(
                 text = "Saved on ${item.lastUpdated}",
                 overflow = TextOverflow.Ellipsis,
+                maxLines = 1,
                 style = Typography.body1.copy(color = MaterialTheme.colors.onSecondary.copy(alpha = 0.54f))
             )
         }
@@ -323,11 +327,13 @@ fun SubmissionItemForm(
             Text(
                 text = item.label ?: "",
                 overflow = TextOverflow.Ellipsis,
+                maxLines = 1,
                 style = Typography.button.copy(MaterialTheme.colors.onSecondary)
             )
             Text(
                 text = "Submitted on ${item.lastUpdated}",
                 overflow = TextOverflow.Ellipsis,
+                maxLines = 1,
                 style = Typography.body1.copy(color = MaterialTheme.colors.onSecondary.copy(alpha = 0.54f))
             )
         }
