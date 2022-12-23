@@ -44,16 +44,16 @@ fun WorxBarcodeField(
         viewModel.uiState.collectAsState().value.values[form.id] as BarcodeFieldValue?
     val formStatus = viewModel.uiState.collectAsState().value.status
     val manuallyOverride = form.manuallyOverride
-    val barcodeValue = barcodeFieldValue?.value ?: ""
+    var barcodeValue by remember { mutableStateOf(barcodeFieldValue?.value ?: "") }
     var value by remember {
         mutableStateOf(
-            TextFieldValue(barcodeValue)
+            BarcodeFieldValue(barcodeValue)
         )
     }
     if (barcodeFieldValue?.value != null) {
         viewModel.setComponentData(indexForm, BarcodeFieldValue(value = barcodeFieldValue.value))
     }
-    val warningInfo = if (form.required == true && value.text.isEmpty()) {
+    val warningInfo = if (form.required == true && barcodeValue.isBlank()) {
         "${form.label} is required"
     } else if (form.barcodeType == BarcodeType.All.type) {
         "Limited to 1D barcodes only"
@@ -61,103 +61,91 @@ fun WorxBarcodeField(
         ""
     }
 
-    Column(
-        modifier = Modifier
-            .padding(horizontal = 16.dp)
-            .fillMaxWidth()
+    WorxBaseField(
+        indexForm = indexForm,
+        viewModel = viewModel,
+        validation = validation,
+        session = session,
+        warningInfo = warningInfo
     ) {
-        Text(
-            form.label ?: "",
-            style = Typography.body2.copy(MaterialTheme.colors.onSecondary),
-            modifier = Modifier.padding(bottom = 8.dp)
-        )
-        if (!form.description.isNullOrBlank()) {
-            Text(
-                text = form.description!!,
-                color = if (theme == SettingTheme.Dark) textFormDescriptionDark else textFormDescription,
-                style = MaterialTheme.typography.body1.copy(textFormDescription),
-                modifier = Modifier.padding(bottom = 8.dp)
-            )
-        }
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier.fillMaxWidth()
+        Column(
+            modifier = Modifier
+                .padding(horizontal = 16.dp)
+                .fillMaxWidth()
         ) {
-            TextField(
-                placeholder = { Text(text = "Scan Barcode")},
-                value = value,
-                modifier = Modifier.padding(end = 12.dp),
-                enabled = manuallyOverride ?: false,
-                colors = TextFieldDefaults.textFieldColors(
-                    backgroundColor = Color.Black.copy(0.06f)
-                ),
-                textStyle = if (value.text.isEmpty()) {
-                    Typography.body2.copy(color = MaterialTheme.colors.onSecondary.copy(0.54f))
-                } else {
-                    Typography.body2.copy(MaterialTheme.colors.onSecondary)
-                },
-                shape = RoundedCornerShape(4.dp),
-                trailingIcon = {
-                    if (!arrayListOf(
-                            EventStatus.Done,
-                            EventStatus.Submitted
-                        ).contains(formStatus)
-                    ) {
-                        Icon(
-                            painterResource(id = R.drawable.ic_delete_circle),
-                            contentDescription = "Clear Text",
-                            modifier = Modifier
-                                .clickable {
-                                    viewModel.setComponentData(indexForm, null)
-                                    value = TextFieldValue("")
-                                },
-                            tint = MaterialTheme.colors.onSecondary,
-                        )
-                    }
-                },
-                onValueChange = { value = it }
-            )
-            Box(modifier = Modifier
-                .clip(RoundedCornerShape(4.dp))
-                .background(
-                    if (theme == SettingTheme.Dark) Color.White else MaterialTheme.colors.background.copy(
-                        0.10f
-                    )
-                )
-                .clickable {
-                    scannerViewModel.navigateFromDetailScreen(
-                        indexForm,
-                        type = form.barcodeType ?: BarcodeType.All.type
-                    )
-                    viewModel.goToScannerBarcode(indexForm)
-                }
-                .fillMaxSize()
-                .height(TextFieldDefaults.MinHeight)
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier.fillMaxWidth()
             ) {
-                Icon(
-                    painter = painterResource(id = R.drawable.ic_barcode),
-                    contentDescription = "Barcode Scanner",
-                    modifier = Modifier.align(Alignment.Center),
-                    tint = MaterialTheme.colors.onBackground
+                TextField(
+                    placeholder = { Text(text = "Scan Barcode") },
+                    value = barcodeValue,
+                    modifier = Modifier.padding(end = 12.dp),
+                    enabled = manuallyOverride ?: false,
+                    colors = TextFieldDefaults.textFieldColors(
+                        backgroundColor = Color.Black.copy(0.06f)
+                    ),
+                    textStyle = if (barcodeValue.isEmpty()) {
+                        Typography.body2.copy(color = MaterialTheme.colors.onSecondary.copy(0.54f))
+                    } else {
+                        Typography.body2.copy(MaterialTheme.colors.onSecondary)
+                    },
+                    shape = RoundedCornerShape(4.dp),
+                    trailingIcon = {
+                        if (!arrayListOf(
+                                EventStatus.Done,
+                                EventStatus.Submitted
+                            ).contains(formStatus)
+                        ) {
+                            Icon(
+                                painterResource(id = R.drawable.ic_delete_circle),
+                                contentDescription = "Clear Text",
+                                modifier = Modifier
+                                    .clickable {
+                                        viewModel.setComponentData(indexForm, null)
+                                        value = BarcodeFieldValue("")
+                                    },
+                                tint = MaterialTheme.colors.onSecondary,
+                            )
+                        }
+                    },
+                    onValueChange = {
+                        barcodeValue = it
+                        if (it.isEmpty()) {
+                            viewModel.setComponentData(indexForm, null)
+                        } else {
+                            viewModel.setComponentData(
+                                indexForm,
+                                BarcodeFieldValue(value = barcodeValue)
+                            )
+                        }
+                    }
                 )
+                Box(modifier = Modifier
+                    .clip(RoundedCornerShape(4.dp))
+                    .background(
+                        if (theme == SettingTheme.Dark) Color.White else MaterialTheme.colors.background.copy(
+                            0.10f
+                        )
+                    )
+                    .clickable {
+                        scannerViewModel.navigateFromDetailScreen(
+                            indexForm,
+                            type = form.barcodeType ?: BarcodeType.All.type
+                        )
+                        viewModel.goToScannerBarcode(indexForm)
+                    }
+                    .fillMaxSize()
+                    .height(TextFieldDefaults.MinHeight)
+                ) {
+                    Icon(
+                        painter = painterResource(id = R.drawable.ic_barcode),
+                        contentDescription = "Barcode Scanner",
+                        modifier = Modifier.align(Alignment.Center),
+                        tint = MaterialTheme.colors.onBackground
+                    )
+                }
             }
         }
-
-        if (warningInfo.isNotBlank()) {
-            if (validation) {
-                Text(
-                    text = warningInfo,
-                    modifier = Modifier.padding(top = 8.dp),
-                    color = PrimaryMain
-                )
-            }
-            form.isValid = false
-        } else {
-            form.isValid = true
-        }
-        Divider(
-            color = GrayDivider,
-            modifier = Modifier.padding(vertical = 16.dp)
-        )
     }
 }

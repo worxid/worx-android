@@ -81,6 +81,7 @@
     <string name="done">Done</string>
     <string name="upload_error">Upload Error</string>
     <string name="upload_image">Upload Image</string>
+    <string name="input_manual">Input Manual</string>
     <string name="upload_success">Upload Success</string>
     <string name="uploading">Uploading</string>
     <string name="no_connection">No connection found.</string>
