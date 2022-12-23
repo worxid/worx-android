@@ -41,6 +41,7 @@
     <string name="camera">Camera</string>
     <string name="add_signature">Add Signature</string>
     <string name="erase">Hapus</string>
+    <string name="preview">Preview</string>
     <string name="clear">Clear</string>
     <string name="save">Simpan</string>
     <string name="save_eng">Save</string>
@@ -79,9 +80,14 @@
     <string name="retake">Retake</string>
     <string name="done">Done</string>
     <string name="upload_error">Upload Error</string>
+    <string name="upload_image">Upload Image</string>
+    <string name="input_manual">Input Manual</string>
     <string name="upload_success">Upload Success</string>
     <string name="uploading">Uploading</string>
     <string name="no_connection">No connection found.</string>
+    <string name="no_barcode">No barcode scanned</string>
+    <string name="only_1d">only 1d type can be scan</string>
+    <string name="point_barcode">Point the barcode in the scan area</string>
     <string name="check_network">Please check your network connection</string>
     <string name="number_picker_formatter">%02d</string>
 

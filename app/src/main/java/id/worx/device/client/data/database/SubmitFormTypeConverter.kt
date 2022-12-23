@@ -155,7 +155,7 @@ class SubmitFormTypeConverter {
         jsonObject.entrySet().forEach { map ->
             val value = gson.fromJson(map.value, SeparatorValue::class.java)
             val type = value.type ?: ""
-            when {
+            when  {
                 type.contains(Type.TextField.type) -> returnMap[map.key] =
                     gson.fromJson(map.value, TextFieldValue::class.java)
                 type.contains(Type.Separator.type) -> returnMap[map.key] =
@@ -187,10 +187,10 @@ class SubmitFormTypeConverter {
                 type.contains(Type.Sketch.type) -> returnMap[map.key] =
                     gson.fromJson(map.value, SketchValue::class.java)
                 else -> throw IllegalArgumentException("Can't deserialize ${map.key} ${map.value}")
-            }
+                 }
         }
         return returnMap
-    }
+        }
 
     @TypeConverter
     fun fromSubmitLocation(value: SubmitLocation?): String = Gson().toJson(value)

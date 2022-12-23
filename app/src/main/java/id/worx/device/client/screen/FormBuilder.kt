@@ -35,6 +35,7 @@ import id.worx.device.client.theme.Typography
 import id.worx.device.client.viewmodel.CameraViewModel
 import id.worx.device.client.viewmodel.DetailFormViewModel
 import id.worx.device.client.viewmodel.EventStatus
+import id.worx.device.client.viewmodel.ScannerViewModel
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterialApi::class)
@@ -43,6 +44,7 @@ fun ValidFormBuilder(
     componentList: List<Fields>,
     viewModel: DetailFormViewModel,
     cameraViewModel: CameraViewModel,
+    scannerViewModel: ScannerViewModel,
     session: Session,
     onEvent: (DetailFormEvent) -> Unit
 ) {
@@ -68,6 +70,7 @@ fun ValidFormBuilder(
             componentList,
             viewModel,
             cameraViewModel,
+            scannerViewModel,
             session,
             validation,
         )
@@ -84,7 +87,7 @@ fun ValidFormBuilder(
                 state,
                 {
                     validation = true
-                    if (totalNonValidData==0) {
+                    if (totalNonValidData == 0) {
                         onEvent(DetailFormEvent.SubmitForm)
                     }
                     showSubmitDialog = false
@@ -105,6 +108,7 @@ fun DetailForm(
     componentList: List<Fields>,
     viewModel: DetailFormViewModel,
     cameraViewModel: CameraViewModel,
+    scannerViewModel: ScannerViewModel,
     session: Session,
     validation: Boolean,
     showSubmitDialog: () -> Unit
@@ -174,7 +178,7 @@ fun DetailForm(
                                 value.values ?: ""
                             ),
                             onValueChange = {
-                                if (it.isNullOrEmpty()){
+                                if (it.isNullOrEmpty()) {
                                     viewModel.setComponentData(index, null)
                                 } else {
                                     viewModel.setComponentData(index, TextFieldValue(values = it))
@@ -227,6 +231,9 @@ fun DetailForm(
                     }
                     Type.Separator.type -> {
                         WorxSeparator(index, viewModel, session)
+                    }
+                    Type.BarcodeField.type -> {
+                        WorxBarcodeField(index, viewModel, scannerViewModel, session,validation)
                     }
                     Type.Time.type -> {
                         WorxTimeInput(index, viewModel, session)
