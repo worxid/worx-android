@@ -68,10 +68,14 @@ fun WorxIntegerField(
             value = value.value ?: "",
             onValueChange = {
                 value.value = it
-                if (value.value?.toInt() != null) {
-                    viewModel.setComponentData(index, IntegerValue(value = value.value!!.toInt()))
-                } else {
+                if (value.value.isNullOrEmpty()){
                     viewModel.setComponentData(index, null)
+                }
+                else  {
+                    try {
+                        val int = Integer.parseInt( value.value!!)
+                        viewModel.setComponentData(index, IntegerValue(value = int))
+                    } catch (_: java.lang.NumberFormatException){}
                 }
             },
             label = {
