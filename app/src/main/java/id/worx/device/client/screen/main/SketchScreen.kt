@@ -18,6 +18,7 @@ import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
+import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
@@ -33,15 +34,19 @@ import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.focus.*
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.*
 import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.input.pointer.consumeAllChanges
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.input.pointer.positionChange
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
@@ -61,6 +66,7 @@ import id.worx.device.client.theme.WorxTheme
 import id.worx.device.client.theme.fontRoboto
 import id.worx.device.client.util.*
 import id.worx.device.client.viewmodel.DetailFormViewModel
+import kotlin.math.roundToInt
 
 @Composable
 fun SketchScreen(
@@ -320,6 +326,17 @@ private fun SketchCanvasView(
             }
         )
 
+    // data offsetnya jg sepertinya bisa disatukan dengan strint & property textnya,
+    // bisa dibikin ke satu data class baru
+    var offsetX by remember { mutableStateOf(0f) }
+    var offsetY by remember { mutableStateOf(0f) }
+
+    var offsetX2 by remember { mutableStateOf(0f) }
+    var offsetY2 by remember { mutableStateOf(0f) }
+
+    var offsetX3 by remember { mutableStateOf(0f) }
+    var offsetY3 by remember { mutableStateOf(0f) }
+
     if (showTextFieldOnCanvas.value) {
         val focusRequester = remember {
             FocusRequester()
@@ -364,81 +381,91 @@ private fun SketchCanvasView(
         }
     }
 
-    Canvas(modifier = drawModifier) {
-        if (allowDrawing.value) {
-            when (motionEvent.value) {
-                MotionEvent.Down -> {
-                    if (drawMode.value != DrawMode.Touch) {
-                        currentPath.value.moveTo(currentPosition.value.x, currentPosition.value.y)
-                    }
-                    previousPosition.value = currentPosition.value
-                }
-
-                MotionEvent.Move -> {
-                    if (drawMode.value != DrawMode.Touch) {
-                        currentPath.value.quadraticBezierTo(
-                            previousPosition.value.x,
-                            previousPosition.value.y,
-                            (previousPosition.value.x + currentPosition.value.x) / 2,
-                            (previousPosition.value.y + currentPosition.value.y) / 2
-                        )
-                    }
-                    previousPosition.value = currentPosition.value
-                }
-
-                MotionEvent.Up -> {
-                    if (drawMode.value != DrawMode.Touch) {
-                        currentPath.value.lineTo(currentPosition.value.x, currentPosition.value.y)
-
-                        paths.add(
-                            Pair(
-                                currentPath.value,
-                                PathProperties(color = drawColor.value, stroke = drawBrush.value)
+    Box() {
+        Canvas(modifier = drawModifier) {
+            if (allowDrawing.value) {
+                when (motionEvent.value) {
+                    MotionEvent.Down -> {
+                        if (drawMode.value != DrawMode.Touch) {
+                            currentPath.value.moveTo(
+                                currentPosition.value.x,
+                                currentPosition.value.y
                             )
-                        )
-
-                        currentPath.value = Path()
+                        }
+                        previousPosition.value = currentPosition.value
                     }
-                    pathsUndone.clear()
 
-                    currentPosition.value = Offset.Unspecified
-                    previousPosition.value = currentPosition.value
-                    motionEvent.value = MotionEvent.Idle
+                    MotionEvent.Move -> {
+                        if (drawMode.value != DrawMode.Touch) {
+                            currentPath.value.quadraticBezierTo(
+                                previousPosition.value.x,
+                                previousPosition.value.y,
+                                (previousPosition.value.x + currentPosition.value.x) / 2,
+                                (previousPosition.value.y + currentPosition.value.y) / 2
+                            )
+                        }
+                        previousPosition.value = currentPosition.value
+                    }
+
+                    MotionEvent.Up -> {
+                        if (drawMode.value != DrawMode.Touch) {
+                            currentPath.value.lineTo(
+                                currentPosition.value.x,
+                                currentPosition.value.y
+                            )
+
+                            paths.add(
+                                Pair(
+                                    currentPath.value,
+                                    PathProperties(
+                                        color = drawColor.value,
+                                        stroke = drawBrush.value
+                                    )
+                                )
+                            )
+
+                            currentPath.value = Path()
+                        }
+                        pathsUndone.clear()
+
+                        currentPosition.value = Offset.Unspecified
+                        previousPosition.value = currentPosition.value
+                        motionEvent.value = MotionEvent.Idle
+                    }
+                    else -> Unit
                 }
-                else -> Unit
             }
-        }
 
-        with(drawContext.canvas.nativeCanvas) {
-            val checkPoint = saveLayer(null, null)
+            with(drawContext.canvas.nativeCanvas) {
+                val checkPoint = saveLayer(null, null)
 
-            imageCanvas?.let {
-                drawImage(
-                    imageCanvas.asImageBitmap(), topLeft = Offset(
-                        x = (size.width - it.width) / 2f,
-                        y = (size.height - it.height) / 2f
+                imageCanvas?.let {
+                    drawImage(
+                        imageCanvas.asImageBitmap(), topLeft = Offset(
+                            x = (size.width - it.width) / 2f,
+                            y = (size.height - it.height) / 2f
+                        )
                     )
-                )
-            }
+                }
 
-            paths.forEach {
-                val path = it.first
-                val property = it.second
+                paths.forEach {
+                    val path = it.first
+                    val property = it.second
 
-                drawPath(
-                    path = path,
-                    color = property.color,
-                    style = Stroke(property.stroke)
-                )
-            }
+                    drawPath(
+                        path = path,
+                        color = property.color,
+                        style = Stroke(property.stroke)
+                    )
+                }
 
-            if (motionEvent.value != MotionEvent.Idle) {
-                drawPath(
-                    path = currentPath.value,
-                    color = drawColor.value,
-                    style = Stroke(drawBrush.value)
-                )
-            }
+                if (motionEvent.value != MotionEvent.Idle) {
+                    drawPath(
+                        path = currentPath.value,
+                        color = drawColor.value,
+                        style = Stroke(drawBrush.value)
+                    )
+                }
 
 //            if (textCanvas.value.isNotBlank()) {
 //                val paint = android.graphics.Paint().apply {
@@ -448,19 +475,65 @@ private fun SketchCanvasView(
 //                }
 //                drawText(textCanvas.value, center.x, center.y, paint)
 //            }
-            texts.forEach {
-                val text = it.first
-                val textProperties = it.second
-
-                val paint = android.graphics.Paint().apply {
-                    textAlign = android.graphics.Paint.Align.CENTER
-                    textSize = 64f
-                    color = textProperties.color.toArgb()
-                }
-                drawText(text, center.x, center.y, paint)
+//                texts.forEach {
+//                    val text = it.first
+//                    val textProperties = it.second
+//
+//                    val paint = android.graphics.Paint().apply {
+//                        textAlign = android.graphics.Paint.Align.CENTER
+//                        textSize = 64f
+//                        color = textProperties.color.toArgb()
+//                    }
+//                    drawText(text, center.x, center.y, paint)
+//                }
+                restoreToCount(checkPoint)
             }
-            restoreToCount(checkPoint)
         }
+    }
+    // Ini ntar bisa diganti dengan lazy column utk optimasissasi codenya
+    Column{
+            Text(
+                modifier = Modifier
+                    .padding(96.dp)
+                    .offset { IntOffset(offsetX.roundToInt(), offsetY.roundToInt()) }
+                    .pointerInput(Unit) {
+                        detectDragGestures { change, dragAmount ->
+                            change.consumeAllChanges()
+                            offsetX += dragAmount.x
+                            offsetY += dragAmount.y
+                        }
+                    },
+                text = "Text1",
+                style = TextStyle(color = Color.Black)
+            )
+        Text(
+            modifier = Modifier
+                .padding(12.dp)
+                .offset { IntOffset(offsetX2.roundToInt(), offsetY2.roundToInt()) }
+                .pointerInput(Unit) {
+                    detectDragGestures { change, dragAmount ->
+                        change.consumeAllChanges()
+                        offsetX2 += dragAmount.x
+                        offsetY2 += dragAmount.y
+                    }
+                },
+            text = "Text2",
+            style = TextStyle(color = Color.Black)
+        )
+        Text(
+            modifier = Modifier
+                .padding(12.dp)
+                .offset { IntOffset(offsetX3.roundToInt(), offsetY3.roundToInt()) }
+                .pointerInput(Unit) {
+                    detectDragGestures { change, dragAmount ->
+                        change.consumeAllChanges()
+                        offsetX3 += dragAmount.x
+                        offsetY3 += dragAmount.y
+                    }
+                },
+            text = "Text3",
+            style = TextStyle(color = Color.Black)
+        )
     }
 }
 
