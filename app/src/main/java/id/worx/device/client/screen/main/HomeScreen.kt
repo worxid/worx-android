@@ -20,11 +20,16 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
+import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.TextFieldValue
@@ -42,6 +47,7 @@ import id.worx.device.client.data.database.Session
 import id.worx.device.client.model.EmptyForm
 import id.worx.device.client.model.SubmitForm
 import id.worx.device.client.screen.components.RedFullWidthButton
+import id.worx.device.client.theme.DarkBackgroundNavView
 import id.worx.device.client.theme.PrimaryMain
 import id.worx.device.client.theme.Typography
 import id.worx.device.client.theme.backgroundFormList
@@ -49,6 +55,7 @@ import id.worx.device.client.viewmodel.DetailFormViewModel
 import id.worx.device.client.viewmodel.HomeViewModelImpl
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+
 
 sealed class BottomNavItem(var title: Int, var icon: Int) {
 
@@ -79,6 +86,7 @@ fun HomeScreen(
             MainTopAppBar(
                 title = session.organization ?: "",
                 onSearchMode = { showBotNav = it },
+                theme = session.theme,
                 viewModel = viewModel
             ) { input ->
                 viewModel.uiState.update {
@@ -182,15 +190,30 @@ fun BottomNavigationView(showBadge: Int, showBotNav: Boolean, theme:String?, pag
         BottomNavItem.Draft,
         BottomNavItem.Submission,
     )
+    val density = LocalDensity
     val scope = rememberCoroutineScope()
-    var selectedColor = if (theme == SettingTheme.Dark) PrimaryMain else MaterialTheme.colors.primary
-    var unselectedColor = if (theme == SettingTheme.Dark) MaterialTheme.colors.primary else Color.Black.copy(0.64f)
+    val selectedColor = if (theme == SettingTheme.Dark) PrimaryMain else MaterialTheme.colors.primary
+    val unselectedColor = if (theme == SettingTheme.Dark) DarkBackgroundNavView else Color.Black.copy(0.64f)
     if (showBotNav) {
         BottomNavigation(
-            backgroundColor = MaterialTheme.colors.secondary,
+            backgroundColor = if (theme == SettingTheme.Dark) MaterialTheme.colors.secondary else Color.White,
             modifier = Modifier
                 .padding(horizontal = 13.5.dp, vertical = 16.dp)
-                .border(2.dp, MaterialTheme.colors.onSecondary, RoundedCornerShape(8.dp))
+                .border(
+                    2.dp,
+                    if (theme == SettingTheme.Dark) Color.Black else MaterialTheme.colors.onSecondary
+                )
+                .drawBehind { drawRect(
+                    color = Color.Black,
+                    size = Size(width = size.width, height = size.height),
+                    topLeft = Offset(4.dp.toPx(), 4.dp.toPx()),
+                    style = Stroke(2.5.dp.toPx())
+                ) }
+                .drawBehind { drawRect(
+                    color = selectedColor,
+                    size = Size(width = size.width, height = size.height),
+                    topLeft = Offset(4.dp.toPx(), 4.dp.toPx())
+                ) }
         ) {
             items.forEachIndexed { index, item  ->
                 BottomNavigationItem(
@@ -235,14 +258,15 @@ fun MainTopAppBar(
     title: String,
     onSearchMode: (Boolean) -> Unit,
     viewModel: HomeViewModelImpl,
-    searchAction: (String) -> Unit,
+    theme: String?,
+    searchAction: (String) -> Unit
 ) {
     var searchMode by remember { mutableStateOf(false) }
     onSearchMode(!searchMode)
 
     TopAppBar(
         modifier = Modifier.fillMaxWidth(),
-        backgroundColor = MaterialTheme.colors.primary,
+        backgroundColor = if (theme == SettingTheme.Dark) PrimaryMain else MaterialTheme.colors.primary,
         contentColor = Color.White
     ) {
         if (!searchMode) {

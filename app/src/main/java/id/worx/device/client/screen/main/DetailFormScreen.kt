@@ -26,7 +26,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import id.worx.device.client.R
 import id.worx.device.client.data.api.SyncServer.Companion.DOWNLOADFROMSERVER
 import id.worx.device.client.data.database.Session
-import id.worx.device.client.model.Separator
+import id.worx.device.client.model.fieldmodel.Separator
 import id.worx.device.client.screen.components.WorxBoxPullRefresh
 import id.worx.device.client.screen.components.WorxDialog
 import id.worx.device.client.screen.components.WorxTopAppBar
@@ -35,6 +35,7 @@ import id.worx.device.client.theme.WorxTheme
 import id.worx.device.client.viewmodel.CameraViewModel
 import id.worx.device.client.viewmodel.DetailFormViewModel
 import id.worx.device.client.viewmodel.EventStatus
+import id.worx.device.client.viewmodel.ScannerViewModel
 
 sealed class DetailFormEvent {
     object SubmitForm : DetailFormEvent()
@@ -47,6 +48,7 @@ sealed class DetailFormEvent {
 fun DetailFormScreen(
     viewModel: DetailFormViewModel,
     cameraViewModel: CameraViewModel,
+    scannerViewModel: ScannerViewModel,
     session: Session,
     onEvent: (DetailFormEvent) -> Unit
 ) {
@@ -89,6 +91,7 @@ fun DetailFormScreen(
                 componentList = componentList,
                 viewModel,
                 cameraViewModel,
+                scannerViewModel,
                 session,
                 onEvent,
             )
@@ -188,10 +191,12 @@ fun LeaveForm(
 fun PreviewDetail() {
     val viewModel: DetailFormViewModel = hiltViewModel()
     val cameraViewModel: CameraViewModel = hiltViewModel()
+    val scannerViewModel: ScannerViewModel = hiltViewModel()
     WorxTheme() {
         DetailFormScreen(
             viewModel = viewModel,
             cameraViewModel,
+            scannerViewModel,
             Session(LocalContext.current),
             {}
         )

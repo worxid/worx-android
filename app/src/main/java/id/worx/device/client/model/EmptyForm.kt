@@ -15,6 +15,10 @@ enum class Type(val type: String){
     Photo("photo"),
     Signature("signature"),
     Separator("separator"),
+    Time("time"),
+    Boolean("boolean"),
+    Integer("integer"),
+    BarcodeField("barcode"),
     Sketch("sketch")
 }
 
@@ -42,13 +46,13 @@ sealed interface BasicForm {
     var lastUpdated: String?
 }
 
-abstract class Fields   (
+abstract class Fields (
     @SerializedName("id"          ) open var id          : String?          = null,
     @SerializedName("label"       ) open var label       : String?          = null,
     @SerializedName("description" ) open var description : String?          = null,
     @SerializedName("type"        ) open var type        : String?          = null,
     @SerializedName("required"    ) open var required    : Boolean?         = null,
-                                    open var isValid     : Boolean?         = null,
+    @Transient                      open var isValid     : Boolean?         = null,
 )
 
 data class Group (

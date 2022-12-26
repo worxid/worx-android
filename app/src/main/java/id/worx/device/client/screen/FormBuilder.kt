@@ -24,13 +24,19 @@ import androidx.constraintlayout.compose.Dimension
 import androidx.hilt.navigation.compose.hiltViewModel
 import id.worx.device.client.R
 import id.worx.device.client.data.database.Session
-import id.worx.device.client.model.*
+import id.worx.device.client.model.EmptyForm
+import id.worx.device.client.model.Fields
+import id.worx.device.client.model.SubmitForm
+import id.worx.device.client.model.Type
+import id.worx.device.client.model.fieldmodel.TextFieldValue
 import id.worx.device.client.screen.components.*
 import id.worx.device.client.screen.main.SketchScreen
+import id.worx.device.client.theme.GrayDivider
 import id.worx.device.client.theme.Typography
 import id.worx.device.client.viewmodel.CameraViewModel
 import id.worx.device.client.viewmodel.DetailFormViewModel
 import id.worx.device.client.viewmodel.EventStatus
+import id.worx.device.client.viewmodel.ScannerViewModel
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterialApi::class)
@@ -39,6 +45,7 @@ fun ValidFormBuilder(
     componentList: List<Fields>,
     viewModel: DetailFormViewModel,
     cameraViewModel: CameraViewModel,
+    scannerViewModel: ScannerViewModel,
     session: Session,
     onEvent: (DetailFormEvent) -> Unit
 ) {
@@ -64,6 +71,7 @@ fun ValidFormBuilder(
             componentList,
             viewModel,
             cameraViewModel,
+            scannerViewModel,
             session,
             validation,
         )
@@ -101,6 +109,7 @@ fun DetailForm(
     componentList: List<Fields>,
     viewModel: DetailFormViewModel,
     cameraViewModel: CameraViewModel,
+    scannerViewModel: ScannerViewModel,
     session: Session,
     validation: Boolean,
     showSubmitDialog: () -> Unit
@@ -224,14 +233,29 @@ fun DetailForm(
                     Type.Separator.type -> {
                         WorxSeparator(index, viewModel, session)
                     }
+                    Type.BarcodeField.type -> {
+                        WorxBarcodeField(index, viewModel, scannerViewModel, session,validation)
+                    }
+                    Type.Time.type -> {
+                        WorxTimeInput(index, viewModel, session)
+                    }
+                    Type.Boolean.type -> {
+                        WorxBooleanField(index, viewModel, validation, session)
+                    }
+                    Type.Integer.type -> {
+                        WorxIntegerField(index, viewModel, session)
+                    }
                     Type.Sketch.type -> {
                         WorxSketch(indexForm = index, viewModel = viewModel, session = session, validation = validation)
                     }
                     else -> {
-                        Text(
-                            text = "Unknown component",
-                            style = Typography.body1.copy(color = Color.Black)
-                        )
+                        Column(modifier = Modifier.padding(horizontal = 16.dp, vertical = 6.dp)) {
+                            Text(
+                                text = "Unknown component ${item.type}",
+                                style = Typography.body1.copy(color = Color.Black)
+                            )
+                            Divider(color = GrayDivider, modifier = Modifier.padding(vertical = 16.dp))
+                        }
                     }
                 }
             }

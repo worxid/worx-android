@@ -65,6 +65,28 @@
         android:name="id.worx.device.client.view.HomeAdvancedSettingsFragment"
         android:label="AdvancedSettingsFragment" />
     <fragment
+        android:id="@+id/scannerFragment"
+        android:name="id.worx.device.client.view.ScannerFragment"
+        android:label="ScannerFragment">
+        <action
+            android:id="@+id/action_scannerFragment_to_detail_form_fragment"
+            app:destination="@id/detail_form_fragment"
+            app:launchSingleTop="true"
+            app:popUpTo="@+id/home_nav_graph"
+            app:popUpToInclusive="true" />
+    </fragment>
+    <fragment
+        android:id="@+id/barcodePreviewFragment"
+        android:name="id.worx.device.client.view.BarcodePreviewFragment"
+        android:label="BarcodePreviewFragment" >
+        <action
+            android:id="@+id/action_barcodePreviewFragment_to_detail_form_fragment"
+            app:destination="@id/detail_form_fragment"
+            app:launchSingleTop="true"
+            app:popUpTo="@+id/home_nav_graph"
+            app:popUpToInclusive="true" />
+    </fragment>
+    <fragment
         android:id="@+id/sketchFragment"
         android:name="id.worx.device.client.view.SketchFragment"
         android:label="SketchFragment" >

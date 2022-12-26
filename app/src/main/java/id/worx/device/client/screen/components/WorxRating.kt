@@ -2,12 +2,11 @@ package id.worx.device.client.screen.components
 
 import android.R
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.material.Divider
 import androidx.compose.material.Icon
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableStateOf
@@ -17,10 +16,9 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import id.worx.device.client.data.database.Session
-import id.worx.device.client.model.RatingField
-import id.worx.device.client.model.RatingValue
-import id.worx.device.client.screen.main.SettingTheme
-import id.worx.device.client.theme.*
+import id.worx.device.client.model.fieldmodel.RatingField
+import id.worx.device.client.model.fieldmodel.RatingValue
+import id.worx.device.client.theme.SecondaryMain
 import id.worx.device.client.viewmodel.DetailFormViewModel
 import id.worx.device.client.viewmodel.EventStatus
 
@@ -52,21 +50,15 @@ fun WorxRating(indexForm: Int, viewModel: DetailFormViewModel,validation : Boole
         21.dp
     }
 
-    Column(modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp)) {
-        Text(
-            title,
-            style = Typography.body2.copy(MaterialTheme.colors.onSecondary),
-            modifier = Modifier.padding(bottom = 8.dp)
-        )
-        if (!form.description.isNullOrBlank()) {
-            Text(
-                text = form.description!!,
-                color = if (theme == SettingTheme.Dark) textFormDescriptionDark else textFormDescription,
-                style = MaterialTheme.typography.body1.copy(textFormDescription),
-                modifier = Modifier.padding(bottom = 8.dp, )
-            )
-        }
+    WorxBaseField(
+        indexForm = indexForm,
+        viewModel = viewModel,
+        validation = validation,
+        session = session,
+        warningInfo = warningInfo
+    ) {
         LazyRow(
+            modifier = Modifier.padding(horizontal = 16.dp),
             horizontalArrangement = Arrangement.spacedBy(12.dp)
         ) {
             items(form.maxStars ?: 5) { index ->
@@ -96,19 +88,5 @@ fun WorxRating(indexForm: Int, viewModel: DetailFormViewModel,validation : Boole
                 )
             }
         }
-        if (warningInfo.isNotBlank()) {
-            if (validation){
-                Text(
-                    text = warningInfo,
-                    modifier = Modifier
-                        .padding(top = 4.dp),
-                    color = PrimaryMain
-                )
-            }
-            form.isValid = false
-        } else {
-            form.isValid = true
-        }
-        Divider(color = GrayDivider, modifier = Modifier.padding(vertical = 16.dp))
     }
 }

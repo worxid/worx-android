@@ -3,13 +3,10 @@ package id.worx.device.client.screen.components
 import android.graphics.Bitmap
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.Divider
 import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableStateOf
@@ -23,10 +20,8 @@ import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import id.worx.device.client.R
 import id.worx.device.client.data.database.Session
-import id.worx.device.client.model.SignatureField
-import id.worx.device.client.model.SignatureValue
-import id.worx.device.client.screen.main.SettingTheme
-import id.worx.device.client.theme.*
+import id.worx.device.client.model.fieldmodel.SignatureField
+import id.worx.device.client.model.fieldmodel.SignatureValue
 import id.worx.device.client.viewmodel.DetailFormViewModel
 import id.worx.device.client.viewmodel.EventStatus
 
@@ -49,22 +44,13 @@ fun WorxSignature(indexForm: Int, viewModel: DetailFormViewModel, session: Sessi
     val fileId = value?.value
     val formStatus = viewModel.uiState.collectAsState().value.status
 
-    Column(modifier = Modifier
-        .fillMaxWidth()
-        .padding(horizontal = 16.dp)) {
-        Text(
-            form.label ?: "Signature",
-            style = Typography.body2.copy(MaterialTheme.colors.onSecondary),
-            modifier = Modifier.padding(bottom = 8.dp)
-        )
-        if (!form.description.isNullOrEmpty()) {
-            Text(
-                text = form.description!!,
-                color = if (theme == SettingTheme.Dark) textFormDescriptionDark else textFormDescription,
-                style = MaterialTheme.typography.body1.copy(textFormDescription),
-                modifier = Modifier.padding(bottom = 8.dp)
-            )
-        }
+    WorxBaseField(
+        indexForm = indexForm,
+        viewModel = viewModel,
+        validation = validation,
+        session = session,
+        warningInfo = warningInfo
+    ) {
         if (value?.bitmap != null) {
             SignatureView(bitmap.value) {
                 viewModel.setComponentData(indexForm, null)
@@ -88,20 +74,6 @@ fun WorxSignature(indexForm: Int, viewModel: DetailFormViewModel, session: Sessi
                 }
             }
         }
-        if (warningInfo.isNotBlank()) {
-            if (validation){
-                Text(
-                    text = warningInfo,
-                    modifier = Modifier
-                        .padding(top = 4.dp),
-                    color = PrimaryMain
-                )
-            }
-            form.isValid = false
-        } else {
-            form.isValid = true
-        }
-        Divider(color = GrayDivider, modifier = Modifier.padding(vertical = 16.dp))
     }
 }
 
@@ -112,7 +84,7 @@ private fun AttachSignatureButton(
 ) {
 
     ActionRedButton(
-        modifier = Modifier,
+        modifier = Modifier.padding(horizontal = 16.dp),
         iconRes = R.drawable.ic_signature_icon,
         title = stringResource(id = R.string.add_signature),
         actionClick = { goToSignaturePad() },

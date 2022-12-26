@@ -17,6 +17,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -36,6 +38,7 @@ import id.worx.device.client.model.BasicForm
 import id.worx.device.client.model.SubmitForm
 import id.worx.device.client.screen.components.WorxBoxPullRefresh
 import id.worx.device.client.theme.PrimaryMain
+import id.worx.device.client.theme.RedBackground
 import id.worx.device.client.theme.Typography
 import id.worx.device.client.theme.openSans
 import id.worx.device.client.viewmodel.DetailFormViewModel
@@ -65,24 +68,24 @@ fun FormScreen(
         Column(
             modifier = Modifier
                 .fillMaxHeight()
-                .background(MaterialTheme.colors.secondary)
-                .padding(horizontal = 16.dp, vertical = 16.dp),
+                .background(MaterialTheme.colors.secondary),
         ) {
             if (!isConnected) {
                 NoConnectionFound(
                     modifier = Modifier
-                        .background(MaterialTheme.colors.primary.copy(alpha = 0.16f))
+                        .background(RedBackground)
                 )
             }
             Text(
                 text = stringResource(id = title[type]),
                 style = Typography.subtitle2.copy(MaterialTheme.colors.onSecondary),
-                modifier = Modifier.padding(bottom = 16.dp)
+                modifier = Modifier.padding(horizontal = 16.dp, vertical = 16.dp)
             )
             if (data.isNullOrEmpty()) {
                 EmptyList(type, titleForEmpty, descriptionForEmpty, session)
             } else {
                 LazyColumn(
+                    modifier = Modifier.padding(start = 16.dp, bottom = 88.dp, end= 16.dp),
                     verticalArrangement = Arrangement.spacedBy(12.dp)
                 ) {
                     when (type) {
@@ -113,13 +116,13 @@ fun NoConnectionFound(modifier: Modifier) {
         modifier = modifier
             .height(54.dp)
             .fillMaxWidth()
-            .padding(horizontal = 16.dp, vertical = 8.dp)
+            .padding(horizontal = 17.dp, vertical = 8.dp)
     ) {
         val (icNoInternet, tvTitle, tvSubtitle) = createRefs()
         Icon(
             painter = painterResource(id = R.drawable.ic_no_internet),
             contentDescription = "Icon No Connection",
-            tint = MaterialTheme.colors.primary,
+            tint = PrimaryMain,
             modifier = Modifier.constrainAs(icNoInternet) {
                 top.linkTo(parent.top)
                 start.linkTo(parent.start)
@@ -131,7 +134,7 @@ fun NoConnectionFound(modifier: Modifier) {
             style = Typography.body2.copy(
                 fontFamily = openSans,
                 fontWeight = FontWeight.W600,
-                color = MaterialTheme.colors.primary
+                color = PrimaryMain
             ),
             modifier = Modifier.constrainAs(tvTitle) {
                 top.linkTo(parent.top)
@@ -145,7 +148,7 @@ fun NoConnectionFound(modifier: Modifier) {
             style = Typography.body1.copy(
                 fontFamily = openSans,
                 fontSize = 10.sp,
-                color = MaterialTheme.colors.onSecondary.copy(alpha = 0.7f)
+                color = Color.Black.copy(alpha = 0.7f)
             ),
             modifier = Modifier.constrainAs(tvSubtitle) {
                 top.linkTo(tvTitle.bottom)
@@ -168,7 +171,17 @@ fun ListItemValidForm(
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .border(1.dp, color = MaterialTheme.colors.onSecondary, RoundedCornerShape(8.dp))
+            .background(
+                if (theme == SettingTheme.Dark
+                ) Color.Unspecified else Color.White
+            )
+            .border(
+                1.dp,
+                color = if (theme == SettingTheme.Dark)
+                    MaterialTheme.colors.onSecondary
+                else MaterialTheme.colors.onSecondary.copy(0.1f),
+                RoundedCornerShape(8.dp)
+            )
             .clickable(
                 onClick = {
                     viewModel.goToDetailScreen()
@@ -189,11 +202,13 @@ fun ListItemValidForm(
                 fontFamily = FontFamily.Monospace,
                 color = MaterialTheme.colors.onSecondary,
                 overflow = TextOverflow.Ellipsis,
+                maxLines = 1,
                 fontWeight = FontWeight.W400
             )
             Text(
                 text = item.description ?: "",
                 overflow = TextOverflow.Ellipsis,
+                maxLines = 1,
                 style = Typography.body1.copy(color = MaterialTheme.colors.onSecondary.copy(alpha = 0.54f))
             )
         }
@@ -210,7 +225,16 @@ fun DraftItemForm(
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .border(1.dp, color = MaterialTheme.colors.onSecondary, RoundedCornerShape(8.dp))
+            .background(
+                if (theme == SettingTheme.Dark
+                ) Color.Unspecified else Color.White
+            )
+            .border(
+                1.dp,
+                color = if (theme == SettingTheme.Dark)
+                    MaterialTheme.colors.onSecondary
+                else MaterialTheme.colors.onSecondary.copy(0.1f),
+                RoundedCornerShape(8.dp))
             .clickable(
                 onClick = {
                     viewModel.goToDetailScreen()
@@ -229,6 +253,7 @@ fun DraftItemForm(
                 Text(
                     text = "${item.label} - ",
                     overflow = TextOverflow.Ellipsis,
+                    maxLines = 1,
                     style = Typography.button.copy(MaterialTheme.colors.onSecondary),
                 )
                 Text(
@@ -239,6 +264,7 @@ fun DraftItemForm(
             Text(
                 text = "Saved on ${item.lastUpdated}",
                 overflow = TextOverflow.Ellipsis,
+                maxLines = 1,
                 style = Typography.body1.copy(color = MaterialTheme.colors.onSecondary.copy(alpha = 0.54f))
             )
         }
@@ -274,7 +300,16 @@ fun SubmissionItemForm(
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .border(1.dp, color = MaterialTheme.colors.onSecondary, RoundedCornerShape(8.dp))
+            .background(
+                if (theme == SettingTheme.Dark
+                ) Color.Unspecified else Color.White
+            )
+            .border(
+                1.dp,
+                color = if (theme == SettingTheme.Dark)
+                    MaterialTheme.colors.onSecondary
+                else MaterialTheme.colors.onSecondary.copy(0.1f),
+                RoundedCornerShape(8.dp))
             .clickable(
                 onClick = {
                     viewModel.goToDetailScreen()
@@ -292,11 +327,13 @@ fun SubmissionItemForm(
             Text(
                 text = item.label ?: "",
                 overflow = TextOverflow.Ellipsis,
+                maxLines = 1,
                 style = Typography.button.copy(MaterialTheme.colors.onSecondary)
             )
             Text(
                 text = "Submitted on ${item.lastUpdated}",
                 overflow = TextOverflow.Ellipsis,
+                maxLines = 1,
                 style = Typography.body1.copy(color = MaterialTheme.colors.onSecondary.copy(alpha = 0.54f))
             )
         }
@@ -306,7 +343,8 @@ fun SubmissionItemForm(
 @Composable
 fun EmptyList(type: Int, text: String, description: String, session: Session) {
     val theme = session.theme
-    val icon = arrayListOf(R.drawable.ic_emptylist_form, R.drawable.ic_emptylist_draft, R.drawable.ic_emptylist_submission)
+    val bg = arrayListOf(R.drawable.bg_emptylist_form, R.drawable.bg_emptylist_draft, R.drawable.bg_emptylist_submission)
+    val icon = arrayListOf(R.drawable.ic_form, R.drawable.ic_draft, R.drawable.ic_tick)
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -314,10 +352,22 @@ fun EmptyList(type: Int, text: String, description: String, session: Session) {
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
-        Image(
-            painter = painterResource(id = icon[type]),
-            contentDescription = "Empty Icon"
-        )
+        Box(contentAlignment = Alignment.Center){
+            Image(
+                painter = painterResource(id = bg[type]),
+                colorFilter = ColorFilter.tint(
+                    if (theme == SettingTheme.Dark) PrimaryMain else MaterialTheme.colors.primary
+                ) ,
+                contentDescription = "Empty Icon"
+            )
+            Image(
+                modifier = Modifier.height(56.dp)
+                    .width(56.dp),
+                contentScale = ContentScale.Fit,
+                painter = painterResource(id = icon[type]),
+                contentDescription = "Empty Icon"
+            )
+        }
         Text(
             modifier = Modifier.padding(top = 28.dp, bottom = 12.dp),
             text = text,

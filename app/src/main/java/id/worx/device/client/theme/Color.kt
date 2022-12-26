@@ -6,6 +6,7 @@ val PrimaryMain = Color(0xFFDA3630)
 val SecondaryMain = Color(0xFFF8CA45)
 val RedDark = Color(0xFFAE2B27)
 val RedDarkButton = Color(0xFFDA3630)
+val RedBackground = Color(0xFFF4DAD9)
 
 val GrayDivider = Color.Black.copy(0.06f)
 val SurfaceSystem = Color(0xFF646464)
@@ -17,7 +18,7 @@ val backgroundFormList = Color (0xFFF9F9F9)
 
 //Dark
 val DarkBackground = Color(0xFF121212)
-val DarkBackgroundStatusBar = Color(0xCC000000)
+val DarkBackgroundNavView = Color(0xff1E1E1E)
 val PrimaryMainDark = Color(0xFF3C3D40)
 val SurfaceMainDark = Color(0xFF222222)
 val SecondaryMainDark = Color(0xFFF8CA45)
@@ -25,6 +26,7 @@ val BlackDark = Color(0xCC000000)
 val BlackDarkButtonDark = Color(0xFFDA3630)
 val textUnfocusColorDark = Color(0xB3FFFFFF)
 val textFormDescriptionDark = Color(0xCCFFFFFF)
+val backgroundDark = Color(0xFF323232)
 
 
 //Green

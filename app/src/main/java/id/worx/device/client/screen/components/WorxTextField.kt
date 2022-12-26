@@ -121,8 +121,7 @@ fun WorxTextField(
             if (validation){
                 Text(
                     text = "$label is required",
-                    modifier = Modifier
-                        .padding(bottom = 8.dp),
+                    modifier = Modifier.padding(top = 4.dp),
                     color = PrimaryMain
                 )
             }
