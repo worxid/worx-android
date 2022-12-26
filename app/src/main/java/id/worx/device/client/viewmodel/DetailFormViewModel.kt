@@ -68,6 +68,9 @@ class DetailFormViewModel @Inject constructor(
 
     val offset = mutableStateOf(0)
 
+    private val _cameraForWhichScreen = MutableLiveData<MainScreen>()
+    val cameraForWhichScreen = _cameraForWhichScreen
+
     /**
      * Pass data from Home ViewModel
      * Params : form - EmptyForm / SubmitForm
@@ -142,6 +145,13 @@ class DetailFormViewModel @Inject constructor(
             "signature${uiState.value.detailForm!!.fields[index].id}"
         val filePath = createFileFromBitmap(fileName, bitmap)
         getPresignedUrlForSignature(index, bitmap, filePath)
+        _navigateTo.value = Event(MainScreen.Detail)
+    }
+
+    fun saveSketch(bitmap: Bitmap, index: Int){
+        val fileName = "sketch${uiState.value.detailForm!!.fields[index].id}"
+        val filePath = createFileFromBitmap(fileName, bitmap)
+        getPresignedUrlForSketch(index, bitmap, filePath)
         _navigateTo.value = Event(MainScreen.Detail)
     }
 
@@ -224,6 +234,24 @@ class DetailFormViewModel @Inject constructor(
                     )
                 } else {
                     Log.d("WORX", "signature $fileName failed to get url")
+                }
+            }
+        }
+    }
+
+    private fun getPresignedUrlForSketch(indexForm: Int, bitmap: Bitmap, fileName: String){
+        viewModelScope.launch {
+            val file = File(fileName)
+            val response = dataSourceRepo.getPresignedUrl(fileName)
+            withContext(Dispatchers.Main){
+                if (response.isSuccessful){
+                    uploadMedia(response.body()!!.url!!, file, "Sketch $fileName")
+                    setComponentData(
+                        indexForm,
+                        SketchValue(value = response.body()!!.fileId, bitmap = bitmap)
+                    )
+                } else {
+                    Log.e("WORX", "sketch $fileName failed to get url")
                 }
             }
         }

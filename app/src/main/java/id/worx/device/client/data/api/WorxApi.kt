@@ -151,6 +151,7 @@ class ValueSerialize : JsonSerializer<Value>, JsonDeserializer<Value> {
                 gson.fromJson(json, ImageValue::class.java)
             type.contains(Type.Signature.type) ->
                 gson.fromJson(json, SignatureValue::class.java)
+            type.contains(Type.Sketch.type) -> gson.fromJson(json, SketchValue::class.java)
             else -> throw IllegalArgumentException("Can't deserialize $value")
         }
     }

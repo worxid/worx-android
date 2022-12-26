@@ -1,6 +1,10 @@
 package id.worx.device.client.screen.components
 
+import android.app.Activity
 import android.graphics.Bitmap
+import android.net.Uri
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -19,6 +23,8 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
+import com.sangcomz.fishbun.FishBun
+import com.sangcomz.fishbun.util.getRealPathFromURI
 import id.worx.device.client.R
 import id.worx.device.client.data.database.Session
 import id.worx.device.client.model.SketchField
@@ -37,6 +43,8 @@ fun WorxSketch(
     session: Session,
     validation: Boolean
 ) {
+    val context = LocalContext.current
+
     val state = viewModel.uiState.collectAsState()
 
     val form = state.value.detailForm!!.fields[indexForm] as SketchField
@@ -139,23 +147,20 @@ private fun SketchResultView(
         modifier = Modifier
             .padding(horizontal = 16.dp, vertical = 12.dp)
             .fillMaxWidth(),
-        horizontalArrangement = Arrangement.End
+        horizontalArrangement = Arrangement.Start
     ) {
-        Spacer(modifier = Modifier.weight(1f))
         Box(
             modifier = Modifier
-                .border(1.5.dp, MaterialTheme.colors.onSecondary, RoundedCornerShape(4.dp))
-                .fillMaxWidth(0.6f)
-                .height(102.dp),
-            contentAlignment = Alignment.Center
         ) {
             AsyncImage(
-                contentScale = ContentScale.Fit,
+                modifier = Modifier
+                    .width(48.dp)
+                    .height(48.dp),
                 model = bitmap,
-                contentDescription = "Sketch"
+                contentScale = ContentScale.Fit,
+                contentDescription = "Sketch",
             )
         }
-        Spacer(modifier = Modifier.weight(1f))
         Icon(
             modifier = Modifier
                 .padding(start = 30.dp, end = 4.dp)
