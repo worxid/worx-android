@@ -14,6 +14,15 @@ data class PathProperties(
     val stroke: Float = 5f
 )
 
+data class TextProperties(
+    val color: Color = Color.Black,
+    val isMoveable: Boolean = false
+)
+
+enum class Menus {
+    Default, Text, Draw
+}
+
 enum class MotionEvent {
     Idle, Down, Move, Up
 }
