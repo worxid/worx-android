@@ -40,6 +40,7 @@
     <string name="gallery">Gallery</string>
     <string name="camera">Camera</string>
     <string name="add_signature">Add Signature</string>
+    <string name="draw_sketch">Draw Sketch</string>
     <string name="erase">Hapus</string>
     <string name="preview">Preview</string>
     <string name="clear">Clear</string>

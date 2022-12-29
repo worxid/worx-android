@@ -22,6 +22,7 @@ import androidx.compose.ui.window.Dialog
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
 import androidx.hilt.navigation.compose.hiltViewModel
+import id.worx.device.client.MainScreen
 import id.worx.device.client.R
 import id.worx.device.client.data.database.Session
 import id.worx.device.client.model.EmptyForm
@@ -30,6 +31,7 @@ import id.worx.device.client.model.SubmitForm
 import id.worx.device.client.model.Type
 import id.worx.device.client.model.fieldmodel.TextFieldValue
 import id.worx.device.client.screen.components.*
+import id.worx.device.client.screen.main.SketchScreen
 import id.worx.device.client.theme.GrayDivider
 import id.worx.device.client.theme.Typography
 import id.worx.device.client.viewmodel.CameraViewModel
@@ -87,7 +89,7 @@ fun ValidFormBuilder(
                 state,
                 {
                     validation = true
-                    if (totalNonValidData == 0) {
+                    if (totalNonValidData==0) {
                         onEvent(DetailFormEvent.SubmitForm)
                     }
                     showSubmitDialog = false
@@ -178,7 +180,7 @@ fun DetailForm(
                                 value.values ?: ""
                             ),
                             onValueChange = {
-                                if (it.isNullOrEmpty()) {
+                                if (it.isNullOrEmpty()){
                                     viewModel.setComponentData(index, null)
                                 } else {
                                     viewModel.setComponentData(index, TextFieldValue(values = it))
@@ -223,7 +225,7 @@ fun DetailForm(
                             session,
                             { cameraViewModel.navigateFromDetailScreen(index) }, validation
                         ) {
-                            viewModel.goToCameraPhoto(index)
+                            viewModel.goToCameraPhoto(index, MainScreen.Detail)
                         }
                     }
                     Type.Signature.type -> {
@@ -243,6 +245,9 @@ fun DetailForm(
                     }
                     Type.Integer.type -> {
                         WorxIntegerField(index, viewModel, session)
+                    }
+                    Type.Sketch.type -> {
+                        WorxSketch(indexForm = index, viewModel = viewModel, session = session, validation = validation)
                     }
                     else -> {
                         Column(modifier = Modifier.padding(horizontal = 16.dp, vertical = 6.dp)) {

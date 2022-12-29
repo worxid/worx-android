@@ -22,7 +22,7 @@
     <fragment
         android:id="@+id/camera_photo_fragment"
         android:name="id.worx.device.client.view.CameraPhotoFragment"
-        android:label="CameraPhotoFragment">
+        android:label="CameraPhotoFragment" >
         <action
             android:id="@+id/action_photofragment_to_previewfragment"
             app:destination="@id/photo_preview_fragment"
@@ -84,6 +84,17 @@
             app:destination="@id/detail_form_fragment"
             app:launchSingleTop="true"
             app:popUpTo="@+id/home_nav_graph"
+            app:popUpToInclusive="true" />
+    </fragment>
+    <fragment
+        android:id="@+id/sketchFragment"
+        android:name="id.worx.device.client.view.SketchFragment"
+        android:label="SketchFragment" >
+        <action
+            android:id="@+id/action_sketchFragment_to_detail_form_fragment"
+            app:destination="@id/detail_form_fragment"
+            app:launchSingleTop="true"
+            app:popUpTo="@id/home_nav_graph"
             app:popUpToInclusive="true" />
     </fragment>
 </navigation>

@@ -161,6 +161,15 @@ dependencies {
     // gps/ admin
     implementation "com.google.android.play:app-update-ktx:2.0.1"
 
+    // capturable
+    implementation "dev.shreyaspatil:capturable:1.0.3"
+
+    // Color Picker
+    implementation 'com.godaddy.android.colorpicker:compose-color-picker:0.5.1'
+
+    // material icons
+    implementation "androidx.compose.material:material-icons-extended:$compose_version"
+
     //barcode scanner
     implementation 'com.google.mlkit:barcode-scanning:17.0.3'
 

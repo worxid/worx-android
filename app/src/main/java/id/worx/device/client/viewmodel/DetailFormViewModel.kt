@@ -4,6 +4,7 @@ import android.content.Context
 import android.graphics.Bitmap
 import android.location.Address
 import android.location.Geocoder
+import android.net.Uri
 import android.util.Log
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateMapOf
@@ -70,6 +71,12 @@ class DetailFormViewModel @Inject constructor(
 
     val offset = mutableStateOf(0)
 
+    private val _navigateFrom = MutableLiveData<MainScreen>()
+    val navigateFrom = _navigateFrom
+
+    private val _cameraResultUri = MutableLiveData<Uri?>()
+    val cameraResultUri = _cameraResultUri
+
     /**
      * Pass data from Home ViewModel
      * Params : form - EmptyForm / SubmitForm
@@ -118,11 +125,14 @@ class DetailFormViewModel @Inject constructor(
         }
     }
 
-    fun goToCameraPhoto(index: Int) {
-        uiState.update {
-            it.copy(currentComponent = index)
+    fun goToCameraPhoto(index: Int? = null, navigateFrom: MainScreen) {
+        if (index != null){
+            uiState.update {
+                it.copy(currentComponent = index)
+            }
         }
         _navigateTo.value = Event(MainScreen.CameraPhoto)
+        _navigateFrom.value = navigateFrom
     }
 
     fun goToScannerBarcode(index: Int){
@@ -139,11 +149,25 @@ class DetailFormViewModel @Inject constructor(
         _navigateTo.value = Event(MainScreen.SignaturePad)
     }
 
+    fun goToSketch(index: Int){
+        uiState.update {
+            it.copy(currentComponent = index)
+        }
+        _navigateTo.value = Event(MainScreen.Sketch)
+    }
+
     fun saveSignature(bitmap: Bitmap, index: Int) {
         val fileName =
             "signature${uiState.value.detailForm!!.fields[index].id}"
         val filePath = createFileFromBitmap(fileName, bitmap)
         getPresignedUrlForSignature(index, bitmap, filePath)
+        _navigateTo.value = Event(MainScreen.Detail)
+    }
+
+    fun saveSketch(bitmap: Bitmap, index: Int){
+        val fileName = "sketch${uiState.value.detailForm!!.fields[index].id}"
+        val filePath = createFileFromBitmap(fileName, bitmap)
+        getPresignedUrlForSketch(index, bitmap, filePath)
         _navigateTo.value = Event(MainScreen.Detail)
     }
 
@@ -161,6 +185,11 @@ class DetailFormViewModel @Inject constructor(
         uiState.update {
             it.copy(currentComponent = index)
         }
+    }
+
+    fun setCameraResultUri(uri: Uri){
+        _cameraResultUri.value = null
+        _cameraResultUri.value = uri
     }
 
     fun goToHome() {
@@ -226,6 +255,24 @@ class DetailFormViewModel @Inject constructor(
                     )
                 } else {
                     Log.d("WORX", "signature $fileName failed to get url")
+                }
+            }
+        }
+    }
+
+    private fun getPresignedUrlForSketch(indexForm: Int, bitmap: Bitmap, fileName: String){
+        viewModelScope.launch {
+            val file = File(fileName)
+            val response = dataSourceRepo.getPresignedUrl(fileName)
+            withContext(Dispatchers.Main){
+                if (response.isSuccessful){
+                    uploadMedia(response.body()!!.url!!, file, "Sketch $fileName")
+                    setComponentData(
+                        indexForm,
+                        SketchValue(value = response.body()!!.fileId, bitmap = bitmap)
+                    )
+                } else {
+                    Log.e("WORX", "sketch $fileName failed to get url")
                 }
             }
         }
