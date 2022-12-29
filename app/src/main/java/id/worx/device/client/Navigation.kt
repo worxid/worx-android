@@ -1,15 +1,17 @@
 package id.worx.device.client
 
+import android.util.Log
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import java.security.InvalidParameterException
 
 enum class WelcomeScreen {
     Splash, Welcome, AdvancedSetting, CreateTeam, CreateTeamSubmitted,
-    JoinTeam, WaitingVerification, VerificationRejected }
+    JoinTeam, WaitingVerification, VerificationRejected
+}
 
 enum class MainScreen {
-    Home, Detail, CameraPhoto, PhotoPreview, SignaturePad, Settings, Licences, AdvanceSettings
+    Home, Detail, CameraPhoto, PhotoPreview, SignaturePad, Settings, Licences, AdvanceSettings, Sketch, ScannerScreen, BarcodePreview
 }
 
 fun Fragment.navigate(to: WelcomeScreen, from: WelcomeScreen) {
@@ -49,7 +51,7 @@ fun Fragment.navigate(to: MainScreen, from: MainScreen) {
     }
     when (to) {
         MainScreen.Home -> {
-            if (from == MainScreen.Detail){
+            if (from == MainScreen.Detail) {
                 findNavController().navigate(R.id.action_detail_to_home)
             } else {
                 findNavController().navigate(R.id.home_fragment)
@@ -61,6 +63,13 @@ fun Fragment.navigate(to: MainScreen, from: MainScreen) {
                     findNavController().navigate(R.id.action_signaturepad_to_detail)
                 MainScreen.PhotoPreview ->
                     findNavController().navigate(R.id.action_previewfragment_to_detailfragment)
+                MainScreen.ScannerScreen ->
+                    findNavController().navigate(R.id.action_scannerFragment_to_detail_form_fragment)
+                MainScreen.BarcodePreview -> {
+                    findNavController().navigate(R.id.action_barcodePreviewFragment_to_detail_form_fragment)
+                }
+                MainScreen.Sketch ->
+                    findNavController().navigate(R.id.action_sketchFragment_to_detail_form_fragment)
                 else -> findNavController().navigate(R.id.detail_form_fragment)
             }
         }
@@ -81,6 +90,15 @@ fun Fragment.navigate(to: MainScreen, from: MainScreen) {
         }
         MainScreen.AdvanceSettings -> {
             findNavController().navigate(R.id.advanced_settings_fragment)
+        }
+        MainScreen.ScannerScreen -> {
+            findNavController().navigate(R.id.scannerFragment)
+        }
+        MainScreen.BarcodePreview -> {
+            findNavController().navigate(R.id.barcodePreviewFragment)
+        }
+        MainScreen.Sketch -> {
+            findNavController().navigate(R.id.sketchFragment)
         }
         else -> {}
     }

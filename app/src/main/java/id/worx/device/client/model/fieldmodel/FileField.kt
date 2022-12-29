@@ -1,6 +1,9 @@
-package id.worx.device.client.model
+package id.worx.device.client.model.fieldmodel
 
 import com.google.gson.annotations.SerializedName
+import id.worx.device.client.model.Fields
+import id.worx.device.client.model.Type
+import id.worx.device.client.model.Value
 
 data class FileField (
 
@@ -22,9 +25,11 @@ data class FileValue(
 ) : Value
 
 data class FilePresignedUrlResponse (
-
-    @SerializedName("fileId" ) var fileId : Int?    = null,
-    @SerializedName("url"    ) var url    : String? = null,
-    @SerializedName("path"   ) var path   : String? = null
-
+    @SerializedName("fileId" )      var fileId      : Int?    = 0,
+    @SerializedName("mediaId")      var mediaId     : String? = null,
+    @SerializedName("name")         var name        : String? = null,
+    @SerializedName("url")          var url         : String? = null,
+    @SerializedName("path")         var path        : String? = null,
+    @SerializedName("mimeType")     var mimeType    : String? = null,
+    @SerializedName("size")         var size        : Int?    = 0
 )

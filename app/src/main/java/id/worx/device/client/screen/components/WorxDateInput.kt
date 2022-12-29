@@ -9,10 +9,12 @@ import androidx.annotation.Nullable
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.*
+import androidx.compose.material.Icon
+import androidx.compose.material.MaterialTheme
+import androidx.compose.material.TextField
+import androidx.compose.material.TextFieldDefaults
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -24,10 +26,10 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import id.worx.device.client.R
 import id.worx.device.client.data.database.Session
-import id.worx.device.client.model.DateField
-import id.worx.device.client.model.DateValue
+import id.worx.device.client.model.fieldmodel.DateField
+import id.worx.device.client.model.fieldmodel.DateValue
 import id.worx.device.client.screen.main.SettingTheme
-import id.worx.device.client.theme.*
+import id.worx.device.client.theme.Typography
 import id.worx.device.client.viewmodel.DetailFormViewModel
 import id.worx.device.client.viewmodel.EventStatus
 import java.text.SimpleDateFormat
@@ -79,27 +81,22 @@ fun WorxDateInput(indexForm: Int, viewModel: DetailFormViewModel, session: Sessi
         year, month, day
     )
 
-    Column(modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp)) {
-        Text(
-            form.label ?: "",
-            style = Typography.body2.copy(MaterialTheme.colors.onSecondary),
-            modifier = Modifier.padding(bottom = 8.dp)
-        )
-        if (!form.description.isNullOrBlank()) {
-            Text(
-                text = form.description!!,
-                color = if (theme == SettingTheme.Dark) textFormDescriptionDark else textFormDescription,
-                style = MaterialTheme.typography.body1.copy(textFormDescription),
-                modifier = Modifier.padding(bottom = 8.dp)
-            )
-        }
+    WorxBaseField(
+        indexForm = indexForm,
+        viewModel = viewModel,
+        validation = validation,
+        session = session,
+        warningInfo = warningInfo) {
         Row(
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier
                 .fillMaxWidth()
+                .padding(horizontal = 16.dp)
         ) {
             TextField(
-                modifier = Modifier.padding(end = 12.dp),
+                modifier = Modifier
+                    .padding(end = 12.dp)
+                    .weight(1f),
                 enabled = false,
                 colors = TextFieldDefaults.textFieldColors(
                     backgroundColor = Color.Black.copy(0.06f)
@@ -142,38 +139,25 @@ fun WorxDateInput(indexForm: Int, viewModel: DetailFormViewModel, session: Sessi
                     )
                 )
                 .clickable { showDatePicker = true }
-                .fillMaxSize()
                 .height(TextFieldDefaults.MinHeight)) {
                 Icon(
                     painter = painterResource(id = R.drawable.ic_date_icon),
                     contentDescription = "Date Picker",
                     modifier = Modifier
-                        .align(Alignment.Center),
+                        .align(Alignment.Center)
+                        .padding(16.dp),
                     tint = MaterialTheme.colors.onBackground
                 )
             }
         }
-        if (warningInfo.isNotBlank()) {
-            if (validation){
-                Text(
-                    text = warningInfo,
-                    modifier = Modifier
-                         .padding(top = 4.dp),
-                    color = PrimaryMain
-                )
-            }
-            form.isValid = false
-        } else {
-            form.isValid = true
-        }
-        if (showDatePicker && !arrayListOf(
-                EventStatus.Done,
-                EventStatus.Submitted
-            ).contains(formStatus)) {
-            mDatePickerDialog.setOnCancelListener { showDatePicker = false }
-            mDatePickerDialog.show()
-        }
-        Divider(color = GrayDivider, modifier = Modifier.padding(vertical = 16.dp))
+    }
+    if (showDatePicker && !arrayListOf(
+            EventStatus.Done,
+            EventStatus.Submitted
+        ).contains(formStatus)
+    ) {
+        mDatePickerDialog.setOnCancelListener { showDatePicker = false }
+        mDatePickerDialog.show()
     }
 }
 

@@ -1,6 +1,9 @@
-package id.worx.device.client.model
+package id.worx.device.client.model.fieldmodel
 
 import com.google.gson.annotations.SerializedName
+import id.worx.device.client.model.Fields
+import id.worx.device.client.model.Type
+import id.worx.device.client.model.Value
 
 data class RadioButtonField (
 
@@ -11,7 +14,7 @@ data class RadioButtonField (
 //    @SerializedName("required"    ) override var required    : Boolean?           = null,
     @SerializedName("options"     ) var options     : ArrayList<Options> = arrayListOf(),
 
-): Fields()
+    ): Fields()
 
 data class Options (
     @SerializedName("label" ) var label : String? = null

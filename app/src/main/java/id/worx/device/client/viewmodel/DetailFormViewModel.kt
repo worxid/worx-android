@@ -4,6 +4,7 @@ import android.content.Context
 import android.graphics.Bitmap
 import android.location.Address
 import android.location.Geocoder
+import android.net.Uri
 import android.util.Log
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateMapOf
@@ -19,6 +20,7 @@ import id.worx.device.client.WorxApplication
 import id.worx.device.client.data.api.SyncServer
 import id.worx.device.client.data.database.Session
 import id.worx.device.client.model.*
+import id.worx.device.client.model.fieldmodel.*
 import id.worx.device.client.repository.SourceDataRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -50,13 +52,14 @@ data class DetailUiState(
 class DetailFormViewModel @Inject constructor(
     private val application: WorxApplication,
     private val session: Session,
-    private val savedStateHandle: SavedStateHandle,
     private val dataSourceRepo: SourceDataRepository,
     private val syncServerWork: SyncServer
 ) : ViewModel() {
 
     var uiState = MutableStateFlow(DetailUiState())
-    lateinit var uiHandler: UIHandler
+
+    private val _toastMessage = MutableLiveData<Event<String>>()
+    val toastMessage : LiveData<Event<String>> = _toastMessage
 
     private val _navigateTo = MutableLiveData<Event<MainScreen>>()
     val navigateTo: LiveData<Event<MainScreen>> = _navigateTo
@@ -67,6 +70,12 @@ class DetailFormViewModel @Inject constructor(
     val indexScroll = mutableStateOf(0)
 
     val offset = mutableStateOf(0)
+
+    private val _navigateFrom = MutableLiveData<MainScreen>()
+    val navigateFrom = _navigateFrom
+
+    private val _cameraResultUri = MutableLiveData<Uri?>()
+    val cameraResultUri = _cameraResultUri
 
     /**
      * Pass data from Home ViewModel
@@ -116,11 +125,21 @@ class DetailFormViewModel @Inject constructor(
         }
     }
 
-    fun goToCameraPhoto(index: Int) {
+    fun goToCameraPhoto(index: Int? = null, navigateFrom: MainScreen) {
+        if (index != null){
+            uiState.update {
+                it.copy(currentComponent = index)
+            }
+        }
+        _navigateTo.value = Event(MainScreen.CameraPhoto)
+        _navigateFrom.value = navigateFrom
+    }
+
+    fun goToScannerBarcode(index: Int){
         uiState.update {
             it.copy(currentComponent = index)
         }
-        _navigateTo.value = Event(MainScreen.CameraPhoto)
+        _navigateTo.value = Event(MainScreen.ScannerScreen)
     }
 
     fun goToSignaturePad(index: Int) {
@@ -130,11 +149,25 @@ class DetailFormViewModel @Inject constructor(
         _navigateTo.value = Event(MainScreen.SignaturePad)
     }
 
+    fun goToSketch(index: Int){
+        uiState.update {
+            it.copy(currentComponent = index)
+        }
+        _navigateTo.value = Event(MainScreen.Sketch)
+    }
+
     fun saveSignature(bitmap: Bitmap, index: Int) {
         val fileName =
             "signature${uiState.value.detailForm!!.fields[index].id}"
         val filePath = createFileFromBitmap(fileName, bitmap)
         getPresignedUrlForSignature(index, bitmap, filePath)
+        _navigateTo.value = Event(MainScreen.Detail)
+    }
+
+    fun saveSketch(bitmap: Bitmap, index: Int){
+        val fileName = "sketch${uiState.value.detailForm!!.fields[index].id}"
+        val filePath = createFileFromBitmap(fileName, bitmap)
+        getPresignedUrlForSketch(index, bitmap, filePath)
         _navigateTo.value = Event(MainScreen.Detail)
     }
 
@@ -152,6 +185,11 @@ class DetailFormViewModel @Inject constructor(
         uiState.update {
             it.copy(currentComponent = index)
         }
+    }
+
+    fun setCameraResultUri(uri: Uri){
+        _cameraResultUri.value = null
+        _cameraResultUri.value = uri
     }
 
     fun goToHome() {
@@ -222,6 +260,24 @@ class DetailFormViewModel @Inject constructor(
         }
     }
 
+    private fun getPresignedUrlForSketch(indexForm: Int, bitmap: Bitmap, fileName: String){
+        viewModelScope.launch {
+            val file = File(fileName)
+            val response = dataSourceRepo.getPresignedUrl(fileName)
+            withContext(Dispatchers.Main){
+                if (response.isSuccessful){
+                    uploadMedia(response.body()!!.url!!, file, "Sketch $fileName")
+                    setComponentData(
+                        indexForm,
+                        SketchValue(value = response.body()!!.fileId, bitmap = bitmap)
+                    )
+                } else {
+                    Log.e("WORX", "sketch $fileName failed to get url")
+                }
+            }
+        }
+    }
+
     private fun uploadMedia(url: String, myFile: File, fileExplaination: String) {
         val request = BinaryUploadRequest(this.application, url)
             .setMethod("PUT")
@@ -245,7 +301,7 @@ class DetailFormViewModel @Inject constructor(
                 if (result.isSuccessful) {
                     dataSourceRepo.insertOrUpdateSubmitForm(form.copy(status = 2)) //insertSubmission to db
                 } else {
-                    dataSourceRepo.insertOrUpdateSubmitForm(form.copy(status = 1)) //insertSubmission to db
+                    _toastMessage.value = Event("Submit Form Error ${result.code()}")
                 }
             } else {
                 dataSourceRepo.insertOrUpdateSubmitForm(form.copy(status = 1)) //insertSubmission to db
@@ -290,7 +346,7 @@ class DetailFormViewModel @Inject constructor(
         if (unFilledFields.isEmpty()) {
             submitForm { actionAfterSubmitted() }
         } else {
-            uiHandler.showToast("Form is not complete!")
+            _toastMessage.value = Event("Form is not complete!")
             uiState.update { it.copy(status = EventStatus.Filling,)
             }
         }
@@ -298,6 +354,9 @@ class DetailFormViewModel @Inject constructor(
 
     fun saveFormAsDraft(actionAfterSaved: () -> Unit) {
         viewModelScope.launch {
+            if (uiState.value.detailForm is SubmitForm) {
+                (uiState.value.detailForm as SubmitForm).dbId?.let { dbId -> dataSourceRepo.deleteSubmitFormById(dbId) }
+            }
             val form = createSubmitForm()
             dataSourceRepo.insertOrUpdateSubmitForm(form.copy(status = 0))
             actionAfterSaved()
@@ -365,9 +424,5 @@ class DetailFormViewModel @Inject constructor(
         viewModelScope.launch {
             syncServerWork.syncWithServer(typeData, viewLifecycleOwner) { refreshData() }
         }
-    }
-
-    interface UIHandler {
-        fun showToast(text: String)
     }
 }

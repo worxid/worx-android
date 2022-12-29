@@ -124,7 +124,7 @@ fun CreateTeamScreen(
             WorxTextField(
                 theme = theme,
                 label = "Organization Name",
-                inputType = KeyboardOptions(keyboardType = KeyboardType.Phone),
+                inputType = KeyboardOptions(keyboardType = KeyboardType.Text),
                 onValueChange = {
                     orgPr = if (it == "" || it.isEmpty()) {
                         0

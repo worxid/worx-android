@@ -39,10 +39,10 @@ class CameraViewModel @Inject constructor(
         _navigateTo.value = Event(MainScreen.CameraPhoto)
     }
 
-    fun navigateToDetail() {
+    fun navigateTo(screen: MainScreen) {
         _photoPath.value = null
         _indexForm.value = null
-        _navigateTo.value = Event(MainScreen.Detail)
+        _navigateTo.value = Event(screen)
     }
 
 }

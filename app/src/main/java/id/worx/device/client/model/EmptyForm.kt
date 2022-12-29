@@ -14,7 +14,12 @@ enum class Type(val type: String){
     File("file"),
     Photo("photo"),
     Signature("signature"),
-    Separator("separator")
+    Separator("separator"),
+    Time("time"),
+    Boolean("boolean"),
+    Integer("integer"),
+    BarcodeField("barcode"),
+    Sketch("sketch")
 }
 
 @Entity(tableName = "form")
@@ -47,7 +52,7 @@ abstract class Fields (
     @SerializedName("description" ) open var description : String?          = null,
     @SerializedName("type"        ) open var type        : String?          = null,
     @SerializedName("required"    ) open var required    : Boolean?         = null,
-                                    open var isValid     : Boolean?         = null,
+    @Transient                      open var isValid     : Boolean?         = null,
 )
 
 data class Group (

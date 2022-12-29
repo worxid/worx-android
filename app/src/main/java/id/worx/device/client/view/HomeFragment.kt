@@ -4,18 +4,21 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.platform.ComposeView
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import dagger.hilt.android.AndroidEntryPoint
 import id.worx.device.client.MainScreen
 import id.worx.device.client.Util
 import id.worx.device.client.data.api.SyncServer.Companion.DOWNLOADFROMSERVER
 import id.worx.device.client.data.database.Session
 import id.worx.device.client.navigate
-import id.worx.device.client.screen.components.WorxThemeStatusBar
 import id.worx.device.client.screen.main.HomeScreen
+import id.worx.device.client.screen.main.SettingTheme
+import id.worx.device.client.theme.RedDark
 import id.worx.device.client.theme.WorxTheme
 import id.worx.device.client.viewmodel.DetailFormViewModel
 import id.worx.device.client.viewmodel.HomeViewModelImpl
@@ -52,8 +55,15 @@ class HomeFragment : Fragment() {
         return ComposeView(requireContext()).apply {
             setContent {
                 val theme = themeViewModel.theme.value
+                val systemUiController = rememberSystemUiController()
                 WorxTheme(theme = theme) {
-                    WorxThemeStatusBar()
+
+                    SideEffect {
+                        if (theme == SettingTheme.Dark) {
+                            systemUiController.setStatusBarColor(RedDark)
+                        }
+                    }
+
                     HomeScreen(
                         formList = viewModel.uiState.collectAsState().value.list,
                         draftList = viewModel.uiState.collectAsState().value.drafts,

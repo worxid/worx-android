@@ -99,6 +99,10 @@ class HomeViewModelImpl @Inject constructor(
         _navigateTo.value = Event(MainScreen.AdvanceSettings)
     }
 
+    fun goToScannerScreen(){
+        _navigateTo.value = Event((MainScreen.ScannerScreen))
+    }
+
     /**
      * Refresh data and update the UI state accordingly
      */

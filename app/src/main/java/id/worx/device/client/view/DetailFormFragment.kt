@@ -18,17 +18,15 @@ import id.worx.device.client.screen.DetailFormEvent
 import id.worx.device.client.screen.DetailFormScreen
 import id.worx.device.client.screen.components.WorxThemeStatusBar
 import id.worx.device.client.theme.WorxTheme
-import id.worx.device.client.viewmodel.CameraViewModel
-import id.worx.device.client.viewmodel.DetailFormViewModel
-import id.worx.device.client.viewmodel.HomeViewModelImpl
-import id.worx.device.client.viewmodel.ThemeViewModelImpl
+import id.worx.device.client.viewmodel.*
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class DetailFormFragment : Fragment(), DetailFormViewModel.UIHandler {
+class DetailFormFragment : Fragment() {
 
     private val viewModel by activityViewModels<DetailFormViewModel>()
     private val cameraViewModel by activityViewModels<CameraViewModel>()
+    private val scannerViewModel by activityViewModels<ScannerViewModel>()
     private val homeViewModel by activityViewModels<HomeViewModelImpl>()
     private val themeViewModel by activityViewModels<ThemeViewModelImpl>()
     @Inject lateinit var session: Session
@@ -38,7 +36,11 @@ class DetailFormFragment : Fragment(), DetailFormViewModel.UIHandler {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        viewModel.uiHandler = this
+        viewModel.toastMessage.observe(viewLifecycleOwner) {
+            it.getContentIfNotHandled()?.let { text ->
+                Toast.makeText(requireContext(), text, Toast.LENGTH_LONG).show()
+            }
+        }
 
         viewModel.navigateTo.observe(viewLifecycleOwner) { navigateToEvent ->
             navigateToEvent.getContentIfNotHandled()?.let { navigateTo ->
@@ -54,6 +56,7 @@ class DetailFormFragment : Fragment(), DetailFormViewModel.UIHandler {
                     DetailFormScreen(
                         viewModel,
                         cameraViewModel,
+                        scannerViewModel,
                         session
                     ) { event ->
                         when (event) {
@@ -77,11 +80,5 @@ class DetailFormFragment : Fragment(), DetailFormViewModel.UIHandler {
                 }
             }
         }
-    }
-
-
-
-    override fun showToast(text: String) {
-        Toast.makeText(activity?.applicationContext, text, Toast.LENGTH_SHORT).show()
     }
 }
