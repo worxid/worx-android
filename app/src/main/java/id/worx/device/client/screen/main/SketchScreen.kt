@@ -165,8 +165,6 @@ fun SketchScreen(
                         }
                     })
 
-//
-
             SketchTopMenu(
                 modifier = modifier
                     .align(Alignment.TopCenter)
@@ -273,119 +271,91 @@ private fun SketchCanvasView(
         mutableStateOf(Offset.Unspecified)
     }
 
+    // Draw canvas section
     val drawModifier = modifier
         .background(Color.White)
-        .dragMotionEvent(onDragStart = {
-            if (allowDrawing.value) {
-                motionEvent = MotionEvent.Down
-                currentPosition = it.position
-                if (it.pressed != it.previousPressed) it.consume()
-            }
-        }, onDrag = {
-            if (allowDrawing.value) {
-                motionEvent = MotionEvent.Move
-                currentPosition = it.position
-
-//                    if (currentMenu.value == Menus.Text) {
-//                        val change = it.positionChange()
-//                        paths.forEach { entry ->
-//                            val path = entry.first
-//                            path.translate(change)
-//                        }
-//                        currentPath.value.translate(change)
-//                    }
-                if (it.positionChange() != Offset.Zero) it.consume()
-            }
-
-        }, onDragEnd = {
-            if (allowDrawing.value) {
-                motionEvent = MotionEvent.Up
-                if (it.pressed != it.previousPressed) it.consume()
-            }
-        })
-
-    Box() {
-        Canvas(modifier = drawModifier) {
-            if (allowDrawing.value) {
-                when (motionEvent) {
-                    MotionEvent.Down -> {
-                            currentPath.moveTo(currentPosition.x,
-                                currentPosition.y)
-                        previousPosition = currentPosition
-                    }
-
-                    MotionEvent.Move -> {
-                            currentPath.quadraticBezierTo(previousPosition.x,
-                                previousPosition.y,
-                                (previousPosition.x + currentPosition.x) / 2,
-                                (previousPosition.y + currentPosition.y) / 2)
-                        previousPosition = currentPosition
-                    }
-
-                    MotionEvent.Up -> {
-                        currentPath.lineTo(currentPosition.x,
-                            currentPosition.y)
-
-                        paths.add(Pair(currentPath,
-                            PathProperties(color = drawColor.value, stroke = drawBrush.value)))
-
-                        currentPath = Path()
-                        pathsUndone.clear()
-
-                        currentPosition = Offset.Unspecified
-                        previousPosition = currentPosition
-                        motionEvent = MotionEvent.Idle
-                    }
-                    else -> Unit
+        .dragMotionEvent(
+            onDragStart = {
+                if (allowDrawing.value) {
+                    motionEvent = MotionEvent.Down
+                    currentPosition = it.position
+                    if (it.pressed != it.previousPressed) it.consume()
                 }
-            }
+            },
+            onDrag = {
+                if (allowDrawing.value) {
+                    motionEvent = MotionEvent.Move
+                    currentPosition = it.position
 
-            with(drawContext.canvas.nativeCanvas) {
-                val checkPoint = saveLayer(null, null)
+                    if (it.positionChange() != Offset.Zero) it.consume()
+                }
+            },
+            onDragEnd = {
+                if (allowDrawing.value) {
+                    motionEvent = MotionEvent.Up
+                    if (it.pressed != it.previousPressed) it.consume()
+                }
+            })
 
-                imageCanvas?.let {
-                    drawImage(imageCanvas.asImageBitmap(),
-                        topLeft = Offset(x = (size.width - it.width) / 2f,
-                            y = (size.height - it.height) / 2f))
+    Canvas(modifier = drawModifier) {
+        if (allowDrawing.value) {
+            when (motionEvent) {
+                MotionEvent.Down -> {
+                    currentPath.moveTo(currentPosition.x, currentPosition.y)
+                    previousPosition = currentPosition
                 }
 
-                paths.forEach {
-                    val path = it.first
-                    val property = it.second
-
-                    drawPath(path = path, color = property.color, style = Stroke(property.stroke))
+                MotionEvent.Move -> {
+                    currentPath.quadraticBezierTo(previousPosition.x,
+                        previousPosition.y,
+                        (previousPosition.x + currentPosition.x) / 2,
+                        (previousPosition.y + currentPosition.y) / 2)
+                    previousPosition = currentPosition
                 }
 
-                if (motionEvent != MotionEvent.Idle) {
-                    drawPath(path = currentPath,
-                        color = drawColor.value,
-                        style = Stroke(drawBrush.value))
-                }
+                MotionEvent.Up -> {
+                    currentPath.lineTo(currentPosition.x, currentPosition.y)
 
-//            if (textCanvas.value.isNotBlank()) {
-//                val paint = android.graphics.Paint().apply {
-//                    textAlign = android.graphics.Paint.Align.CENTER
-//                    textSize = 64f
-//                    color = drawTextColor.value.toArgb()
-//                }
-//                drawText(textCanvas.value, center.x, center.y, paint)
-//            }
-//                texts.forEach {
-//                    val text = it.first
-//                    val textProperties = it.second
-//
-//                    val paint = android.graphics.Paint().apply {
-//                        textAlign = android.graphics.Paint.Align.CENTER
-//                        textSize = 64f
-//                        color = textProperties.color.toArgb()
-//                    }
-//                    drawText(text, center.x, center.y, paint)
-//                }
-                restoreToCount(checkPoint)
+                    paths.add(Pair(currentPath,
+                        PathProperties(color = drawColor.value, stroke = drawBrush.value)))
+
+                    currentPath = Path()
+                    pathsUndone.clear()
+
+                    currentPosition = Offset.Unspecified
+                    previousPosition = currentPosition
+                    motionEvent = MotionEvent.Idle
+                }
+                else -> Unit
             }
         }
+
+        with(drawContext.canvas.nativeCanvas) {
+            val checkPoint = saveLayer(null, null)
+
+            imageCanvas?.let {
+                drawImage(imageCanvas.asImageBitmap(),
+                    topLeft = Offset(x = (size.width - it.width) / 2f,
+                        y = (size.height - it.height) / 2f))
+            }
+
+            paths.forEach {
+                val path = it.first
+                val property = it.second
+
+                drawPath(path = path, color = property.color, style = Stroke(property.stroke))
+            }
+
+            if (motionEvent != MotionEvent.Idle) {
+                drawPath(path = currentPath,
+                    color = drawColor.value,
+                    style = Stroke(drawBrush.value))
+            }
+            restoreToCount(checkPoint)
+        }
     }
-    // Ini ntar bisa diganti dengan lazy column utk optimasissasi codenya
+
+    // Draw text section
 
     var selected by remember {
         mutableStateOf(false)
@@ -704,16 +674,18 @@ private fun SketchBottomMenu(
         horizontalArrangement = Arrangement.SpaceBetween) {
 
         Row {
-            IconButton(onClick = {
-                if (cameraPermissions.all {
-                        ContextCompat.checkSelfPermission(context,
-                            it) == PackageManager.PERMISSION_GRANTED
-                    }) {
-                    navigateToPhotoCamera()
-                } else {
-                    cameraPermissionLauncher.launch(cameraPermissions)
-                }
-            }, modifier = Modifier.padding(end = 6.dp)) {
+            IconButton(
+                onClick = {
+                    if (cameraPermissions.all {
+                            ContextCompat.checkSelfPermission(context,
+                                it) == PackageManager.PERMISSION_GRANTED
+                        }) {
+                        navigateToPhotoCamera()
+                    } else {
+                        cameraPermissionLauncher.launch(cameraPermissions)
+                    }
+                },
+                modifier = Modifier.padding(end = 16.dp)) {
                 Icon(
                     imageVector = Icons.Default.PhotoCamera,
                     contentDescription = "Camera",
@@ -785,7 +757,7 @@ private fun ColorPickerDialog(
 }
 
 @Composable
-fun TransparentTextField(
+private fun TransparentTextField(
     value: String,
     onValueChange: (String) -> Unit,
     color: Color,
