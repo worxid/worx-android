@@ -35,7 +35,7 @@ fun WorxSketch(
     indexForm: Int,
     viewModel: DetailFormViewModel,
     session: Session,
-    validation: Boolean
+    validation: Boolean,
 ) {
     val context = LocalContext.current
 

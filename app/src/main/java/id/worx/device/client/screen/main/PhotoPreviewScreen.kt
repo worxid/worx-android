@@ -1,5 +1,7 @@
 package id.worx.device.client.screen.main
 
+import android.net.Uri
+import androidx.activity.compose.LocalOnBackPressedDispatcherOwner
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -16,6 +18,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.AsyncImage
+import id.worx.device.client.MainScreen
 import id.worx.device.client.R
 import id.worx.device.client.model.fieldmodel.ImageValue
 import id.worx.device.client.theme.WorxTheme
@@ -30,6 +33,8 @@ fun PhotoPreviewScreen(
     detailViewModel: DetailFormViewModel,
     addPhotoToGallery: (String) -> Unit
 ) {
+    val dispatcher = LocalOnBackPressedDispatcherOwner.current!!.onBackPressedDispatcher
+
     Box(modifier = Modifier.fillMaxSize()) {
         AsyncImage(
             model = viewModel.photoPath.value?.let { File(it) },
@@ -68,17 +73,38 @@ fun PhotoPreviewScreen(
             }
             Row(
                 modifier = Modifier
-                    .padding(end= 24.dp, top = 20.dp, bottom = 20.dp)
+                    .padding(end = 24.dp, top = 20.dp, bottom = 20.dp)
                     .clickable {
                         val path = viewModel.photoPath.value!!
-                        val index = viewModel.indexForm.value!!
-                        val id = detailViewModel.uiState.value.detailForm!!.fields[index].id
-                        val value = detailViewModel.uiState.value.values[id] as ImageValue?
-                        var filePath = value?.filePath?.toList() ?: listOf()
-                        ArrayList(filePath).apply { add(path) }.also { array -> filePath = array.toList() }
-                        detailViewModel.getPresignedUrl(ArrayList(filePath), index, 2)
+                        val navigateFrom = detailViewModel.navigateFrom.value!!
+
                         addPhotoToGallery(path)
-                        viewModel.navigateToDetail()
+
+                        when (navigateFrom) {
+                            MainScreen.Detail -> {
+                                val index = viewModel.indexForm.value!!
+                                val id = detailViewModel.uiState.value.detailForm!!.fields[index].id
+                                val value = detailViewModel.uiState.value.values[id] as ImageValue?
+                                var filePath = value?.filePath?.toList() ?: listOf()
+
+                                ArrayList(filePath)
+                                    .apply { add(path) }
+                                    .also { array -> filePath = array.toList() }
+                                detailViewModel.getPresignedUrl(ArrayList(filePath), index, 2)
+                                viewModel.navigateTo(MainScreen.Detail)
+                            }
+                            MainScreen.Sketch -> {
+                                val uri = Uri.fromFile(File(path))
+
+                                detailViewModel.setCameraResultUri(uri)
+                                viewModel.navigateTo(MainScreen.Sketch)
+//                                dispatcher.onBackPressed()
+                            }
+                            else -> {
+
+                            }
+                        }
+
                     },
                 verticalAlignment = Alignment.CenterVertically
             ) {

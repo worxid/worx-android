@@ -24,10 +24,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Check
-import androidx.compose.material.icons.filled.Collections
-import androidx.compose.material.icons.filled.TextFields
-import androidx.compose.material.icons.filled.Undo
+import androidx.compose.material.icons.filled.*
 import androidx.compose.material.icons.outlined.Edit
 import androidx.compose.runtime.*
 import androidx.compose.runtime.snapshots.SnapshotStateList
@@ -39,16 +36,13 @@ import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.*
 import androidx.compose.ui.graphics.drawscope.Stroke
-import androidx.compose.ui.input.pointer.consumeAllChanges
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.input.pointer.positionChange
+import androidx.compose.ui.layout.onGloballyPositioned
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.IntOffset
-import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
+import androidx.compose.ui.unit.*
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.zIndex
 import androidx.core.content.ContextCompat
@@ -57,12 +51,12 @@ import com.sangcomz.fishbun.FishBun
 import com.sangcomz.fishbun.adapter.image.impl.CoilAdapter
 import dev.shreyaspatil.capturable.Capturable
 import dev.shreyaspatil.capturable.controller.rememberCaptureController
+import id.worx.device.client.MainScreen
 import id.worx.device.client.R
 import id.worx.device.client.screen.components.WorxTopAppBar
 import id.worx.device.client.screen.components.getActivity
 import id.worx.device.client.theme.PrimaryMain
 import id.worx.device.client.theme.PrimaryMainDark
-import id.worx.device.client.theme.WorxTheme
 import id.worx.device.client.theme.fontRoboto
 import id.worx.device.client.util.*
 import id.worx.device.client.viewmodel.DetailFormViewModel
@@ -72,23 +66,23 @@ import kotlin.math.roundToInt
 fun SketchScreen(
     modifier: Modifier = Modifier,
     viewModel: DetailFormViewModel,
-    onBackNavigation: () -> Unit
+    onBackNavigation: () -> Unit,
 ) {
-    Scaffold(
-        topBar = {
-            WorxTopAppBar(
-                onBack = onBackNavigation,
-                title = "Draw Sketch",
-                useProgressBar = false
-            )
-        }
-    ) { innerPadding ->
-        Box(
-            modifier = modifier
-                .padding(innerPadding)
-                .background(MaterialTheme.colors.secondary)
-                .fillMaxSize()
-        ) {
+//    val dispatcher = LocalOnBackPressedDispatcherOwner.current!!.onBackPressedDispatcher
+//
+//    BackHandler {
+//        dispatcher.onBackPressed()
+//    }
+
+    Scaffold(topBar = {
+        WorxTopAppBar(onBack = onBackNavigation, title = "Draw Sketch", useProgressBar = false)
+    }) { innerPadding ->
+        Box(modifier = modifier
+            .padding(innerPadding)
+            .background(MaterialTheme.colors.secondary)
+            .fillMaxSize()) {
+
+            // TODO: Move variable that not used globally
             val context = LocalContext.current
 
             val state = viewModel.uiState.collectAsState()
@@ -120,28 +114,8 @@ fun SketchScreen(
                 mutableStateListOf<Pair<Path, PathProperties>>()
             }
 
-            val currentPath = remember {
-                mutableStateOf(Path())
-            }
-
-            val motionEvent = remember {
-                mutableStateOf(MotionEvent.Idle)
-            }
-
-            val currentPosition = remember {
-                mutableStateOf(Offset.Unspecified)
-            }
-
-            val previousPosition = remember {
-                mutableStateOf(Offset.Unspecified)
-            }
-
-            val drawMode = remember {
-                mutableStateOf(DrawMode.Draw)
-            }
-
             val allowDrawing = remember {
-                mutableStateOf(true)
+                mutableStateOf(false)
             }
 
             // Image canvas
@@ -153,7 +127,7 @@ fun SketchScreen(
             val texts = remember {
                 mutableStateListOf<Pair<String, TextProperties>>()
             }
-            val textCanvas = remember {
+            val tempText = remember {
                 mutableStateOf("")
             }
             val showTextFieldOnCanvas = remember {
@@ -169,19 +143,25 @@ fun SketchScreen(
                 mutableStateOf<Bitmap?>(null)
             }
 
-            val launcherGallery = rememberLauncherForActivityResult(
-                contract = ActivityResultContracts.StartActivityForResult(),
-                onResult = {
-                    if (it.resultCode == Activity.RESULT_OK &&
-                        it.data != null
-                    ) {
-                        it.data!!.getParcelableArrayListExtra<Uri>(FishBun.INTENT_PATH)
-                            ?.forEach { uri ->
-                                val bitmap = uri.toBitmap(context)
-                                imageCanvasBitmap = bitmap
-                            }
-                    }
-                })
+            val cameraResultUri = viewModel.cameraResultUri.value
+
+            if (cameraResultUri != null) {
+                imageCanvasBitmap = cameraResultUri.toBitmap(context)
+            }
+
+            val launcherGallery =
+                rememberLauncherForActivityResult(contract = ActivityResultContracts.StartActivityForResult(),
+                    onResult = {
+                        if (it.resultCode == Activity.RESULT_OK && it.data != null) {
+                            it.data!!.getParcelableArrayListExtra<Uri>(FishBun.INTENT_PATH)
+                                ?.forEach { uri ->
+                                    val bitmap = uri.toBitmap(context)
+                                    imageCanvasBitmap = bitmap
+                                }
+                        }
+                    })
+
+//
 
             SketchTopMenu(
                 modifier = modifier
@@ -192,8 +172,8 @@ fun SketchScreen(
                 drawColor = drawColor,
                 drawTextColor = drawTextColor,
                 showColorPicker = showColorPicker,
-                isPathNotEmpty = paths.isNotEmpty(),
                 allowDrawing = allowDrawing,
+                isPathNotEmpty = paths.isNotEmpty(),
                 showTextFieldOnCanvas = showTextFieldOnCanvas,
                 onDone = {
                     currentMenu.value = Menus.Default
@@ -211,11 +191,9 @@ fun SketchScreen(
 
                         pathsUndone.add(Pair(lastPath, lastPathProperty))
                     }
-                }
-            )
+                })
 
-            Capturable(
-                modifier = modifier.fillMaxSize(),
+            Capturable(modifier = modifier.fillMaxSize(),
                 controller = captureController,
                 onCaptured = { imageBitmap, error ->
                     if (imageBitmap != null) {
@@ -225,41 +203,33 @@ fun SketchScreen(
                         Log.e("WORX", "Sketch capture error: ${error.message}")
                     }
                 }) {
-                SketchCanvasView(
-                    modifier = modifier.fillMaxSize(),
+                SketchCanvasView(modifier = modifier.fillMaxSize(),
                     paths = paths,
                     texts = texts,
                     pathsUndone = pathsUndone,
-                    currentPath = currentPath,
-                    motionEvent = motionEvent,
-                    currentPosition = currentPosition,
-                    previousPosition = previousPosition,
-                    drawMode = drawMode,
                     allowDrawing = allowDrawing,
                     drawBrush = drawBrush,
                     drawColor = drawColor,
                     drawTextColor = drawTextColor,
                     imageCanvas = imageCanvasBitmap,
-                    textCanvas = textCanvas,
+                    tempText = tempText,
                     showTextFieldOnCanvas = showTextFieldOnCanvas,
-                    currentMenu = currentMenu
-                )
+                    currentMenu = currentMenu)
             }
 
             if (currentMenu.value == Menus.Default) {
-                SketchBottomMenu(
-                    modifier = modifier.align(Alignment.BottomCenter),
+                SketchBottomMenu(modifier = modifier.align(Alignment.BottomCenter),
                     context = context,
                     launcher = launcherGallery,
                     onDone = {
                         if (capturedBitmap.value != null) {
-                            viewModel.saveSketch(
-                                capturedBitmap.value!!,
-                                viewModel.uiState.value.currentComponent
-                            )
+                            viewModel.saveSketch(capturedBitmap.value!!,
+                                viewModel.uiState.value.currentComponent)
                         }
-                    }
-                )
+                    },
+                    navigateToPhotoCamera = {
+                        viewModel.goToCameraPhoto(navigateFrom = MainScreen.Sketch)
+                    })
             }
 
         }
@@ -271,40 +241,60 @@ private fun SketchCanvasView(
     modifier: Modifier,
     paths: SnapshotStateList<Pair<Path, PathProperties>>,
     pathsUndone: SnapshotStateList<Pair<Path, PathProperties>>,
-    currentPath: MutableState<Path>,
-    motionEvent: MutableState<MotionEvent>,
-    currentPosition: MutableState<Offset>,
-    previousPosition: MutableState<Offset>,
-    drawMode: MutableState<DrawMode>,
-    allowDrawing: MutableState<Boolean>,
     drawBrush: MutableState<Float>,
     drawColor: MutableState<Color>,
     imageCanvas: Bitmap?,
     showTextFieldOnCanvas: MutableState<Boolean>,
-    textCanvas: MutableState<String>,
+    tempText: MutableState<String>,
     drawTextColor: MutableState<Color>,
     texts: SnapshotStateList<Pair<String, TextProperties>>,
-    currentMenu: MutableState<Menus>
+    currentMenu: MutableState<Menus>,
+    allowDrawing: MutableState<Boolean>,
 ) {
     val context = LocalContext.current
 
+    var currentPath by remember {
+        mutableStateOf(Path())
+    }
+
+    var motionEvent by remember {
+        mutableStateOf(MotionEvent.Idle)
+    }
+
+    var currentPosition by remember {
+        mutableStateOf(Offset.Unspecified)
+    }
+
+    var previousPosition by remember {
+        mutableStateOf(Offset.Unspecified)
+    }
+
+    // Maybe Remove (?)
+    var drawMode by remember {
+        mutableStateOf(DrawMode.Draw)
+    }
+
+    val config = LocalConfiguration.current
+
+    val centerItem =
+        Offset((config.screenWidthDp.toFloat() / 2f), (config.screenHeightDp.toFloat() / 2f))
+
+    var mSize by remember {
+        mutableStateOf(Offset.Zero)
+    }
+
     val drawModifier = modifier
         .background(Color.White)
-        .dragMotionEvent(
-            onDragStart = {
-                if (allowDrawing.value) {
-                    motionEvent.value = MotionEvent.Down
-                    currentPosition.value = it.position
-                    if (it.pressed != it.previousPressed) it.consume()
-                }
-//                if (currentMenu.value == Menus.Text) {
-//                    showTextFieldOnCanvas.value = !showTextFieldOnCanvas.value
-//                }
-            },
-            onDrag = {
-                if (allowDrawing.value) {
-                    motionEvent.value = MotionEvent.Move
-                    currentPosition.value = it.position
+        .dragMotionEvent(onDragStart = {
+            if (allowDrawing.value) {
+                motionEvent = MotionEvent.Down
+                currentPosition = it.position
+                if (it.pressed != it.previousPressed) it.consume()
+            }
+        }, onDrag = {
+            if (allowDrawing.value) {
+                motionEvent = MotionEvent.Move
+                currentPosition = it.position
 
 //                    if (currentMenu.value == Menus.Text) {
 //                        val change = it.positionChange()
@@ -314,123 +304,58 @@ private fun SketchCanvasView(
 //                        }
 //                        currentPath.value.translate(change)
 //                    }
-                    if (it.positionChange() != Offset.Zero) it.consume()
-                }
-
-            },
-            onDragEnd = {
-                if (allowDrawing.value) {
-                    motionEvent.value = MotionEvent.Up
-                    if (it.pressed != it.previousPressed) it.consume()
-                }
+                if (it.positionChange() != Offset.Zero) it.consume()
             }
-        )
 
-    // data offsetnya jg sepertinya bisa disatukan dengan strint & property textnya,
-    // bisa dibikin ke satu data class baru
-    var offsetX by remember { mutableStateOf(0f) }
-    var offsetY by remember { mutableStateOf(0f) }
+        }, onDragEnd = {
+            if (allowDrawing.value) {
+                motionEvent = MotionEvent.Up
+                if (it.pressed != it.previousPressed) it.consume()
+            }
+        })
 
-    var offsetX2 by remember { mutableStateOf(0f) }
-    var offsetY2 by remember { mutableStateOf(0f) }
-
-    var offsetX3 by remember { mutableStateOf(0f) }
-    var offsetY3 by remember { mutableStateOf(0f) }
-
-    if (showTextFieldOnCanvas.value) {
-        val focusRequester = remember {
-            FocusRequester()
-        }
-
-        val tempText = remember {
-            mutableStateOf("")
-        }
-
-        LaunchedEffect(key1 = Unit) {
-            focusRequester.requestFocus()
-        }
-        Box(
-            modifier = modifier
-                .fillMaxSize()
-                .background(Color.Black.copy(0.54f))
-                .zIndex(2f)
-                .pointerInput(Unit) {
-                    detectTapGestures {
-                        showTextFieldOnCanvas.value = false
-                        textCanvas.value = tempText.value
-                        texts.add(
-                            Pair(
-                                tempText.value,
-                                TextProperties(
-                                    color = drawTextColor.value
-                                )
-                            )
-                        )
-                    }
-                },
-            contentAlignment = Alignment.Center
-        ) {
-            TextField(
-                value = tempText.value,
-                onValueChange = {
-                    tempText.value = it
-                },
-                modifier = Modifier
-                    .focusRequester(focusRequester)
-            )
-        }
+    var centerText by remember {
+        mutableStateOf(Offset.Zero)
     }
 
     Box() {
         Canvas(modifier = drawModifier) {
+            centerText = center
             if (allowDrawing.value) {
-                when (motionEvent.value) {
+                when (motionEvent) {
                     MotionEvent.Down -> {
-                        if (drawMode.value != DrawMode.Touch) {
-                            currentPath.value.moveTo(
-                                currentPosition.value.x,
-                                currentPosition.value.y
-                            )
+                        if (drawMode != DrawMode.Touch) {
+                            currentPath.moveTo(currentPosition.x,
+                                currentPosition.y)
                         }
-                        previousPosition.value = currentPosition.value
+                        previousPosition = currentPosition
                     }
 
                     MotionEvent.Move -> {
-                        if (drawMode.value != DrawMode.Touch) {
-                            currentPath.value.quadraticBezierTo(
-                                previousPosition.value.x,
-                                previousPosition.value.y,
-                                (previousPosition.value.x + currentPosition.value.x) / 2,
-                                (previousPosition.value.y + currentPosition.value.y) / 2
-                            )
+                        if (drawMode != DrawMode.Touch) {
+                            currentPath.quadraticBezierTo(previousPosition.x,
+                                previousPosition.y,
+                                (previousPosition.x + currentPosition.x) / 2,
+                                (previousPosition.y + currentPosition.y) / 2)
                         }
-                        previousPosition.value = currentPosition.value
+                        previousPosition = currentPosition
                     }
 
                     MotionEvent.Up -> {
-                        if (drawMode.value != DrawMode.Touch) {
-                            currentPath.value.lineTo(
-                                currentPosition.value.x,
-                                currentPosition.value.y
-                            )
+                        if (drawMode != DrawMode.Touch) {
+                            currentPath.lineTo(currentPosition.x,
+                                currentPosition.y)
 
-                            paths.add(
-                                Pair(
-                                    currentPath.value,
-                                    PathProperties(
-                                        color = drawColor.value,
-                                        stroke = drawBrush.value
-                                    )
-                                )
-                            )
+                            paths.add(Pair(currentPath,
+                                PathProperties(color = drawColor.value, stroke = drawBrush.value)))
 
-                            currentPath.value = Path()
+                            currentPath = Path()
                         }
                         pathsUndone.clear()
 
-                        currentPosition.value = Offset.Unspecified
-                        previousPosition.value = currentPosition.value
-                        motionEvent.value = MotionEvent.Idle
+                        currentPosition = Offset.Unspecified
+                        previousPosition = currentPosition
+                        motionEvent = MotionEvent.Idle
                     }
                     else -> Unit
                 }
@@ -440,32 +365,25 @@ private fun SketchCanvasView(
                 val checkPoint = saveLayer(null, null)
 
                 imageCanvas?.let {
-                    drawImage(
-                        imageCanvas.asImageBitmap(), topLeft = Offset(
-                            x = (size.width - it.width) / 2f,
-                            y = (size.height - it.height) / 2f
-                        )
-                    )
+                    drawImage(imageCanvas.asImageBitmap(),
+                        topLeft = Offset(x = (size.width - it.width) / 2f,
+                            y = (size.height - it.height) / 2f))
                 }
 
                 paths.forEach {
                     val path = it.first
                     val property = it.second
 
-                    drawPath(
-                        path = path,
-                        color = property.color,
-                        style = Stroke(property.stroke)
-                    )
+                    drawPath(path = path, color = property.color, style = Stroke(property.stroke))
                 }
 
-                if (motionEvent.value != MotionEvent.Idle) {
-                    drawPath(
-                        path = currentPath.value,
+                if (motionEvent != MotionEvent.Idle) {
+                    drawPath(path = currentPath,
                         color = drawColor.value,
-                        style = Stroke(drawBrush.value)
-                    )
+                        style = Stroke(drawBrush.value))
                 }
+
+                Log.d("Center", "$center")
 
 //            if (textCanvas.value.isNotBlank()) {
 //                val paint = android.graphics.Paint().apply {
@@ -491,49 +409,92 @@ private fun SketchCanvasView(
         }
     }
     // Ini ntar bisa diganti dengan lazy column utk optimasissasi codenya
-    Column{
-            Text(
-                modifier = Modifier
-                    .padding(96.dp)
-                    .offset { IntOffset(offsetX.roundToInt(), offsetY.roundToInt()) }
-                    .pointerInput(Unit) {
-                        detectDragGestures { change, dragAmount ->
-                            change.consumeAllChanges()
+
+    var selected by remember {
+        mutableStateOf(false)
+    }
+
+    if (showTextFieldOnCanvas.value) {
+        val focusRequester = remember {
+            FocusRequester()
+        }
+
+        LaunchedEffect(key1 = Unit) {
+            focusRequester.requestFocus()
+        }
+
+        Box(modifier = Modifier
+            .fillMaxSize()
+            .background(Color.Black.copy(0.54f))
+            .zIndex(2f)
+            .pointerInput(Unit) {
+                detectTapGestures {
+                    showTextFieldOnCanvas.value = false
+                    texts.add(Pair(tempText.value,
+                        TextProperties(color = drawTextColor.value, offset = mSize)))
+                    currentMenu.value = Menus.Default
+                    tempText.value = ""
+                    Log.d("canvas center", centerText.toString())
+                }
+            }, contentAlignment = Alignment.Center) {
+            TransparentTextField(
+                modifier = Modifier.focusRequester(focusRequester),
+                value = tempText.value,
+                onValueChange = {
+                    tempText.value = it
+                },
+                color = drawTextColor.value
+            )
+        }
+    }
+
+    Box(
+        modifier = Modifier.onGloballyPositioned { coordinates ->
+            mSize = Offset(coordinates.size.center.x.toFloat(), coordinates.size.center.y.toFloat())
+        },
+        contentAlignment = Alignment.Center
+    ) {
+        texts.forEach {
+            var offsetX by remember { mutableStateOf(0f) }
+            var offsetY by remember { mutableStateOf(0f) }
+
+            val text = it.first
+            val textProperties = it.second
+
+            Text(modifier = Modifier
+                .offset {
+                    IntOffset(offsetX.roundToInt(), offsetY.roundToInt())
+                }
+                .pointerInput(Unit) {
+                    detectTapGestures {
+                        selected = true
+                        Toast
+                            .makeText(context, "Selected $text", Toast.LENGTH_SHORT)
+                            .show()
+                    }
+                }
+                .pointerInput(Unit) {
+                    detectDragGestures(
+                        onDragEnd = {
+                            if (!allowDrawing.value)
+                                textProperties.offset = Offset(offsetX, offsetY)
+                        },
+                    ) { change, dragAmount ->
+                        if (!allowDrawing.value) {
+                            change.consume()
                             offsetX += dragAmount.x
                             offsetY += dragAmount.y
                         }
-                    },
-                text = "Text1",
-                style = TextStyle(color = Color.Black)
+                    }
+                }
+                .background(color = if (selected) Color.Green else Color.Transparent)
+                ,
+                text = text,
+                color = textProperties.color,
+                fontSize = 18.sp
             )
-        Text(
-            modifier = Modifier
-                .padding(12.dp)
-                .offset { IntOffset(offsetX2.roundToInt(), offsetY2.roundToInt()) }
-                .pointerInput(Unit) {
-                    detectDragGestures { change, dragAmount ->
-                        change.consumeAllChanges()
-                        offsetX2 += dragAmount.x
-                        offsetY2 += dragAmount.y
-                    }
-                },
-            text = "Text2",
-            style = TextStyle(color = Color.Black)
-        )
-        Text(
-            modifier = Modifier
-                .padding(12.dp)
-                .offset { IntOffset(offsetX3.roundToInt(), offsetY3.roundToInt()) }
-                .pointerInput(Unit) {
-                    detectDragGestures { change, dragAmount ->
-                        change.consumeAllChanges()
-                        offsetX3 += dragAmount.x
-                        offsetY3 += dragAmount.y
-                    }
-                },
-            text = "Text3",
-            style = TextStyle(color = Color.Black)
-        )
+        }
+
     }
 }
 
@@ -547,19 +508,17 @@ private fun SketchTopMenu(
     drawBrush: MutableState<Float>,
     drawColor: MutableState<Color>,
     isPathNotEmpty: Boolean,
-    allowDrawing: MutableState<Boolean>,
     showTextFieldOnCanvas: MutableState<Boolean>,
     drawTextColor: MutableState<Color>,
     currentMenu: MutableState<Menus>,
+    allowDrawing: MutableState<Boolean>,
 ) {
-    Row(
-        modifier = modifier
-            .fillMaxWidth()
-            .background(Color.Black.copy(0.54f))
-            .padding(16.dp),
+    Row(modifier = modifier
+        .fillMaxWidth()
+        .background(Color.Black.copy(0.54f))
+        .padding(16.dp),
         horizontalArrangement = Arrangement.SpaceBetween,
-        verticalAlignment = Alignment.CenterVertically
-    ) {
+        verticalAlignment = Alignment.CenterVertically) {
         Row {
             if (currentMenu.value != Menus.Default) {
                 TextButton(onClick = onDone) {
@@ -578,37 +537,30 @@ private fun SketchTopMenu(
                 Menus.Default -> {
                     allowDrawing.value = false
                     showTextFieldOnCanvas.value = false
-                    ShowDefaultMenu(
-                        onTextMenuClicked = {
-                            currentMenu.value = Menus.Text
-                        },
-                        onDrawMenuClicked = {
-                            currentMenu.value = Menus.Draw
-                        }
-                    )
+                    ShowDefaultMenu(onTextMenuClicked = {
+                        currentMenu.value = Menus.Text
+                    }, onDrawMenuClicked = {
+                        currentMenu.value = Menus.Draw
+                    })
                 }
                 Menus.Text -> {
                     allowDrawing.value = false
                     showTextFieldOnCanvas.value = true
-                    ShowTextMenu(
-                        modifier = modifier,
+                    ShowTextMenu(modifier = modifier,
                         showColorPicker = showColorPicker,
                         isPathNotEmpty = isPathNotEmpty,
                         drawTextColor = drawTextColor,
-                        onUndo = onUndo
-                    )
+                        onUndo = onUndo)
                 }
                 Menus.Draw -> {
                     allowDrawing.value = true
                     showTextFieldOnCanvas.value = false
-                    ShowDrawMenu(
-                        modifier = modifier,
+                    ShowDrawMenu(modifier = modifier,
                         showColorPicker = showColorPicker,
                         drawBrush = drawBrush,
                         drawColor = drawColor,
                         isPathNotEmpty = isPathNotEmpty,
-                        onUndo = onUndo
-                    )
+                        onUndo = onUndo)
                 }
             }
 
@@ -622,39 +574,29 @@ private fun ShowTextMenu(
     showColorPicker: MutableState<Boolean>,
     isPathNotEmpty: Boolean,
     onUndo: () -> Unit,
-    drawTextColor: MutableState<Color>
+    drawTextColor: MutableState<Color>,
 ) {
     IconButton(onClick = onUndo, enabled = isPathNotEmpty) {
-        Icon(
-            imageVector = Icons.Default.Undo,
+        Icon(imageVector = Icons.Default.Undo,
             contentDescription = "Undo",
-            tint = if (isPathNotEmpty) Color.White else PrimaryMainDark
-        )
+            tint = if (isPathNotEmpty) Color.White else PrimaryMainDark)
     }
     Spacer(modifier = modifier.width(8.dp))
-    FloatingActionButton(
-        modifier = modifier.size(48.dp),
+    FloatingActionButton(modifier = modifier.size(48.dp),
         onClick = {
             showColorPicker.value = true
         },
         elevation = FloatingActionButtonDefaults.elevation(0.dp),
-        backgroundColor = drawTextColor.value
-    ) {
+        backgroundColor = drawTextColor.value) {
         if (showColorPicker.value) {
-            ColorPickerDialog(
-                modifier = modifier,
-                initialColor = drawTextColor.value,
-                onDismiss = {
-                    showColorPicker.value = !showColorPicker.value
-                },
-                onPositiveClick = {
-                    drawTextColor.value = it
-                    showColorPicker.value = false
-                },
-                onNegativeClick = {
-                    showColorPicker.value = !showColorPicker.value
-                }
-            )
+            ColorPickerDialog(modifier = modifier, initialColor = drawTextColor.value, onDismiss = {
+                showColorPicker.value = !showColorPicker.value
+            }, onPositiveClick = {
+                drawTextColor.value = it
+                showColorPicker.value = false
+            }, onNegativeClick = {
+                showColorPicker.value = !showColorPicker.value
+            })
         }
     }
 }
@@ -681,51 +623,37 @@ private fun ShowDrawMenu(
     Spacer(modifier = modifier.width(8.dp))
     brushDensityLevel.forEach { level ->
         val selected = drawBrush.value.toInt() == level
-        IconButton(
-            modifier = modifier
-                .clip(CircleShape)
-                .background(color = if (selected) Color.Black.copy(0.54f) else Color.Transparent),
+        IconButton(modifier = modifier
+            .clip(CircleShape)
+            .background(color = if (selected) Color.Black.copy(0.54f) else Color.Transparent),
             onClick = {
                 drawBrush.value = level.toFloat()
-            }
-        ) {
-            Icon(
-                painter = when (level) {
-                    5 -> painterResource(id = R.drawable.ic_line_thin)
-                    10 -> painterResource(id = R.drawable.ic_line_medium)
-                    15 -> painterResource(id = R.drawable.ic_line_thick)
-                    else -> painterResource(id = -1)
-                },
-                contentDescription = null,
-                tint = Color.White
-            )
+            }) {
+            Icon(painter = when (level) {
+                5 -> painterResource(id = R.drawable.ic_line_thin)
+                10 -> painterResource(id = R.drawable.ic_line_medium)
+                15 -> painterResource(id = R.drawable.ic_line_thick)
+                else -> painterResource(id = -1)
+            }, contentDescription = null, tint = Color.White)
         }
         Spacer(modifier = modifier.width(8.dp))
     }
 
-    FloatingActionButton(
-        modifier = modifier.size(48.dp),
+    FloatingActionButton(modifier = modifier.size(48.dp),
         onClick = {
             showColorPicker.value = true
         },
         elevation = FloatingActionButtonDefaults.elevation(0.dp),
-        backgroundColor = drawColor.value
-    ) {
+        backgroundColor = drawColor.value) {
         if (showColorPicker.value) {
-            ColorPickerDialog(
-                modifier = modifier,
-                initialColor = drawColor.value,
-                onDismiss = {
-                    showColorPicker.value = !showColorPicker.value
-                },
-                onPositiveClick = {
-                    drawColor.value = it
-                    showColorPicker.value = false
-                },
-                onNegativeClick = {
-                    showColorPicker.value = !showColorPicker.value
-                }
-            )
+            ColorPickerDialog(modifier = modifier, initialColor = drawColor.value, onDismiss = {
+                showColorPicker.value = !showColorPicker.value
+            }, onPositiveClick = {
+                drawColor.value = it
+                showColorPicker.value = false
+            }, onNegativeClick = {
+                showColorPicker.value = !showColorPicker.value
+            })
         }
     }
 
@@ -733,16 +661,11 @@ private fun ShowDrawMenu(
 
 @Composable
 private fun ShowDefaultMenu(onTextMenuClicked: () -> Unit, onDrawMenuClicked: () -> Unit) {
-    IconButton(
-        onClick = onTextMenuClicked,
-        modifier = Modifier
-    ) {
+    IconButton(onClick = onTextMenuClicked, modifier = Modifier) {
         Icon(imageVector = Icons.Default.TextFields, contentDescription = null, tint = Color.White)
     }
 
-    IconButton(
-        onClick = onDrawMenuClicked
-    ) {
+    IconButton(onClick = onDrawMenuClicked) {
         Icon(imageVector = Icons.Outlined.Edit, contentDescription = null, tint = Color.White)
     }
 }
@@ -752,86 +675,97 @@ private fun SketchBottomMenu(
     modifier: Modifier,
     context: Context,
     launcher: ManagedActivityResultLauncher<Intent, ActivityResult>,
+    navigateToPhotoCamera: () -> Unit,
     onDone: () -> Unit,
 ) {
 
-    val permissions = arrayOf(
+    val galleryPermissions = arrayOf(
         Manifest.permission.READ_EXTERNAL_STORAGE,
         Manifest.permission.WRITE_EXTERNAL_STORAGE,
     )
 
+    var cameraPermissions =
+        arrayOf(Manifest.permission.CAMERA, Manifest.permission.WRITE_EXTERNAL_STORAGE)
+    if (Build.VERSION.SDK_INT > 32) {
+        cameraPermissions = arrayOf(Manifest.permission.CAMERA)
+    }
+
     val path = ArrayList<Uri>()
 
-    val fishbun = FishBun.with(context.getActivity()!!)
-        .setImageAdapter(CoilAdapter())
-        .setMaxCount(1)
-        .setSelectedImages(path)
-        .setThemeColor(PrimaryMain.toArgb())
-        .hasCameraInPickerPage(hasCamera = true)
+    val fishbun =
+        FishBun.with(context.getActivity()!!).setImageAdapter(CoilAdapter()).setMaxCount(1)
+            .setSelectedImages(path).setThemeColor(PrimaryMain.toArgb())
+            .hasCameraInPickerPage(hasCamera = true)
 
-    val permissionLauncher = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.RequestMultiplePermissions(),
-        onResult = {
-            if (it.containsValue(false)) {
-                Toast.makeText(
-                    context,
-                    context.getString(R.string.permission_rejected),
-                    Toast.LENGTH_LONG
-                ).show()
+    val galleryPermissionsLauncher =
+        rememberLauncherForActivityResult(contract = ActivityResultContracts.RequestMultiplePermissions(),
+            onResult = {
+                if (it.containsValue(false)) {
+                    Toast.makeText(context,
+                        context.getString(R.string.permission_rejected),
+                        Toast.LENGTH_LONG).show()
+                } else {
+                    fishbun.startAlbumWithActivityResultCallback(launcher)
+                }
+            })
+
+    val cameraPermissionLauncher =
+        rememberLauncherForActivityResult(contract = ActivityResultContracts.RequestMultiplePermissions(),
+            onResult = {
+                if (it.containsValue(false)) {
+                    Toast.makeText(context,
+                        context.getString(R.string.permission_rejected),
+                        Toast.LENGTH_LONG).show()
+                } else {
+                    navigateToPhotoCamera()
+                }
+            })
+
+    Row(modifier = modifier
+        .fillMaxWidth()
+        .background(Color.Black.copy(0.54f))
+        .padding(horizontal = 16.dp, vertical = 24.dp),
+        horizontalArrangement = Arrangement.SpaceBetween) {
+        IconButton(onClick = {
+            if (cameraPermissions.all {
+                    ContextCompat.checkSelfPermission(context,
+                        it) == PackageManager.PERMISSION_GRANTED
+                }) {
+                navigateToPhotoCamera()
             } else {
-                fishbun.startAlbumWithActivityResultCallback(launcher)
+                cameraPermissionLauncher.launch(cameraPermissions)
             }
+        }, modifier = Modifier.padding(end = 6.dp)) {
+            Icon(
+                imageVector = Icons.Default.PhotoCamera,
+                contentDescription = "Camera",
+                tint = Color.White,
+            )
         }
-    )
 
-    Row(
-        modifier = modifier
-            .fillMaxWidth()
-            .background(Color.Black.copy(0.54f))
-            .padding(horizontal = 16.dp, vertical = 24.dp),
-        horizontalArrangement = Arrangement.SpaceBetween
-    ) {
-        TextButton(onClick = {
-            if (permissions.all {
-                    ContextCompat.checkSelfPermission(
-                        context,
-                        it
-                    ) == PackageManager.PERMISSION_GRANTED
+        IconButton(onClick = {
+            if (galleryPermissions.all {
+                    ContextCompat.checkSelfPermission(context,
+                        it) == PackageManager.PERMISSION_GRANTED
                 }) {
                 fishbun.startAlbumWithActivityResultCallback(launcher)
             } else {
-                permissionLauncher.launch(permissions)
+                galleryPermissionsLauncher.launch(galleryPermissions)
             }
         }) {
             Icon(
                 imageVector = Icons.Default.Collections,
-                contentDescription = "Add Image",
+                contentDescription = "Gallery",
                 tint = Color.White,
-                modifier = Modifier.padding(end = 6.dp)
-            )
-            Text(
-                text = "ADD IMAGE",
-                fontSize = 16.sp,
-                color = Color.White,
-                fontFamily = fontRoboto
             )
         }
 
-        TextButton(
-            onClick = onDone
-        ) {
-            Icon(
-                imageVector = Icons.Default.Check,
+        TextButton(onClick = onDone) {
+            Icon(imageVector = Icons.Default.Check,
                 contentDescription = "Done",
                 tint = Color.White,
-                modifier = Modifier.padding(end = 6.dp)
-            )
-            Text(
-                text = "DONE",
-                fontSize = 16.sp,
-                color = Color.White,
-                fontFamily = fontRoboto
-            )
+                modifier = Modifier.padding(end = 6.dp))
+            Text(text = "DONE", fontSize = 16.sp, color = Color.White, fontFamily = fontRoboto)
         }
     }
 }
@@ -842,35 +776,28 @@ private fun ColorPickerDialog(
     initialColor: Color,
     onDismiss: () -> Unit,
     onPositiveClick: (Color) -> Unit,
-    onNegativeClick: () -> Unit
+    onNegativeClick: () -> Unit,
 ) {
     var color by remember {
         mutableStateOf(initialColor)
     }
     Dialog(onDismissRequest = onDismiss) {
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
-            ClassicColorPicker(
-                modifier = modifier.height(200.dp),
+            ClassicColorPicker(modifier = modifier.height(200.dp),
                 showAlphaBar = false,
                 color = color,
                 onColorChanged = {
                     color = it.toColor()
                 })
             Spacer(modifier = modifier.height(12.dp))
-            Row(
-                modifier = modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceEvenly
-            ) {
-                TextButton(
-                    onClick = onNegativeClick,
-                    colors = ButtonDefaults.buttonColors(backgroundColor = Color.Transparent)
-                ) {
+            Row(modifier = modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceEvenly) {
+                TextButton(onClick = onNegativeClick,
+                    colors = ButtonDefaults.buttonColors(backgroundColor = Color.Transparent)) {
                     Text(text = "Cancel")
                 }
-                TextButton(
-                    onClick = { onPositiveClick(color) },
-                    colors = ButtonDefaults.buttonColors(backgroundColor = Color.Transparent)
-                ) {
+                TextButton(onClick = { onPositiveClick(color) },
+                    colors = ButtonDefaults.buttonColors(backgroundColor = Color.Transparent)) {
                     Text(text = "OK")
                 }
             }
@@ -878,15 +805,23 @@ private fun ColorPickerDialog(
     }
 }
 
-
-@Preview
 @Composable
-fun SketchScreenPreview() {
-    WorxTheme() {
-//        SketchScreen() {
-//
-//        }
-    }
+fun TransparentTextField(
+    value: String,
+    onValueChange: (String) -> Unit,
+    color: Color,
+    modifier: Modifier,
+) {
+    TextField(value = value,
+        onValueChange = onValueChange,
+        modifier = modifier,
+        colors = TextFieldDefaults.textFieldColors(
+            textColor = color,
+            backgroundColor = Color.Transparent,
+            focusedIndicatorColor = Color.Transparent,
+            unfocusedIndicatorColor = Color.Transparent,
+            disabledIndicatorColor = Color.Transparent
+        ))
 }
 
 private fun Uri.toBitmap(context: Context): Bitmap {

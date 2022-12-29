@@ -4,6 +4,7 @@ import android.content.Context
 import android.graphics.Bitmap
 import android.location.Address
 import android.location.Geocoder
+import android.net.Uri
 import android.util.Log
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateMapOf
@@ -70,8 +71,11 @@ class DetailFormViewModel @Inject constructor(
 
     val offset = mutableStateOf(0)
 
-    private val _cameraForWhichScreen = MutableLiveData<MainScreen>()
-    val cameraForWhichScreen = _cameraForWhichScreen
+    private val _navigateFrom = MutableLiveData<MainScreen>()
+    val navigateFrom = _navigateFrom
+
+    private val _cameraResultUri = MutableLiveData<Uri?>()
+    val cameraResultUri = _cameraResultUri
 
     /**
      * Pass data from Home ViewModel
@@ -121,11 +125,14 @@ class DetailFormViewModel @Inject constructor(
         }
     }
 
-    fun goToCameraPhoto(index: Int) {
-        uiState.update {
-            it.copy(currentComponent = index)
+    fun goToCameraPhoto(index: Int? = null, navigateFrom: MainScreen) {
+        if (index != null){
+            uiState.update {
+                it.copy(currentComponent = index)
+            }
         }
         _navigateTo.value = Event(MainScreen.CameraPhoto)
+        _navigateFrom.value = navigateFrom
     }
 
     fun goToScannerBarcode(index: Int){
@@ -178,6 +185,11 @@ class DetailFormViewModel @Inject constructor(
         uiState.update {
             it.copy(currentComponent = index)
         }
+    }
+
+    fun setCameraResultUri(uri: Uri){
+        _cameraResultUri.value = null
+        _cameraResultUri.value = uri
     }
 
     fun goToHome() {
