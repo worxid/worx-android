@@ -19,16 +19,12 @@ data class TextProperties(
     var offset: Offset = Offset.Zero
 )
 
-enum class Menus {
+enum class Menu {
     Default, Text, Draw
 }
 
 enum class MotionEvent {
     Idle, Down, Move, Up
-}
-
-enum class DrawMode {
-    Draw, Touch, Erase
 }
 
 suspend fun AwaitPointerEventScope.awaitDragMotionEvent(

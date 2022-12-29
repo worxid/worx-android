@@ -39,8 +39,6 @@ import androidx.compose.ui.graphics.*
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.input.pointer.positionChange
-import androidx.compose.ui.layout.onGloballyPositioned
-import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
@@ -91,7 +89,7 @@ fun SketchScreen(
 
             // Menu
             val currentMenu = remember {
-                mutableStateOf(Menus.Default)
+                mutableStateOf(Menu.Default)
             }
 
             // Brush Color
@@ -182,7 +180,7 @@ fun SketchScreen(
                 isPathNotEmpty = paths.isNotEmpty(),
                 showTextFieldOnCanvas = showTextFieldOnCanvas,
                 onDone = {
-                    currentMenu.value = Menus.Default
+                    currentMenu.value = Menu.Default
                     if (paths.isNotEmpty()) {
                         captureController.capture()
                     }
@@ -223,13 +221,14 @@ fun SketchScreen(
                     currentMenu = currentMenu)
             }
 
-            if (currentMenu.value == Menus.Default) {
+            if (currentMenu.value == Menu.Default) {
                 SketchBottomMenu(modifier = modifier.align(Alignment.BottomCenter),
                     context = context,
                     launcher = launcherGallery,
                     onDone = {
                         if (capturedBitmap.value != null) {
-                            viewModel.saveSketch(capturedBitmap.value!!, viewModel.uiState.value.currentComponent)
+                            viewModel.saveSketch(capturedBitmap.value!!,
+                                viewModel.uiState.value.currentComponent)
                             viewModel.cameraResultUri.value = null
                         }
 
@@ -255,11 +254,9 @@ private fun SketchCanvasView(
     tempText: MutableState<String>,
     drawTextColor: MutableState<Color>,
     texts: SnapshotStateList<Pair<String, TextProperties>>,
-    currentMenu: MutableState<Menus>,
+    currentMenu: MutableState<Menu>,
     allowDrawing: MutableState<Boolean>,
 ) {
-    val context = LocalContext.current
-
     var currentPath by remember {
         mutableStateOf(Path())
     }
@@ -274,20 +271,6 @@ private fun SketchCanvasView(
 
     var previousPosition by remember {
         mutableStateOf(Offset.Unspecified)
-    }
-
-    // Maybe Remove (?)
-    var drawMode by remember {
-        mutableStateOf(DrawMode.Draw)
-    }
-
-    val config = LocalConfiguration.current
-
-    val centerItem =
-        Offset((config.screenWidthDp.toFloat() / 2f), (config.screenHeightDp.toFloat() / 2f))
-
-    var mSize by remember {
-        mutableStateOf(Offset.Zero)
     }
 
     val drawModifier = modifier
@@ -321,43 +304,32 @@ private fun SketchCanvasView(
             }
         })
 
-    var centerText by remember {
-        mutableStateOf(Offset.Zero)
-    }
-
     Box() {
         Canvas(modifier = drawModifier) {
-            centerText = center
             if (allowDrawing.value) {
                 when (motionEvent) {
                     MotionEvent.Down -> {
-                        if (drawMode != DrawMode.Touch) {
                             currentPath.moveTo(currentPosition.x,
                                 currentPosition.y)
-                        }
                         previousPosition = currentPosition
                     }
 
                     MotionEvent.Move -> {
-                        if (drawMode != DrawMode.Touch) {
                             currentPath.quadraticBezierTo(previousPosition.x,
                                 previousPosition.y,
                                 (previousPosition.x + currentPosition.x) / 2,
                                 (previousPosition.y + currentPosition.y) / 2)
-                        }
                         previousPosition = currentPosition
                     }
 
                     MotionEvent.Up -> {
-                        if (drawMode != DrawMode.Touch) {
-                            currentPath.lineTo(currentPosition.x,
-                                currentPosition.y)
+                        currentPath.lineTo(currentPosition.x,
+                            currentPosition.y)
 
-                            paths.add(Pair(currentPath,
-                                PathProperties(color = drawColor.value, stroke = drawBrush.value)))
+                        paths.add(Pair(currentPath,
+                            PathProperties(color = drawColor.value, stroke = drawBrush.value)))
 
-                            currentPath = Path()
-                        }
+                        currentPath = Path()
                         pathsUndone.clear()
 
                         currentPosition = Offset.Unspecified
@@ -389,8 +361,6 @@ private fun SketchCanvasView(
                         color = drawColor.value,
                         style = Stroke(drawBrush.value))
                 }
-
-                Log.d("Center", "$center")
 
 //            if (textCanvas.value.isNotBlank()) {
 //                val paint = android.graphics.Paint().apply {
@@ -440,9 +410,8 @@ private fun SketchCanvasView(
                     showTextFieldOnCanvas.value = false
                     texts.add(Pair(tempText.value,
                         TextProperties(color = drawTextColor.value)))
-                    currentMenu.value = Menus.Default
+                    currentMenu.value = Menu.Default
                     tempText.value = ""
-                    Log.d("canvas center", centerText.toString())
                 }
             }, contentAlignment = Alignment.Center) {
             TransparentTextField(
@@ -458,10 +427,6 @@ private fun SketchCanvasView(
 
     Box(
         modifier = Modifier
-            .onGloballyPositioned { coordinates ->
-                mSize =
-                    Offset(coordinates.size.center.x.toFloat(), coordinates.size.center.y.toFloat())
-            }
             .padding(16.dp),
         contentAlignment = Alignment.Center
     ) {
@@ -498,8 +463,7 @@ private fun SketchCanvasView(
                         }
                     }
                 }
-                .background(color = if (selected) Color.Green else Color.Transparent)
-                ,
+                .background(color = if (selected) Color.Green else Color.Transparent),
                 text = text,
                 color = textProperties.color,
                 fontSize = 16.sp,
@@ -522,7 +486,7 @@ private fun SketchTopMenu(
     isPathNotEmpty: Boolean,
     showTextFieldOnCanvas: MutableState<Boolean>,
     drawTextColor: MutableState<Color>,
-    currentMenu: MutableState<Menus>,
+    currentMenu: MutableState<Menu>,
     allowDrawing: MutableState<Boolean>,
 ) {
     Row(modifier = modifier
@@ -532,7 +496,7 @@ private fun SketchTopMenu(
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically) {
         Row {
-            if (currentMenu.value != Menus.Default) {
+            if (currentMenu.value != Menu.Default) {
                 TextButton(onClick = onDone) {
                     Text(
                         text = "DONE",
@@ -546,16 +510,16 @@ private fun SketchTopMenu(
         }
         Row(horizontalArrangement = Arrangement.SpaceEvenly) {
             when (currentMenu.value) {
-                Menus.Default -> {
+                Menu.Default -> {
                     allowDrawing.value = false
                     showTextFieldOnCanvas.value = false
                     ShowDefaultMenu(onTextMenuClicked = {
-                        currentMenu.value = Menus.Text
+                        currentMenu.value = Menu.Text
                     }, onDrawMenuClicked = {
-                        currentMenu.value = Menus.Draw
+                        currentMenu.value = Menu.Draw
                     })
                 }
-                Menus.Text -> {
+                Menu.Text -> {
                     allowDrawing.value = false
                     showTextFieldOnCanvas.value = true
                     ShowTextMenu(modifier = modifier,
@@ -564,7 +528,7 @@ private fun SketchTopMenu(
                         drawTextColor = drawTextColor,
                         onUndo = onUndo)
                 }
-                Menus.Draw -> {
+                Menu.Draw -> {
                     allowDrawing.value = true
                     showTextFieldOnCanvas.value = false
                     ShowDrawMenu(modifier = modifier,
@@ -738,38 +702,41 @@ private fun SketchBottomMenu(
         .background(Color.Black.copy(0.54f))
         .padding(horizontal = 16.dp, vertical = 24.dp),
         horizontalArrangement = Arrangement.SpaceBetween) {
-        IconButton(onClick = {
-            if (cameraPermissions.all {
-                    ContextCompat.checkSelfPermission(context,
-                        it) == PackageManager.PERMISSION_GRANTED
-                }) {
-                navigateToPhotoCamera()
-            } else {
-                cameraPermissionLauncher.launch(cameraPermissions)
-            }
-        }, modifier = Modifier.padding(end = 6.dp)) {
-            Icon(
-                imageVector = Icons.Default.PhotoCamera,
-                contentDescription = "Camera",
-                tint = Color.White,
-            )
-        }
 
-        IconButton(onClick = {
-            if (galleryPermissions.all {
-                    ContextCompat.checkSelfPermission(context,
-                        it) == PackageManager.PERMISSION_GRANTED
-                }) {
-                fishbun.startAlbumWithActivityResultCallback(launcher)
-            } else {
-                galleryPermissionsLauncher.launch(galleryPermissions)
+        Row {
+            IconButton(onClick = {
+                if (cameraPermissions.all {
+                        ContextCompat.checkSelfPermission(context,
+                            it) == PackageManager.PERMISSION_GRANTED
+                    }) {
+                    navigateToPhotoCamera()
+                } else {
+                    cameraPermissionLauncher.launch(cameraPermissions)
+                }
+            }, modifier = Modifier.padding(end = 6.dp)) {
+                Icon(
+                    imageVector = Icons.Default.PhotoCamera,
+                    contentDescription = "Camera",
+                    tint = Color.White,
+                )
             }
-        }) {
-            Icon(
-                imageVector = Icons.Default.Collections,
-                contentDescription = "Gallery",
-                tint = Color.White,
-            )
+
+            IconButton(onClick = {
+                if (galleryPermissions.all {
+                        ContextCompat.checkSelfPermission(context,
+                            it) == PackageManager.PERMISSION_GRANTED
+                    }) {
+                    fishbun.startAlbumWithActivityResultCallback(launcher)
+                } else {
+                    galleryPermissionsLauncher.launch(galleryPermissions)
+                }
+            }) {
+                Icon(
+                    imageVector = Icons.Default.Collections,
+                    contentDescription = "Gallery",
+                    tint = Color.White,
+                )
+            }
         }
 
         TextButton(onClick = onDone) {
