@@ -37,4 +37,8 @@ Android Client for <a href="https://worx.id" target="_blank"> WORX </a> applicat
 - [Fishbun](https://github.com/sangcomz/FishBun) - image picker for Android.
 - [AboutLibraries](https://github.com/mikepenz/AboutLibraries) -  collects all dependency details including licenses at compile time
 - [Android Upload Service](https://github.com/gotev/android-upload-service) - handles multiple concurrent upload tasks in the background
+- [Captureable](https://github.com/PatilShreyas/Capturable) - Drawing Bitmap Image from Jetpack Compose View
+- [Color Picker](https://github.com/godaddy/compose-color-picker) - Android Jetpack Compose color picker
+- [Barcode Scanner](https://developers.google.com/ml-kit/vision/barcode-scanning/android) - Google ML Kit for Barcode Scanner
+- [Number Picker](https://github.com/ShawnLin013/NumberPicker) - Android Library for customize Number Picker
 
