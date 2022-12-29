@@ -78,8 +78,6 @@ fun PhotoPreviewScreen(
                         val path = viewModel.photoPath.value!!
                         val navigateFrom = detailViewModel.navigateFrom.value!!
 
-                        addPhotoToGallery(path)
-
                         when (navigateFrom) {
                             MainScreen.Detail -> {
                                 val index = viewModel.indexForm.value!!
@@ -87,9 +85,13 @@ fun PhotoPreviewScreen(
                                 val value = detailViewModel.uiState.value.values[id] as ImageValue?
                                 var filePath = value?.filePath?.toList() ?: listOf()
 
+
                                 ArrayList(filePath)
                                     .apply { add(path) }
                                     .also { array -> filePath = array.toList() }
+
+                                addPhotoToGallery(path)
+
                                 detailViewModel.getPresignedUrl(ArrayList(filePath), index, 2)
                                 viewModel.navigateTo(MainScreen.Detail)
                             }

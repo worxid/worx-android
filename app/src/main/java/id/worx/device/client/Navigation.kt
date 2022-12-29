@@ -7,7 +7,8 @@ import java.security.InvalidParameterException
 
 enum class WelcomeScreen {
     Splash, Welcome, AdvancedSetting, CreateTeam, CreateTeamSubmitted,
-    JoinTeam, WaitingVerification, VerificationRejected }
+    JoinTeam, WaitingVerification, VerificationRejected
+}
 
 enum class MainScreen {
     Home, Detail, CameraPhoto, PhotoPreview, SignaturePad, Settings, Licences, AdvanceSettings, Sketch, ScannerScreen, BarcodePreview
@@ -50,7 +51,7 @@ fun Fragment.navigate(to: MainScreen, from: MainScreen) {
     }
     when (to) {
         MainScreen.Home -> {
-            if (from == MainScreen.Detail){
+            if (from == MainScreen.Detail) {
                 findNavController().navigate(R.id.action_detail_to_home)
             } else {
                 findNavController().navigate(R.id.home_fragment)
@@ -67,6 +68,8 @@ fun Fragment.navigate(to: MainScreen, from: MainScreen) {
                 MainScreen.BarcodePreview -> {
                     findNavController().navigate(R.id.action_barcodePreviewFragment_to_detail_form_fragment)
                 }
+                MainScreen.Sketch ->
+                    findNavController().navigate(R.id.action_sketchFragment_to_detail_form_fragment)
                 else -> findNavController().navigate(R.id.detail_form_fragment)
             }
         }

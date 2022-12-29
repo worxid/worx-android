@@ -16,9 +16,7 @@ data class PathProperties(
 
 data class TextProperties(
     val color: Color = Color.Black,
-    var offsetX: Float = -1f,
-    var offsetY: Float = -1f,
-    var offset: Offset
+    var offset: Offset = Offset.Zero
 )
 
 enum class Menus {

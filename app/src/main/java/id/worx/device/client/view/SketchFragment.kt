@@ -10,6 +10,7 @@ import androidx.fragment.app.activityViewModels
 import androidx.navigation.findNavController
 import dagger.hilt.android.AndroidEntryPoint
 import id.worx.device.client.MainScreen
+import id.worx.device.client.R
 import id.worx.device.client.navigate
 import id.worx.device.client.screen.components.WorxThemeStatusBar
 import id.worx.device.client.screen.main.SketchScreen
@@ -38,7 +39,12 @@ class SketchFragment : Fragment() {
                 WorxTheme(theme = theme) {
                     WorxThemeStatusBar()
                     SketchScreen(viewModel = viewModel) {
-                        findNavController().navigateUp()
+                        if (findNavController().previousBackStackEntry?.destination?.id == R.id.photo_preview_fragment){
+                            navigate(MainScreen.Detail, MainScreen.Sketch)
+                            viewModel.cameraResultUri.value = null
+                        } else {
+                            findNavController().navigateUp()
+                        }
                     }
                 }
             }

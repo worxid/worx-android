@@ -27,6 +27,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material.icons.outlined.Edit
 import androidx.compose.runtime.*
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -42,6 +43,7 @@ import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.*
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.zIndex
@@ -139,15 +141,19 @@ fun SketchScreen(
 
             // capture canvas
             val captureController = rememberCaptureController()
+
             val capturedBitmap = remember {
                 mutableStateOf<Bitmap?>(null)
             }
 
-            val cameraResultUri = viewModel.cameraResultUri.value
+            val cameraResultUri by viewModel.cameraResultUri.observeAsState()
 
             if (cameraResultUri != null) {
-                imageCanvasBitmap = cameraResultUri.toBitmap(context)
+                imageCanvasBitmap = cameraResultUri!!.toBitmap(context)
             }
+
+            Log.d("Camera Result URi", cameraResultUri.toString())
+            Log.d("Image canvas", imageCanvasBitmap.toString())
 
             val launcherGallery =
                 rememberLauncherForActivityResult(contract = ActivityResultContracts.StartActivityForResult(),
@@ -223,9 +229,10 @@ fun SketchScreen(
                     launcher = launcherGallery,
                     onDone = {
                         if (capturedBitmap.value != null) {
-                            viewModel.saveSketch(capturedBitmap.value!!,
-                                viewModel.uiState.value.currentComponent)
+                            viewModel.saveSketch(capturedBitmap.value!!, viewModel.uiState.value.currentComponent)
+                            viewModel.cameraResultUri.value = null
                         }
+
                     },
                     navigateToPhotoCamera = {
                         viewModel.goToCameraPhoto(navigateFrom = MainScreen.Sketch)
@@ -427,11 +434,12 @@ private fun SketchCanvasView(
             .fillMaxSize()
             .background(Color.Black.copy(0.54f))
             .zIndex(2f)
+            .padding(16.dp)
             .pointerInput(Unit) {
                 detectTapGestures {
                     showTextFieldOnCanvas.value = false
                     texts.add(Pair(tempText.value,
-                        TextProperties(color = drawTextColor.value, offset = mSize)))
+                        TextProperties(color = drawTextColor.value)))
                     currentMenu.value = Menus.Default
                     tempText.value = ""
                     Log.d("canvas center", centerText.toString())
@@ -449,9 +457,12 @@ private fun SketchCanvasView(
     }
 
     Box(
-        modifier = Modifier.onGloballyPositioned { coordinates ->
-            mSize = Offset(coordinates.size.center.x.toFloat(), coordinates.size.center.y.toFloat())
-        },
+        modifier = Modifier
+            .onGloballyPositioned { coordinates ->
+                mSize =
+                    Offset(coordinates.size.center.x.toFloat(), coordinates.size.center.y.toFloat())
+            }
+            .padding(16.dp),
         contentAlignment = Alignment.Center
     ) {
         texts.forEach {
@@ -465,14 +476,14 @@ private fun SketchCanvasView(
                 .offset {
                     IntOffset(offsetX.roundToInt(), offsetY.roundToInt())
                 }
-                .pointerInput(Unit) {
-                    detectTapGestures {
-                        selected = true
-                        Toast
-                            .makeText(context, "Selected $text", Toast.LENGTH_SHORT)
-                            .show()
-                    }
-                }
+//                .pointerInput(Unit) {
+//                    detectTapGestures {
+//                        selected = true
+//                        Toast
+//                            .makeText(context, "Selected $text", Toast.LENGTH_SHORT)
+//                            .show()
+//                    }
+//                }
                 .pointerInput(Unit) {
                     detectDragGestures(
                         onDragEnd = {
@@ -491,7 +502,8 @@ private fun SketchCanvasView(
                 ,
                 text = text,
                 color = textProperties.color,
-                fontSize = 18.sp
+                fontSize = 16.sp,
+                fontFamily = fontRoboto
             )
         }
 
@@ -815,6 +827,7 @@ fun TransparentTextField(
     TextField(value = value,
         onValueChange = onValueChange,
         modifier = modifier,
+        textStyle = TextStyle.Default.copy(fontFamily = fontRoboto, fontSize = 16.sp),
         colors = TextFieldDefaults.textFieldColors(
             textColor = color,
             backgroundColor = Color.Transparent,
