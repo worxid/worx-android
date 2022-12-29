@@ -411,14 +411,6 @@ private fun SketchCanvasView(
                 .offset {
                     IntOffset(offsetX.roundToInt(), offsetY.roundToInt())
                 }
-//                .pointerInput(Unit) {
-//                    detectTapGestures {
-//                        selected = true
-//                        Toast
-//                            .makeText(context, "Selected $text", Toast.LENGTH_SHORT)
-//                            .show()
-//                    }
-//                }
                 .pointerInput(Unit) {
                     detectDragGestures(
                         onDragEnd = {
@@ -432,8 +424,7 @@ private fun SketchCanvasView(
                             offsetY += dragAmount.y
                         }
                     }
-                }
-                .background(color = if (selected) Color.Green else Color.Transparent),
+                },
                 text = text,
                 color = textProperties.color,
                 fontSize = 16.sp,
