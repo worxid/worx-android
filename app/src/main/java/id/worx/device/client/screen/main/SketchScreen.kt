@@ -42,7 +42,9 @@ import androidx.compose.ui.input.pointer.positionChange
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.unit.*
+import androidx.compose.ui.unit.IntOffset
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.zIndex
 import androidx.core.content.ContextCompat
@@ -68,11 +70,6 @@ fun SketchScreen(
     viewModel: DetailFormViewModel,
     onBackNavigation: () -> Unit,
 ) {
-//    val dispatcher = LocalOnBackPressedDispatcherOwner.current!!.onBackPressedDispatcher
-//
-//    BackHandler {
-//        dispatcher.onBackPressed()
-//    }
 
     Scaffold(topBar = {
         WorxTopAppBar(onBack = onBackNavigation, title = "Draw Sketch", useProgressBar = false)
@@ -228,6 +225,8 @@ fun SketchScreen(
                             viewModel.saveSketch(capturedBitmap.value!!,
                                 viewModel.uiState.value.currentComponent)
                             viewModel.cameraResultUri.value = null
+                        } else {
+                            captureController.capture()
                         }
 
                     },
@@ -356,11 +355,6 @@ private fun SketchCanvasView(
     }
 
     // Draw text section
-
-    var selected by remember {
-        mutableStateOf(false)
-    }
-
     if (showTextFieldOnCanvas.value) {
         val focusRequester = remember {
             FocusRequester()
