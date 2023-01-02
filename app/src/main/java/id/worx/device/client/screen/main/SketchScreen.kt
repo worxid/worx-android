@@ -179,7 +179,13 @@ fun SketchScreen(
                     if (paths.isNotEmpty()) {
                         captureController.capture()
                     }
-                    showTextFieldOnCanvas.value = false
+                    if (tempText.value.isNotEmpty()) {
+                        texts.add(Pair(tempText.value,
+                            TextProperties(color = drawTextColor.value)))
+                        currentMenu.value = Menu.Default
+                        tempText.value = ""
+                        showTextFieldOnCanvas.value = false
+                    }
                 },
                 onUndo = {
                     if (paths.isNotEmpty()) {
@@ -303,7 +309,6 @@ private fun SketchCanvasView(
                     currentPath.moveTo(currentPosition.x, currentPosition.y)
                     previousPosition = currentPosition
                 }
-
                 MotionEvent.Move -> {
                     currentPath.quadraticBezierTo(previousPosition.x,
                         previousPosition.y,
@@ -311,7 +316,6 @@ private fun SketchCanvasView(
                         (previousPosition.y + currentPosition.y) / 2)
                     previousPosition = currentPosition
                 }
-
                 MotionEvent.Up -> {
                     currentPath.lineTo(currentPosition.x, currentPosition.y)
 
