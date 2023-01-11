@@ -128,7 +128,8 @@ fun DetailForm(
     }
 
     ConstraintLayout(
-        modifier = Modifier.fillMaxSize()
+        modifier = Modifier.navigationBarsPadding().imePadding()
+            .fillMaxSize()
     ) {
         val (lazyColumn, btnSubmit) = createRefs()
         var modifier = Modifier
@@ -140,7 +141,9 @@ fun DetailForm(
                 width = Dimension.fillToConstraints
                 height = Dimension.fillToConstraints
             }
+            .navigationBarsPadding().imePadding()
             .padding(vertical = 12.dp)
+
 
         if (detailForm is EmptyForm || (detailForm is SubmitForm && detailForm.status == 0)) {
             modifier = Modifier
@@ -152,11 +155,13 @@ fun DetailForm(
                     width = Dimension.fillToConstraints
                     height = Dimension.fillToConstraints
                 }
+                .navigationBarsPadding().imePadding()
                 .padding(vertical = 12.dp)
         }
         LazyColumn(
             state = listState,
             modifier = modifier,
+            contentPadding = WindowInsets.statusBars.only(WindowInsetsSides.Horizontal + WindowInsetsSides.Top).asPaddingValues()
         ) {
             itemsIndexed(items = componentList) { index, item ->
                 when (item.type) {
