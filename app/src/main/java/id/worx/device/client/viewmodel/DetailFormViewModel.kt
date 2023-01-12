@@ -360,7 +360,8 @@ class DetailFormViewModel @Inject constructor(
             val form = createSubmitForm()
             dataSourceRepo.insertOrUpdateSubmitForm(form.copy(status = 0))
             actionAfterSaved()
-            _navigateTo.value = Event(MainScreen.Home)
+            _formProgress.value = 0
+
             uiState.update {
                 it.copy(
                     detailForm = null,
@@ -370,6 +371,8 @@ class DetailFormViewModel @Inject constructor(
                 )
             }
             _formProgress.value = 0
+            _navigateTo.value = Event(MainScreen.Home)
+
         }
     }
 

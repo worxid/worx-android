@@ -48,7 +48,7 @@ fun ValidFormBuilder(
     cameraViewModel: CameraViewModel,
     scannerViewModel: ScannerViewModel,
     session: Session,
-    onEvent: (DetailFormEvent) -> Unit
+    onEvent: (DetailFormEvent) -> Unit,
 ) {
     var showDraftDialog by remember { mutableStateOf(false) }
     var validation by remember { mutableStateOf(false) }
@@ -89,7 +89,7 @@ fun ValidFormBuilder(
                 state,
                 {
                     validation = true
-                    if (totalNonValidData==0) {
+                    if (totalNonValidData == 0) {
                         onEvent(DetailFormEvent.SubmitForm)
                     }
                     showSubmitDialog = false
@@ -113,7 +113,7 @@ fun DetailForm(
     scannerViewModel: ScannerViewModel,
     session: Session,
     validation: Boolean,
-    showSubmitDialog: () -> Unit
+    showSubmitDialog: () -> Unit,
 ) {
     val theme = session.theme
     val listState = rememberLazyListState(viewModel.indexScroll.value, viewModel.offset.value)
@@ -128,7 +128,9 @@ fun DetailForm(
     }
 
     ConstraintLayout(
-        modifier = Modifier.navigationBarsPadding().imePadding()
+        modifier = Modifier
+            .navigationBarsPadding()
+            .imePadding()
             .fillMaxSize()
     ) {
         val (lazyColumn, btnSubmit) = createRefs()
@@ -141,7 +143,8 @@ fun DetailForm(
                 width = Dimension.fillToConstraints
                 height = Dimension.fillToConstraints
             }
-            .navigationBarsPadding().imePadding()
+            .navigationBarsPadding()
+            .imePadding()
             .padding(vertical = 12.dp)
 
 
@@ -155,13 +158,15 @@ fun DetailForm(
                     width = Dimension.fillToConstraints
                     height = Dimension.fillToConstraints
                 }
-                .navigationBarsPadding().imePadding()
+                .navigationBarsPadding()
+                .imePadding()
                 .padding(vertical = 12.dp)
         }
         LazyColumn(
             state = listState,
             modifier = modifier,
-            contentPadding = WindowInsets.statusBars.only(WindowInsetsSides.Horizontal + WindowInsetsSides.Top).asPaddingValues()
+            contentPadding = WindowInsets.statusBars.only(WindowInsetsSides.Horizontal + WindowInsetsSides.Top)
+                .asPaddingValues()
         ) {
             itemsIndexed(items = componentList) { index, item ->
                 when (item.type) {
@@ -172,7 +177,7 @@ fun DetailForm(
                         val value = viewModel.uiState.collectAsState().value.values[id]
                                 as TextFieldValue? ?: TextFieldValue()
                         val form =
-                            viewModel.uiState.collectAsState().value.detailForm!!.fields.getOrNull(
+                            viewModel.uiState.collectAsState().value.detailForm?.fields?.getOrNull(
                                 index
                             )
                         WorxTextField(
@@ -185,7 +190,7 @@ fun DetailForm(
                                 value.values ?: ""
                             ),
                             onValueChange = {
-                                if (it.isNullOrEmpty()){
+                                if (it.isNullOrEmpty()) {
                                     viewModel.setComponentData(index, null)
                                 } else {
                                     viewModel.setComponentData(index, TextFieldValue(values = it))
@@ -240,7 +245,7 @@ fun DetailForm(
                         WorxSeparator(index, viewModel, session)
                     }
                     Type.BarcodeField.type -> {
-                        WorxBarcodeField(index, viewModel, scannerViewModel, session,validation)
+                        WorxBarcodeField(index, viewModel, scannerViewModel, session, validation)
                     }
                     Type.Time.type -> {
                         WorxTimeInput(index, viewModel, session)
@@ -252,7 +257,10 @@ fun DetailForm(
                         WorxIntegerField(index, viewModel, session)
                     }
                     Type.Sketch.type -> {
-                        WorxSketch(indexForm = index, viewModel = viewModel, session = session, validation = validation)
+                        WorxSketch(indexForm = index,
+                            viewModel = viewModel,
+                            session = session,
+                            validation = validation)
                     }
                     else -> {
                         Column(modifier = Modifier.padding(horizontal = 16.dp, vertical = 6.dp)) {
@@ -260,7 +268,8 @@ fun DetailForm(
                                 text = "Unknown component ${item.type}",
                                 style = Typography.body1.copy(color = Color.Black)
                             )
-                            Divider(color = GrayDivider, modifier = Modifier.padding(vertical = 16.dp))
+                            Divider(color = GrayDivider,
+                                modifier = Modifier.padding(vertical = 16.dp))
                         }
                     }
                 }
@@ -292,11 +301,15 @@ fun DialogSubmitForm(
     session: Session,
     state: ModalBottomSheetState,
     submitForm: () -> Unit,
-    saveDraftForm: () -> Unit
+    saveDraftForm: () -> Unit,
 ) {
     val progress = viewModel.formProgress.value
-    val separatorCount = viewModel.uiState.collectAsState().value.detailForm!!.fields.count { it.type == Type.Separator.type }
-    val fieldsNo = viewModel.uiState.collectAsState().value.detailForm!!.fields.size - separatorCount
+    val separatorCount =
+        viewModel.uiState.collectAsState().value.detailForm?.fields?.count { it.type == Type.Separator.type }
+    val fieldsNo = separatorCount?.let {
+        viewModel.uiState.collectAsState().value.detailForm?.fields?.size?.minus(
+            it)
+    }
     val theme = session.theme
 
     ModalBottomSheetLayout(
@@ -343,7 +356,8 @@ fun DialogSubmitForm(
                         tint = MaterialTheme.colors.onBackground
                     )
                 }
-                val fieldFilled = viewModel.uiState.collectAsState().value.values.count { it.value != null }
+                val fieldFilled =
+                    viewModel.uiState.collectAsState().value.values.count { it.value != null }
                 Text(
                     text = "$fieldFilled of $fieldsNo Fields Answered",
                     style = Typography.body2.copy(MaterialTheme.colors.onSecondary.copy(0.54f))
@@ -371,7 +385,7 @@ fun DialogSubmitForm(
 fun DialogDraftForm(
     theme: String?,
     saveDraft: () -> Unit,
-    closeDialog: () -> Unit
+    closeDialog: () -> Unit,
 ) {
     Dialog(
         content = {
