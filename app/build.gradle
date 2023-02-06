@@ -9,6 +9,7 @@ plugins {
     id 'com.google.gms.google-services'
     id 'com.google.firebase.crashlytics'
     id 'org.sonarqube'
+    id "io.sentry.android.gradle" version "3.4.2"
 }
 
 android {
@@ -175,5 +176,4 @@ dependencies {
 
     implementation 'io.github.ShawnLin013:number-picker:2.4.13'
 
-    implementation 'io.sentry:sentry-android:6.13.0'
 }
