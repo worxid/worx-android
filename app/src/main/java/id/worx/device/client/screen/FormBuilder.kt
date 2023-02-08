@@ -1,5 +1,6 @@
 package id.worx.device.client.screen
 
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -29,9 +30,9 @@ import id.worx.device.client.model.EmptyForm
 import id.worx.device.client.model.Fields
 import id.worx.device.client.model.SubmitForm
 import id.worx.device.client.model.Type
+import id.worx.device.client.model.fieldmodel.TextField
 import id.worx.device.client.model.fieldmodel.TextFieldValue
 import id.worx.device.client.screen.components.*
-import id.worx.device.client.screen.main.SketchScreen
 import id.worx.device.client.theme.GrayDivider
 import id.worx.device.client.theme.Typography
 import id.worx.device.client.viewmodel.CameraViewModel
@@ -180,6 +181,9 @@ fun DetailForm(
                             viewModel.uiState.collectAsState().value.detailForm?.fields?.getOrNull(
                                 index
                             )
+                        val textField = form as TextField?
+                        Log.d("MUTILINE", textField.toString())
+
                         WorxTextField(
                             theme = theme,
                             label = item.label ?: "Free Text",
@@ -206,6 +210,7 @@ fun DetailForm(
                                 EventStatus.Done,
                                 EventStatus.Submitted
                             ).contains(formStatus),
+                            allowMultiline = textField?.allowMultiline ?: false,
                             viewModel = viewModel,
                             index = index
                         )
@@ -412,7 +417,9 @@ fun DialogDraftForm(
                     description = "",
                     hint = stringResource(R.string.draft_descr),
                     inputType = KeyboardOptions(keyboardType = KeyboardType.Text),
-                    onValueChange = {})
+                    onValueChange = {},
+                    allowMultiline = false
+                )
                 Row(
                     modifier = Modifier
                         .align(Alignment.End)

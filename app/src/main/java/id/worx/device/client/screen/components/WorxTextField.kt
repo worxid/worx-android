@@ -1,10 +1,7 @@
 package id.worx.device.client.screen.components
 
-import android.text.BoringLayout
 import android.util.Log
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -37,14 +34,17 @@ fun WorxTextField(
     onValueChange: (String) -> Unit,
     isPassword: Boolean = false,
     isDeleteTrail: Boolean = false,
-    isRequired : Boolean = false,
+    isRequired: Boolean = false,
     validation: Boolean = false,
     isEnabled: Boolean = true,
-    viewModel:DetailFormViewModel? = null,
-    index: Int =-1
+    viewModel: DetailFormViewModel? = null,
+    index: Int = -1,
+    allowMultiline: Boolean = false
 ) {
     var textValue by remember { mutableStateOf(initialValue) }
     val data = viewModel?.uiState?.collectAsState()?.value?.detailForm?.fields?.getOrNull(index)
+
+    Log.i("MULTILIN", allowMultiline.toString())
 
     Column(
         modifier = Modifier.padding(horizontal = 16.dp)
@@ -87,6 +87,8 @@ fun WorxTextField(
             },
             textStyle = Typography.body1.copy(color = MaterialTheme.colors.onSecondary),
             keyboardOptions = inputType,
+            singleLine = !allowMultiline,
+            maxLines = if (allowMultiline) 4 else 1,
             visualTransformation = if (isPassword && passwordVisible) PasswordVisualTransformation() else VisualTransformation.None,
             trailingIcon = {
                 if (isPassword) {
