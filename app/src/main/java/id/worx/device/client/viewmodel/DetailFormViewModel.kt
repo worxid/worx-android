@@ -386,9 +386,7 @@ class DetailFormViewModel @Inject constructor(
             1
         )?.get(0) ?: Address(Locale.getDefault())
         val submitLocation = SubmitLocation(
-            "${address.getAddressLine(0)}, ${address.subLocality}, " +
-                    "${address.locality}, ${address.subAdminArea}, " +
-                    "${address.adminArea}, ${address.countryName}",
+            address.getAddressLine(0),
             latitude.toDouble(),
             longitude.toDouble()
         )
