@@ -9,6 +9,7 @@ plugins {
     id 'com.google.gms.google-services'
     id 'com.google.firebase.crashlytics'
     id 'org.sonarqube'
+    id "io.sentry.android.gradle" version "3.4.2"
 }
 
 android {
@@ -174,4 +175,5 @@ dependencies {
     implementation 'com.google.mlkit:barcode-scanning:17.0.3'
 
     implementation 'io.github.ShawnLin013:number-picker:2.4.13'
+
 }

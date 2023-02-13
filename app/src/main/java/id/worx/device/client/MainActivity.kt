@@ -22,6 +22,7 @@ import com.google.android.play.core.install.model.AppUpdateType
 import com.google.android.play.core.install.model.UpdateAvailability
 import dagger.hilt.android.AndroidEntryPoint
 import id.worx.device.client.data.database.Session
+import io.sentry.Sentry
 import java.io.IOException
 import javax.inject.Inject
 
