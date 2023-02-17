@@ -37,6 +37,7 @@ import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.*
 import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.graphics.drawscope.scale
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.input.pointer.positionChange
 import androidx.compose.ui.platform.LocalContext
@@ -74,7 +75,7 @@ fun SketchScreen(
     Scaffold(topBar = {
         WorxTopAppBar(onBack = onBackNavigation, title = "Draw Sketch", useProgressBar = false)
     }) { innerPadding ->
-        Box(modifier = modifier
+        Column(modifier = modifier
             .padding(innerPadding)
             .background(MaterialTheme.colors.secondary)
             .fillMaxSize()) {
@@ -163,9 +164,9 @@ fun SketchScreen(
                     })
 
             SketchTopMenu(
-                modifier = modifier
-                    .align(Alignment.TopCenter)
-                    .zIndex(99f),
+                modifier = modifier.padding(0.dp),
+                   // .align(Alignment.TopCenter)
+                   // .zIndex(99f),
                 currentMenu = currentMenu,
                 drawBrush = drawBrush,
                 drawColor = drawColor,
@@ -198,7 +199,7 @@ fun SketchScreen(
                     }
                 })
 
-            Capturable(modifier = modifier.fillMaxSize(),
+            Capturable(modifier = modifier.weight(1f),
                 controller = captureController,
                 onCaptured = { imageBitmap, error ->
                     if (imageBitmap != null) {
@@ -223,7 +224,7 @@ fun SketchScreen(
             }
 
             if (currentMenu.value == Menu.Default) {
-                SketchBottomMenu(modifier = modifier.align(Alignment.BottomCenter),
+                SketchBottomMenu(modifier = modifier.padding(0.dp),
                     context = context,
                     launcher = launcherGallery,
                     onDone = {
@@ -337,9 +338,31 @@ private fun SketchCanvasView(
             val checkPoint = saveLayer(null, null)
 
             imageCanvas?.let {
-                drawImage(imageCanvas.asImageBitmap(),
-                    topLeft = Offset(x = (size.width - it.width) / 2f,
-                        y = (size.height - it.height) / 2f))
+                if (size.width >= it.width && size.height >= it.height){
+                drawImage(
+                    imageCanvas.asImageBitmap(),
+                    topLeft = Offset(
+                        x = (size.width - it.width) / 2f,
+                        y = (size.height - it.height) / 2f
+                    )
+                )
+            } else {
+                    val scaleWidth = size.width / it.width
+                    val scaleHeight = size.height / it.height
+                    var scale = scaleHeight
+                    if (scaleWidth < scaleHeight) {
+                        scale = scaleWidth
+                    }
+                    scale(scale, scale) {
+                        drawImage(
+                            imageCanvas.asImageBitmap(),
+                            topLeft = Offset(
+                                x = (size.width - it.width) / 2f,
+                                y = (size.height - it.height) / 2f
+                            )
+                        )
+                    }
+                }
             }
 
             paths.forEach {
@@ -376,8 +399,12 @@ private fun SketchCanvasView(
             .pointerInput(Unit) {
                 detectTapGestures {
                     showTextFieldOnCanvas.value = false
-                    texts.add(Pair(tempText.value,
-                        TextProperties(color = drawTextColor.value)))
+                    texts.add(
+                        Pair(
+                            tempText.value,
+                            TextProperties(color = drawTextColor.value)
+                        )
+                    )
                     currentMenu.value = Menu.Default
                     tempText.value = ""
                 }
