@@ -67,7 +67,7 @@ fun AdvanceSettingsScreen(
             )
             Text(
                 text = stringResource(R.string.configure_server_descr),
-                style = Typography.body2.copy(MaterialTheme.colors.onSecondary),
+                style = Typography.body1.copy(MaterialTheme.colors.onSecondary),
                 modifier = Modifier.padding(start = 16.dp, top = 8.dp, end = 16.dp, bottom = 40.dp)
             )
             WorxTextField(
