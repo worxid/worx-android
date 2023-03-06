@@ -13,11 +13,13 @@ import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import id.worx.device.client.R
 import id.worx.device.client.data.database.Session
 import id.worx.device.client.screen.components.RedFullWidthButton
@@ -60,12 +62,12 @@ fun AdvanceSettingsScreen(
 
             Text(
                 text = stringResource(R.string.configure_server_url),
-                style = Typography.h6.copy(MaterialTheme.colors.onSecondary),
+                style = Typography.subtitle1.copy(MaterialTheme.colors.onSecondary),
                 modifier = Modifier.padding(start = 16.dp, top = 40.dp)
             )
             Text(
                 text = stringResource(R.string.configure_server_descr),
-                style = Typography.body1.copy(MaterialTheme.colors.onSecondary),
+                style = Typography.body2.copy(MaterialTheme.colors.onSecondary),
                 modifier = Modifier.padding(start = 16.dp, top = 8.dp, end = 16.dp, bottom = 40.dp)
             )
             WorxTextField(
@@ -80,6 +82,11 @@ fun AdvanceSettingsScreen(
                     }
                    urlServer = it
                 }
+            )
+            Text(
+                text = stringResource(id = R.string.example_url),
+                style = Typography.body1.copy(fontSize = 12.sp, color = Color.Black.copy(0.6f)),
+                modifier = Modifier.padding(start = 28.dp)
             )
             Spacer(modifier = Modifier.weight(1f))
             RedFullWidthButton(
@@ -96,6 +103,6 @@ fun AdvanceSettingsScreen(
 @Composable
 fun AdvanceSettingsScreenPreview() {
     WorxTheme {
-        JoinTeamScreen(Session(LocalContext.current), {})
+        AdvanceSettingsScreen(Session(LocalContext.current), {})
     }
 }

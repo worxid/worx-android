@@ -63,7 +63,7 @@ fun JoinTeamScreen(
 
             Text(
                 text = stringResource(R.string.ready_to_join),
-                style = Typography.h6.copy(MaterialTheme.colors.onSecondary),
+                style = Typography.subtitle1.copy(MaterialTheme.colors.onSecondary),
                 modifier = Modifier.padding(start = 16.dp, top = 40.dp)
             )
             Text(

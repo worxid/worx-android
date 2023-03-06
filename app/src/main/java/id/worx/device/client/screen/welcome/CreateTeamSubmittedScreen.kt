@@ -15,6 +15,7 @@ import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
@@ -61,9 +62,9 @@ fun CreateTeamSubmittedScreen(session: Session, onEvent: (CreateTeamSubmittedEve
             )
             Text(
                 stringResource(id = R.string.check_email),
-                fontSize = 16.sp,
-                fontWeight = FontWeight.W700,
-                fontFamily = FontFamily.Monospace,
+                fontSize = 20.sp,
+                fontWeight = FontWeight.W500,
+                fontFamily = FontFamily(Font(R.font.dmmono)),
                 color = MaterialTheme.colors.onSecondary,
                 modifier = Modifier.padding(top = 24.dp, bottom = 8.dp)
             )
@@ -84,11 +85,11 @@ fun CreateTeamSubmittedScreen(session: Session, onEvent: (CreateTeamSubmittedEve
             Row(modifier = Modifier.padding(top = 20.dp)) {
                 Text(
                     stringResource(id = R.string.not_receive_link),
-                    style = Typography.body1.copy(MaterialTheme.colors.onSecondary)
+                    style = Typography.body1.copy(fontSize = 12.sp, color = MaterialTheme.colors.onSecondary)
                 )
                 Text(
                     stringResource(id = R.string.resend),
-                    style = Typography.body1.copy(color = if (theme == SettingTheme.Dark) PrimaryMain else MaterialTheme.colors.primary),
+                    style = Typography.body1.copy(fontSize = 12.sp, color = if (theme == SettingTheme.Dark) PrimaryMain else MaterialTheme.colors.primary),
                     modifier = Modifier.clickable {
                         onEvent(CreateTeamSubmittedEvent.Resend)
                     })

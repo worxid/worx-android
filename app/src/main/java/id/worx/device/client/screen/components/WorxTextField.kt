@@ -13,6 +13,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.TextFieldValue
@@ -81,11 +82,11 @@ fun WorxTextField(
             label = {
                 Text(
                     text = hint ?: "Enter $label",
-                    fontFamily = FontFamily.Monospace,
+                    fontFamily = FontFamily(Font(R.font.dmmono)),
                     color = if (theme == SettingTheme.Dark) textUnfocusColorDark else textUnfocusColorSystem
                 )
             },
-            textStyle = Typography.body1.copy(color = MaterialTheme.colors.onSecondary),
+            textStyle = Typography.body2.copy(color = MaterialTheme.colors.onSecondary),
             keyboardOptions = inputType,
             singleLine = !allowMultiline,
             maxLines = if (allowMultiline) 4 else 1,

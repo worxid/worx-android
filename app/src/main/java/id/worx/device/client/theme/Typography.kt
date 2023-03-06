@@ -62,29 +62,29 @@ val Typography = Typography(
         fontWeight = FontWeight.W500,
         fontSize = 18.sp,
         letterSpacing = 0.15.sp,
-        fontFamily = FontFamily.Monospace
+        fontFamily = FontFamily(Font(R.font.dmmono))
     ),
     subtitle1 = TextStyle(
         fontWeight = FontWeight.W500,
-        fontSize = 16.sp,
-        fontFamily = FontFamily.Monospace,
+        fontSize = 20.sp,
+        fontFamily = FontFamily(Font(R.font.dmmono)),
         letterSpacing = 0.15.sp
     ),
     body1 = TextStyle(
         fontWeight = FontWeight.W400,
-        fontSize = 12.sp,
-        fontFamily = FontFamily.Monospace,
+        fontSize = 14.sp,
+        fontFamily = FontFamily(Font(R.font.dmmono)),
         letterSpacing = 0.15.sp,
     ),
     body2 = TextStyle(
-        fontWeight = FontWeight.W400,
-        fontSize = 14.sp,
-        fontFamily = FontFamily.Monospace),
+        fontWeight = FontWeight.W500,
+        fontSize = 16.sp,
+        fontFamily = FontFamily(Font(R.font.dmmono))),
     button = TextStyle(
         fontWeight = FontWeight.W500,
-        fontSize = 14.sp,
+        fontSize = 16.sp,
         letterSpacing = 0.15.sp,
-        fontFamily = FontFamily.Monospace
+        fontFamily = FontFamily(Font(R.font.dmmono))
     ),
     caption = TextStyle(
         fontWeight = FontWeight.W500,

@@ -32,6 +32,7 @@
     <string name="configure_server_descr">Access to different server, default is Worx.</string>
     <string name="connect">Connect</string>
     <string name="server_url">Server URL</string>
+    <string name="example_url">E.g: https://yourdomain.com</string>
 
     <string name="form">Forms</string>
     <string name="draft">Drafts</string>
