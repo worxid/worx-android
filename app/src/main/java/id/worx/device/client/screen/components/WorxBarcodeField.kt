@@ -73,9 +73,18 @@ fun WorxBarcodeField(
                 modifier = Modifier.fillMaxWidth()
             ) {
                 TextField(
-                    placeholder = { Text(text = "Scan Barcode") },
+                    placeholder = {
+                        Text(
+                            text = "Scan Barcode",
+                            style = Typography.body2.copy(
+                                color = MaterialTheme.colors.onSecondary.copy(alpha = 0.54f)
+                            )
+                        )
+                    },
                     value = barcodeValue,
-                    modifier = Modifier.padding(end = 12.dp),
+                    modifier = Modifier
+                        .padding(end = 12.dp)
+                        .weight(1f),
                     enabled = manuallyOverride ?: false,
                     colors = TextFieldDefaults.textFieldColors(
                         backgroundColor = Color.Black.copy(0.06f)
@@ -130,7 +139,7 @@ fun WorxBarcodeField(
                         )
                         viewModel.goToScannerBarcode(indexForm)
                     }
-                    .fillMaxSize()
+                    .size(48.dp)
                     .height(TextFieldDefaults.MinHeight)
                 ) {
                     Icon(

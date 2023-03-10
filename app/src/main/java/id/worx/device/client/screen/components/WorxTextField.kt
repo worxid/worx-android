@@ -82,6 +82,7 @@ fun WorxTextField(
             label = {
                 Text(
                     text = hint ?: "Enter $label",
+                    style = Typography.body2,
                     fontFamily = FontFamily(Font(R.font.dmmono)),
                     color = if (theme == SettingTheme.Dark) textUnfocusColorDark else textUnfocusColorSystem
                 )
