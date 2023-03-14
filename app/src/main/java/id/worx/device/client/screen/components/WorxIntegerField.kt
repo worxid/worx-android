@@ -14,15 +14,14 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
+import id.worx.device.client.R
 import id.worx.device.client.data.database.Session
 import id.worx.device.client.model.IntegerValue
-import id.worx.device.client.screen.main.SettingTheme
 import id.worx.device.client.theme.Typography
-import id.worx.device.client.theme.textUnfocusColorDark
-import id.worx.device.client.theme.textUnfocusColorSystem
 import id.worx.device.client.viewmodel.DetailFormViewModel
 import id.worx.device.client.viewmodel.EventStatus
 
@@ -81,8 +80,9 @@ fun WorxIntegerField(
             label = {
                 Text(
                     text = "Input Integer Number",
-                    fontFamily = FontFamily.Monospace,
-                    color = if (session.theme == SettingTheme.Dark) textUnfocusColorDark else textUnfocusColorSystem
+                    fontFamily = FontFamily(Font(R.font.dmmono)),
+                    style = Typography.body2,
+                    color = MaterialTheme.colors.onSecondary.copy(0.54f)
                 )
             })
     }
