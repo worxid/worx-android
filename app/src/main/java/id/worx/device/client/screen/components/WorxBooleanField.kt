@@ -141,7 +141,7 @@ fun WorxBooleanField(
                                     EventStatus.Submitted
                                 ).contains(formStatus)
                             ) {
-                                onCheck.value = true
+                                onCheck.value = false
                                 viewModel.setComponentData(
                                     indexForm,
                                     BooleanValue(value = onCheck.value)
