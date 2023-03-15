@@ -96,7 +96,8 @@ fun WorxDateInput(indexForm: Int, viewModel: DetailFormViewModel, session: Sessi
             TextField(
                 modifier = Modifier
                     .padding(end = 12.dp)
-                    .weight(1f),
+                    .weight(1f)
+                    .clickable { showDatePicker = true },
                 enabled = false,
                 colors = TextFieldDefaults.textFieldColors(
                     backgroundColor = Color.Black.copy(0.06f)

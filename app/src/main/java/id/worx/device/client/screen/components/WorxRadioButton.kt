@@ -1,5 +1,6 @@
 package id.worx.device.client.screen.components
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
@@ -73,7 +74,20 @@ fun WorxRadiobutton(indexForm: Int, viewModel: DetailFormViewModel, validation: 
                             modifier = Modifier.padding(start = 4.dp)
                         )
                         Text(
-                            item.label ?: "",
+                            modifier = Modifier.clickable {
+                                if (!arrayListOf(
+                                        EventStatus.Done,
+                                        EventStatus.Submitted
+                                    ).contains(formStatus)
+                                ) {
+                                    onCheck.value = index
+                                    viewModel.setComponentData(
+                                        indexForm,
+                                        RadioButtonValue(value = onCheck.value)
+                                    )
+                                }
+                            },
+                            text = item.label ?: "",
                             style = Typography.body1.copy(MaterialTheme.colors.onSecondary)
                         )
                     }

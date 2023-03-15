@@ -117,20 +117,20 @@ fun SettingScreen(
             )
             Divider(color = GrayDivider, modifier = Modifier.padding(top = 20.dp))
             HeaderTileSetting(title = stringResource(id = R.string.devices_settings))
-            TileItemTheme( themeViewModel = themeViewModel, session = session)
-            TileItemSetting(
-                title = stringResource(id = R.string.save_image_in_gallery),
-                subtitle = stringResource(id = R.string.save_image_in_gallery_sub),
-                iconRes = R.drawable.ic_baseline_collections_24,
-                toggleActive = true,
-                session = session
-            )
             TileItemSetting(
                 title = stringResource(id = R.string.advance_settings),
                 subtitle = stringResource(id = R.string.switch_to_server),
                 iconRes = R.drawable.ic_settings,
                 onPress = { viewModel.goToAdvanceSettings() },
                 toggleActive = false,
+                session = session
+            )
+            TileItemTheme( themeViewModel = themeViewModel, session = session)
+            TileItemSetting(
+                title = stringResource(id = R.string.save_image_in_gallery),
+                subtitle = stringResource(id = R.string.save_image_in_gallery_sub),
+                iconRes = R.drawable.ic_baseline_collections_24,
+                toggleActive = true,
                 session = session
             )
             HeaderTileSetting(title = stringResource(id = R.string.about_this_app))
@@ -156,6 +156,7 @@ fun SettingScreen(
                 },
                 session = session
             )
+            Spacer(modifier = Modifier.weight(1f))
             WhiteFullWidthButton(
                 modifier = Modifier
                     .fillMaxWidth()

@@ -11,14 +11,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import id.worx.device.client.R
 import id.worx.device.client.data.database.Session
 import id.worx.device.client.model.fieldmodel.BarcodeField
 import id.worx.device.client.model.fieldmodel.BarcodeFieldValue
 import id.worx.device.client.screen.main.SettingTheme
-import id.worx.device.client.theme.*
+import id.worx.device.client.theme.Typography
 import id.worx.device.client.viewmodel.DetailFormViewModel
 import id.worx.device.client.viewmodel.EventStatus
 import id.worx.device.client.viewmodel.ScannerViewModel
@@ -84,7 +83,16 @@ fun WorxBarcodeField(
                     value = barcodeValue,
                     modifier = Modifier
                         .padding(end = 12.dp)
-                        .weight(1f),
+                        .weight(1f)
+                        .clickable {
+                            if (!manuallyOverride!!) {
+                                scannerViewModel.navigateFromDetailScreen(
+                                    indexForm,
+                                    type = form.barcodeType ?: BarcodeType.All.type
+                                )
+                                viewModel.goToScannerBarcode(indexForm)
+                            }
+                        },
                     enabled = manuallyOverride ?: false,
                     colors = TextFieldDefaults.textFieldColors(
                         backgroundColor = Color.Black.copy(0.06f)

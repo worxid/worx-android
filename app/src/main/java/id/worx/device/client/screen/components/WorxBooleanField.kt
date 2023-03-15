@@ -1,5 +1,6 @@
 package id.worx.device.client.screen.components
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
@@ -87,6 +88,19 @@ fun WorxBooleanField(
                     )
                     Text(
                         stringResource(id = id.worx.device.client.R.string.yes),
+                        modifier = Modifier.clickable {
+                            if (!arrayListOf(
+                                    EventStatus.Done,
+                                    EventStatus.Submitted
+                                ).contains(formStatus)
+                            ) {
+                                onCheck.value = true
+                                viewModel.setComponentData(
+                                    indexForm,
+                                    BooleanValue(value = onCheck.value)
+                                )
+                            }
+                        },
                         style = Typography.body1.copy(MaterialTheme.colors.onSecondary)
                     )
                 }
@@ -121,6 +135,19 @@ fun WorxBooleanField(
                     )
                     Text(
                         stringResource(id = id.worx.device.client.R.string.no),
+                        modifier = Modifier.clickable {
+                            if (!arrayListOf(
+                                    EventStatus.Done,
+                                    EventStatus.Submitted
+                                ).contains(formStatus)
+                            ) {
+                                onCheck.value = true
+                                viewModel.setComponentData(
+                                    indexForm,
+                                    BooleanValue(value = onCheck.value)
+                                )
+                            }
+                        },
                         style = Typography.body1.copy(MaterialTheme.colors.onSecondary)
                     )
                 }
