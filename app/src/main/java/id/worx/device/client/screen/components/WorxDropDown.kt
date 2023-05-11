@@ -1,5 +1,6 @@
 package id.worx.device.client.screen.components
 
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -10,6 +11,7 @@ import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.runtime.*
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
@@ -21,7 +23,13 @@ import id.worx.device.client.viewmodel.DetailFormViewModel
 import id.worx.device.client.viewmodel.EventStatus
 
 @Composable
-fun WorxDropdown(indexForm: Int, viewModel: DetailFormViewModel, session: Session, validation : Boolean = false) {
+fun WorxDropdown(
+    indexForm: Int,
+    viewModel: DetailFormViewModel,
+    session: Session,
+    validation: Boolean = false,
+    navigateToSelectionMenuScreen: () -> Unit,
+) {
     val theme = session.theme
     val form =
         viewModel.uiState.collectAsState().value.detailForm!!.fields[indexForm] as DropDownField
@@ -37,9 +45,20 @@ fun WorxDropdown(indexForm: Int, viewModel: DetailFormViewModel, session: Sessio
             mutableStateOf(DropDownValue())
         }
     }
+
+    Log.d("Dropdown value 1", value.toString())
+    Log.d("Dropdown value 2", viewModel.selectedOption.value.toString())
+    Log.d("Dropdown value 3", selected.value.toString())
+
     val warningInfo = if (form.required == true && value == null) "$title is required" else ""
 
     var expanded by remember { mutableStateOf(false) }
+
+    val navigate = viewModel.navigateTo.observeAsState()
+    
+    val clicked by remember {
+        mutableStateOf(false)
+    }
 
     WorxBaseField(
         indexForm = indexForm,
@@ -54,7 +73,10 @@ fun WorxDropdown(indexForm: Int, viewModel: DetailFormViewModel, session: Sessio
         ) {
             TextField(
                 modifier = Modifier
-                    .clickable { expanded = true }
+                    .clickable {
+                        viewModel.itemIndex.value = indexForm
+                        navigateToSelectionMenuScreen()
+                    }
                     .fillMaxWidth()
                     .padding(horizontal = 16.dp),
                 enabled = false,
@@ -67,48 +89,48 @@ fun WorxDropdown(indexForm: Int, viewModel: DetailFormViewModel, session: Sessio
                     Typography.body2.copy(color = MaterialTheme.colors.onSecondary)
                 },
                 shape = RoundedCornerShape(4.dp),
-                trailingIcon = {
-                    Icon(
-                        Icons.Default.KeyboardArrowDown,
-                        contentDescription = "DropDown",
-                        tint = MaterialTheme.colors.onSecondary
-                    )
-                },
-                value = if (selected.value.value != null) {
-                    optionTitles[selected.value.value!!].label ?: ""
+//                trailingIcon = {
+//                    Icon(
+//                        Icons.Default.KeyboardArrowDown,
+//                        contentDescription = "DropDown",
+//                        tint = MaterialTheme.colors.onSecondary
+//                    )
+//                },
+                value = if (value?.value != null) {
+                    optionTitles[value.value!!].label ?: ""
                 } else {
-                    "Answer"
+                    "Select item"
                 },
                 onValueChange = {})
-            DropdownMenu(
-                expanded =
-                if (!arrayListOf(EventStatus.Done, EventStatus.Submitted).contains(formStatus)
-                ) {
-                    expanded
-                } else {
-                    false
-                },
-                onDismissRequest = { expanded = false },
-                modifier = Modifier
-                    .fillMaxWidth(0.94f)
-                    .background(Color.White),
-            ) {
-                optionTitles.forEachIndexed { index, item ->
-                    DropdownMenuItem(
-                        onClick = {
-                            selected.value.value = index
-                            viewModel.setComponentData(indexForm, selected.value)
-                            expanded = false
-                        },
-                        modifier = Modifier.background(Color.White)
-                    ) {
-                        Text(
-                            text = item.label ?: "",
-                            style = Typography.body1.copy(color = Color.Black)
-                        )
-                    }
-                }
-            }
+//            DropdownMenu(
+//                expanded =
+//                if (!arrayListOf(EventStatus.Done, EventStatus.Submitted).contains(formStatus)
+//                ) {
+//                    expanded
+//                } else {
+//                    false
+//                },
+//                onDismissRequest = { expanded = false },
+//                modifier = Modifier
+//                    .fillMaxWidth(0.94f)
+//                    .background(Color.White),
+//            ) {
+//                optionTitles.forEachIndexed { index, item ->
+//                    DropdownMenuItem(
+//                        onClick = {
+//                            selected.value.value = index
+//                            viewModel.setComponentData(indexForm, selected.value)
+//                            expanded = false
+//                        },
+//                        modifier = Modifier.background(Color.White)
+//                    ) {
+//                        Text(
+//                            text = item.label ?: "",
+//                            style = Typography.body1.copy(color = Color.Black)
+//                        )
+//                    }
+//                }
+//            }
         }
     }
 }

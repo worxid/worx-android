@@ -67,9 +67,13 @@ class DetailFormViewModel @Inject constructor(
     private val _formProgress = mutableStateOf(0)
     val formProgress: State<Int> = _formProgress
 
-    val indexScroll = mutableStateOf(0)
+    val indexScroll = mutableStateOf(-1)
 
     val offset = mutableStateOf(0)
+
+    val itemIndex = mutableStateOf(0)
+
+    val selectedOption = mutableStateOf<DropDownValue?>(null)
 
     private val _navigateFrom = MutableLiveData<MainScreen>()
     val navigateFrom = _navigateFrom

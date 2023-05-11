@@ -6,8 +6,8 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.itemsIndexed
-import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
 import androidx.compose.runtime.*
@@ -50,18 +50,16 @@ fun ValidFormBuilder(
     scannerViewModel: ScannerViewModel,
     session: Session,
     onEvent: (DetailFormEvent) -> Unit,
+    listState: LazyListState,
+    bottomSheetState: ModalBottomSheetState,
+    showSubmitDialog: MutableState<Boolean>,
 ) {
     var showDraftDialog by remember { mutableStateOf(false) }
     var validation by remember { mutableStateOf(false) }
     var isValid by remember { mutableStateOf(false) }
     val theme = session.theme
     val scope = rememberCoroutineScope()
-    val state = rememberModalBottomSheetState(
-        initialValue = ModalBottomSheetValue.Hidden,
-        confirmStateChange = { true },
-        skipHalfExpanded = true
-    )
-    var showSubmitDialog by remember { mutableStateOf(state.isVisible) }
+
     val totalNonValidData = componentList.filter { !(it.isValid ?: true) }.size
 
     Box(
@@ -76,24 +74,26 @@ fun ValidFormBuilder(
             scannerViewModel,
             session,
             validation,
+            showSubmitDialog = {
+//                showSubmitDialog = true
+//                scope.launch {
+//                    state.show()
+//                }
+            },
+            listState,
+            { onEvent(DetailFormEvent.NavigateToSelectionMenuFragment) }
         )
-        {
-            showSubmitDialog = true
-            scope.launch {
-                state.animateTo(ModalBottomSheetValue.Expanded)
-            }
-        }
-        if (showSubmitDialog) {
+        if (showSubmitDialog.value) {
             DialogSubmitForm(
                 viewModel,
                 session,
-                state,
+                bottomSheetState,
                 {
                     validation = true
                     if (totalNonValidData == 0) {
                         onEvent(DetailFormEvent.SubmitForm)
                     }
-                    showSubmitDialog = false
+                    showSubmitDialog.value = false
                 },
                 { showDraftDialog = true })
         }
@@ -115,18 +115,20 @@ fun DetailForm(
     session: Session,
     validation: Boolean,
     showSubmitDialog: () -> Unit,
+    listState: LazyListState,
+    navigateToSelectionMenuScreen: () -> Unit,
 ) {
     val theme = session.theme
-    val listState = rememberLazyListState(viewModel.indexScroll.value, viewModel.offset.value)
+//    val listState = rememberLazyListState(viewModel.indexScroll.value, viewModel.offset.value)
     val formStatus = viewModel.uiState.collectAsState().value.status
     val detailForm = viewModel.uiState.collectAsState().value.detailForm
 
-    LaunchedEffect(key1 = listState.isScrollInProgress) {
-        if (!listState.isScrollInProgress) {
-            viewModel.indexScroll.value = listState.firstVisibleItemIndex
-            viewModel.offset.value = listState.firstVisibleItemScrollOffset
-        }
-    }
+//    LaunchedEffect(key1 = listState.isScrollInProgress) {
+//        if (!listState.isScrollInProgress) {
+//            viewModel.indexScroll.value = listState.firstVisibleItemIndex
+//            viewModel.offset.value = listState.firstVisibleItemScrollOffset
+//        }
+//    }
 
     ConstraintLayout(
         modifier = Modifier
@@ -215,24 +217,31 @@ fun DetailForm(
                             index = index
                         )
                     }
+
                     Type.Checkbox.type -> {
                         WorxCheckBox(index, viewModel, validation, session)
                     }
+
                     Type.RadioGroup.type -> {
                         WorxRadiobutton(index, viewModel, validation, session)
                     }
+
                     Type.Dropdown.type -> {
-                        WorxDropdown(index, viewModel, session, validation)
+                        WorxDropdown(index, viewModel, session, validation, navigateToSelectionMenuScreen)
                     }
+
                     Type.Date.type -> {
                         WorxDateInput(index, viewModel, session, validation)
                     }
+
                     Type.Rating.type -> {
                         WorxRating(index, viewModel, validation, session)
                     }
+
                     Type.File.type -> {
                         WorxAttachFile(index, viewModel, session, validation)
                     }
+
                     Type.Photo.type -> {
                         WorxAttachImage(
                             index,
@@ -243,38 +252,50 @@ fun DetailForm(
                             viewModel.goToCameraPhoto(index, MainScreen.Detail)
                         }
                     }
+
                     Type.Signature.type -> {
                         WorxSignature(index, viewModel, session, validation)
                     }
+
                     Type.Separator.type -> {
                         WorxSeparator(index, viewModel, session)
                     }
+
                     Type.BarcodeField.type -> {
                         WorxBarcodeField(index, viewModel, scannerViewModel, session, validation)
                     }
+
                     Type.Time.type -> {
                         WorxTimeInput(index, viewModel, session)
                     }
+
                     Type.Boolean.type -> {
                         WorxBooleanField(index, viewModel, validation, session)
                     }
+
                     Type.Integer.type -> {
                         WorxIntegerField(index, viewModel, session)
                     }
+
                     Type.Sketch.type -> {
-                        WorxSketch(indexForm = index,
+                        WorxSketch(
+                            indexForm = index,
                             viewModel = viewModel,
                             session = session,
-                            validation = validation)
+                            validation = validation
+                        )
                     }
+
                     else -> {
                         Column(modifier = Modifier.padding(horizontal = 16.dp, vertical = 6.dp)) {
                             Text(
                                 text = "Unknown component ${item.type}",
                                 style = Typography.body1.copy(color = Color.Black)
                             )
-                            Divider(color = GrayDivider,
-                                modifier = Modifier.padding(vertical = 16.dp))
+                            Divider(
+                                color = GrayDivider,
+                                modifier = Modifier.padding(vertical = 16.dp)
+                            )
                         }
                     }
                 }
@@ -313,7 +334,8 @@ fun DialogSubmitForm(
         viewModel.uiState.collectAsState().value.detailForm?.fields?.count { it.type == Type.Separator.type }
     val fieldsNo = separatorCount?.let {
         viewModel.uiState.collectAsState().value.detailForm?.fields?.size?.minus(
-            it)
+            it
+        )
     }
     val theme = session.theme
 

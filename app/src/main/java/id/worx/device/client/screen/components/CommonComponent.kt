@@ -2,12 +2,14 @@ package id.worx.device.client.screen.components
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material3.FloatingActionButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.SideEffect
 import androidx.compose.ui.Alignment
@@ -25,6 +27,7 @@ import id.worx.device.client.screen.main.SettingTheme
 import id.worx.device.client.screen.welcome.WelcomeEvent
 import id.worx.device.client.theme.RedDarkButton
 import id.worx.device.client.theme.Typography
+import id.worx.device.client.util.advancedShadow
 
 @Composable
 fun RedFullWidthButton(
@@ -143,7 +146,6 @@ fun WorxTopAppBar(
                     )
                 }
             }
-
         }
     }
 }
@@ -184,5 +186,36 @@ fun WorxThemeStatusBar(
 
     SideEffect {
         systemUiController.setStatusBarColor(statusBarColor)
+    }
+}
+
+@Composable
+fun WorxAnimatedFabButton(
+    text: @Composable () -> Unit,
+    icon: @Composable () -> Unit,
+    onClickEvent: () -> Unit,
+    modifier: Modifier = Modifier,
+    expanded: Boolean
+) {
+    FloatingActionButton(
+        modifier = modifier
+            .padding(16.dp)
+            .border(
+                1.5.dp, color = Color.Black, shape = RoundedCornerShape(16.dp)
+            )
+            .advancedShadow(
+                color = Color.Black, offsetY = 4.dp, offsetX = 4.dp, shadowBlurRadius = 1.dp, cornersRadius = 16.dp
+            )
+            .navigationBarsPadding()
+            .height(48.dp)
+            .widthIn(min = 48.dp),
+//        shape = RoundedCornerShape(1),
+        containerColor = MaterialTheme.colors.primary,
+        contentColor = Color.White,
+        onClick = {
+            onClickEvent()
+        },
+    ) {
+        AnimatingFabContent(icon = icon, text = text, extended = expanded)
     }
 }

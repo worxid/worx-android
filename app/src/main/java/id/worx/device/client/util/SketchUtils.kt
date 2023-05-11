@@ -1,13 +1,22 @@
 package id.worx.device.client.util
 
+import android.graphics.Bitmap
+import android.graphics.Canvas
+import androidx.annotation.DrawableRes
+import androidx.appcompat.content.res.AppCompatResources
 import androidx.compose.foundation.gestures.awaitFirstDown
 import androidx.compose.foundation.gestures.awaitTouchSlopOrCancellation
 import androidx.compose.foundation.gestures.drag
 import androidx.compose.foundation.gestures.forEachGesture
+import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ImageBitmap
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.input.pointer.*
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.vectorResource
 
 data class PathProperties(
     val color: Color = Color.Black,
@@ -25,6 +34,29 @@ enum class Menu {
 
 enum class MotionEvent {
     Idle, Down, Move, Up
+}
+
+enum class MultiFloatingState {
+    Expanded, Collapsed
+}
+
+data class FabItem(
+    val icon: ImageVector? = null,
+    val identifier: String
+)
+
+@Composable
+fun vectorDrawableToImageBitmap(@DrawableRes res: Int): Bitmap? {
+    val drawable = AppCompatResources.getDrawable(LocalContext.current, res)
+    val bitmap = Bitmap.createBitmap(
+        drawable!!.intrinsicWidth,
+        drawable.intrinsicHeight,
+        Bitmap.Config.ARGB_8888
+    )
+    val canvas = Canvas(bitmap)
+    drawable.setBounds(0, 0, canvas.width, canvas.height)
+    drawable.draw(canvas)
+    return bitmap
 }
 
 suspend fun AwaitPointerEventScope.awaitDragMotionEvent(

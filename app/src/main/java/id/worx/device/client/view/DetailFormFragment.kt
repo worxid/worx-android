@@ -74,6 +74,9 @@ class DetailFormFragment : Fragment() {
                                     homeViewModel.showBadge(R.string.draft)
                                 }
                             }
+                            is DetailFormEvent.NavigateToSelectionMenuFragment -> {
+                                navigate(MainScreen.SelectionMenu, MainScreen.Detail)
+                            }
                             else -> {}
                         }
                     }
