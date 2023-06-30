@@ -85,7 +85,6 @@ fun PhotoPreviewScreen(
                                 val value = detailViewModel.uiState.value.values[id] as ImageValue?
                                 var filePath = value?.filePath?.toList() ?: listOf()
 
-
                                 ArrayList(filePath)
                                     .apply { add(path) }
                                     .also { array -> filePath = array.toList() }

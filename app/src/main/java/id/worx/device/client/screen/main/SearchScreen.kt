@@ -27,6 +27,7 @@ import id.worx.device.client.theme.Typography
 import id.worx.device.client.theme.WorxTheme
 import id.worx.device.client.viewmodel.DetailFormViewModel
 import id.worx.device.client.viewmodel.HomeViewModelImpl
+import id.worx.device.client.viewmodel.PunchViewModel
 import kotlinx.coroutines.launch
 
 val tabItems = listOf(
@@ -43,6 +44,7 @@ fun SearchScreen(
     submissionList: List<SubmitForm>,
     viewModel: HomeViewModelImpl,
     detailVM: DetailFormViewModel,
+    punchViewModel: PunchViewModel,
     session: Session,
     syncWithServer: () -> Unit,
     modifier: Modifier
@@ -116,6 +118,7 @@ fun SearchScreen(
                         0,
                         viewModel,
                         detailVM,
+                        punchViewModel,
                         stringResource(R.string.no_forms),
                         stringResource(R.string.empty_description_form),
                         session = session,
@@ -126,6 +129,7 @@ fun SearchScreen(
                         1,
                         viewModel,
                         detailVM,
+                        punchViewModel,
                         stringResource(R.string.no_drafts),
                         stringResource(R.string.empty_description_drafts),
                         session = session,
@@ -136,6 +140,7 @@ fun SearchScreen(
                         2,
                         viewModel,
                         detailVM,
+                        punchViewModel,
                         stringResource(R.string.no_submission),
                         stringResource(R.string.empty_description_submission),
                         session = session,
@@ -157,6 +162,7 @@ fun PreviewSearchScreen() {
             submissionList = arrayListOf(),
             viewModel = hiltViewModel(),
             detailVM = hiltViewModel(),
+            punchViewModel = hiltViewModel(),
             session = Session(LocalContext.current),
             {  },
             modifier = Modifier

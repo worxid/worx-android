@@ -22,6 +22,7 @@ import id.worx.device.client.theme.RedDark
 import id.worx.device.client.theme.WorxTheme
 import id.worx.device.client.viewmodel.DetailFormViewModel
 import id.worx.device.client.viewmodel.HomeViewModelImpl
+import id.worx.device.client.viewmodel.PunchViewModel
 import id.worx.device.client.viewmodel.ThemeViewModelImpl
 import javax.inject.Inject
 
@@ -30,6 +31,7 @@ class HomeFragment : Fragment() {
 
     private val viewModel by activityViewModels<HomeViewModelImpl>()
     private val detailViewModel by activityViewModels<DetailFormViewModel>()
+    private val punchViewModel by activityViewModels<PunchViewModel>()
     private val themeViewModel by activityViewModels<ThemeViewModelImpl>()
 
     @Inject
@@ -70,6 +72,7 @@ class HomeFragment : Fragment() {
                         submissionList = viewModel.uiState.collectAsState().value.submission,
                         viewModel = viewModel,
                         detailVM = detailViewModel,
+                        punchViewModel = punchViewModel,
                         session = session,
                         syncWithServer = { syncWithServer() }
                     )

@@ -18,6 +18,8 @@ import id.worx.device.client.data.database.Session
 import id.worx.device.client.data.database.SubmitFormDB
 import id.worx.device.client.repository.SourceDataRepository
 import net.gotev.uploadservice.extensions.isValidHttpUrl
+import java.text.SimpleDateFormat
+import java.util.Locale
 import javax.inject.Singleton
 
 @Module
@@ -79,4 +81,8 @@ object ApplicationModule {
     fun provideSession(@ApplicationContext appContext: Context): Session{
         return Session(appContext)
     }
+
+    @Singleton
+    @Provides
+    fun provideSDF(): SimpleDateFormat = SimpleDateFormat("dd LLL yyyy HH:mm:ss", Locale.getDefault())
 }

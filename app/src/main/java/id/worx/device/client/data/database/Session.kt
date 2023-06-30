@@ -10,6 +10,7 @@ class Session(context: Context) {
 
     val theme get() = pref.getString(SETTING_THEME, SettingTheme.System)
     val isSaveImageToGallery get() = pref.getBoolean(SETTING_SAVE_IMAGE, false)
+    val username get() = pref.getString(USERNAME, "")
     val latitude get() = pref.getString(LATITUDE, "-5.1966")
     val longitude get() = pref.getString(LONGITUDE, " 119.4926")
     val organization get() = pref.getString(ORGANIZATION,"")
@@ -23,6 +24,7 @@ class Session(context: Context) {
         val SETTING_THEME = "SETTING_THEME"
         val SETTING_SAVE_IMAGE = "SETTING_SAVE_IMAGE"
 
+        val USERNAME = "USERNAME"
         val LATITUDE = "LATITUDE"
         val LONGITUDE = "LONGITUDE"
         val ORGANIZATION = "ORGANIZATION"
@@ -44,6 +46,11 @@ class Session(context: Context) {
 
     fun isSaveImageToGallery(save: Boolean){
         editor.putBoolean(SETTING_SAVE_IMAGE, save)
+        editor.commit()
+    }
+
+    fun saveUsername(username: String){
+        editor.putString(USERNAME, username)
         editor.commit()
     }
 

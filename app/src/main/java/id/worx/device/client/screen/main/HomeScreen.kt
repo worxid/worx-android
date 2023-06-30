@@ -1,5 +1,6 @@
 package id.worx.device.client.screen.main
 
+import android.util.Log
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.ExitTransition
@@ -17,6 +18,7 @@ import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.runtime.*
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -42,6 +44,7 @@ import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.PagerState
 import com.google.accompanist.pager.rememberPagerState
+import id.worx.device.client.MainScreen
 import id.worx.device.client.R
 import id.worx.device.client.data.database.Session
 import id.worx.device.client.model.EmptyForm
@@ -53,6 +56,7 @@ import id.worx.device.client.theme.Typography
 import id.worx.device.client.theme.backgroundFormList
 import id.worx.device.client.viewmodel.DetailFormViewModel
 import id.worx.device.client.viewmodel.HomeViewModelImpl
+import id.worx.device.client.viewmodel.PunchViewModel
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
@@ -62,6 +66,7 @@ sealed class BottomNavItem(var title: Int, var icon: Int) {
     object Form : BottomNavItem(R.string.form, R.drawable.ic_form)
     object Draft : BottomNavItem(R.string.draft, R.drawable.ic_draft)
     object Submission : BottomNavItem(R.string.submission, R.drawable.ic_tick)
+    object AttendanceReport : BottomNavItem(R.string.attendance_report, R.drawable.ic_outline_timer)
 }
 
 @OptIn(ExperimentalPagerApi::class)
@@ -72,6 +77,7 @@ fun HomeScreen(
     submissionList: List<SubmitForm>,
     viewModel: HomeViewModelImpl,
     detailVM: DetailFormViewModel,
+    punchViewModel: PunchViewModel,
     session: Session,
     syncWithServer: () -> Unit
 ) {
@@ -79,13 +85,26 @@ fun HomeScreen(
     val showBadge by viewModel.showBadge.collectAsState()
     var showSubmittedStatus by remember { mutableStateOf(notificationType == 1) }
     var showBotNav by remember { mutableStateOf(false) }
+    var showSearchBar by remember { mutableStateOf(false) }
     val pagerState = rememberPagerState(0)
+
+    val navigateFrom by viewModel.navigateFrom.observeAsState()
+
+//    LaunchedEffect(key1 = Unit, block = {
+//        if ( navigateFrom != null && navigateFrom == MainScreen.Punch){
+//            pagerState.animateScrollToPage(3)
+//            viewModel.navigateFrom.value = null
+//        }
+//    })
 
     Scaffold(
         topBar = {
             MainTopAppBar(
                 title = session.organization ?: "",
-                onSearchMode = { showBotNav = it },
+                onSearchMode = {
+                    showSearchBar = !it
+                    showBotNav = it
+                },
                 theme = session.theme,
                 viewModel = viewModel
             ) { input ->
@@ -95,21 +114,24 @@ fun HomeScreen(
             }
         },
         bottomBar = {
-            BottomNavigationView(
-                showBadge = showBadge,
-                showBotNav = showBotNav,
-                theme = session.theme,
-                pagerState = pagerState
-            )
+//            if (!showSearchBar) {
+                BottomNavigationView(
+                    showBadge = showBadge,
+                    showBotNav = showBotNav,
+                    theme = session.theme,
+                    pagerState = pagerState
+                )
+//            }
         }
     ) { padding ->
         val modifier = Modifier
             .padding(bottom = 56.dp)
             .background(backgroundFormList)
-        if (showBotNav) {
+
+        if (!showSearchBar) {
             HorizontalPager(
                 modifier = Modifier.fillMaxSize(),
-                count = 3,
+                count = 4,
                 state = pagerState,
             ) { page ->
                 when (page) {
@@ -118,30 +140,53 @@ fun HomeScreen(
                         0,
                         viewModel,
                         detailVM,
+                        punchViewModel,
                         stringResource(R.string.no_forms),
                         stringResource(R.string.empty_description_form),
                         session = session,
                         syncWithServer
                     )
+
                     1 -> FormScreen(
                         draftList,
                         1,
                         viewModel,
                         detailVM,
+                        punchViewModel,
                         stringResource(R.string.no_drafts),
                         stringResource(R.string.empty_description_drafts),
                         session = session,
                         syncWithServer
                     )
+
                     2 -> FormScreen(
                         submissionList,
                         2,
                         viewModel,
                         detailVM,
+                        punchViewModel,
                         stringResource(R.string.no_submission),
                         stringResource(R.string.empty_description_submission),
                         session = session,
                         syncWithServer
+                    )
+
+                    3 -> FormScreen(
+                        submissionList,
+                        3,
+                        viewModel,
+                        detailVM,
+                        punchViewModel,
+                        "",
+                        "",
+                        session = session,
+                        syncWithServer,
+                        onDismissBottomBar = {
+                            showBotNav = false
+                        },
+                        onDismissBottomSheet = {
+                            showBotNav = true
+                        }
                     )
                 }
             }
@@ -152,6 +197,7 @@ fun HomeScreen(
                 submissionList = submissionList,
                 viewModel = viewModel,
                 detailVM = detailVM,
+                punchViewModel = punchViewModel,
                 session = session,
                 syncWithServer = syncWithServer,
                 modifier = modifier
@@ -184,16 +230,24 @@ fun HomeScreen(
 
 @OptIn(ExperimentalPagerApi::class)
 @Composable
-fun BottomNavigationView(showBadge: Int, showBotNav: Boolean, theme:String?, pagerState: PagerState) {
+fun BottomNavigationView(
+    showBadge: Int,
+    showBotNav: Boolean,
+    theme: String?,
+    pagerState: PagerState
+) {
     val items = listOf(
         BottomNavItem.Form,
         BottomNavItem.Draft,
         BottomNavItem.Submission,
+        BottomNavItem.AttendanceReport
     )
     val density = LocalDensity
     val scope = rememberCoroutineScope()
-    val selectedColor = if (theme == SettingTheme.Dark) PrimaryMain else MaterialTheme.colors.primary
-    val unselectedColor = if (theme == SettingTheme.Dark) DarkBackgroundNavView else Color.Black.copy(0.64f)
+    val selectedColor =
+        if (theme == SettingTheme.Dark) PrimaryMain else MaterialTheme.colors.primary
+    val unselectedColor =
+        if (theme == SettingTheme.Dark) DarkBackgroundNavView else Color.Black.copy(0.64f)
     if (showBotNav) {
         BottomNavigation(
             backgroundColor = if (theme == SettingTheme.Dark) MaterialTheme.colors.secondary else Color.White,
@@ -203,19 +257,23 @@ fun BottomNavigationView(showBadge: Int, showBotNav: Boolean, theme:String?, pag
                     2.dp,
                     if (theme == SettingTheme.Dark) Color.Black else MaterialTheme.colors.onSecondary
                 )
-                .drawBehind { drawRect(
-                    color = Color.Black,
-                    size = Size(width = size.width, height = size.height),
-                    topLeft = Offset(4.dp.toPx(), 4.dp.toPx()),
-                    style = Stroke(2.5.dp.toPx())
-                ) }
-                .drawBehind { drawRect(
-                    color = selectedColor,
-                    size = Size(width = size.width, height = size.height),
-                    topLeft = Offset(4.dp.toPx(), 4.dp.toPx())
-                ) }
+                .drawBehind {
+                    drawRect(
+                        color = Color.Black,
+                        size = Size(width = size.width, height = size.height),
+                        topLeft = Offset(4.dp.toPx(), 4.dp.toPx()),
+                        style = Stroke(2.5.dp.toPx())
+                    )
+                }
+                .drawBehind {
+                    drawRect(
+                        color = selectedColor,
+                        size = Size(width = size.width, height = size.height),
+                        topLeft = Offset(4.dp.toPx(), 4.dp.toPx())
+                    )
+                }
         ) {
-            items.forEachIndexed { index, item  ->
+            items.forEachIndexed { index, item ->
                 BottomNavigationItem(
                     icon = {
                         BadgedBox(badge = {
@@ -226,10 +284,11 @@ fun BottomNavigationView(showBadge: Int, showBotNav: Boolean, theme:String?, pag
                                 )
                             }
                         }) {
-                            Box( modifier = Modifier
-                                .padding(16.dp)
-                                .height(24.dp)
-                                ) {
+                            Box(
+                                modifier = Modifier
+                                    .padding(16.dp)
+                                    .height(24.dp)
+                            ) {
                                 Icon(
                                     modifier = Modifier
                                         .clip(RoundedCornerShape(4.dp))
@@ -451,6 +510,11 @@ fun FormSubmitted(
 @OptIn(ExperimentalPagerApi::class)
 @Preview(showBackground = true)
 @Composable
-private fun BottomNavigationViewPreview(){
-    BottomNavigationView(showBadge = 1, showBotNav = true, theme = SettingTheme.System, PagerState(1))
+private fun BottomNavigationViewPreview() {
+    BottomNavigationView(
+        showBadge = 1,
+        showBotNav = true,
+        theme = SettingTheme.System,
+        PagerState(1)
+    )
 }

@@ -36,7 +36,7 @@ val GreenDark = Color(0xFF3B873E)
 val BlackGreenButtonDark = Color(0xFFDA3630)
 
 //Blue
-val PrimaryMainBlue = Color(0xFF2196F3)
+val PrimaryMainBlue = Color(0xFF39A0FF)
 val SecondaryMainBlue = Color(0xFFF8CA45)
 val BlueDark = Color(0xFF176FB4)
 val BlackBlueButtonDark = Color(0xFFDA3630)

@@ -1,9 +1,6 @@
 package id.worx.device.client
 
-import android.util.Log
 import androidx.fragment.app.Fragment
-import androidx.navigation.NavDirections
-import androidx.navigation.NavOptions
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.navOptions
 import java.security.InvalidParameterException
@@ -14,7 +11,7 @@ enum class WelcomeScreen {
 }
 
 enum class MainScreen {
-    Home, Detail, CameraPhoto, PhotoPreview, SignaturePad, Settings, Licences, AdvanceSettings, Sketch, ScannerScreen, BarcodePreview, SelectionMenu
+    Home, Detail, CameraPhoto, PhotoPreview, SignaturePad, Settings, Licences, AdvanceSettings, Sketch, Scanner, BarcodePreview, SelectionMenu, Punch, WorkStatus, ImagePreview
 }
 
 fun Fragment.navigate(to: WelcomeScreen, from: WelcomeScreen) {
@@ -76,7 +73,7 @@ fun Fragment.navigate(to: MainScreen, from: MainScreen) {
                 MainScreen.PhotoPreview ->
                     findNavController().navigate(R.id.action_previewfragment_to_detailfragment)
 
-                MainScreen.ScannerScreen ->
+                MainScreen.Scanner ->
                     findNavController().navigate(R.id.action_scannerFragment_to_detail_form_fragment)
 
                 MainScreen.BarcodePreview -> {
@@ -116,7 +113,7 @@ fun Fragment.navigate(to: MainScreen, from: MainScreen) {
             findNavController().navigate(R.id.advanced_settings_fragment)
         }
 
-        MainScreen.ScannerScreen -> {
+        MainScreen.Scanner -> {
             findNavController().navigate(R.id.scannerFragment)
         }
 
@@ -137,6 +134,18 @@ fun Fragment.navigate(to: MainScreen, from: MainScreen) {
 //                    popExit = R.anim.slide_in_left
                 }
             })
+        }
+
+        MainScreen.Punch -> {
+            findNavController().navigate(R.id.punchFragment)
+        }
+
+        MainScreen.WorkStatus -> {
+            findNavController().navigate(R.id.workStatusFragment)
+        }
+
+        MainScreen.ImagePreview -> {
+            findNavController().navigate(R.id.imagePreviewFragment)
         }
 
         else -> {}

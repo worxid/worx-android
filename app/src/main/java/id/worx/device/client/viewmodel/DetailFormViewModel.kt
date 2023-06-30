@@ -143,7 +143,7 @@ class DetailFormViewModel @Inject constructor(
         uiState.update {
             it.copy(currentComponent = index)
         }
-        _navigateTo.value = Event(MainScreen.ScannerScreen)
+        _navigateTo.value = Event(MainScreen.Scanner)
     }
 
     fun goToSignaturePad(index: Int) {

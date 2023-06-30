@@ -2,7 +2,6 @@ package id.worx.device.client.viewmodel
 
 import android.os.Build
 import android.util.Log
-import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.*
 import com.google.gson.Gson
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -37,7 +36,8 @@ data class HomeUiState(
     var submission: List<SubmitForm> = emptyList(),
     var isLoading: Boolean = false,
     var errorMessages: String = "",
-    var searchInput: String = ""
+    var searchInput: String = "",
+    val workStatus: String = "Available"
 )
 
 abstract class HomeViewModel() : ViewModel() {
@@ -45,6 +45,9 @@ abstract class HomeViewModel() : ViewModel() {
     abstract fun goToSettingScreen()
     abstract fun goToLicencesScreen()
     abstract fun goToAdvanceSettings()
+    abstract fun goToPunchScreen()
+    abstract fun goToWorkStatusScreen()
+    abstract fun goToImagePreviewScreen()
     abstract fun onSearchInputChanged(searchInput: String)
     abstract fun showNotification(typeOfNotification: Int)
     abstract fun showBadge(typeOfBadge: Int)
@@ -57,6 +60,7 @@ abstract class HomeViewModel() : ViewModel() {
     abstract fun getDeviceInfo(session: Session)
     abstract fun updateDeviceInfo(session: Session)
     abstract fun saveServerUrl(session: Session, url: String)
+    abstract fun saveWorkStatus(workStatus: String)
     }
 
 @HiltViewModel
@@ -73,11 +77,15 @@ class HomeViewModelImpl @Inject constructor(
     private val _navigateTo = MutableLiveData<Event<MainScreen>>()
     val navigateTo: LiveData<Event<MainScreen>> = _navigateTo
 
+    private val _navigateFrom = MutableLiveData<MainScreen?>()
+    val navigateFrom = _navigateFrom
+
     private val _showNotification = MutableStateFlow(0)
     val showNotification: StateFlow<Int> = _showNotification
 
     private val _showBadge = MutableStateFlow(0)
     val showBadge: StateFlow<Int> = _showBadge
+
 
     init {
         refreshData()
@@ -100,7 +108,21 @@ class HomeViewModelImpl @Inject constructor(
     }
 
     fun goToScannerScreen(){
-        _navigateTo.value = Event((MainScreen.ScannerScreen))
+        _navigateTo.value = Event((MainScreen.Scanner))
+    }
+
+    override fun goToPunchScreen(){
+        _navigateTo.value = Event(MainScreen.Punch)
+        _navigateFrom.value = MainScreen.Punch
+    }
+
+    override fun goToWorkStatusScreen() {
+        _navigateTo.value = Event(MainScreen.WorkStatus)
+//        _navigateFrom.value = MainScreen.Punch
+    }
+
+    override fun goToImagePreviewScreen() {
+        _navigateTo.value = Event(MainScreen.ImagePreview)
     }
 
     /**
@@ -238,6 +260,17 @@ class HomeViewModelImpl @Inject constructor(
         }
     }
 
+    override fun saveWorkStatus(workStatus: String) {
+        viewModelScope.launch {
+            if (workStatus.isNotBlank()) {
+                uiState.update {
+                    it.copy(workStatus = workStatus)
+                }
+            _navigateTo.value = Event(MainScreen.Home)
+            }
+        }
+    }
+
     interface UIHandler {
         fun showToast(text: String)
     }
@@ -249,6 +282,10 @@ class HomeVMPrev: HomeViewModel(){
     override fun goToSettingScreen() {}
     override fun goToLicencesScreen() {}
     override fun goToAdvanceSettings() {}
+    override fun goToPunchScreen() {}
+    override fun goToWorkStatusScreen() {}
+    override fun goToImagePreviewScreen() {}
+
     override fun onSearchInputChanged(searchInput: String) {}
     override fun showNotification(typeOfNotification: Int) {}
     override fun showBadge(typeOfBadge: Int) {}
@@ -257,4 +294,5 @@ class HomeVMPrev: HomeViewModel(){
     override fun getDeviceInfo(session: Session) {}
     override fun updateDeviceInfo(session: Session) {}
     override fun saveServerUrl(session: Session, url: String) {}
+    override fun saveWorkStatus(workStatus: String) {}
 }

@@ -108,4 +108,16 @@
             app:popUpTo="@id/home_nav_graph"
             app:popUpToInclusive="true" />
     </fragment>
+    <fragment
+        android:id="@+id/punchFragment"
+        android:name="id.worx.device.client.view.PunchFragment"
+        android:label="PunchFragment" />
+    <fragment
+        android:id="@+id/workStatusFragment"
+        android:name="id.worx.device.client.view.WorkStatusFragment"
+        android:label="WorkStatusFragment" />
+    <fragment
+        android:id="@+id/imagePreviewFragment"
+        android:name="id.worx.device.client.view.ImagePreviewFragment"
+        android:label="ImagePreviewFragment" />
 </navigation>

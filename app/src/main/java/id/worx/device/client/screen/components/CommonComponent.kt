@@ -10,6 +10,7 @@ import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.FloatingActionButtonDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.SideEffect
 import androidx.compose.ui.Alignment
@@ -204,7 +205,11 @@ fun WorxAnimatedFabButton(
                 1.5.dp, color = Color.Black, shape = RoundedCornerShape(16.dp)
             )
             .advancedShadow(
-                color = Color.Black, offsetY = 4.dp, offsetX = 4.dp, shadowBlurRadius = 1.dp, cornersRadius = 16.dp
+                color = Color.Black,
+                offsetY = 4.dp,
+                offsetX = 4.dp,
+                shadowBlurRadius = 1.dp,
+                cornersRadius = 16.dp
             )
             .navigationBarsPadding()
             .height(48.dp)
@@ -215,6 +220,9 @@ fun WorxAnimatedFabButton(
         onClick = {
             onClickEvent()
         },
+        elevation = FloatingActionButtonDefaults.elevation(
+            defaultElevation = 4.dp
+        )
     ) {
         AnimatingFabContent(icon = icon, text = text, extended = expanded)
     }

@@ -39,7 +39,6 @@ import id.worx.device.client.viewmodel.CameraViewModel
 import id.worx.device.client.viewmodel.DetailFormViewModel
 import id.worx.device.client.viewmodel.EventStatus
 import id.worx.device.client.viewmodel.ScannerViewModel
-import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
@@ -53,14 +52,12 @@ fun ValidFormBuilder(
     listState: LazyListState,
     bottomSheetState: ModalBottomSheetState,
     showSubmitDialog: MutableState<Boolean>,
+    showDraftDialog: MutableState<Boolean>,
+    validation: MutableState<Boolean>,
 ) {
-    var showDraftDialog by remember { mutableStateOf(false) }
-    var validation by remember { mutableStateOf(false) }
-    var isValid by remember { mutableStateOf(false) }
+
     val theme = session.theme
     val scope = rememberCoroutineScope()
-
-    val totalNonValidData = componentList.filter { !(it.isValid ?: true) }.size
 
     Box(
         modifier = Modifier
@@ -73,7 +70,7 @@ fun ValidFormBuilder(
             cameraViewModel,
             scannerViewModel,
             session,
-            validation,
+            validation.value,
             showSubmitDialog = {
 //                showSubmitDialog = true
 //                scope.launch {
@@ -83,25 +80,25 @@ fun ValidFormBuilder(
             listState,
             { onEvent(DetailFormEvent.NavigateToSelectionMenuFragment) }
         )
-        if (showSubmitDialog.value) {
-            DialogSubmitForm(
-                viewModel,
-                session,
-                bottomSheetState,
-                {
-                    validation = true
-                    if (totalNonValidData == 0) {
-                        onEvent(DetailFormEvent.SubmitForm)
-                    }
-                    showSubmitDialog.value = false
-                },
-                { showDraftDialog = true })
-        }
-        if (showDraftDialog) {
+//        if (showSubmitDialog.value) {
+//            DialogSubmitForm(
+//                viewModel,
+//                session,
+//                bottomSheetState,
+//                {
+//                    validation = true
+//                    if (totalNonValidData == 0) {
+//                        onEvent(DetailFormEvent.SubmitForm)
+//                    }
+//                    showSubmitDialog.value = false
+//                },
+//                { showDraftDialog = true })
+//        }
+        if (showDraftDialog.value) {
             DialogDraftForm(
                 theme = theme,
                 { onEvent(DetailFormEvent.SaveDraft) },
-                { showDraftDialog = false })
+                { showDraftDialog.value = false })
         }
     }
 }
@@ -156,7 +153,7 @@ fun DetailForm(
                 .constrainAs(lazyColumn) {
                     top.linkTo(parent.top)
                     start.linkTo(parent.start)
-                    bottom.linkTo(btnSubmit.top)
+                    bottom.linkTo(parent.bottom)
                     end.linkTo(parent.end)
                     width = Dimension.fillToConstraints
                     height = Dimension.fillToConstraints
@@ -174,6 +171,7 @@ fun DetailForm(
             itemsIndexed(items = componentList) { index, item ->
                 when (item.type) {
                     Type.TextField.type -> {
+                        Log.d("Index form", "$index - Textfield")
                         val id =
                             viewModel.uiState.collectAsState().value.detailForm?.fields?.get(index)?.id
                                 ?: 0
@@ -184,7 +182,6 @@ fun DetailForm(
                                 index
                             )
                         val textField = form as TextField?
-                        Log.d("MUTILINE", textField.toString())
 
                         WorxTextField(
                             theme = theme,
@@ -219,30 +216,37 @@ fun DetailForm(
                     }
 
                     Type.Checkbox.type -> {
+                        Log.d("Index form", "$index - Checkbox")
                         WorxCheckBox(index, viewModel, validation, session)
                     }
 
                     Type.RadioGroup.type -> {
+                        Log.d("Index form", "$index - Radio")
                         WorxRadiobutton(index, viewModel, validation, session)
                     }
 
                     Type.Dropdown.type -> {
+                        Log.d("Index form", "$index - Dropdown")
                         WorxDropdown(index, viewModel, session, validation, navigateToSelectionMenuScreen)
                     }
 
                     Type.Date.type -> {
+                        Log.d("Index form", "$index - Date")
                         WorxDateInput(index, viewModel, session, validation)
                     }
 
                     Type.Rating.type -> {
+                        Log.d("Index form", "$index - Rating")
                         WorxRating(index, viewModel, validation, session)
                     }
 
                     Type.File.type -> {
+                        Log.d("Index form", "$index - File")
                         WorxAttachFile(index, viewModel, session, validation)
                     }
 
                     Type.Photo.type -> {
+                        Log.d("Index form", "$index - Photo")
                         WorxAttachImage(
                             index,
                             viewModel,
@@ -254,30 +258,37 @@ fun DetailForm(
                     }
 
                     Type.Signature.type -> {
+                        Log.d("Index form", "$index - Signature")
                         WorxSignature(index, viewModel, session, validation)
                     }
 
                     Type.Separator.type -> {
+                        Log.d("Index form", "$index - Seperator")
                         WorxSeparator(index, viewModel, session)
                     }
 
                     Type.BarcodeField.type -> {
+                        Log.d("Index form", "$index - Barcode")
                         WorxBarcodeField(index, viewModel, scannerViewModel, session, validation)
                     }
 
                     Type.Time.type -> {
+                        Log.d("Index form", "$index - Time")
                         WorxTimeInput(index, viewModel, session)
                     }
 
                     Type.Boolean.type -> {
+                        Log.d("Index form", "$index - Boolean")
                         WorxBooleanField(index, viewModel, validation, session)
                     }
 
                     Type.Integer.type -> {
+                        Log.d("Index form", "$index - INteger")
                         WorxIntegerField(index, viewModel, session)
                     }
 
                     Type.Sketch.type -> {
+                        Log.d("Index form", "$index - Sketch")
                         WorxSketch(
                             indexForm = index,
                             viewModel = viewModel,
@@ -302,21 +313,21 @@ fun DetailForm(
             }
         }
 
-        if (detailForm is EmptyForm || (detailForm is SubmitForm && detailForm.status == 0)) {
-            RedFullWidthButton(
-                onClickCallback = { showSubmitDialog() },
-                label = "Submit",
-                modifier = Modifier
-                    .padding(vertical = 16.dp)
-                    .constrainAs(btnSubmit) {
-                        bottom.linkTo(parent.bottom)
-                        start.linkTo(parent.start)
-                        end.linkTo(parent.end)
-                        width = Dimension.fillToConstraints
-                    },
-                theme = theme
-            )
-        }
+//        if (detailForm is EmptyForm || (detailForm is SubmitForm && detailForm.status == 0)) {
+//            RedFullWidthButton(
+//                onClickCallback = { showSubmitDialog() },
+//                label = "Submit",
+//                modifier = Modifier
+//                    .padding(vertical = 16.dp)
+//                    .constrainAs(btnSubmit) {
+//                        bottom.linkTo(parent.bottom)
+//                        start.linkTo(parent.start)
+//                        end.linkTo(parent.end)
+//                        width = Dimension.fillToConstraints
+//                    },
+//                theme = theme
+//            )
+//        }
     }
 }
 
@@ -341,6 +352,7 @@ fun DialogSubmitForm(
 
     ModalBottomSheetLayout(
         sheetState = state,
+        sheetElevation = 99.dp,
         sheetContent = {
             Column(
                 modifier = Modifier
