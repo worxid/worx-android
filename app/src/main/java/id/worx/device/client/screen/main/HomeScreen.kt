@@ -80,11 +80,12 @@ fun HomeScreen(
     var showSubmittedStatus by remember { mutableStateOf(notificationType == 1) }
     var showBotNav by remember { mutableStateOf(false) }
     val pagerState = rememberPagerState(0)
+    val title = arrayListOf(R.string.form, R.string.draft, R.string.submission)
 
     Scaffold(
         topBar = {
             MainTopAppBar(
-                title = session.organization ?: "",
+                title = stringResource(id = title[pagerState.currentPage]),
                 onSearchMode = { showBotNav = it },
                 theme = session.theme,
                 viewModel = viewModel
@@ -203,17 +204,21 @@ fun BottomNavigationView(showBadge: Int, showBotNav: Boolean, theme:String?, pag
                     2.dp,
                     if (theme == SettingTheme.Dark) Color.Black else MaterialTheme.colors.onSecondary
                 )
-                .drawBehind { drawRect(
-                    color = Color.Black,
-                    size = Size(width = size.width, height = size.height),
-                    topLeft = Offset(4.dp.toPx(), 4.dp.toPx()),
-                    style = Stroke(2.5.dp.toPx())
-                ) }
-                .drawBehind { drawRect(
-                    color = selectedColor,
-                    size = Size(width = size.width, height = size.height),
-                    topLeft = Offset(4.dp.toPx(), 4.dp.toPx())
-                ) }
+                .drawBehind {
+                    drawRect(
+                        color = Color.Black,
+                        size = Size(width = size.width, height = size.height),
+                        topLeft = Offset(4.dp.toPx(), 4.dp.toPx()),
+                        style = Stroke(2.5.dp.toPx())
+                    )
+                }
+                .drawBehind {
+                    drawRect(
+                        color = selectedColor,
+                        size = Size(width = size.width, height = size.height),
+                        topLeft = Offset(4.dp.toPx(), 4.dp.toPx())
+                    )
+                }
         ) {
             items.forEachIndexed { index, item  ->
                 BottomNavigationItem(
@@ -286,25 +291,26 @@ fun MainTopAppBar(
                 Text(
                     textAlign = TextAlign.Center,
                     text = title,
-                    style = Typography.button.copy(Color.White)
+                    style = Typography.h6.copy(Color.White)
                 )
                 Spacer(modifier = Modifier.weight(1f))
                 Icon(
                     modifier = Modifier.clickable {
                         searchMode = true
                     },
-                    imageVector = Icons.Filled.Search,
+                    painter = painterResource(id = R.drawable.ic_icon_search),
                     contentDescription = "Search"
                 )
-                Icon(
-                    modifier = Modifier
-                        .padding(horizontal = 20.dp)
-                        .clickable {
-                            viewModel.goToSettingScreen()
-                        },
-                    imageVector = Icons.Filled.Settings,
-                    contentDescription = "Settings"
-                )
+                // TODO: remove
+//                Icon(
+//                    modifier = Modifier
+//                        .padding(horizontal = 20.dp)
+//                        .clickable {
+//                            viewModel.goToSettingScreen()
+//                        },
+//                    imageVector = Icons.Filled.Settings,
+//                    contentDescription = "Settings"
+//                )
             }
         } else {
             SearchBar(
