@@ -32,6 +32,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -56,7 +57,7 @@ import id.worx.device.client.Util.isNetworkAvailable
 import id.worx.device.client.data.database.Session
 import id.worx.device.client.model.BasicForm
 import id.worx.device.client.model.FormSortModel
-import id.worx.device.client.model.FormSortType
+import id.worx.device.client.model.FormSortOrderBy
 import id.worx.device.client.model.SubmitForm
 import id.worx.device.client.screen.components.WorxBoxPullRefresh
 import id.worx.device.client.theme.PrimaryMain
@@ -64,6 +65,7 @@ import id.worx.device.client.theme.Typography
 import id.worx.device.client.theme.fontRoboto
 import id.worx.device.client.viewmodel.DetailFormViewModel
 import id.worx.device.client.viewmodel.HomeViewModelImpl
+import kotlinx.coroutines.launch
 
 @Composable
 fun FormScreen(
@@ -74,6 +76,7 @@ fun FormScreen(
     titleForEmpty: String,
     descriptionForEmpty: String,
     session: Session,
+    openSortBottomSheet: () -> Unit,
     syncWithServer: () -> Unit
 ) {
     val searchInput = viewModel.uiState.collectAsState().value.searchInput
@@ -97,21 +100,28 @@ fun FormScreen(
                         .background(PrimaryMain.copy(alpha = 0.16f))
                 )
             }
-            FormSort(selectedSort = FormSortModel())
+            FormSort(selectedSort = FormSortModel(), openSortByBottomSheet = openSortBottomSheet)
             if (data.isNullOrEmpty()) {
                 EmptyList(type, titleForEmpty, descriptionForEmpty, session)
             } else {
                 LazyColumn(
-                    modifier = Modifier.padding(start = 16.dp, bottom = 88.dp, end= 16.dp),
+                    modifier = Modifier.padding(start = 16.dp, bottom = 88.dp, end = 16.dp),
                     verticalArrangement = Arrangement.spacedBy(12.dp)
                 ) {
                     when (type) {
                         0 -> items(items = data, itemContent = { item ->
                             ListItemValidForm(item, viewModel, detailFormViewModel, theme)
                         })
+
                         1 -> items(items = data, itemContent = { item ->
-                            DraftItemForm(item as SubmitForm, viewModel, detailFormViewModel, theme)
+                            DraftItemForm(
+                                item as SubmitForm,
+                                viewModel,
+                                detailFormViewModel,
+                                theme
+                            )
                         })
+
                         2 -> items(items = data, itemContent = { item ->
                             SubmissionItemForm(
                                 item as SubmitForm,
@@ -180,14 +190,22 @@ fun NoConnectionFound(modifier: Modifier) {
 }
 
 @Composable
-fun FormSort(selectedSort: FormSortModel) {
+fun FormSort(
+    selectedSort: FormSortModel,
+    openSortByBottomSheet: suspend () -> Unit
+) {
+    val scope = rememberCoroutineScope()
     ConstraintLayout(
         modifier = Modifier
+            .fillMaxWidth()
             .padding(16.dp)
+            .clickable {
+                scope.launch { openSortByBottomSheet() }
+            }
     ) {
         val (tvSort, icChevron) = createRefs()
         Text(
-            text = selectedSort.formSort.value,
+            text = selectedSort.formSortType.value,
             style = Typography.body2.copy(
                 fontFamily = fontRoboto,
                 fontWeight = FontWeight.W400,
@@ -201,15 +219,17 @@ fun FormSort(selectedSort: FormSortModel) {
             }
         )
         Icon(
-            imageVector = if (selectedSort.formSortType == FormSortType.ASC) Icons.Filled.ArrowUpward else Icons.Filled.ArrowDownward,
+            imageVector = if (selectedSort.formSortOrderBy == FormSortOrderBy.ASC) Icons.Filled.ArrowUpward else Icons.Filled.ArrowDownward,
             contentDescription = "Arrow Upward",
             tint = MaterialTheme.colors.onSecondary.copy(alpha = 0.54f),
-            modifier = Modifier.size(20.dp).constrainAs(icChevron) {
-                top.linkTo(tvSort.top)
-                start.linkTo(tvSort.end, 2.dp)
-                bottom.linkTo(tvSort.bottom)
-                width = Dimension.fillToConstraints
-            })
+            modifier = Modifier
+                .size(20.dp)
+                .constrainAs(icChevron) {
+                    top.linkTo(tvSort.top)
+                    start.linkTo(tvSort.end, 2.dp)
+                    bottom.linkTo(tvSort.bottom)
+                    width = Dimension.fillToConstraints
+                })
     }
 }
 
@@ -397,7 +417,11 @@ fun SubmissionItemForm(
 @Composable
 fun EmptyList(type: Int, text: String, description: String, session: Session) {
     val theme = session.theme
-    val bg = arrayListOf(R.drawable.bg_emptylist_form, R.drawable.bg_emptylist_draft, R.drawable.bg_emptylist_submission)
+    val bg = arrayListOf(
+        R.drawable.bg_emptylist_form,
+        R.drawable.bg_emptylist_draft,
+        R.drawable.bg_emptylist_submission
+    )
     val icon = arrayListOf(R.drawable.ic_form, R.drawable.ic_draft, R.drawable.ic_tick)
     Column(
         modifier = Modifier
@@ -406,12 +430,12 @@ fun EmptyList(type: Int, text: String, description: String, session: Session) {
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
-        Box(contentAlignment = Alignment.Center){
+        Box(contentAlignment = Alignment.Center) {
             Image(
                 painter = painterResource(id = bg[type]),
                 colorFilter = ColorFilter.tint(
                     if (theme == SettingTheme.Dark) PrimaryMain else MaterialTheme.colors.primary
-                ) ,
+                ),
                 contentDescription = "Empty Icon"
             )
             Image(

@@ -39,6 +39,7 @@
     <string name="form">Forms</string>
     <string name="draft">Drafts</string>
     <string name="submission">Submissions</string>
+    <string name="text_sort_by">Sort By</string>
     <string name="add_file">Add File</string>
     <string name="gallery">Gallery</string>
     <string name="camera">Camera</string>

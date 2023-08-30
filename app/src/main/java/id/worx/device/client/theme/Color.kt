@@ -41,3 +41,5 @@ val SecondaryMainBlue = Color(0xFFF8CA45)
 val BlueDark = Color(0xFF176FB4)
 val BlackBlueButtonDark = Color(0xFFDA3630)
 
+val DragHandle = Color(0xFFEEEEEE)
+

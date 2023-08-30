@@ -15,7 +15,6 @@ import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Search
-import androidx.compose.material.icons.filled.Settings
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -45,8 +44,10 @@ import com.google.accompanist.pager.rememberPagerState
 import id.worx.device.client.R
 import id.worx.device.client.data.database.Session
 import id.worx.device.client.model.EmptyForm
+import id.worx.device.client.model.FormSortModel
 import id.worx.device.client.model.SubmitForm
 import id.worx.device.client.screen.components.RedFullWidthButton
+import id.worx.device.client.screen.components.WorxSortByBottomSheet
 import id.worx.device.client.theme.DarkBackgroundNavView
 import id.worx.device.client.theme.PrimaryMain
 import id.worx.device.client.theme.Typography
@@ -64,7 +65,7 @@ sealed class BottomNavItem(var title: Int, var icon: Int) {
     object Submission : BottomNavItem(R.string.submission, R.drawable.ic_tick)
 }
 
-@OptIn(ExperimentalPagerApi::class)
+@OptIn(ExperimentalPagerApi::class, ExperimentalMaterialApi::class)
 @Composable
 fun HomeScreen(
     formList: List<EmptyForm>,
@@ -80,112 +81,135 @@ fun HomeScreen(
     var showSubmittedStatus by remember { mutableStateOf(notificationType == 1) }
     var showBotNav by remember { mutableStateOf(false) }
     val pagerState = rememberPagerState(0)
+    val sheetState = rememberModalBottomSheetState(initialValue = ModalBottomSheetValue.Hidden)
     val title = arrayListOf(R.string.form, R.string.draft, R.string.submission)
 
-    Scaffold(
-        topBar = {
-            MainTopAppBar(
-                title = stringResource(id = title[pagerState.currentPage]),
-                onSearchMode = { showBotNav = it },
-                theme = session.theme,
-                viewModel = viewModel
-            ) { input ->
-                viewModel.uiState.update {
-                    it.copy(searchInput = input)
-                }
-            }
-        },
-        bottomBar = {
-            BottomNavigationView(
-                showBadge = showBadge,
-                showBotNav = showBotNav,
-                theme = session.theme,
-                pagerState = pagerState
-            )
+
+    WorxSortByBottomSheet(
+        sheetState = sheetState,
+        selectedSort = FormSortModel(),
+        onSortClicked = {
+
         }
-    ) { padding ->
-        val modifier = Modifier
-            .padding(bottom = 56.dp)
-            .background(backgroundFormList)
-        if (showBotNav) {
-            HorizontalPager(
-                modifier = Modifier.fillMaxSize(),
-                count = 3,
-                state = pagerState,
-            ) { page ->
-                when (page) {
-                    0 -> FormScreen(
-                        formList,
-                        0,
-                        viewModel,
-                        detailVM,
-                        stringResource(R.string.no_forms),
-                        stringResource(R.string.empty_description_form),
-                        session = session,
-                        syncWithServer
-                    )
-                    1 -> FormScreen(
-                        draftList,
-                        1,
-                        viewModel,
-                        detailVM,
-                        stringResource(R.string.no_drafts),
-                        stringResource(R.string.empty_description_drafts),
-                        session = session,
-                        syncWithServer
-                    )
-                    2 -> FormScreen(
-                        submissionList,
-                        2,
-                        viewModel,
-                        detailVM,
-                        stringResource(R.string.no_submission),
-                        stringResource(R.string.empty_description_submission),
-                        session = session,
-                        syncWithServer
-                    )
+    ) { openSortBottomSheet ->
+        Scaffold(
+            topBar = {
+                MainTopAppBar(
+                    title = stringResource(id = title[pagerState.currentPage]),
+                    onSearchMode = { showBotNav = it },
+                    theme = session.theme,
+                    viewModel = viewModel
+                ) { input ->
+                    viewModel.uiState.update {
+                        it.copy(searchInput = input)
+                    }
                 }
+            },
+            bottomBar = {
+                BottomNavigationView(
+                    showBadge = showBadge,
+                    showBotNav = showBotNav,
+                    theme = session.theme,
+                    pagerState = pagerState
+                )
             }
-        } else {
-            SearchScreen(
-                formList = formList,
-                draftList = draftList,
-                submissionList = submissionList,
-                viewModel = viewModel,
-                detailVM = detailVM,
-                session = session,
-                syncWithServer = syncWithServer,
-                modifier = modifier
-            )
-        }
-        AnimatedVisibility(
-            visible = viewModel.uiState.collectAsState().value.isLoading,
-            enter = EnterTransition.None,
-            exit = ExitTransition.None
-        ) {
-            Box(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(padding)
+        ) { padding ->
+            val modifier = Modifier
+                .padding(bottom = 56.dp)
+                .background(backgroundFormList)
+
+            if (showBotNav) {
+                HorizontalPager(
+                    modifier = Modifier.fillMaxSize(),
+                    count = 3,
+                    state = pagerState,
+                ) { page ->
+                    when (page) {
+                        0 -> FormScreen(
+                            formList,
+                            0,
+                            viewModel,
+                            detailVM,
+                            stringResource(R.string.no_forms),
+                            stringResource(R.string.empty_description_form),
+                            session = session,
+                            openSortBottomSheet = openSortBottomSheet,
+                            syncWithServer
+                        )
+
+                        1 -> FormScreen(
+                            draftList,
+                            1,
+                            viewModel,
+                            detailVM,
+                            stringResource(R.string.no_drafts),
+                            stringResource(R.string.empty_description_drafts),
+                            session = session,
+                            openSortBottomSheet = openSortBottomSheet,
+                            syncWithServer
+                        )
+
+                        2 -> FormScreen(
+                            submissionList,
+                            2,
+                            viewModel,
+                            detailVM,
+                            stringResource(R.string.no_submission),
+                            stringResource(R.string.empty_description_submission),
+                            session = session,
+                            openSortBottomSheet = openSortBottomSheet,
+                            syncWithServer
+                        )
+                    }
+                }
+            } else {
+                SearchScreen(
+                    formList = formList,
+                    draftList = draftList,
+                    submissionList = submissionList,
+                    viewModel = viewModel,
+                    detailVM = detailVM,
+                    session = session,
+                    syncWithServer = syncWithServer,
+                    openSortBottomSheet = openSortBottomSheet,
+                    modifier = modifier
+                )
+            }
+            AnimatedVisibility(
+                visible = viewModel.uiState.collectAsState().value.isLoading,
+                enter = EnterTransition.None,
+                exit = ExitTransition.None
             ) {
-                CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(padding)
+                ) {
+                    CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
+                }
             }
-        }
-        AnimatedVisibility(
-            visible = showSubmittedStatus
-        )
-        {
-            FormSubmitted(session = session) {
-                viewModel.showNotification(0)
-                showSubmittedStatus = false
+            AnimatedVisibility(
+                visible = showSubmittedStatus
+            )
+            {
+                FormSubmitted(session = session) {
+                    viewModel.showNotification(0)
+                    showSubmittedStatus = false
+                }
             }
         }
     }
+
 }
 
 @OptIn(ExperimentalPagerApi::class)
 @Composable
-fun BottomNavigationView(showBadge: Int, showBotNav: Boolean, theme:String?, pagerState: PagerState) {
+fun BottomNavigationView(
+    showBadge: Int,
+    showBotNav: Boolean,
+    theme: String?,
+    pagerState: PagerState
+) {
     val items = listOf(
         BottomNavItem.Form,
         BottomNavItem.Draft,
@@ -193,8 +217,10 @@ fun BottomNavigationView(showBadge: Int, showBotNav: Boolean, theme:String?, pag
     )
     val density = LocalDensity
     val scope = rememberCoroutineScope()
-    val selectedColor = if (theme == SettingTheme.Dark) PrimaryMain else MaterialTheme.colors.primary
-    val unselectedColor = if (theme == SettingTheme.Dark) DarkBackgroundNavView else Color.Black.copy(0.64f)
+    val selectedColor =
+        if (theme == SettingTheme.Dark) PrimaryMain else MaterialTheme.colors.primary
+    val unselectedColor =
+        if (theme == SettingTheme.Dark) DarkBackgroundNavView else Color.Black.copy(0.64f)
     if (showBotNav) {
         BottomNavigation(
             backgroundColor = if (theme == SettingTheme.Dark) MaterialTheme.colors.secondary else Color.White,
@@ -220,7 +246,7 @@ fun BottomNavigationView(showBadge: Int, showBotNav: Boolean, theme:String?, pag
                     )
                 }
         ) {
-            items.forEachIndexed { index, item  ->
+            items.forEachIndexed { index, item ->
                 BottomNavigationItem(
                     icon = {
                         BadgedBox(badge = {
@@ -231,10 +257,11 @@ fun BottomNavigationView(showBadge: Int, showBotNav: Boolean, theme:String?, pag
                                 )
                             }
                         }) {
-                            Box( modifier = Modifier
-                                .padding(16.dp)
-                                .height(24.dp)
-                                ) {
+                            Box(
+                                modifier = Modifier
+                                    .padding(16.dp)
+                                    .height(24.dp)
+                            ) {
                                 Icon(
                                     modifier = Modifier
                                         .clip(RoundedCornerShape(4.dp))
@@ -457,6 +484,11 @@ fun FormSubmitted(
 @OptIn(ExperimentalPagerApi::class)
 @Preview(showBackground = true)
 @Composable
-private fun BottomNavigationViewPreview(){
-    BottomNavigationView(showBadge = 1, showBotNav = true, theme = SettingTheme.System, PagerState(1))
+private fun BottomNavigationViewPreview() {
+    BottomNavigationView(
+        showBadge = 1,
+        showBotNav = true,
+        theme = SettingTheme.System,
+        PagerState(1)
+    )
 }
