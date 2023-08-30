@@ -26,9 +26,7 @@ import id.worx.device.client.viewmodel.DetailFormViewModel
 
 @Composable
 fun WorxTextField(
-    theme: String?,
     label: String,
-    description: String = "",
     hint: String? = null,
     inputType: KeyboardOptions,
     initialValue: TextFieldValue = TextFieldValue(),
@@ -51,22 +49,9 @@ fun WorxTextField(
         modifier = Modifier.padding(horizontal = 16.dp)
     ) {
         var passwordVisible by rememberSaveable { mutableStateOf(false) }
-        Text(
-            modifier = Modifier.padding(bottom = 8.dp),
-            text = label,
-            style = Typography.body2.copy(MaterialTheme.colors.onSecondary)
-        )
-        if (description.isNotBlank()) {
-            Text(
-                text = description,
-                color = if (theme == SettingTheme.Dark) textFormDescriptionDark else textFormDescription,
-                style = MaterialTheme.typography.body1.copy(textFormDescription),
-                modifier = Modifier.padding(bottom = 8.dp)
-            )
-        }
         TextField(
             colors = TextFieldDefaults.textFieldColors(
-                backgroundColor = Color.Black.copy(0.06f),
+                backgroundColor = backgroundFormList,
 //                focusedLabelColor = if (theme == SettingTheme.Dark || theme == SettingTheme.System) PrimaryMain else MaterialTheme.colors.primary,
 //                unfocusedLabelColor = if (theme == SettingTheme.Dark) textUnfocusColorDark else textUnfocusColorSystem
             ),
@@ -80,6 +65,14 @@ fun WorxTextField(
             },
             enabled = isEnabled,
             label = {
+                Text(
+                    text = label,
+                    style = Typography.body2,
+                    fontFamily = FontFamily(Font(R.font.dmmono)),
+                    color = MaterialTheme.colors.onSecondary.copy(0.54f)
+                )
+            },
+            placeholder = {
                 Text(
                     text = hint ?: "Enter $label",
                     style = Typography.body2,
@@ -133,9 +126,5 @@ fun WorxTextField(
         } else {
             data?.isValid = true
         }
-        Divider(
-            color = GrayDivider,
-            modifier = Modifier.padding(vertical = 16.dp)
-        )
     }
 }

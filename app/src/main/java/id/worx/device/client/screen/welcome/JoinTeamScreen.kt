@@ -1,9 +1,11 @@
 package id.worx.device.client.screen.welcome
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
@@ -12,10 +14,13 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
 import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import id.worx.device.client.R
@@ -44,35 +49,40 @@ fun JoinTeamScreen(
     var orgPr by remember { mutableStateOf(0) }
     val theme = session.theme
 
-    Scaffold(
-        topBar = {
-            WorxTopAppBar({
-                onEvent(JoinTeamEvent.NavigateBack)
-            }, progress = namePr + orgPr, "Join An Existing Team")
-        }
-    ) { padding ->
+    Scaffold { padding ->
         Column(
             modifier = Modifier
                 .padding(padding)
                 .fillMaxSize()
                 .background(MaterialTheme.colors.secondary)
+                .padding(vertical = 36.dp, horizontal = 16.dp)
                 .verticalScroll(rememberScrollState())
         ) {
             var name by remember { mutableStateOf("") }
             var organization by remember { mutableStateOf("") }
 
+            Image(
+                painter = painterResource(R.drawable.worx_logo_red),
+                contentDescription = "Worx Logo",
+                modifier = Modifier.align(Alignment.CenterHorizontally)
+            )
+
+            Spacer(modifier = Modifier.height(24.dp))
+
             Text(
-                text = stringResource(R.string.ready_to_join),
+                text = stringResource(R.string.join_an_existing_team),
                 style = Typography.subtitle1.copy(MaterialTheme.colors.onSecondary),
-                modifier = Modifier.padding(start = 16.dp, top = 40.dp)
+                modifier = Modifier.align(Alignment.CenterHorizontally)
             )
+            Spacer(modifier = Modifier.height(4.dp))
             Text(
-                text = stringResource(R.string.admin_will_approve),
+                text = stringResource(R.string.text_join_team_fill_form),
                 style = Typography.body1.copy(MaterialTheme.colors.onSecondary),
-                modifier = Modifier.padding(start = 16.dp, top = 8.dp, end = 16.dp, bottom = 40.dp)
+                modifier = Modifier.align(Alignment.CenterHorizontally),
+                textAlign = TextAlign.Center
             )
+            Spacer(modifier = Modifier.height(24.dp))
             WorxTextField(
-                theme = theme,
                 label = stringResource(R.string.name),
                 inputType = KeyboardOptions(keyboardType = KeyboardType.Text),
                 onValueChange = {
@@ -84,8 +94,8 @@ fun JoinTeamScreen(
                     name = it
                 }
             )
+            Spacer(modifier = Modifier.height(20.dp))
             WorxTextField(
-                theme = theme,
                 label = stringResource(R.string.organization_code),
                 inputType = KeyboardOptions(keyboardType = KeyboardType.Text),
                 onValueChange = {
@@ -99,7 +109,7 @@ fun JoinTeamScreen(
             )
             Spacer(modifier = Modifier.weight(1f))
             RedFullWidthButton(
-                onClickCallback = {onEvent(JoinTeamEvent.JoinTeam(name, organization))},
+                onClickCallback = { onEvent(JoinTeamEvent.JoinTeam(name, organization)) },
                 label = stringResource(R.string.send_request),
                 modifier = Modifier.padding(vertical = 20.dp),
                 theme = theme

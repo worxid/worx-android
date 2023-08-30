@@ -185,9 +185,7 @@ fun DetailForm(
                         Log.d("MUTILINE", textField.toString())
 
                         WorxTextField(
-                            theme = theme,
                             label = item.label ?: "Free Text",
-                            description = item.description ?: "",
                             hint = "Answer",
                             inputType = KeyboardOptions(keyboardType = KeyboardType.Text),
                             initialValue = androidx.compose.ui.text.input.TextFieldValue(
@@ -412,9 +410,7 @@ fun DialogDraftForm(
                     style = Typography.body2.copy(MaterialTheme.colors.onSecondary.copy(0.54f))
                 )
                 WorxTextField(
-                    theme = theme,
                     label = "",
-                    description = "",
                     hint = stringResource(R.string.draft_descr),
                     inputType = KeyboardOptions(keyboardType = KeyboardType.Text),
                     onValueChange = {},
