@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
@@ -23,10 +24,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import id.worx.device.client.R
 import id.worx.device.client.data.database.Session
 import id.worx.device.client.screen.components.RedFullWidthButton
@@ -67,7 +70,9 @@ fun JoinTeamScreen(
             Image(
                 painter = painterResource(R.drawable.worx_logo_red),
                 contentDescription = "Worx Logo",
-                modifier = Modifier.align(Alignment.CenterHorizontally)
+                modifier = Modifier
+                    .align(Alignment.CenterHorizontally)
+                    .size(122.dp, 36.dp)
             )
 
             Spacer(modifier = Modifier.height(24.dp))
@@ -75,14 +80,17 @@ fun JoinTeamScreen(
             Text(
                 text = stringResource(R.string.join_an_existing_team),
                 style = Typography.subtitle1.copy(MaterialTheme.colors.onSecondary),
-                modifier = Modifier.align(Alignment.CenterHorizontally)
+                modifier = Modifier.align(Alignment.CenterHorizontally),
+                fontWeight = FontWeight.Bold,
+                lineHeight = 30.sp
             )
             Spacer(modifier = Modifier.height(4.dp))
             Text(
                 text = stringResource(R.string.text_join_team_fill_form),
-                style = Typography.body1.copy(MaterialTheme.colors.onSecondary),
-                modifier = Modifier.align(Alignment.CenterHorizontally),
-                textAlign = TextAlign.Center
+                style = Typography.body1.copy(MaterialTheme.colors.onSecondary.copy(alpha = 0.54f)),
+                modifier = Modifier.align(Alignment.CenterHorizontally).padding(horizontal = 16.dp),
+                textAlign = TextAlign.Center,
+                lineHeight = 24.sp
             )
             Spacer(modifier = Modifier.height(24.dp))
             WorxTextField(
@@ -110,11 +118,11 @@ fun JoinTeamScreen(
                     organization = it
                 }
             )
-            Spacer(modifier = Modifier.weight(1f))
+            Spacer(modifier = Modifier.height(20.dp))
             RedFullWidthButton(
                 onClickCallback = { onEvent(JoinTeamEvent.JoinTeam(name, organization)) },
-                label = stringResource(R.string.send_request),
-                modifier = Modifier.padding(vertical = 20.dp),
+                label = stringResource(R.string.join_an_existing_team),
+                modifier = Modifier,
                 theme = theme
             )
         }

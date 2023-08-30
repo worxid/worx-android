@@ -28,6 +28,7 @@ import id.worx.device.client.screen.main.SettingTheme
 import id.worx.device.client.theme.PrimaryMain
 import id.worx.device.client.theme.Typography
 import id.worx.device.client.theme.WorxTheme
+import id.worx.device.client.theme.fontRoboto
 
 
 sealed class CreateTeamSubmittedEvent {
@@ -64,7 +65,7 @@ fun CreateTeamSubmittedScreen(session: Session, onEvent: (CreateTeamSubmittedEve
                 stringResource(id = R.string.check_email),
                 fontSize = 20.sp,
                 fontWeight = FontWeight.W500,
-                fontFamily = FontFamily(Font(R.font.dmmono)),
+                fontFamily = fontRoboto,
                 color = MaterialTheme.colors.onSecondary,
                 modifier = Modifier.padding(top = 24.dp, bottom = 8.dp)
             )

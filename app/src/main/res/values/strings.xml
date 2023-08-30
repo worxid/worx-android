@@ -21,7 +21,6 @@
     <string name="password">Password</string>
     <string name="work_phone">Work Phone</string>
     <string name="organization_code">Organization Code</string>
-    <string name="send_request">Send Request</string>
     <string name="back_to_join_request">Back To Join Request</string>
     <string name="waiting_for_verification">Waiting for verification</string>
     <string name="verification_rejected">Your verification was rejected</string>
