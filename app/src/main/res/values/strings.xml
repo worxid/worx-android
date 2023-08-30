@@ -6,6 +6,8 @@
     <string name="welcome_messg_2">Easily &amp; Interactively</string>
     <string name="create_new_team">Create New Team</string>
     <string name="join_team">Join Existing Team</string>
+    <string name="join_an_existing_team">Join An Existing Team</string>
+    <string name="text_join_team_fill_form">Fill the form and waiting until admin from your company approve your device.</string>
     <string name="full_name">Full Name</string>
     <string name="check_email">Check Your Email</string>
     <string name="activate_acc_1">Click the link in your email to</string>
@@ -13,9 +15,8 @@
     <string name="open_email">Open Email App</string>
     <string name="not_receive_link">Didn\'t receive the link?</string>
     <string name="resend">Resend</string>
-    <string name="ready_to_join">Ready to join</string>
     <string name="admin_will_approve">Admin will approve your device</string>
-    <string name="name">Name</string>
+    <string name="name">Full Name</string>
     <string name="email">Email</string>
     <string name="password">Password</string>
     <string name="work_phone">Work Phone</string>

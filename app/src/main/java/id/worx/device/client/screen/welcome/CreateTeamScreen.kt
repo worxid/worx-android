@@ -69,7 +69,6 @@ fun CreateTeamScreen(
             var organization by remember { mutableStateOf("") }
 
             WorxTextField(
-                theme = theme,
                 label = "Full Name",
                 inputType = KeyboardOptions(keyboardType = KeyboardType.Text),
                 onValueChange = {
@@ -82,7 +81,6 @@ fun CreateTeamScreen(
                 }
             )
             WorxTextField(
-                theme = theme,
                 label = "Email",
                 inputType = KeyboardOptions(keyboardType = KeyboardType.Email),
                 onValueChange = {
@@ -95,7 +93,6 @@ fun CreateTeamScreen(
                 }
             )
             WorxTextField(
-                theme = theme,
                 label = "Password",
                 inputType = KeyboardOptions(keyboardType = KeyboardType.Password),
                 onValueChange = {
@@ -109,7 +106,6 @@ fun CreateTeamScreen(
                 isPassword = true
             )
             WorxTextField(
-                theme = theme,
                 label = "Work Phone",
                 inputType = KeyboardOptions(keyboardType = KeyboardType.Phone),
                 onValueChange = {
@@ -122,7 +118,6 @@ fun CreateTeamScreen(
                 }
             )
             WorxTextField(
-                theme = theme,
                 label = "Organization Name",
                 inputType = KeyboardOptions(keyboardType = KeyboardType.Text),
                 onValueChange = {
