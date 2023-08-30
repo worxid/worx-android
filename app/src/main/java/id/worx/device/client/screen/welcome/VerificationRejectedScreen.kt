@@ -5,24 +5,24 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.scale
-import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import id.worx.device.client.R
 import id.worx.device.client.data.database.Session
-import id.worx.device.client.screen.components.RedFullWidthButton
-import id.worx.device.client.screen.main.SettingTheme
+import id.worx.device.client.screen.components.TransparentButton
 import id.worx.device.client.theme.Typography
 import id.worx.device.client.theme.WorxTheme
 
@@ -34,31 +34,36 @@ fun VerificationRejectedScreen(session: Session, onEvent: (VerificationEvent) ->
     ) {
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
-            modifier = Modifier.background(MaterialTheme.colors.secondary)
+            modifier = Modifier
+                .background(MaterialTheme.colors.secondary)
+                .padding(vertical = 36.dp, horizontal = 16.dp)
         ) {
             Image(
-                modifier = Modifier
-                    .padding(vertical = 45.dp)
-                    .scale(0.75f),
-                painter = painterResource(R.drawable.worx_logo),
-                contentDescription = "Worx Logo",
-                colorFilter = ColorFilter.tint(color = MaterialTheme.colors.onSecondary)
+                modifier = Modifier.size(78.dp, 24.dp),
+                painter = painterResource(R.drawable.worx_logo_red),
+                contentDescription = "Worx Logo"
             )
             Spacer(modifier = Modifier.weight(1f))
             Image(
-                painter = painterResource(id = if (theme == SettingTheme.Dark) R.drawable.ic_reject_dark else R.drawable.ic_reject_icon),
+                painter = painterResource(R.drawable.ic_icon_reject),
                 contentDescription = "Rejected icon"
             )
+            Spacer(modifier = Modifier.height(12.dp))
             Text(
                 stringResource(R.string.verification_rejected),
-                style = Typography.body1.copy(color = MaterialTheme.colors.onSecondary),
-                modifier = Modifier.padding(top = 25.dp, bottom = 20.dp)
+                style = Typography.h6.copy(color = MaterialTheme.colors.onSecondary)
             )
-            RedFullWidthButton(
+            Spacer(modifier = Modifier.height(4.dp))
+            Text(
+                stringResource(R.string.verification_rejected_description),
+                style = Typography.body2.copy(color = MaterialTheme.colors.onSecondary.copy(alpha = 0.54f)),
+                textAlign = TextAlign.Center
+            )
+            Spacer(modifier = Modifier.height(12.dp))
+            TransparentButton(
                 onClickCallback = { onEvent(VerificationEvent.MakeNewRequest) },
                 label = stringResource(R.string.make_new_request),
-                modifier = Modifier.padding(vertical = 20.dp),
-                theme = theme
+                modifier = Modifier
             )
             Spacer(modifier = Modifier.weight(1.5f))
         }

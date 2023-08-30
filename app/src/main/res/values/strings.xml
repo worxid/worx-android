@@ -24,7 +24,8 @@
     <string name="cancel_request">Cancel Request</string>
     <string name="request_success_sent">Request successfully sent</string>
     <string name="verification_need_admin_approval">Need approval admin via Worx web to continue.</string>
-    <string name="verification_rejected">Your verification was rejected</string>
+    <string name="verification_rejected">Verification Was Rejected</string>
+    <string name="verification_rejected_description">Make a new request and make sure your admin knows about your request.</string>
     <string name="make_new_request">Make A New Request</string>
     <string name="title_activity_main">MainActivity</string>
     <string name="advance_settings">Advance Settings</string>
