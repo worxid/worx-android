@@ -59,32 +59,35 @@ val Typography = Typography(
     ),
     // app bar title
     h6 = TextStyle(
-        fontWeight = FontWeight.W500,
+        fontWeight = FontWeight.Bold,
         fontSize = 18.sp,
         letterSpacing = 0.15.sp,
-        fontFamily = FontFamily(Font(R.font.dmmono))
+        fontFamily = fontRoboto,
+        lineHeight = 30.sp
     ),
     subtitle1 = TextStyle(
         fontWeight = FontWeight.W500,
         fontSize = 20.sp,
-        fontFamily = FontFamily(Font(R.font.dmmono)),
+        fontFamily = fontRoboto,
         letterSpacing = 0.15.sp
     ),
     body1 = TextStyle(
         fontWeight = FontWeight.W400,
         fontSize = 14.sp,
-        fontFamily = FontFamily(Font(R.font.dmmono)),
+        fontFamily = fontRoboto,
         letterSpacing = 0.15.sp,
+        lineHeight = 24.sp
     ),
     body2 = TextStyle(
         fontWeight = FontWeight.W500,
-        fontSize = 16.sp,
-        fontFamily = FontFamily(Font(R.font.dmmono))),
+        fontSize = 14.sp,
+        fontFamily = fontRoboto
+    ),
     button = TextStyle(
         fontWeight = FontWeight.W500,
-        fontSize = 16.sp,
+        fontSize = 14.sp,
         letterSpacing = 0.15.sp,
-        fontFamily = FontFamily(Font(R.font.dmmono))
+        fontFamily = fontRoboto
     ),
     caption = TextStyle(
         fontWeight = FontWeight.W500,

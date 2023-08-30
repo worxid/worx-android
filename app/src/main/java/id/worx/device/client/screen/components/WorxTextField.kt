@@ -52,8 +52,8 @@ fun WorxTextField(
         TextField(
             colors = TextFieldDefaults.textFieldColors(
                 backgroundColor = backgroundFormList,
-//                focusedLabelColor = if (theme == SettingTheme.Dark || theme == SettingTheme.System) PrimaryMain else MaterialTheme.colors.primary,
-//                unfocusedLabelColor = if (theme == SettingTheme.Dark) textUnfocusColorDark else textUnfocusColorSystem
+                focusedLabelColor = PrimaryMain,
+                unfocusedLabelColor = MaterialTheme.colors.onSecondary.copy(0.54f),
             ),
             modifier = Modifier
                 .fillMaxWidth(),
@@ -67,16 +67,15 @@ fun WorxTextField(
             label = {
                 Text(
                     text = label,
-                    style = Typography.body2,
-                    fontFamily = FontFamily(Font(R.font.dmmono)),
-                    color = MaterialTheme.colors.onSecondary.copy(0.54f)
+                    style = Typography.caption,
+                    fontFamily = fontRoboto
                 )
             },
             placeholder = {
                 Text(
                     text = hint ?: "Enter $label",
                     style = Typography.body2,
-                    fontFamily = FontFamily(Font(R.font.dmmono)),
+                    fontFamily = fontRoboto,
                     color = MaterialTheme.colors.onSecondary.copy(0.54f)
                 )
             },
