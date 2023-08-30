@@ -72,7 +72,7 @@ class WaitingVerificationFragment : Fragment(), WelcomeViewModel.UIHandler {
                         session,
                         onEvent = { event ->
                             when (event) {
-                                is VerificationEvent.BackToJoinRequest -> {
+                                is VerificationEvent.CancelRequest -> {
                                     viewModel.backToJoinRequest()
                                 }
                                 else -> {}

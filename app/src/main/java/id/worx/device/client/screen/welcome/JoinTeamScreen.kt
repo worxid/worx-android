@@ -29,7 +29,6 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import id.worx.device.client.R
 import id.worx.device.client.data.database.Session
 import id.worx.device.client.screen.components.RedFullWidthButton
@@ -81,16 +80,14 @@ fun JoinTeamScreen(
                 text = stringResource(R.string.join_an_existing_team),
                 style = Typography.subtitle1.copy(MaterialTheme.colors.onSecondary),
                 modifier = Modifier.align(Alignment.CenterHorizontally),
-                fontWeight = FontWeight.Bold,
-                lineHeight = 30.sp
+                fontWeight = FontWeight.Bold
             )
             Spacer(modifier = Modifier.height(4.dp))
             Text(
                 text = stringResource(R.string.text_join_team_fill_form),
                 style = Typography.body1.copy(MaterialTheme.colors.onSecondary.copy(alpha = 0.54f)),
                 modifier = Modifier.align(Alignment.CenterHorizontally).padding(horizontal = 16.dp),
-                textAlign = TextAlign.Center,
-                lineHeight = 24.sp
+                textAlign = TextAlign.Center
             )
             Spacer(modifier = Modifier.height(24.dp))
             WorxTextField(
