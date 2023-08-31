@@ -2,6 +2,7 @@ package id.worx.device.client.screen.components
 
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -26,17 +27,15 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.CornerRadius
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.compose.ui.zIndex
 import id.worx.device.client.R
 import id.worx.device.client.model.FormSortModel
 import id.worx.device.client.model.FormSortOrderBy
 import id.worx.device.client.model.FormSortType
-import id.worx.device.client.theme.DragHandle
+import id.worx.device.client.theme.LocalCustomColorsPalette
 import id.worx.device.client.theme.PrimaryMain
 import id.worx.device.client.theme.WorxTheme
 import kotlinx.coroutines.launch
@@ -51,13 +50,11 @@ fun WorxSortByBottomSheet(
 ) {
     val scope = rememberCoroutineScope()
     ModalBottomSheetLayout(
-        modifier = Modifier.zIndex(10f),
         sheetState = sheetState,
         sheetContent = {
             WorxSortByContent(selectedSort = selectedSort, onSortClicked = onSortClicked)
         },
-        sheetBackgroundColor = Color.White,
-        sheetContentColor = Color.White
+        sheetBackgroundColor = LocalCustomColorsPalette.current.bottomSheetBackground
     ) {
         content(openSortByBottomSheet = { scope.launch { sheetState.show() } })
     }
@@ -68,18 +65,23 @@ private fun WorxSortByContent(
     selectedSort: FormSortModel,
     onSortClicked: (newSort: FormSortModel) -> Unit
 ) {
-    Column {
+    val colorPalette = LocalCustomColorsPalette.current
+    Column(
+        modifier = Modifier
+            .background(colorPalette.bottomSheetBackground)
+            .padding(bottom = 16.dp),
+    ) {
         Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .background(Color.White)
+                .background(colorPalette.bottomSheetBackground)
                 .padding(vertical = 8.dp)
         ) {
             Canvas(modifier = Modifier
                 .size(80.dp, 4.dp)
                 .align(Alignment.Center), onDraw = {
                 drawRoundRect(
-                    color = DragHandle,
+                    color = colorPalette.bottomSheetDragHandle,
                     cornerRadius = CornerRadius(2f, 2f)
                 )
             })
@@ -95,7 +97,15 @@ private fun WorxSortByContent(
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .background(if (isSelected) PrimaryMain.copy(alpha = 0.16f) else Color.White)
+                    .background(if (isSelected) PrimaryMain.copy(alpha = 0.16f) else colorPalette.bottomSheetBackground)
+                    .clickable {
+                        if (isSelected) {
+                            onSortClicked(selectedSort.toggleSortOrderBy())
+                        }
+                        else {
+                            onSortClicked(FormSortModel(model))
+                        }
+                    }
                     .padding(
                         horizontal = if (isSelected) 16.dp else 36.dp,
                         vertical = 10.dp
@@ -105,7 +115,7 @@ private fun WorxSortByContent(
                     Icon(
                         imageVector = if (selectedSort.formSortOrderBy == FormSortOrderBy.ASC) Icons.Filled.ArrowUpward else Icons.Filled.ArrowDownward,
                         contentDescription = "Arrow Upward",
-                        tint = PrimaryMain,
+                        tint = colorPalette.button,
                         modifier = Modifier.size(20.dp)
                     )
                 }
@@ -114,9 +124,7 @@ private fun WorxSortByContent(
                     text = model.value,
                     style = MaterialTheme.typography.body1,
                     fontSize = 16.sp,
-                    color = if (isSelected) PrimaryMain else MaterialTheme.colors.onSecondary.copy(
-                        alpha = 0.87f
-                    )
+                    color = if (isSelected) colorPalette.button else MaterialTheme.colors.onSecondary
                 )
             }
         }

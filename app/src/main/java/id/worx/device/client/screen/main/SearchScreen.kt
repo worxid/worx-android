@@ -122,7 +122,7 @@ fun SearchScreen(
                         stringResource(R.string.empty_description_form),
                         session = session,
                         openSortBottomSheet = openSortBottomSheet,
-                        syncWithServer
+                        syncWithServer = syncWithServer
                     )
                     1 -> FormScreen(
                         draftData,
@@ -133,7 +133,7 @@ fun SearchScreen(
                         stringResource(R.string.empty_description_drafts),
                         session = session,
                         openSortBottomSheet = openSortBottomSheet,
-                        syncWithServer
+                        syncWithServer = syncWithServer
                     )
                     2 -> FormScreen(
                         submissionData,
@@ -144,7 +144,7 @@ fun SearchScreen(
                         stringResource(R.string.empty_description_submission),
                         session = session,
                         openSortBottomSheet = openSortBottomSheet,
-                        syncWithServer
+                        syncWithServer = syncWithServer
                     )
                 }
             }

@@ -11,7 +11,7 @@
         <item name="android:navigationBarColor">@android:color/white</item>
         <item name="android:windowLightNavigationBar">true</item>
         <item name="android:windowBackground">?attr/colorSurface</item>
-        <item name="android:forceDarkAllowed">false</item>
+        <item name="android:forceDarkAllowed">true</item>
     </style>
 
     <style name="Theme.Worx.NoActionBar">

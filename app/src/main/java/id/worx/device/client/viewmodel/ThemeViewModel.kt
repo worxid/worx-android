@@ -9,7 +9,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import id.worx.device.client.data.database.Session
 import javax.inject.Inject
 
-abstract class ThemeViewModel() : ViewModel() {
+abstract class ThemeViewModel : ViewModel() {
     abstract fun onThemeChanged(newTheme: String)
 }
 
