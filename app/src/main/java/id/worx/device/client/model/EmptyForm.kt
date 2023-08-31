@@ -58,3 +58,19 @@ abstract class Fields (
 data class Group (
     @SerializedName("label" ) var label : String? = null
 )
+
+enum class FormSortType(val value: String) {
+    NAME("Name"),
+    DESCRIPTION("Description"),
+    LAST_MODIFIED("Last Modified"),
+}
+
+enum class FormSortOrderBy {
+    ASC,
+    DESC
+}
+
+data class FormSortModel(
+    val formSortType: FormSortType = FormSortType.NAME,
+    val formSortOrderBy: FormSortOrderBy = FormSortOrderBy.ASC
+)

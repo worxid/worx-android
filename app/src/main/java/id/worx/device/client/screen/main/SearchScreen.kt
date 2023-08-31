@@ -4,6 +4,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -45,6 +46,7 @@ fun SearchScreen(
     detailVM: DetailFormViewModel,
     session: Session,
     syncWithServer: () -> Unit,
+    openSortBottomSheet: () -> Unit,
     modifier: Modifier
 ) {
     val searchInput = viewModel.uiState.collectAsState().value.searchInput
@@ -55,7 +57,7 @@ fun SearchScreen(
 
     Scaffold { padding ->
         ConstraintLayout(
-            modifier = modifier
+            modifier = modifier.padding(padding)
         ) {
             val (tablayout, tabcontent) = createRefs()
             val pagerState = rememberPagerState()
@@ -119,6 +121,7 @@ fun SearchScreen(
                         stringResource(R.string.no_forms),
                         stringResource(R.string.empty_description_form),
                         session = session,
+                        openSortBottomSheet = openSortBottomSheet,
                         syncWithServer
                     )
                     1 -> FormScreen(
@@ -129,6 +132,7 @@ fun SearchScreen(
                         stringResource(R.string.no_drafts),
                         stringResource(R.string.empty_description_drafts),
                         session = session,
+                        openSortBottomSheet = openSortBottomSheet,
                         syncWithServer
                     )
                     2 -> FormScreen(
@@ -139,6 +143,7 @@ fun SearchScreen(
                         stringResource(R.string.no_submission),
                         stringResource(R.string.empty_description_submission),
                         session = session,
+                        openSortBottomSheet = openSortBottomSheet,
                         syncWithServer
                     )
                 }
@@ -158,7 +163,8 @@ fun PreviewSearchScreen() {
             viewModel = hiltViewModel(),
             detailVM = hiltViewModel(),
             session = Session(LocalContext.current),
-            {  },
+            openSortBottomSheet = {},
+            syncWithServer = {},
             modifier = Modifier
         )
     }

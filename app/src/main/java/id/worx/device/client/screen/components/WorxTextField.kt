@@ -7,21 +7,30 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material.*
-import androidx.compose.runtime.*
+import androidx.compose.material.Icon
+import androidx.compose.material.IconButton
+import androidx.compose.material.MaterialTheme
+import androidx.compose.material.Text
+import androidx.compose.material.TextField
+import androidx.compose.material.TextFieldDefaults
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.font.Font
-import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import id.worx.device.client.R
-import id.worx.device.client.screen.main.SettingTheme
-import id.worx.device.client.theme.*
+import id.worx.device.client.theme.LocalCustomColorsPalette
+import id.worx.device.client.theme.PrimaryMain
+import id.worx.device.client.theme.Typography
+import id.worx.device.client.theme.fontRoboto
 import id.worx.device.client.viewmodel.DetailFormViewModel
 
 @Composable
@@ -51,9 +60,11 @@ fun WorxTextField(
         var passwordVisible by rememberSaveable { mutableStateOf(false) }
         TextField(
             colors = TextFieldDefaults.textFieldColors(
-                backgroundColor = backgroundFormList,
-                focusedLabelColor = PrimaryMain,
-                unfocusedLabelColor = MaterialTheme.colors.onSecondary.copy(0.54f),
+                backgroundColor = LocalCustomColorsPalette.current.textFieldContainer,
+                focusedLabelColor = LocalCustomColorsPalette.current.textFieldFocusedLabel,
+                unfocusedLabelColor = LocalCustomColorsPalette.current.textFieldUnfocusedLabel,
+                focusedIndicatorColor = LocalCustomColorsPalette.current.textFieldFocusedIndicator,
+                cursorColor = MaterialTheme.colors.onSecondary
             ),
             modifier = Modifier
                 .fillMaxWidth(),
@@ -73,7 +84,7 @@ fun WorxTextField(
             },
             placeholder = {
                 Text(
-                    text = hint ?: "Enter $label",
+                    text = hint ?: "",
                     style = Typography.body2,
                     fontFamily = fontRoboto,
                     color = MaterialTheme.colors.onSecondary.copy(0.54f)

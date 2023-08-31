@@ -14,6 +14,7 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -23,6 +24,7 @@ import androidx.compose.ui.unit.dp
 import id.worx.device.client.R
 import id.worx.device.client.data.database.Session
 import id.worx.device.client.screen.components.TransparentButton
+import id.worx.device.client.theme.LocalCustomColorsPalette
 import id.worx.device.client.theme.Typography
 import id.worx.device.client.theme.WorxTheme
 
@@ -40,13 +42,14 @@ fun VerificationRejectedScreen(session: Session, onEvent: (VerificationEvent) ->
         ) {
             Image(
                 modifier = Modifier.size(78.dp, 24.dp),
-                painter = painterResource(R.drawable.worx_logo_red),
+                painter = painterResource(R.drawable.worx_logo),
                 contentDescription = "Worx Logo"
             )
             Spacer(modifier = Modifier.weight(1f))
             Image(
                 painter = painterResource(R.drawable.ic_icon_reject),
-                contentDescription = "Rejected icon"
+                contentDescription = "Rejected icon",
+                colorFilter = ColorFilter.tint(color = LocalCustomColorsPalette.current.icon)
             )
             Spacer(modifier = Modifier.height(12.dp))
             Text(

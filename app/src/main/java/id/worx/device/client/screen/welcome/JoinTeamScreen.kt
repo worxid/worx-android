@@ -1,5 +1,6 @@
 package id.worx.device.client.screen.welcome
 
+import android.content.res.Configuration
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
@@ -67,7 +68,7 @@ fun JoinTeamScreen(
             var organization by remember { mutableStateOf("") }
 
             Image(
-                painter = painterResource(R.drawable.worx_logo_red),
+                painter = painterResource(R.drawable.worx_logo),
                 contentDescription = "Worx Logo",
                 modifier = Modifier
                     .align(Alignment.CenterHorizontally)
@@ -129,6 +130,16 @@ fun JoinTeamScreen(
 @Preview(name = "JoinTeam Screen", showSystemUi = true)
 @Composable
 fun JoinTeamScreenPreview() {
+    WorxTheme {
+        JoinTeamScreen(Session(LocalContext.current), {})
+    }
+}
+
+@Preview(name = "JoinTeam Screen", showSystemUi = true,
+    uiMode = Configuration.UI_MODE_NIGHT_YES or Configuration.UI_MODE_TYPE_NORMAL
+)
+@Composable
+fun JoinTeamScreenNightPreview() {
     WorxTheme {
         JoinTeamScreen(Session(LocalContext.current), {})
     }
