@@ -4,9 +4,11 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -38,8 +40,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.ColorFilter
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -102,8 +102,9 @@ fun FormScreen(
                     openSortByBottomSheet = openSortBottomSheet
                 )
                 LazyColumn(
-                    modifier = Modifier.padding(start = 16.dp, bottom = 88.dp, end = 16.dp),
-                    verticalArrangement = Arrangement.spacedBy(12.dp)
+                    modifier = Modifier.padding(start = 16.dp, end = 16.dp),
+                    verticalArrangement = Arrangement.spacedBy(12.dp),
+                    contentPadding = PaddingValues(bottom = 12.dp)
                 ) {
                     when (type) {
                         0 -> items(items = data, itemContent = { item ->
@@ -135,54 +136,41 @@ fun FormScreen(
 }
 
 @Composable
-fun NoConnectionFound(modifier: Modifier) {
-    ConstraintLayout(
+fun NoConnectionFound(modifier: Modifier = Modifier) {
+    Row(
         modifier = modifier
-            .height(54.dp)
             .fillMaxWidth()
-            .padding(horizontal = 17.dp, vertical = 8.dp)
+            .height(56.dp)
+            .background(LocalCustomColorsPalette.current.iconBackground)
+            .padding(horizontal = 16.dp, vertical = 8.dp)
     ) {
-        val (icNoInternet, tvTitle, tvSubtitle) = createRefs()
         Icon(
             painter = painterResource(id = R.drawable.ic_no_internet),
             contentDescription = "Icon No Connection",
-            tint = PrimaryMain,
-            modifier = Modifier.constrainAs(icNoInternet) {
-                top.linkTo(parent.top)
-                start.linkTo(parent.start)
-                bottom.linkTo(parent.bottom)
-                width = Dimension.fillToConstraints
-            })
-        Text(
-            text = stringResource(id = R.string.no_connection),
-            style = Typography.subtitle2.copy(
-                fontFamily = fontRoboto,
-                fontWeight = FontWeight.SemiBold,
-                color = PrimaryMain,
-                fontSize = 14.sp
-            ),
-            modifier = Modifier.constrainAs(tvTitle) {
-                top.linkTo(parent.top)
-                start.linkTo(icNoInternet.end, 11.dp)
-                end.linkTo(parent.end)
-                width = Dimension.fillToConstraints
-            }
+            tint = MaterialTheme.colors.onPrimary,
+            modifier = Modifier.align(Alignment.CenterVertically)
         )
-        Text(
-            text = stringResource(id = R.string.check_network),
-            style = Typography.caption.copy(
-                fontFamily = fontRoboto,
-                fontSize = 12.sp,
-                color = MaterialTheme.colors.onSecondary
-            ),
-            modifier = Modifier.constrainAs(tvSubtitle) {
-                top.linkTo(tvTitle.bottom)
-                start.linkTo(tvTitle.start)
-                end.linkTo(tvTitle.end)
-                bottom.linkTo(parent.bottom)
-                width = Dimension.fillToConstraints
-            }
-        )
+        Spacer(modifier = Modifier.width(12.dp))
+        Column {
+            Text(
+                text = stringResource(id = R.string.no_connection),
+                style = Typography.subtitle2.copy(
+                    fontFamily = fontRoboto,
+                    fontWeight = FontWeight.SemiBold,
+                    color = MaterialTheme.colors.onPrimary,
+                    fontSize = 14.sp
+                )
+            )
+            Spacer(modifier = Modifier.height(2.dp))
+            Text(
+                text = stringResource(id = R.string.check_network),
+                style = Typography.caption.copy(
+                    fontFamily = fontRoboto,
+                    fontSize = 12.sp,
+                    color = MaterialTheme.colors.onPrimary,
+                )
+            )
+        }
     }
 }
 
@@ -195,10 +183,11 @@ fun FormSort(
     ConstraintLayout(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(16.dp)
-            .clickable {
-                scope.launch { openSortByBottomSheet() }
-            }
+            .padding(top = 16.dp, start = 16.dp, end = 16.dp, bottom = 12.dp)
+            .clickable(
+                indication = null,
+                interactionSource = MutableInteractionSource()
+            ) { scope.launch { openSortByBottomSheet() } }
     ) {
         val (tvSort, icChevron) = createRefs()
         Text(

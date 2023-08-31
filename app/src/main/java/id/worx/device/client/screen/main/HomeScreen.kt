@@ -19,17 +19,12 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
-import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
-import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.TextFieldValue
@@ -50,7 +45,6 @@ import id.worx.device.client.model.FormSortModel
 import id.worx.device.client.model.SubmitForm
 import id.worx.device.client.screen.components.RedFullWidthButton
 import id.worx.device.client.screen.components.WorxSortByBottomSheet
-import id.worx.device.client.theme.DarkBackgroundNavView
 import id.worx.device.client.theme.LocalCustomColorsPalette
 import id.worx.device.client.theme.PrimaryMain
 import id.worx.device.client.theme.Typography
@@ -61,11 +55,13 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 
-sealed class BottomNavItem(var title: Int, var icon: Int) {
+sealed class BottomNavItem(var title: Int, var icon: Int, var selectedIcon: Int) {
 
-    object Form : BottomNavItem(R.string.form, R.drawable.ic_form)
-    object Draft : BottomNavItem(R.string.draft, R.drawable.ic_draft)
-    object Submission : BottomNavItem(R.string.submission, R.drawable.ic_tick)
+    object Form : BottomNavItem(R.string.form, R.drawable.ic_form_square, R.drawable.ic_form_square_selected)
+    object Draft : BottomNavItem(R.string.draft, R.drawable.ic_draft, R.drawable.ic_draft_selected)
+    object Submission : BottomNavItem(R.string.submission, R.drawable.ic_tick, R.drawable.ic_tick_selected)
+    object Setting : BottomNavItem(R.string.settings, R.drawable.ic_settings, R.drawable.ic_settings_selected)
+
 }
 
 @OptIn(ExperimentalPagerApi::class, ExperimentalMaterialApi::class)
@@ -87,7 +83,7 @@ fun HomeScreen(
     val pagerState = rememberPagerState(0)
     val sheetState = rememberModalBottomSheetState(initialValue = ModalBottomSheetValue.Hidden)
     val title = arrayListOf(R.string.form, R.string.draft, R.string.submission)
-    var isConnected by remember { mutableStateOf(Util.isNetworkAvailable(context)) }
+    val isConnected by remember { mutableStateOf(Util.isNetworkAvailable(context)) }
 
     WorxSortByBottomSheet(
         sheetState = sheetState,
@@ -111,10 +107,7 @@ fun HomeScreen(
             bottomBar = {
                 Column {
                     if (!isConnected) {
-                        NoConnectionFound(
-                            modifier = Modifier
-                                .background(PrimaryMain.copy(alpha = 0.16f))
-                        )
+                        NoConnectionFound()
                     }
                     BottomNavigationView(
                         showBadge = showBadge,
@@ -126,12 +119,14 @@ fun HomeScreen(
             }
         ) { padding ->
             val modifier = Modifier
-                .padding(bottom = 56.dp)
+                .padding(padding)
                 .background(backgroundFormList)
 
             if (showBotNav) {
                 HorizontalPager(
-                    modifier = Modifier.fillMaxSize(),
+                    modifier = Modifier
+                        .padding(padding)
+                        .fillMaxSize(),
                     count = 3,
                     state = pagerState,
                 ) { page ->
@@ -194,7 +189,6 @@ fun HomeScreen(
                 Box(
                     modifier = Modifier
                         .fillMaxSize()
-                        .padding(padding)
                 ) {
                     CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
                 }
@@ -225,37 +219,33 @@ fun BottomNavigationView(
         BottomNavItem.Form,
         BottomNavItem.Draft,
         BottomNavItem.Submission,
+        BottomNavItem.Setting
     )
-    val density = LocalDensity
     val scope = rememberCoroutineScope()
-    val selectedColor =
-        if (theme == SettingTheme.Dark) PrimaryMain else MaterialTheme.colors.primary
-    val unselectedColor =
-        if (theme == SettingTheme.Dark) DarkBackgroundNavView else Color.Black.copy(0.64f)
+    val unselectedColor = MaterialTheme.colors.onSecondary.copy(alpha = 0.54f)
     if (showBotNav) {
         BottomNavigation(
-            backgroundColor = if (theme == SettingTheme.Dark) MaterialTheme.colors.secondary else Color.White,
+            backgroundColor = LocalCustomColorsPalette.current.formItemContainer,
             modifier = Modifier
-                .padding(horizontal = 13.5.dp, vertical = 16.dp)
                 .border(
                     2.dp,
-                    if (theme == SettingTheme.Dark) Color.Black else MaterialTheme.colors.onSecondary
+                    Color.Black
                 )
-                .drawBehind {
-                    drawRect(
-                        color = Color.Black,
-                        size = Size(width = size.width, height = size.height),
-                        topLeft = Offset(4.dp.toPx(), 4.dp.toPx()),
-                        style = Stroke(2.5.dp.toPx())
-                    )
-                }
-                .drawBehind {
-                    drawRect(
-                        color = selectedColor,
-                        size = Size(width = size.width, height = size.height),
-                        topLeft = Offset(4.dp.toPx(), 4.dp.toPx())
-                    )
-                }
+//                .drawBehind {
+//                    drawRect(
+//                        color = Color.Black,
+//                        size = Size(width = size.width, height = size.height),
+//                        topLeft = Offset(4.dp.toPx(), 4.dp.toPx()),
+//                        style = Stroke(2.5.dp.toPx())
+//                    )
+//                }
+//                .drawBehind {
+//                    drawRect(
+//                        color = selectedColor,
+//                        size = Size(width = size.width, height = size.height),
+//                        topLeft = Offset(4.dp.toPx(), 4.dp.toPx())
+//                    )
+//                }
         ) {
             items.forEachIndexed { index, item ->
                 BottomNavigationItem(
@@ -271,18 +261,21 @@ fun BottomNavigationView(
                             Box(
                                 modifier = Modifier
                                     .padding(16.dp)
-                                    .height(24.dp)
                             ) {
                                 Icon(
                                     modifier = Modifier
-                                        .clip(RoundedCornerShape(4.dp))
-                                        .background(if (index == pagerState.currentPage) selectedColor else unselectedColor),
+                                        .size(48.dp)
+                                        .clip(RoundedCornerShape(4.dp)),
+//                                    tint = if (index == pagerState.currentPage) LocalCustomColorsPalette.current.iconBackground else unselectedColor,
                                     tint = Color.Unspecified,
-                                    painter = painterResource(id = item.icon),
+                                    painter = painterResource(id = if (index == pagerState.currentPage) item.selectedIcon else item.icon),
                                     contentDescription = stringResource(id = item.title),
                                 )
                             }
                         }
+                    },
+                    label = {
+                        Text(text = "")
                     },
                     selected = index == pagerState.currentPage,
                     onClick = {

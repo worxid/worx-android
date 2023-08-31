@@ -60,7 +60,8 @@ data class WorxColorsPalette(
     val icon: Color = Color.Unspecified,
     val iconV2: Color = Color.Unspecified,
     val formItemContainer: Color = Color.Unspecified,
-    val appBar: Color = Color.Unspecified
+    val appBar: Color = Color.Unspecified,
+    val iconBackground: Color = Color.Unspecified
 )
 
 val WorxLightColorsPalette = WorxColorsPalette(
@@ -73,7 +74,8 @@ val WorxLightColorsPalette = WorxColorsPalette(
     icon = Silver,
     iconV2 = Silver,
     formItemContainer = Color.White,
-    appBar = PrimaryMain
+    appBar = PrimaryMain,
+    iconBackground = PrimaryMain
 )
 
 val WorxDarkColorsPalette = WorxColorsPalette(
@@ -86,7 +88,8 @@ val WorxDarkColorsPalette = WorxColorsPalette(
     icon = Boulder,
     iconV2 = Edward,
     formItemContainer = Shark,
-    appBar = Shark
+    appBar = Shark,
+    iconBackground = Pomegranate
 )
 
 val LocalCustomColorsPalette = staticCompositionLocalOf { WorxColorsPalette() }
