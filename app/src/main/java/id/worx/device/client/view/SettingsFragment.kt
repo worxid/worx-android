@@ -46,7 +46,6 @@ class SettingsFragment : Fragment() {
                     WorxThemeStatusBar()
                     SettingScreen(
                         viewModel,
-                        onBackNavigation = { findNavController().navigateUp() },
                         session = session,
                         themeViewModel = themeViewModel
                     )

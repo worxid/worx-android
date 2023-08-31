@@ -65,7 +65,7 @@
     <string name="organizations_key">Organization key</string>
     <string name="device_name">Device name</string>
     <string name="devices_settings">Devices Settings</string>
-    <string name="theme">Theme</string>
+    <string name="theme">Color Theme</string>
     <string name="save_image_in_gallery">Save image in gallery</string>
     <string name="save_image_in_gallery_sub">Images you capture will be saved to your gallery</string>
     <string name="about_this_app">About this app</string>
@@ -74,6 +74,7 @@
     <string name="app_package_name">App package name</string>
     <string name="legal">Legal</string>
     <string name="open_source_licenses">Open source licenses</string>
+    <string name="open_source">Open source</string>
     <string name="yes">Yes</string>
     <string name="no">No</string>
     <string name="cancel">Cancel</string>

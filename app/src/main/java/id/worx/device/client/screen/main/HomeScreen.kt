@@ -47,7 +47,6 @@ import id.worx.device.client.model.SubmitForm
 import id.worx.device.client.screen.components.RedFullWidthButton
 import id.worx.device.client.screen.components.WorxSortByBottomSheet
 import id.worx.device.client.theme.LocalCustomColorsPalette
-import id.worx.device.client.theme.PrimaryMain
 import id.worx.device.client.theme.Typography
 import id.worx.device.client.theme.backgroundFormList
 import id.worx.device.client.viewmodel.DetailFormViewModel
@@ -55,6 +54,7 @@ import id.worx.device.client.viewmodel.HomeViewModelImpl
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
+private const val SETTINGS_INDEX = 3
 
 sealed class BottomNavItem(var title: Int, var icon: Int, var selectedIcon: Int) {
 
@@ -88,22 +88,22 @@ fun HomeScreen(
     var showBotNav by remember { mutableStateOf(false) }
     val pagerState = rememberPagerState(0)
     val sheetState = rememberModalBottomSheetState(initialValue = ModalBottomSheetValue.Hidden)
-    val title = arrayListOf(R.string.form, R.string.draft, R.string.submission)
+    val title = arrayListOf(R.string.form, R.string.draft, R.string.submission, R.string.settings)
     val isConnected by remember { mutableStateOf(Util.isNetworkAvailable(context)) }
+    var selectedSort by remember { mutableStateOf(FormSortModel()) }
 
     WorxSortByBottomSheet(
         sheetState = sheetState,
-        selectedSort = FormSortModel(),
-        onSortClicked = {
-
-        }
+        selectedSort = selectedSort,
+        onSortClicked = { selectedSort = it }
     ) { openSortBottomSheet ->
         Scaffold(
             topBar = {
                 MainTopAppBar(
                     title = stringResource(id = title[pagerState.currentPage]),
                     onSearchMode = { showBotNav = it },
-                    viewModel = viewModel
+                    viewModel = viewModel,
+                    showSearch = pagerState.currentPage != SETTINGS_INDEX
                 ) { input ->
                     viewModel.uiState.update {
                         it.copy(searchInput = input)
@@ -118,7 +118,6 @@ fun HomeScreen(
                     BottomNavigationView(
                         showBadge = showBadge,
                         showBotNav = showBotNav,
-                        theme = session.theme,
                         pagerState = pagerState
                     )
                 }
@@ -133,7 +132,7 @@ fun HomeScreen(
                     modifier = Modifier
                         .padding(padding)
                         .fillMaxSize(),
-                    count = 3,
+                    count = 4,
                     state = pagerState,
                 ) { page ->
                     when (page) {
@@ -145,6 +144,7 @@ fun HomeScreen(
                             stringResource(R.string.no_forms),
                             stringResource(R.string.empty_description_form),
                             session = session,
+                            selectedSort = selectedSort,
                             openSortBottomSheet = openSortBottomSheet,
                             syncWithServer
                         )
@@ -157,6 +157,7 @@ fun HomeScreen(
                             stringResource(R.string.no_drafts),
                             stringResource(R.string.empty_description_drafts),
                             session = session,
+                            selectedSort = selectedSort,
                             openSortBottomSheet = openSortBottomSheet,
                             syncWithServer
                         )
@@ -169,9 +170,17 @@ fun HomeScreen(
                             stringResource(R.string.no_submission),
                             stringResource(R.string.empty_description_submission),
                             session = session,
+                            selectedSort = selectedSort,
                             openSortBottomSheet = openSortBottomSheet,
                             syncWithServer
                         )
+
+                        3 -> {
+                            SettingScreen(
+                                viewModel,
+                                session = session
+                            )
+                        }
                     }
                 }
             } else {
@@ -218,7 +227,6 @@ fun HomeScreen(
 fun BottomNavigationView(
     showBadge: Int,
     showBotNav: Boolean,
-    theme: String?,
     pagerState: PagerState
 ) {
     val items = listOf(
@@ -227,27 +235,13 @@ fun BottomNavigationView(
         BottomNavItem.Submission,
         BottomNavItem.Setting
     )
+    val colorPalette = LocalCustomColorsPalette.current
     val scope = rememberCoroutineScope()
     if (showBotNav) {
         BottomNavigation(
-            backgroundColor = LocalCustomColorsPalette.current.formItemContainer,
+            backgroundColor = colorPalette.formItemContainer,
             modifier = Modifier
                 .border(2.dp, Color.Black)
-//                .drawBehind {
-//                    drawRect(
-//                        color = Color.Black,
-//                        size = Size(width = size.width, height = size.height),
-//                        topLeft = Offset(4.dp.toPx(), 4.dp.toPx()),
-//                        style = Stroke(2.5.dp.toPx())
-//                    )
-//                }
-//                .drawBehind {
-//                    drawRect(
-//                        color = selectedColor,
-//                        size = Size(width = size.width, height = size.height),
-//                        topLeft = Offset(4.dp.toPx(), 4.dp.toPx())
-//                    )
-//                }
         ) {
             items.forEachIndexed { index, item ->
                 BottomNavigationItem(
@@ -257,7 +251,7 @@ fun BottomNavigationView(
                             if (item.title == showBadge) {
                                 Badge(
                                     modifier = Modifier.scale(0.7f),
-                                    backgroundColor = LocalCustomColorsPalette.current.button
+                                    backgroundColor = colorPalette.button
                                 )
                             }
                         }) {
@@ -266,7 +260,7 @@ fun BottomNavigationView(
                                     modifier = Modifier
                                         .size(28.dp)
                                         .clip(RoundedCornerShape(4.dp)),
-//                                    tint = if (index == pagerState.currentPage) LocalCustomColorsPalette.current.iconBackground else unselectedColor,
+//                                    tint = if (index == pagerState.currentPage) colorPalette.iconBackground else unselectedColor,
                                     tint = Color.Unspecified,
                                     painter = painterResource(id = if (index == pagerState.currentPage) item.selectedIcon else item.icon),
                                     contentDescription = stringResource(id = item.title),
@@ -278,7 +272,7 @@ fun BottomNavigationView(
                         Text(
                             text = stringResource(id = item.title),
                             fontSize = 10.sp,
-                            color = if (index == pagerState.currentPage) LocalCustomColorsPalette.current.button else MaterialTheme.colors.onSecondary.copy(
+                            color = if (index == pagerState.currentPage) colorPalette.button else MaterialTheme.colors.onSecondary.copy(
                                 alpha = 0.6f
                             ),
                             lineHeight = 11.sp,
@@ -300,6 +294,7 @@ fun BottomNavigationView(
 @Composable
 fun MainTopAppBar(
     title: String,
+    showSearch: Boolean = true,
     onSearchMode: (Boolean) -> Unit,
     viewModel: HomeViewModelImpl,
     searchAction: (String) -> Unit
@@ -333,26 +328,18 @@ fun MainTopAppBar(
                     style = Typography.h6.copy(Color.White)
                 )
                 Spacer(modifier = Modifier.weight(1f))
-                Icon(
-                    modifier = Modifier
-                        .clickable {
-                            searchMode = true
-                        }
-                        .padding(horizontal = 16.dp),
-                    painter = painterResource(id = R.drawable.ic_icon_search),
-                    contentDescription = "Search",
-                    tint = Color.White
-                )
-                // TODO: remove
-//                Icon(
-//                    modifier = Modifier
-//                        .padding(horizontal = 20.dp)
-//                        .clickable {
-//                            viewModel.goToSettingScreen()
-//                        },
-//                    imageVector = Icons.Filled.Settings,
-//                    contentDescription = "Settings"
-//                )
+                if (showSearch) {
+                    Icon(
+                        modifier = Modifier
+                            .clickable {
+                                searchMode = true
+                            }
+                            .padding(horizontal = 16.dp),
+                        painter = painterResource(id = R.drawable.ic_icon_search),
+                        contentDescription = "Search",
+                        tint = Color.White
+                    )
+                }
             }
         } else {
             SearchBar(
@@ -503,7 +490,6 @@ private fun BottomNavigationViewPreview() {
     BottomNavigationView(
         showBadge = 1,
         showBotNav = true,
-        theme = SettingTheme.System,
         PagerState(1)
     )
 }

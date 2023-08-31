@@ -76,6 +76,7 @@ fun FormScreen(
     titleForEmpty: String,
     descriptionForEmpty: String,
     session: Session,
+    selectedSort: FormSortModel? = null,
     openSortBottomSheet: () -> Unit,
     syncWithServer: () -> Unit
 ) {
@@ -96,10 +97,12 @@ fun FormScreen(
             if (data.isNullOrEmpty()) {
                 EmptyList(type, titleForEmpty, descriptionForEmpty)
             } else {
-                FormSort(
-                    selectedSort = FormSortModel(),
-                    openSortByBottomSheet = openSortBottomSheet
-                )
+                if (selectedSort != null) {
+                    FormSort(
+                        selectedSort = selectedSort,
+                        openSortByBottomSheet = openSortBottomSheet
+                    )
+                }
                 LazyColumn(
                     modifier = Modifier.padding(start = 16.dp, end = 16.dp),
                     verticalArrangement = Arrangement.spacedBy(12.dp),
