@@ -77,12 +77,25 @@ fun ValidFormBuilder(
             session,
             validation,
         )
-        {
-            showSubmitDialog = true
-            scope.launch {
-                state.animateTo(ModalBottomSheetValue.Expanded)
-            }
+
+        val detailForm = viewModel.uiState.collectAsState().value.detailForm
+
+        if (detailForm is EmptyForm || (detailForm is SubmitForm && detailForm.status == 0)) {
+            RedFullWidthButton(
+                onClickCallback = {
+                    showSubmitDialog = true
+                    scope.launch {
+                        state.animateTo(ModalBottomSheetValue.Expanded)
+                    }
+                },
+                label = "Submit",
+                modifier = Modifier
+                    .padding(vertical = 16.dp)
+                    .align(Alignment.BottomEnd),
+                theme = theme
+            )
         }
+
         if (showSubmitDialog) {
             DialogSubmitForm(
                 viewModel,
@@ -114,7 +127,6 @@ fun DetailForm(
     scannerViewModel: ScannerViewModel,
     session: Session,
     validation: Boolean,
-    showSubmitDialog: () -> Unit,
 ) {
     val theme = session.theme
     val listState = rememberLazyListState(viewModel.indexScroll.value, viewModel.offset.value)
@@ -149,20 +161,6 @@ fun DetailForm(
             .padding(vertical = 12.dp)
 
 
-        if (detailForm is EmptyForm || (detailForm is SubmitForm && detailForm.status == 0)) {
-            modifier = Modifier
-                .constrainAs(lazyColumn) {
-                    top.linkTo(parent.top)
-                    start.linkTo(parent.start)
-                    bottom.linkTo(btnSubmit.top)
-                    end.linkTo(parent.end)
-                    width = Dimension.fillToConstraints
-                    height = Dimension.fillToConstraints
-                }
-                .navigationBarsPadding()
-                .imePadding()
-                .padding(vertical = 12.dp)
-        }
         LazyColumn(
             state = listState,
             modifier = modifier,
@@ -277,22 +275,6 @@ fun DetailForm(
                     }
                 }
             }
-        }
-
-        if (detailForm is EmptyForm || (detailForm is SubmitForm && detailForm.status == 0)) {
-            RedFullWidthButton(
-                onClickCallback = { showSubmitDialog() },
-                label = "Submit",
-                modifier = Modifier
-                    .padding(vertical = 16.dp)
-                    .constrainAs(btnSubmit) {
-                        bottom.linkTo(parent.bottom)
-                        start.linkTo(parent.start)
-                        end.linkTo(parent.end)
-                        width = Dimension.fillToConstraints
-                    },
-                theme = theme
-            )
         }
     }
 }
