@@ -43,7 +43,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
@@ -251,18 +250,19 @@ fun ListItemValidForm(
         Column(modifier = Modifier.padding(vertical = 13.dp)) {
             Text(
                 text = item.label ?: "",
-                fontSize = 14.sp,
-                fontFamily = FontFamily.Monospace,
-                color = MaterialTheme.colors.onSecondary.copy(alpha = 0.87f),
                 overflow = TextOverflow.Ellipsis,
                 maxLines = 1,
-                fontWeight = FontWeight.W400
+                style = MaterialTheme.typography.body1,
+                color = MaterialTheme.colors.onSecondary.copy(alpha = 0.87f),
             )
+            Spacer(modifier = Modifier.height(2.dp))
             Text(
                 text = item.description ?: "",
                 overflow = TextOverflow.Ellipsis,
                 maxLines = 1,
-                style = Typography.body1.copy(color = MaterialTheme.colors.onSecondary.copy(alpha = 0.6f))
+                style = MaterialTheme.typography.caption,
+                color = MaterialTheme.colors.onSecondary.copy(alpha = 0.6f),
+                fontWeight = FontWeight.W400
             )
         }
     }
@@ -354,17 +354,7 @@ fun SubmissionItemForm(
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .background(
-                if (theme == SettingTheme.Dark
-                ) Color.Unspecified else Color.White
-            )
-            .border(
-                1.dp,
-                color = if (theme == SettingTheme.Dark)
-                    MaterialTheme.colors.onSecondary
-                else MaterialTheme.colors.onSecondary.copy(0.1f),
-                RoundedCornerShape(8.dp)
-            )
+            .background(LocalCustomColorsPalette.current.formItemContainer)
             .clickable(
                 onClick = {
                     viewModel.goToDetailScreen()
@@ -383,13 +373,17 @@ fun SubmissionItemForm(
                 text = item.label ?: "",
                 overflow = TextOverflow.Ellipsis,
                 maxLines = 1,
-                style = Typography.button.copy(MaterialTheme.colors.onSecondary)
+                style = MaterialTheme.typography.body1,
+                color = MaterialTheme.colors.onSecondary.copy(alpha = 0.87f)
             )
+            Spacer(modifier = Modifier.height(4.dp))
             Text(
                 text = "Submitted on ${item.lastUpdated}",
                 overflow = TextOverflow.Ellipsis,
                 maxLines = 1,
-                style = Typography.body1.copy(color = MaterialTheme.colors.onSecondary.copy(alpha = 0.54f))
+                style = MaterialTheme.typography.caption,
+                color = MaterialTheme.colors.onSecondary.copy(alpha = 0.6f),
+                fontWeight = FontWeight.W400
             )
         }
     }

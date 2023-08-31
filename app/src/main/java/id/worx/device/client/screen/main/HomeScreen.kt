@@ -32,6 +32,7 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
@@ -57,10 +58,15 @@ import kotlinx.coroutines.launch
 
 sealed class BottomNavItem(var title: Int, var icon: Int, var selectedIcon: Int) {
 
-    object Form : BottomNavItem(R.string.form, R.drawable.ic_form_square, R.drawable.ic_form_square_selected)
+    object Form :
+        BottomNavItem(R.string.form, R.drawable.ic_form_square, R.drawable.ic_form_square_selected)
+
     object Draft : BottomNavItem(R.string.draft, R.drawable.ic_draft, R.drawable.ic_draft_selected)
-    object Submission : BottomNavItem(R.string.submission, R.drawable.ic_tick, R.drawable.ic_tick_selected)
-    object Setting : BottomNavItem(R.string.settings, R.drawable.ic_settings, R.drawable.ic_settings_selected)
+    object Submission :
+        BottomNavItem(R.string.submission, R.drawable.ic_tick, R.drawable.ic_tick_selected)
+
+    object Setting :
+        BottomNavItem(R.string.settings, R.drawable.ic_settings, R.drawable.ic_settings_selected)
 
 }
 
@@ -222,15 +228,11 @@ fun BottomNavigationView(
         BottomNavItem.Setting
     )
     val scope = rememberCoroutineScope()
-    val unselectedColor = MaterialTheme.colors.onSecondary.copy(alpha = 0.54f)
     if (showBotNav) {
         BottomNavigation(
             backgroundColor = LocalCustomColorsPalette.current.formItemContainer,
             modifier = Modifier
-                .border(
-                    2.dp,
-                    Color.Black
-                )
+                .border(2.dp, Color.Black)
 //                .drawBehind {
 //                    drawRect(
 //                        color = Color.Black,
@@ -249,22 +251,20 @@ fun BottomNavigationView(
         ) {
             items.forEachIndexed { index, item ->
                 BottomNavigationItem(
+                    modifier = Modifier.align(Alignment.CenterVertically).offset(y = 4.dp),
                     icon = {
                         BadgedBox(badge = {
                             if (item.title == showBadge) {
                                 Badge(
                                     modifier = Modifier.scale(0.7f),
-                                    backgroundColor = if (theme == SettingTheme.Dark) PrimaryMain else MaterialTheme.colors.primary
+                                    backgroundColor = LocalCustomColorsPalette.current.button
                                 )
                             }
                         }) {
-                            Box(
-                                modifier = Modifier
-                                    .padding(16.dp)
-                            ) {
+                            Box {
                                 Icon(
                                     modifier = Modifier
-                                        .size(48.dp)
+                                        .size(28.dp)
                                         .clip(RoundedCornerShape(4.dp)),
 //                                    tint = if (index == pagerState.currentPage) LocalCustomColorsPalette.current.iconBackground else unselectedColor,
                                     tint = Color.Unspecified,
@@ -275,7 +275,15 @@ fun BottomNavigationView(
                         }
                     },
                     label = {
-                        Text(text = "")
+                        Text(
+                            text = stringResource(id = item.title),
+                            fontSize = 10.sp,
+                            color = if (index == pagerState.currentPage) LocalCustomColorsPalette.current.button else MaterialTheme.colors.onSecondary.copy(
+                                alpha = 0.6f
+                            ),
+                            lineHeight = 11.sp,
+                            letterSpacing = 0.15.sp
+                        )
                     },
                     selected = index == pagerState.currentPage,
                     onClick = {
