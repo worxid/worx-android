@@ -28,6 +28,7 @@ import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -42,6 +43,7 @@ import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.PagerState
 import com.google.accompanist.pager.rememberPagerState
 import id.worx.device.client.R
+import id.worx.device.client.Util
 import id.worx.device.client.data.database.Session
 import id.worx.device.client.model.EmptyForm
 import id.worx.device.client.model.FormSortModel
@@ -49,6 +51,7 @@ import id.worx.device.client.model.SubmitForm
 import id.worx.device.client.screen.components.RedFullWidthButton
 import id.worx.device.client.screen.components.WorxSortByBottomSheet
 import id.worx.device.client.theme.DarkBackgroundNavView
+import id.worx.device.client.theme.LocalCustomColorsPalette
 import id.worx.device.client.theme.PrimaryMain
 import id.worx.device.client.theme.Typography
 import id.worx.device.client.theme.backgroundFormList
@@ -76,6 +79,7 @@ fun HomeScreen(
     session: Session,
     syncWithServer: () -> Unit
 ) {
+    val context = LocalContext.current
     val notificationType by viewModel.showNotification.collectAsState()
     val showBadge by viewModel.showBadge.collectAsState()
     var showSubmittedStatus by remember { mutableStateOf(notificationType == 1) }
@@ -83,7 +87,7 @@ fun HomeScreen(
     val pagerState = rememberPagerState(0)
     val sheetState = rememberModalBottomSheetState(initialValue = ModalBottomSheetValue.Hidden)
     val title = arrayListOf(R.string.form, R.string.draft, R.string.submission)
-
+    var isConnected by remember { mutableStateOf(Util.isNetworkAvailable(context)) }
 
     WorxSortByBottomSheet(
         sheetState = sheetState,
@@ -97,7 +101,6 @@ fun HomeScreen(
                 MainTopAppBar(
                     title = stringResource(id = title[pagerState.currentPage]),
                     onSearchMode = { showBotNav = it },
-                    theme = session.theme,
                     viewModel = viewModel
                 ) { input ->
                     viewModel.uiState.update {
@@ -106,12 +109,20 @@ fun HomeScreen(
                 }
             },
             bottomBar = {
-                BottomNavigationView(
-                    showBadge = showBadge,
-                    showBotNav = showBotNav,
-                    theme = session.theme,
-                    pagerState = pagerState
-                )
+                Column {
+                    if (!isConnected) {
+                        NoConnectionFound(
+                            modifier = Modifier
+                                .background(PrimaryMain.copy(alpha = 0.16f))
+                        )
+                    }
+                    BottomNavigationView(
+                        showBadge = showBadge,
+                        showBotNav = showBotNav,
+                        theme = session.theme,
+                        pagerState = pagerState
+                    )
+                }
             }
         ) { padding ->
             val modifier = Modifier
@@ -290,7 +301,6 @@ fun MainTopAppBar(
     title: String,
     onSearchMode: (Boolean) -> Unit,
     viewModel: HomeViewModelImpl,
-    theme: String?,
     searchAction: (String) -> Unit
 ) {
     var searchMode by remember { mutableStateOf(false) }
@@ -298,7 +308,7 @@ fun MainTopAppBar(
 
     TopAppBar(
         modifier = Modifier.fillMaxWidth(),
-        backgroundColor = if (theme == SettingTheme.Dark) PrimaryMain else MaterialTheme.colors.primary,
+        backgroundColor = LocalCustomColorsPalette.current.appBar,
         contentColor = Color.White
     ) {
         if (!searchMode) {
@@ -313,7 +323,8 @@ fun MainTopAppBar(
                         .height(24.dp)
                         .width(24.dp),
                     painter = painterResource(id = R.drawable.ic_symbol_worx_white),
-                    contentDescription = "Logo Worx"
+                    contentDescription = "Logo Worx",
+                    tint = Color.White
                 )
                 Text(
                     textAlign = TextAlign.Center,
@@ -322,11 +333,14 @@ fun MainTopAppBar(
                 )
                 Spacer(modifier = Modifier.weight(1f))
                 Icon(
-                    modifier = Modifier.clickable {
-                        searchMode = true
-                    },
+                    modifier = Modifier
+                        .clickable {
+                            searchMode = true
+                        }
+                        .padding(horizontal = 16.dp),
                     painter = painterResource(id = R.drawable.ic_icon_search),
-                    contentDescription = "Search"
+                    contentDescription = "Search",
+                    tint = Color.White
                 )
                 // TODO: remove
 //                Icon(
