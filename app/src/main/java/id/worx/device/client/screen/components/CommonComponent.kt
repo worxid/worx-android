@@ -35,8 +35,7 @@ import androidx.compose.ui.unit.dp
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import id.worx.device.client.screen.main.SettingTheme
 import id.worx.device.client.screen.welcome.WelcomeEvent
-import id.worx.device.client.theme.PrimaryMain
-import id.worx.device.client.theme.RedDarkButton
+import id.worx.device.client.theme.LocalCustomColorsPalette
 import id.worx.device.client.theme.Typography
 
 @Composable
@@ -51,7 +50,7 @@ fun RedFullWidthButton(
             .fillMaxWidth()
             .padding(horizontal = 16.dp),
         colors = ButtonDefaults.buttonColors(
-            backgroundColor = if (theme == SettingTheme.Dark || theme == SettingTheme.System) RedDarkButton else MaterialTheme.colors.primary,
+            backgroundColor = LocalCustomColorsPalette.current.button,
             contentColor = Color.White
         ),
         border = BorderStroke(
@@ -78,7 +77,7 @@ fun TransparentButton(
             .padding(horizontal = 16.dp),
         colors = ButtonDefaults.buttonColors(
             backgroundColor = Color.Transparent,
-            contentColor = PrimaryMain
+            contentColor = LocalCustomColorsPalette.current.button
         ),
         border = BorderStroke(
             0.dp,
