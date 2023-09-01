@@ -62,7 +62,7 @@ fun WorxFormSubmitButton(
         )
 
         OutlinedButton(
-            modifier = modifier
+            modifier = Modifier
                 .constrainAs(outlinedButton) {
                     top.linkTo(parent.top)
                     start.linkTo(parent.start)
