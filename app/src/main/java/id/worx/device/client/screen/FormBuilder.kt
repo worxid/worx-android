@@ -135,37 +135,21 @@ fun DetailForm(
             .fillMaxSize()
     ) {
         val (lazyColumn, btnSubmit) = createRefs()
-        var modifier = Modifier
-            .constrainAs(lazyColumn) {
-                top.linkTo(parent.top)
-                start.linkTo(parent.start)
-                bottom.linkTo(parent.bottom)
-                end.linkTo(parent.end)
-                width = Dimension.fillToConstraints
-                height = Dimension.fillToConstraints
-            }
-            .navigationBarsPadding()
-            .imePadding()
-            .padding(vertical = 12.dp)
 
-
-        if (detailForm is EmptyForm || (detailForm is SubmitForm && detailForm.status == 0)) {
+        LazyColumn(
+            state = listState,
             modifier = Modifier
                 .constrainAs(lazyColumn) {
                     top.linkTo(parent.top)
                     start.linkTo(parent.start)
-                    bottom.linkTo(btnSubmit.top)
+                    bottom.linkTo(parent.bottom)
                     end.linkTo(parent.end)
                     width = Dimension.fillToConstraints
                     height = Dimension.fillToConstraints
                 }
                 .navigationBarsPadding()
                 .imePadding()
-                .padding(vertical = 12.dp)
-        }
-        LazyColumn(
-            state = listState,
-            modifier = modifier,
+                .padding(vertical = 12.dp),
             contentPadding = WindowInsets.statusBars.only(WindowInsetsSides.Horizontal + WindowInsetsSides.Top)
                 .asPaddingValues()
         ) {
@@ -282,16 +266,13 @@ fun DetailForm(
         }
 
         if (detailForm is EmptyForm || (detailForm is SubmitForm && detailForm.status == 0)) {
-            RedFullWidthButton(
+            WorxFormSubmitButton(
                 onClickCallback = { showSubmitDialog() },
                 label = "Submit",
                 modifier = Modifier
-                    .padding(vertical = 16.dp)
                     .constrainAs(btnSubmit) {
-                        bottom.linkTo(parent.bottom)
-                        start.linkTo(parent.start)
-                        end.linkTo(parent.end)
-                        width = Dimension.fillToConstraints
+                        bottom.linkTo(parent.bottom, 16.dp)
+                        end.linkTo(parent.end, 16.dp)
                     },
                 theme = theme
             )
