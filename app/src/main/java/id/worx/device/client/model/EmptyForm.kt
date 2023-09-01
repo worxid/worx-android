@@ -75,8 +75,29 @@ data class FormSortModel(
     val formSortOrderBy: FormSortOrderBy = FormSortOrderBy.ASC
 ) {
     fun toggleSortOrderBy(): FormSortModel {
-        val newSortOrderBy =
-            if (formSortOrderBy == FormSortOrderBy.ASC) FormSortOrderBy.DESC else FormSortOrderBy.ASC
+        val newSortOrderBy = if (formSortOrderBy == FormSortOrderBy.ASC) {
+            FormSortOrderBy.DESC
+        } else {
+            FormSortOrderBy.ASC
+        }
         return FormSortModel(formSortType, newSortOrderBy)
+    }
+
+    fun getSortQuery(): String {
+        return "${getSortField()} ${formSortOrderBy.name}"
+    }
+
+    private fun getSortField(): String {
+        return when (formSortType) {
+            FormSortType.NAME -> LABEL
+            FormSortType.DESCRIPTION -> DESCRIPTION
+            FormSortType.LAST_MODIFIED -> LAST_UPDATED
+        }
+    }
+
+    companion object {
+        private const val LABEL = "label"
+        private const val DESCRIPTION = "description"
+        private const val LAST_UPDATED = "lastUpdated"
     }
 }

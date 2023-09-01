@@ -1,11 +1,15 @@
 package id.worx.device.client.data.dao
 
 import androidx.room.*
+import androidx.sqlite.db.SupportSQLiteQuery
 import id.worx.device.client.model.SubmitForm
 import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface SubmitFormDAO {
+    @RawQuery(observedEntities = [SubmitForm::class])
+    fun getSubmitForm(query: SupportSQLiteQuery): Flow<List<SubmitForm>>
+
     @Query("SELECT * FROM submit_form WHERE status = 0")
     fun getAllDraft(): Flow<List<SubmitForm>>
 

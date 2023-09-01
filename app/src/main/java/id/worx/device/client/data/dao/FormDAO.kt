@@ -1,6 +1,7 @@
 package id.worx.device.client.data.dao
 
 import androidx.room.*
+import androidx.sqlite.db.SupportSQLiteQuery
 import id.worx.device.client.model.EmptyForm
 import kotlinx.coroutines.flow.Flow
 
@@ -11,6 +12,9 @@ interface FormDAO {
         deleteAllForm()
         insertAll(list)
     }
+
+    @RawQuery(observedEntities = [EmptyForm::class])
+    fun getSortedAllForms(query: SupportSQLiteQuery): Flow<List<EmptyForm>>
 
     @Query("SELECT * FROM form ORDER BY id ASC")
     fun getAllForm(): Flow<List<EmptyForm>>

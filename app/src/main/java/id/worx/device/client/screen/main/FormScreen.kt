@@ -38,6 +38,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
@@ -92,7 +93,7 @@ fun FormScreen(
         Column(
             modifier = Modifier
                 .fillMaxHeight()
-                .background(MaterialTheme.colors.secondary),
+                .background(LocalCustomColorsPalette.current.homeBackground),
         ) {
             if (data.isNullOrEmpty()) {
                 EmptyList(type, titleForEmpty, descriptionForEmpty)
@@ -126,8 +127,7 @@ fun FormScreen(
                             SubmissionItemForm(
                                 item as SubmitForm,
                                 viewModel,
-                                detailFormViewModel,
-                                theme
+                                detailFormViewModel
                             )
                         })
                     }
@@ -230,17 +230,14 @@ fun ListItemValidForm(
     Row(
         modifier = Modifier
             .fillMaxWidth()
+            .clip(RoundedCornerShape(4.dp))
             .background(LocalCustomColorsPalette.current.formItemContainer)
-            .border(
-                1.dp,
-                color = MaterialTheme.colors.onSecondary.copy(0.1f),
-                RoundedCornerShape(8.dp)
-            )
             .clickable(
                 onClick = {
                     viewModel.goToDetailScreen()
                     detailFormViewModel.navigateFromHomeScreen(item)
-                })
+                }
+            )
     ) {
         Icon(
             modifier = Modifier
@@ -351,12 +348,12 @@ fun DraftItemForm(
 fun SubmissionItemForm(
     item: SubmitForm,
     viewModel: HomeViewModelImpl,
-    detailFormViewModel: DetailFormViewModel,
-    theme: String?
+    detailFormViewModel: DetailFormViewModel
 ) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
+            .clip(RoundedCornerShape(4.dp))
             .background(LocalCustomColorsPalette.current.formItemContainer)
             .clickable(
                 onClick = {

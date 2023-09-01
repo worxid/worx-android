@@ -64,14 +64,17 @@ class HomeFragment : Fragment() {
                         }
                     }
 
+                    val uiState = viewModel.uiState.collectAsState()
+
                     HomeScreen(
-                        formList = viewModel.uiState.collectAsState().value.list,
-                        draftList = viewModel.uiState.collectAsState().value.drafts,
-                        submissionList = viewModel.uiState.collectAsState().value.submission,
+                        formList = uiState.value.list,
+                        draftList = uiState.value.drafts,
+                        submissionList = uiState.value.submission,
                         viewModel = viewModel,
                         detailVM = detailViewModel,
                         session = session,
-                        syncWithServer = { syncWithServer() }
+                        syncWithServer = { syncWithServer() },
+                        selectedSort = uiState.value.selectedSort
                     )
                 }
             }
