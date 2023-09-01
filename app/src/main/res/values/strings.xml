@@ -47,7 +47,7 @@
     <string name="clear">Clear</string>
     <string name="save">Simpan</string>
     <string name="save_eng">Save</string>
-    <string name="draft_descr">Draft description</string>
+    <string name="draft_descr">Description (Optional)</string>
     <string name="empty_description_form">You currently not signed to any forms. Please contact your admin to add forms to your device.</string>
     <string name="no_forms">No Forms</string>
     <string name="no_drafts">No Saved Drafts</string>

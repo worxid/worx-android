@@ -2,20 +2,22 @@ package id.worx.device.client.screen
 
 import android.util.Log
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -35,6 +37,7 @@ import id.worx.device.client.model.fieldmodel.TextFieldValue
 import id.worx.device.client.screen.components.*
 import id.worx.device.client.theme.GrayDivider
 import id.worx.device.client.theme.Typography
+import id.worx.device.client.theme.WorxTheme
 import id.worx.device.client.viewmodel.CameraViewModel
 import id.worx.device.client.viewmodel.DetailFormViewModel
 import id.worx.device.client.viewmodel.EventStatus
@@ -379,18 +382,20 @@ fun DialogDraftForm(
                 modifier = Modifier
                     .wrapContentSize()
                     .background(MaterialTheme.colors.secondary)
-                    .border(1.5.dp, Color.Black)
-                    .padding(20.dp),
-                verticalArrangement = Arrangement.spacedBy(20.dp)
+                    .padding(horizontal = 16.dp, vertical = 24.dp)
+                    .clip(shape = RoundedCornerShape(2.dp)),
             ) {
                 Text(
-                    modifier = Modifier.padding(top = 20.dp),
-                    text = "Save draft?",
-                    style = Typography.button.copy(MaterialTheme.colors.onSecondary)
+                    text = "Save draft",
+                    style = Typography.body2.copy(Color.Black.copy(0.87f)),
+                    fontWeight = FontWeight.Bold,
                 )
+
+                Spacer(modifier = Modifier.height(8.dp))
+
                 Text(
                     text = "You can optionally add a description to the saved draft",
-                    style = Typography.body2.copy(MaterialTheme.colors.onSecondary.copy(0.54f))
+                    style = Typography.body2.copy(Color.Black.copy(0.87f))
                 )
                 WorxTextField(
                     theme = theme,
@@ -399,12 +404,17 @@ fun DialogDraftForm(
                     hint = stringResource(R.string.draft_descr),
                     inputType = KeyboardOptions(keyboardType = KeyboardType.Text),
                     onValueChange = {},
-                    allowMultiline = false
+                    allowMultiline = false,
+                    isShowDivider = false,
+                    horizontalPadding = 0.dp,
                 )
+
+                Spacer(modifier = Modifier.height(24.dp))
+
                 Row(
                     modifier = Modifier
                         .align(Alignment.End)
-                        .padding(bottom = 20.dp),
+                        .padding(end = 16.dp),
                     horizontalArrangement = Arrangement.spacedBy(20.dp)
                 ) {
                     Text(text = "Cancel",
@@ -427,4 +437,16 @@ fun PreviewFormComponent() {
     val cameraViewModel: CameraViewModel = hiltViewModel()
 
     //ValidFormBuilder(list, viewModel, cameraViewModel)
+}
+
+@Preview
+@Composable
+fun DialogDraftFormPreview() {
+    WorxTheme {
+        DialogDraftForm(
+            theme = null,
+            saveDraft = {},
+            closeDialog = {},
+        )
+    }
 }
