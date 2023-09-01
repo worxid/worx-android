@@ -2,8 +2,12 @@ package id.worx.device.client.viewmodel
 
 import android.os.Build
 import android.util.Log
-import androidx.compose.runtime.mutableStateOf
-import androidx.lifecycle.*
+import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.SavedStateHandle
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.google.gson.Gson
 import dagger.hilt.android.lifecycle.HiltViewModel
 import id.worx.device.client.BuildConfig
@@ -13,6 +17,7 @@ import id.worx.device.client.data.api.SyncServer
 import id.worx.device.client.data.database.Session
 import id.worx.device.client.model.DeviceInfo
 import id.worx.device.client.model.EmptyForm
+import id.worx.device.client.model.FormSortModel
 import id.worx.device.client.model.ResponseDeviceInfo
 import id.worx.device.client.model.SubmitForm
 import id.worx.device.client.repository.DeviceInfoRepository
@@ -37,10 +42,15 @@ data class HomeUiState(
     var submission: List<SubmitForm> = emptyList(),
     var isLoading: Boolean = false,
     var errorMessages: String = "",
-    var searchInput: String = ""
+    var searchInput: String = "",
+    val selectedSort: FormSortModel = FormSortModel()
 )
 
-abstract class HomeViewModel() : ViewModel() {
+sealed interface HomeUiEvent {
+    data class OnSortClicked(val sortModel: FormSortModel) : HomeUiEvent
+}
+
+abstract class HomeViewModel : ViewModel() {
     abstract fun goToDetailScreen()
     abstract fun goToSettingScreen()
     abstract fun goToLicencesScreen()
@@ -48,16 +58,17 @@ abstract class HomeViewModel() : ViewModel() {
     abstract fun onSearchInputChanged(searchInput: String)
     abstract fun showNotification(typeOfNotification: Int)
     abstract fun showBadge(typeOfBadge: Int)
-    abstract fun syncWithServer(typeData : Int, viewLifecycleOwner: LifecycleOwner)
+    abstract fun syncWithServer(typeData: Int, viewLifecycleOwner: LifecycleOwner)
     abstract fun leaveTeam(
         onSuccess: () -> Unit,
         onError: () -> Unit,
         deviceCode: String
     )
+
     abstract fun getDeviceInfo(session: Session)
     abstract fun updateDeviceInfo(session: Session)
     abstract fun saveServerUrl(session: Session, url: String)
-    }
+}
 
 @HiltViewModel
 class HomeViewModelImpl @Inject constructor(
@@ -99,8 +110,21 @@ class HomeViewModelImpl @Inject constructor(
         _navigateTo.value = Event(MainScreen.AdvanceSettings)
     }
 
-    fun goToScannerScreen(){
+    fun goToScannerScreen() {
         _navigateTo.value = Event((MainScreen.ScannerScreen))
+    }
+
+    fun onEvent(homeUiEvent: HomeUiEvent) {
+        when(homeUiEvent) {
+            is HomeUiEvent.OnSortClicked -> onSortUpdated(homeUiEvent.sortModel)
+        }
+    }
+
+    private fun onSortUpdated(formSortModel: FormSortModel) {
+        uiState.update {
+            it.copy(selectedSort = formSortModel)
+        }
+        refreshData()
     }
 
     /**
@@ -109,9 +133,10 @@ class HomeViewModelImpl @Inject constructor(
     private fun refreshData() {
         // Ui state is refreshing
         uiState.value.isLoading = true
+        val selectedSort = uiState.value.selectedSort
 
         viewModelScope.launch {
-            repository.getAllDraftForm().collect { list ->
+            repository.getAllDraftForm(formSortModel = selectedSort).collect { list ->
                 uiState.update {
                     it.copy(drafts = list)
                 }
@@ -119,7 +144,7 @@ class HomeViewModelImpl @Inject constructor(
         }
 
         viewModelScope.launch {
-            repository.getAllSubmission().collect { list ->
+            repository.getAllSubmission(formSortModel = selectedSort).collect { list ->
                 uiState.update {
                     it.copy(submission = list)
                 }
@@ -127,7 +152,7 @@ class HomeViewModelImpl @Inject constructor(
         }
 
         viewModelScope.launch {
-            repository.getAllFormFromDB().collect { list ->
+            repository.getAllFormFromDB(formSortModel = selectedSort).collect { list ->
                 uiState.update {
                     it.copy(list = list, isLoading = false)
                 }
@@ -160,7 +185,7 @@ class HomeViewModelImpl @Inject constructor(
         _showBadge.value = typeOfBadge
     }
 
-    override fun syncWithServer(typeData : Int, viewLifecycleOwner: LifecycleOwner){
+    override fun syncWithServer(typeData: Int, viewLifecycleOwner: LifecycleOwner) {
         viewModelScope.launch {
             syncServerWork.syncWithServer(typeData, viewLifecycleOwner) { refreshData() }
         }
@@ -214,13 +239,13 @@ class HomeViewModelImpl @Inject constructor(
         viewModelScope.launch {
             val deviceInfo = DeviceInfo(
                 label = session.deviceName,
-                deviceModel = "${Build.MANUFACTURER} ${Build.MODEL}" ,
+                deviceModel = "${Build.MANUFACTURER} ${Build.MODEL}",
                 deviceOsVersion = "${Build.VERSION.SDK_INT}",
                 deviceAppVersion = BuildConfig.VERSION_NAME,
             )
             val response = deviceInfoRepository.updateDeviceInfo(deviceInfo)
-            withContext(Dispatchers.Main){
-                if (response.code() > 250){
+            withContext(Dispatchers.Main) {
+                if (response.code() > 250) {
                     uiHandler.showToast("Error ${response.code()} when update device info to server")
                 }
             }
@@ -229,7 +254,7 @@ class HomeViewModelImpl @Inject constructor(
 
     override fun saveServerUrl(session: Session, url: String) {
         viewModelScope.launch {
-            if (url.isEmpty() || !url.isValidHttpUrl()){
+            if (url.isEmpty() || !url.isValidHttpUrl()) {
                 uiHandler.showToast("Url is not valid")
             } else {
                 session.saveServerUrl(url)
@@ -244,7 +269,7 @@ class HomeViewModelImpl @Inject constructor(
 }
 
 
-class HomeVMPrev: HomeViewModel(){
+class HomeVMPrev : HomeViewModel() {
     override fun goToDetailScreen() {}
     override fun goToSettingScreen() {}
     override fun goToLicencesScreen() {}

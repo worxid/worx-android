@@ -50,6 +50,7 @@ import id.worx.device.client.theme.LocalCustomColorsPalette
 import id.worx.device.client.theme.Typography
 import id.worx.device.client.theme.backgroundFormList
 import id.worx.device.client.viewmodel.DetailFormViewModel
+import id.worx.device.client.viewmodel.HomeUiEvent
 import id.worx.device.client.viewmodel.HomeViewModelImpl
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -79,7 +80,8 @@ fun HomeScreen(
     viewModel: HomeViewModelImpl,
     detailVM: DetailFormViewModel,
     session: Session,
-    syncWithServer: () -> Unit
+    syncWithServer: () -> Unit,
+    selectedSort: FormSortModel
 ) {
     val context = LocalContext.current
     val notificationType by viewModel.showNotification.collectAsState()
@@ -90,12 +92,11 @@ fun HomeScreen(
     val sheetState = rememberModalBottomSheetState(initialValue = ModalBottomSheetValue.Hidden)
     val title = arrayListOf(R.string.form, R.string.draft, R.string.submission, R.string.settings)
     val isConnected by remember { mutableStateOf(Util.isNetworkAvailable(context)) }
-    var selectedSort by remember { mutableStateOf(FormSortModel()) }
 
     WorxSortByBottomSheet(
         sheetState = sheetState,
         selectedSort = selectedSort,
-        onSortClicked = { selectedSort = it }
+        onSortClicked = { viewModel.onEvent(HomeUiEvent.OnSortClicked(it)) }
     ) { openSortBottomSheet ->
         Scaffold(
             topBar = {

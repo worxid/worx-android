@@ -52,7 +52,12 @@ fun WorxSortByBottomSheet(
     ModalBottomSheetLayout(
         sheetState = sheetState,
         sheetContent = {
-            WorxSortByContent(selectedSort = selectedSort, onSortClicked = onSortClicked)
+            WorxSortByContent(
+                selectedSort = selectedSort, onSortClicked = {
+                    onSortClicked.invoke(it)
+                    scope.launch { sheetState.hide() }
+                }
+            )
         },
         sheetBackgroundColor = LocalCustomColorsPalette.current.bottomSheetBackground
     ) {
@@ -101,8 +106,7 @@ private fun WorxSortByContent(
                     .clickable {
                         if (isSelected) {
                             onSortClicked(selectedSort.toggleSortOrderBy())
-                        }
-                        else {
+                        } else {
                             onSortClicked(FormSortModel(model))
                         }
                     }

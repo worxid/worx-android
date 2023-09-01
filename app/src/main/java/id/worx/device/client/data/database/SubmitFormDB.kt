@@ -5,10 +5,12 @@ import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
+import androidx.room.migration.Migration
+import androidx.sqlite.db.SupportSQLiteDatabase
 import id.worx.device.client.data.dao.SubmitFormDAO
 import id.worx.device.client.model.SubmitForm
 
-@Database(entities = [SubmitForm::class], version = 3, exportSchema = true)
+@Database(entities = [SubmitForm::class], version = 4, exportSchema = true)
 @TypeConverters(SubmitFormTypeConverter::class)
 abstract class SubmitFormDB : RoomDatabase() {
 
@@ -28,7 +30,12 @@ abstract class SubmitFormDB : RoomDatabase() {
                 context.applicationContext,
                 SubmitFormDB::class.java,
                 "draft.db"
-            ).fallbackToDestructiveMigration()
-                .build()
+            ).addMigrations(MIGRATION_3_4).build()
+
+        private val MIGRATION_3_4: Migration = object : Migration(3, 4) {
+            override fun migrate(database: SupportSQLiteDatabase) {
+                // no-op adding getSubmitForm in SubmitDAO
+            }
+        }
     }
 }

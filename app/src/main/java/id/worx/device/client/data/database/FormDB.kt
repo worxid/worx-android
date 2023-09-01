@@ -5,10 +5,13 @@ import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
+import androidx.room.migration.Migration
+import androidx.sqlite.db.SupportSQLiteDatabase
 import id.worx.device.client.data.dao.FormDAO
 import id.worx.device.client.model.EmptyForm
 
-@Database(entities = [EmptyForm::class], version = 3, exportSchema = true)
+
+@Database(entities = [EmptyForm::class], version = 4, exportSchema = true)
 @TypeConverters(SubmitFormTypeConverter::class)
 abstract class FormDB : RoomDatabase() {
 
@@ -28,7 +31,12 @@ abstract class FormDB : RoomDatabase() {
                 context.applicationContext,
                 FormDB::class.java,
                 "form.db"
-            ).fallbackToDestructiveMigration()
-                .build()
+            ).addMigrations(MIGRATION_3_4).build()
+
+        private val MIGRATION_3_4: Migration = object : Migration(1, 2) {
+            override fun migrate(database: SupportSQLiteDatabase) {
+                // no-op adding getSortedAllForms in FormDAO
+            }
+        }
     }
 }

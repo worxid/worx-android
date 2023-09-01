@@ -91,7 +91,7 @@ fun SettingScreen(
     Column(
         modifier = Modifier
             .verticalScroll(verticalScroll)
-            .background(colorPalette.settingsBackground)
+            .background(colorPalette.homeBackground)
             .padding(16.dp)
     ) {
         HeaderTileSetting(
