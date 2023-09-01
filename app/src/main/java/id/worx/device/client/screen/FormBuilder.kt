@@ -15,10 +15,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
@@ -36,6 +38,7 @@ import id.worx.device.client.model.fieldmodel.TextField
 import id.worx.device.client.model.fieldmodel.TextFieldValue
 import id.worx.device.client.screen.components.*
 import id.worx.device.client.theme.GrayDivider
+import id.worx.device.client.theme.PrimaryMainGreen
 import id.worx.device.client.theme.Typography
 import id.worx.device.client.theme.WorxTheme
 import id.worx.device.client.viewmodel.CameraViewModel
@@ -88,17 +91,23 @@ fun ValidFormBuilder(
         }
         if (showSubmitDialog) {
             DialogSubmitForm(
-                viewModel,
-                session,
-                state,
-                {
+                viewModel = viewModel,
+                session = session,
+                submitForm = {
                     validation = true
                     if (totalNonValidData == 0) {
                         onEvent(DetailFormEvent.SubmitForm)
                     }
                     showSubmitDialog = false
                 },
-                { showDraftDialog = true })
+                saveDraftForm = {
+                    showSubmitDialog = false
+                    showDraftDialog = true
+                },
+                onCancel = {
+                    showSubmitDialog = false
+                }
+            )
         }
         if (showDraftDialog) {
             DialogDraftForm(
@@ -283,92 +292,186 @@ fun DetailForm(
     }
 }
 
-@OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun DialogSubmitForm(
     viewModel: DetailFormViewModel,
     session: Session,
-    state: ModalBottomSheetState,
     submitForm: () -> Unit,
     saveDraftForm: () -> Unit,
+    onCancel: () -> Unit,
 ) {
     val progress = viewModel.formProgress.value
     val separatorCount =
         viewModel.uiState.collectAsState().value.detailForm?.fields?.count { it.type == Type.Separator.type }
-    val fieldsNo = separatorCount?.let {
-        viewModel.uiState.collectAsState().value.detailForm?.fields?.size?.minus(
-            it)
-    }
-    val theme = session.theme
+    val fieldTotal = separatorCount?.let {
+        viewModel.uiState.collectAsState().value.detailForm?.fields?.size?.minus(it) ?: 0
+    } ?: 0
+    val fieldFilled = viewModel.uiState.collectAsState().value.values.count { it.value != null }
 
-    ModalBottomSheetLayout(
-        sheetState = state,
-        sheetContent = {
-            Column(
+    DialogSubmitForm(
+        session = session,
+        progress = progress,
+        fieldTotal = fieldTotal,
+        fieldFilled = fieldFilled,
+        submitForm = submitForm,
+        saveDraftForm = saveDraftForm,
+        onCancel = onCancel,
+    )
+}
+
+@Composable
+fun DialogSubmitForm(
+    session: Session,
+    progress: Int,
+    fieldTotal: Int,
+    fieldFilled: Int,
+    submitForm: () -> Unit,
+    saveDraftForm: () -> Unit,
+    onCancel: () -> Unit,
+) {
+    Dialog(
+        content = {
+            ConstraintLayout(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .wrapContentHeight()
+                    .clip(shape = RoundedCornerShape(2.dp))
                     .background(MaterialTheme.colors.secondary),
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.spacedBy(20.dp)
             ) {
+                val (
+                    title,
+                    icon,
+                    description,
+                    divider1,
+                    submit,
+                    divider2,
+                    saveDraft,
+                    divider3,
+                    cancel,
+                ) = createRefs()
+
                 Text(
-                    modifier = Modifier.padding(top = 24.dp),
-                    text = "Submit",
-                    style = Typography.subtitle1.copy(MaterialTheme.colors.onSecondary)
+                    text = "Submit Form",
+                    style = Typography.body2.copy(Color.Black.copy(0.87f)),
+                    fontWeight = FontWeight.Bold,
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier.constrainAs(title) {
+                        top.linkTo(parent.top, 24.dp)
+                        start.linkTo(parent.start, 16.dp)
+                        end.linkTo(parent.end, 16.dp)
+
+                        width = Dimension.fillToConstraints
+                    }
                 )
+
                 Box(
                     modifier = Modifier
-                        .align(Alignment.CenterHorizontally)
                         .wrapContentSize()
+                        .constrainAs(icon) {
+                            top.linkTo(title.bottom, 16.dp)
+                            start.linkTo(title.start)
+                            end.linkTo(title.end)
+                        }
                 ) {
                     CircularProgressIndicator(
                         progress = 1f,
                         modifier = Modifier
-                            .width(102.dp)
-                            .height(102.dp),
+                            .width(56.dp)
+                            .height(56.dp),
                         color = Color(0xFFEAEAEA),
                         strokeWidth = 3.5.dp
                     )
                     CircularProgressIndicator(
                         progress = progress / 100.toFloat(),
                         modifier = Modifier
-                            .width(102.dp)
-                            .height(102.dp),
-                        color = MaterialTheme.colors.onBackground,
+                            .width(56.dp)
+                            .height(56.dp),
+                        color = PrimaryMainGreen,
                         strokeWidth = 3.5.dp
                     )
-                    Icon(
-                        modifier = Modifier.align(Alignment.Center),
-                        painter = painterResource(R.drawable.ic_red_triangle_warning),
-                        contentDescription = "Image Warning",
-                        tint = MaterialTheme.colors.onBackground
-                    )
+//                    Icon(
+//                        modifier = Modifier.align(Alignment.Center),
+//                        painter = painterResource(R.drawable.ic_red_triangle_warning),
+//                        contentDescription = "Image Warning",
+//                        tint = MaterialTheme.colors.onBackground
+//                    )
                 }
-                val fieldFilled =
-                    viewModel.uiState.collectAsState().value.values.count { it.value != null }
+
                 Text(
-                    text = "$fieldFilled of $fieldsNo Fields Answered",
-                    style = Typography.body2.copy(MaterialTheme.colors.onSecondary.copy(0.54f))
+                    text = "$fieldFilled of $fieldTotal field answered",
+                    style = Typography.body2.copy(Color.Black.copy(0.87f)),
+                    modifier = Modifier.constrainAs(description) {
+                        top.linkTo(icon.bottom, 16.dp)
+                        start.linkTo(title.start)
+                        end.linkTo(title.end)
+                    }
                 )
-                RedFullWidthButton(
-                    onClickCallback = { submitForm() },
-                    label = "Submit Form",
-                    modifier = Modifier.padding(),
-                    theme = theme
+
+                Divider(
+                    modifier = Modifier.constrainAs(divider1) {
+                        top.linkTo(description.bottom, 24.dp)
+                        start.linkTo(parent.start)
+                        end.linkTo(parent.end)
+                    }
                 )
+
                 Text(
+                    text = "Submit",
+                    style = Typography.body2.copy(MaterialTheme.colors.primary),
+                    modifier = Modifier
+                        .clickable { submitForm() }
+                        .constrainAs(submit) {
+                            top.linkTo(divider1.bottom, 16.dp)
+                            start.linkTo(title.start)
+                            end.linkTo(title.end)
+                        }
+                )
+
+                Divider(
+                    modifier = Modifier.constrainAs(divider2) {
+                        top.linkTo(submit.bottom, 16.dp)
+                        start.linkTo(parent.start)
+                        end.linkTo(parent.end)
+                    }
+                )
+
+                Text(
+                    text = "Save Draft",
+                    style = Typography.body2.copy(MaterialTheme.colors.onSecondary.copy(0.54f)),
                     modifier = Modifier
                         .clickable { saveDraftForm() }
-                        .padding(bottom = 24.dp),
-                    text = "Save Draft",
-                    style = Typography.button.copy(MaterialTheme.colors.onBackground)
+                        .constrainAs(saveDraft) {
+                            top.linkTo(divider2.bottom, 16.dp)
+                            start.linkTo(title.start)
+                            end.linkTo(title.end)
+                        }
+                )
+
+                Divider(
+                    modifier = Modifier.constrainAs(divider3) {
+                        top.linkTo(saveDraft.bottom, 16.dp)
+                        start.linkTo(parent.start)
+                        end.linkTo(parent.end)
+                    }
+                )
+
+                Text(
+                    text = "Cancel",
+                    style = Typography.body2.copy(MaterialTheme.colors.onSecondary.copy(0.54f)),
+                    modifier = Modifier
+                        .clickable { onCancel() }
+                        .constrainAs(cancel) {
+                            top.linkTo(divider3.bottom, 16.dp)
+                            start.linkTo(title.start)
+                            end.linkTo(title.end)
+                            bottom.linkTo(parent.bottom, 16.dp)
+                        }
                 )
             }
         },
-        content = {}
+        onDismissRequest = {}
     )
 }
+
 
 @Composable
 fun DialogDraftForm(
@@ -437,6 +540,22 @@ fun PreviewFormComponent() {
     val cameraViewModel: CameraViewModel = hiltViewModel()
 
     //ValidFormBuilder(list, viewModel, cameraViewModel)
+}
+
+@Preview
+@Composable
+fun DialogSubmitFormPreview() {
+    WorxTheme {
+        DialogSubmitForm(
+            session = Session(LocalContext.current),
+            progress = 30,
+            fieldTotal = 6,
+            fieldFilled = 1,
+            submitForm = {},
+            saveDraftForm = {},
+            onCancel = {}
+        )
+    }
 }
 
 @Preview
