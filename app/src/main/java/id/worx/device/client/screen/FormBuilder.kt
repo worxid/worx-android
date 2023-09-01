@@ -381,9 +381,9 @@ fun DialogDraftForm(
             Column(
                 modifier = Modifier
                     .wrapContentSize()
+                    .clip(shape = RoundedCornerShape(2.dp))
                     .background(MaterialTheme.colors.secondary)
-                    .padding(horizontal = 16.dp, vertical = 24.dp)
-                    .clip(shape = RoundedCornerShape(2.dp)),
+                    .padding(horizontal = 16.dp, vertical = 24.dp),
             ) {
                 Text(
                     text = "Save draft",
