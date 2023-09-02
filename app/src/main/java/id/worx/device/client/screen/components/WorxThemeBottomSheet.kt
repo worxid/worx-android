@@ -92,7 +92,7 @@ private fun WorxThemeContent(
             modifier = Modifier.padding(start = 16.dp, end = 16.dp, bottom = 8.dp)
         )
         for (model in AppTheme.values()) {
-            val isSelected = model.theme == selectedTheme.theme
+            val isSelected = model.value == selectedTheme.value
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -104,7 +104,7 @@ private fun WorxThemeContent(
                     )
             ) {
                 Text(
-                    text = model.theme,
+                    text = model.value,
                     style = MaterialTheme.typography.body1,
                     fontSize = 16.sp,
                     color = if (isSelected) colorPalette.button else MaterialTheme.colors.onSecondary

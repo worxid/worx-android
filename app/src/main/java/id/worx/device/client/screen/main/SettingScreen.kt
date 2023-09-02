@@ -47,11 +47,20 @@ object SettingTheme {
     val Blue = "Blue"
 }
 
-enum class AppTheme(val theme: String) {
+enum class AppTheme(val value: String) {
     LIGHT("Light"),
     DARK("Dark"),
     DEVICE_SYSTEM("Device System")
 }
+
+fun String.getAppTheme(): AppTheme {
+    return when (this) {
+        "Device System" -> AppTheme.DEVICE_SYSTEM
+        else -> AppTheme.valueOf(this.uppercase())
+    }
+}
+
+
 
 @OptIn(ExperimentalMaterialApi::class)
 @SuppressLint("HardwareIds")
@@ -61,9 +70,8 @@ fun SettingScreen(
     session: Session,
     themeViewModel: ThemeViewModel
 ) {
-    val theme = session.theme
+    val selectedTheme = session.theme.getAppTheme()
     val showDialogLeave = remember { mutableStateOf(false) }
-    var selectedTheme by remember { mutableStateOf(AppTheme.LIGHT) }
     val context = LocalContext.current
     val sheetState = rememberModalBottomSheetState(initialValue = ModalBottomSheetValue.Hidden)
 
@@ -92,10 +100,11 @@ fun SettingScreen(
     }
 
     val verticalScroll = rememberScrollState()
-    val colorPalette = LocalCustomColorsPalette.current
+    val colorPalette = WorxCustomColorsPalette.current
 
     WorxThemeBottomSheet(sheetState = sheetState, selectedTheme = selectedTheme, onThemeClicked = {
-        selectedTheme = it
+        themeViewModel.onThemeChanged(it.value)
+        session.setTheme(it.value)
     }) { openThemeBottomSheet ->
         Column(
             modifier = Modifier
@@ -148,7 +157,7 @@ fun SettingScreen(
             TileItemSetting(
                 title = stringResource(id = R.string.theme),
 //                subtitle = session.theme,
-                subtitle = selectedTheme.theme,
+                subtitle = session.theme,
                 iconRes = R.drawable.ic_color_theme,
                 showChevron = true,
                 session = session,
@@ -306,103 +315,6 @@ fun LeaveOrganizationDialog(
     }
 }
 
-
-@Composable
-fun TileItemTheme(
-    themeViewModel: ThemeViewModel,
-    session: Session
-) {
-    ConstraintLayout(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 18.dp, vertical = 8.dp)
-    ) {
-        val (icon, tvTitle, red, dark, green, blue) = createRefs()
-        Icon(
-            painter = painterResource(id = R.drawable.ic_baseline_color_lens_24),
-            contentDescription = "Icon",
-            modifier = Modifier.constrainAs(icon) {
-                top.linkTo(parent.top)
-                bottom.linkTo(parent.bottom)
-                start.linkTo(parent.start)
-            },
-            tint = MaterialTheme.colors.onSecondary
-        )
-        Text(
-            text = stringResource(id = R.string.theme),
-            modifier = Modifier
-                .constrainAs(tvTitle) {
-                    top.linkTo(parent.top)
-                    start.linkTo(
-                        icon.end,
-                        18.dp
-                    )
-                    end.linkTo(parent.end)
-                    width = Dimension.fillToConstraints
-                },
-            style = Typography.body2,
-            color = MaterialTheme.colors.onSecondary,
-        )
-        BoxTheme(
-            Modifier.constrainAs(red) {
-                top.linkTo(tvTitle.bottom, 7.dp)
-                bottom.linkTo(parent.bottom)
-                start.linkTo(tvTitle.start)
-            }, SettingTheme.System, themeViewModel, session, PrimaryMain
-        )
-
-        BoxTheme(Modifier.constrainAs(dark) {
-            top.linkTo(red.top)
-            bottom.linkTo(red.bottom)
-            start.linkTo(red.end, 20.dp)
-        }, SettingTheme.Dark, themeViewModel, session, PrimaryMainDark)
-
-        BoxTheme(Modifier.constrainAs(blue) {
-            top.linkTo(dark.top)
-            bottom.linkTo(dark.bottom)
-            start.linkTo(dark.end, 20.dp)
-        }, SettingTheme.Blue, themeViewModel, session, PrimaryMainBlue)
-
-        BoxTheme(Modifier.constrainAs(green) {
-            top.linkTo(blue.top)
-            bottom.linkTo(blue.bottom)
-            start.linkTo(blue.end, 20.dp)
-        }, SettingTheme.Green, themeViewModel, session, PrimaryMainGreen)
-    }
-}
-
-@Composable
-private fun BoxTheme(
-    modifier: Modifier,
-    selectedTheme: String,
-    themeViewModel: ThemeViewModel,
-    session: Session,
-    themeColor: Color
-) {
-    Box(
-        modifier = modifier
-            .clickable {
-                themeViewModel.onThemeChanged(selectedTheme)
-                session.setTheme(selectedTheme)
-            }
-            .clip(RoundedCornerShape(2.dp))
-            .background(
-                if (session.theme?.equals(selectedTheme) == true) MaterialTheme.colors.primary.copy(
-                    0.2f
-                ) else Color.White.copy(0f)
-            )
-            .size(36.dp), contentAlignment = Alignment.Center
-    ) {
-        Box(
-            modifier = Modifier
-                .clip(RoundedCornerShape(2.dp))
-                .background(themeColor)
-                .size(32.dp)
-        )
-    }
-}
-
-
 @Composable
 fun TileItemSetting(
     modifier: Modifier = Modifier,
@@ -420,7 +332,7 @@ fun TileItemSetting(
         modifier = modifier
             .fillMaxWidth()
             .clickable { onPress() }
-            .background(LocalCustomColorsPalette.current.bottomSheetBackground)
+            .background(WorxCustomColorsPalette.current.bottomSheetBackground)
             .padding(vertical = 8.dp, horizontal = 12.dp)
     ) {
         val (icon, tvTitle, tvSubtitle, button) = createRefs()
@@ -476,7 +388,7 @@ fun TileItemSetting(
             Icon(
                 imageVector = Icons.Filled.ChevronRight,
                 contentDescription = "Chevron Right",
-                tint = LocalCustomColorsPalette.current.button,
+                tint = WorxCustomColorsPalette.current.button,
                 modifier = modifier.constrainAs(button) {
                     top.linkTo(parent.top)
                     end.linkTo(parent.end)

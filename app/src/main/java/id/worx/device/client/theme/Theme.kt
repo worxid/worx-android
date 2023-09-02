@@ -110,13 +110,19 @@ val WorxCustomColorsPalette = compositionLocalOf { WorxColorsPalette() }
 @Composable
 fun WorxTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
-    theme: String = SettingTheme.System,
+    theme: String = AppTheme.LIGHT.value,
     content: @Composable() () -> Unit
 ) {
-    val (colors, customColors) = if (darkTheme) {
-        Pair(DarkThemeColorsSystem, WorxDarkColorsPalette)
-    } else {
-        Pair(LightThemeColorsSystem, WorxLightColorsPalette)
+    val (colors, customColors) = when (theme.getAppTheme()) {
+        AppTheme.LIGHT -> Pair(LightThemeColorsSystem, WorxLightColorsPalette)
+        AppTheme.DARK -> Pair(DarkThemeColorsSystem, WorxDarkColorsPalette)
+        else ->
+            if (darkTheme) {
+                Pair(DarkThemeColorsSystem, WorxDarkColorsPalette)
+            } else {
+                Pair(LightThemeColorsSystem, WorxLightColorsPalette)
+            }
+
     }
 
     CompositionLocalProvider(
