@@ -65,6 +65,7 @@ data class WorxColorsPalette(
     val bottomSheetBackground: Color = Color.Unspecified,
     val bottomSheetDragHandle: Color = Color.Unspecified,
     val homeBackground: Color = Color.Unspecified,
+    val bottomNavigationBorder: Color = Color.Unspecified,
 )
 
 val WorxLightColorsPalette = WorxColorsPalette(
@@ -81,7 +82,8 @@ val WorxLightColorsPalette = WorxColorsPalette(
     iconBackground = PrimaryMain,
     bottomSheetBackground = Color.White,
     bottomSheetDragHandle = DragHandle,
-    homeBackground = backgroundFormList
+    homeBackground = backgroundFormList,
+    bottomNavigationBorder = LightThemeColorsSystem.onSecondary
 )
 
 val WorxDarkColorsPalette = WorxColorsPalette(
@@ -98,7 +100,8 @@ val WorxDarkColorsPalette = WorxColorsPalette(
     iconBackground = Pomegranate,
     bottomSheetBackground = CapeCod,
     bottomSheetDragHandle = Abbey,
-    homeBackground = Shark
+    homeBackground = Shark,
+    bottomNavigationBorder = Abbey2
 )
 
 val LocalCustomColorsPalette = staticCompositionLocalOf { WorxColorsPalette() }

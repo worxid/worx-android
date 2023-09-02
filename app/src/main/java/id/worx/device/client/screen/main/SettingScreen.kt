@@ -26,6 +26,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -34,6 +35,7 @@ import id.worx.device.client.R
 import id.worx.device.client.Util
 import id.worx.device.client.data.database.Session
 import id.worx.device.client.screen.components.TransparentButton
+import id.worx.device.client.screen.components.TransparentButtonType
 import id.worx.device.client.screen.components.WorxDialog
 import id.worx.device.client.screen.components.WorxThemeBottomSheet
 import id.worx.device.client.screen.components.getActivity
@@ -250,11 +252,13 @@ fun LeaveOrganizationDialog(
             .fillMaxWidth()
             .background(MaterialTheme.colors.secondary)
     ) {
-        val (tvTitle, tvYes, tvCancel) = createRefs()
+        val (tvTitle, tvDesc, tvYes, tvCancel) = createRefs()
 
         Text(
-            text = stringResource(id = R.string.leave_organization),
-            style = Typography.body2.copy(MaterialTheme.colors.onSecondary),
+            text = stringResource(id = R.string.leave_organization_title),
+            style = Typography.h6,
+            color = MaterialTheme.colors.onSecondary.copy(alpha = 0.87f),
+            lineHeight = 27.sp,
             modifier = Modifier.constrainAs(tvTitle) {
                 top.linkTo(parent.top)
                 start.linkTo(parent.start)
@@ -262,34 +266,48 @@ fun LeaveOrganizationDialog(
                 width = Dimension.fillToConstraints
             }
         )
+
         Text(
-            text = stringResource(id = R.string.yes),
-            style = Typography.body2.copy(MaterialTheme.colors.onBackground),
+            text = stringResource(id = R.string.leave_organization),
+            style = Typography.body2,
+            lineHeight = 24.sp,
+            color = MaterialTheme.colors.onSecondary.copy(alpha = 0.87f),
+            modifier = Modifier.constrainAs(tvDesc) {
+                top.linkTo(tvTitle.bottom, 8.dp)
+                start.linkTo(parent.start)
+                end.linkTo(parent.end)
+                width = Dimension.fillToConstraints
+            }
+        )
+
+        TransparentButton(
+            label = stringResource(id = R.string.confirm),
             modifier = Modifier
                 .constrainAs(tvYes) {
-                    top.linkTo(tvTitle.bottom, 32.dp)
+                    top.linkTo(tvDesc.bottom, 8.dp)
                     bottom.linkTo(parent.bottom)
                     end.linkTo(parent.end)
                     width = Dimension.fillToConstraints
-                }
-                .clickable {
-                    setShowDialog(false)
-                    onPositiveButton()
-                }
+                },
+            onClickCallback = {
+                setShowDialog(false)
+                onPositiveButton()
+            }
         )
-        Text(
-            text = stringResource(id = R.string.cancel),
-            style = Typography.body2.copy(MaterialTheme.colors.onSecondary),
+
+        TransparentButton(
+            label = stringResource(id = R.string.cancel),
             modifier = Modifier
                 .constrainAs(tvCancel) {
-                    top.linkTo(tvTitle.bottom, 32.dp)
+                    top.linkTo(tvDesc.bottom, 8.dp)
                     bottom.linkTo(parent.bottom)
-                    end.linkTo(tvYes.start, 38.dp)
+                    end.linkTo(tvYes.start, 8.dp)
                     width = Dimension.fillToConstraints
-                }
-                .clickable {
-                    setShowDialog(false)
-                }
+                },
+            onClickCallback = {
+                setShowDialog(false)
+            },
+            transparentButtonType = TransparentButtonType.NEGATIVE
         )
     }
 }

@@ -38,6 +38,11 @@ import id.worx.device.client.screen.welcome.WelcomeEvent
 import id.worx.device.client.theme.LocalCustomColorsPalette
 import id.worx.device.client.theme.Typography
 
+enum class TransparentButtonType {
+    NEGATIVE,
+    NORMAL
+}
+
 @Composable
 fun RedFullWidthButton(
     onClickCallback: () -> Unit,
@@ -69,15 +74,18 @@ fun RedFullWidthButton(
 fun TransparentButton(
     onClickCallback: () -> Unit,
     label: String,
-    modifier: Modifier
+    modifier: Modifier,
+    transparentButtonType: TransparentButtonType = TransparentButtonType.NORMAL
 ) {
+    val contentColor =
+        if (transparentButtonType == TransparentButtonType.NORMAL) LocalCustomColorsPalette.current.button else MaterialTheme.colors.onSecondary.copy(
+            alpha = 0.6f
+        )
     OutlinedButton(
-        modifier = modifier
-            .fillMaxWidth()
-            .padding(horizontal = 16.dp),
+        modifier = modifier,
         colors = ButtonDefaults.buttonColors(
             backgroundColor = Color.Transparent,
-            contentColor = LocalCustomColorsPalette.current.button
+            contentColor = contentColor
         ),
         border = BorderStroke(
             0.dp,

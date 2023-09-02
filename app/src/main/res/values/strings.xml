@@ -77,7 +77,9 @@
     <string name="open_source">Open source</string>
     <string name="yes">Yes</string>
     <string name="no">No</string>
+    <string name="confirm">Confirm</string>
     <string name="cancel">Cancel</string>
+    <string name="leave_organization_title">Leave Organization</string>
     <string name="leave_organization">Are you sure you want to leave the organization?</string>
     <string name="leave_form">Leave This Form?</string>
     <string name="leave_form_sub">Are you sure you want to leave this page? if you leave this form, your existing work will be included in the draft</string>

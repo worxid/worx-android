@@ -116,6 +116,10 @@ fun HomeScreen(
                     if (!isConnected) {
                         NoConnectionFound()
                     }
+                    Divider(
+                        color = LocalCustomColorsPalette.current.bottomNavigationBorder,
+                        thickness = 1.5.dp
+                    )
                     BottomNavigationView(
                         showBadge = showBadge,
                         showBotNav = showBotNav,
@@ -242,11 +246,12 @@ fun BottomNavigationView(
         BottomNavigation(
             backgroundColor = colorPalette.formItemContainer,
             modifier = Modifier
-                .border(2.dp, Color.Black)
         ) {
             items.forEachIndexed { index, item ->
                 BottomNavigationItem(
-                    modifier = Modifier.align(Alignment.CenterVertically).offset(y = 4.dp),
+                    modifier = Modifier
+                        .align(Alignment.CenterVertically)
+                        .offset(y = 4.dp),
                     icon = {
                         BadgedBox(badge = {
                             if (item.title == showBadge) {
