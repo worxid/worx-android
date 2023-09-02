@@ -10,13 +10,14 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.SideEffect
-import androidx.compose.runtime.staticCompositionLocalOf
+import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalView
 import androidx.core.view.WindowCompat
 import dagger.hilt.android.internal.managers.FragmentComponentManager
-import id.worx.device.client.screen.main.SettingTheme
+import id.worx.device.client.screen.main.AppTheme
+import id.worx.device.client.screen.main.getAppTheme
 
 //System default
 @SuppressLint("ConflictingOnColor")
@@ -104,7 +105,7 @@ val WorxDarkColorsPalette = WorxColorsPalette(
     bottomNavigationBorder = Abbey2
 )
 
-val LocalCustomColorsPalette = staticCompositionLocalOf { WorxColorsPalette() }
+val WorxCustomColorsPalette = compositionLocalOf { WorxColorsPalette() }
 
 @Composable
 fun WorxTheme(
@@ -119,7 +120,7 @@ fun WorxTheme(
     }
 
     CompositionLocalProvider(
-        LocalCustomColorsPalette provides customColors
+        WorxCustomColorsPalette provides customColors
     ) {
         MaterialTheme(
             colors = colors,

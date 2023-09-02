@@ -27,7 +27,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import id.worx.device.client.R
 import id.worx.device.client.screen.main.AppTheme
-import id.worx.device.client.theme.LocalCustomColorsPalette
+import id.worx.device.client.theme.WorxCustomColorsPalette
 import id.worx.device.client.theme.PrimaryMain
 import id.worx.device.client.theme.WorxTheme
 import kotlinx.coroutines.launch
@@ -52,7 +52,7 @@ fun WorxThemeBottomSheet(
                 }
             )
         },
-        sheetBackgroundColor = LocalCustomColorsPalette.current.bottomSheetBackground
+        sheetBackgroundColor = WorxCustomColorsPalette.current.bottomSheetBackground
     ) {
         content(openSortByBottomSheet = { scope.launch { sheetState.show() } })
     }
@@ -63,7 +63,7 @@ private fun WorxThemeContent(
     selectedTheme: AppTheme,
     onThemeClicked: (theme: AppTheme) -> Unit
 ) {
-    val colorPalette = LocalCustomColorsPalette.current
+    val colorPalette = WorxCustomColorsPalette.current
     Column(
         modifier = Modifier
             .background(colorPalette.bottomSheetBackground)

@@ -72,6 +72,7 @@ class HomeFragment : Fragment() {
                         submissionList = uiState.value.submission,
                         viewModel = viewModel,
                         detailVM = detailViewModel,
+                        themeViewModel = themeViewModel,
                         session = session,
                         syncWithServer = { syncWithServer() },
                         selectedSort = uiState.value.selectedSort

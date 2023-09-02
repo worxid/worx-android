@@ -46,12 +46,13 @@ import id.worx.device.client.model.FormSortModel
 import id.worx.device.client.model.SubmitForm
 import id.worx.device.client.screen.components.RedFullWidthButton
 import id.worx.device.client.screen.components.WorxSortByBottomSheet
-import id.worx.device.client.theme.LocalCustomColorsPalette
+import id.worx.device.client.theme.WorxCustomColorsPalette
 import id.worx.device.client.theme.Typography
 import id.worx.device.client.theme.backgroundFormList
 import id.worx.device.client.viewmodel.DetailFormViewModel
 import id.worx.device.client.viewmodel.HomeUiEvent
 import id.worx.device.client.viewmodel.HomeViewModelImpl
+import id.worx.device.client.viewmodel.ThemeViewModel
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
@@ -79,6 +80,7 @@ fun HomeScreen(
     submissionList: List<SubmitForm>,
     viewModel: HomeViewModelImpl,
     detailVM: DetailFormViewModel,
+    themeViewModel: ThemeViewModel,
     session: Session,
     syncWithServer: () -> Unit,
     selectedSort: FormSortModel
@@ -117,7 +119,7 @@ fun HomeScreen(
                         NoConnectionFound()
                     }
                     Divider(
-                        color = LocalCustomColorsPalette.current.bottomNavigationBorder,
+                        color = WorxCustomColorsPalette.current.bottomNavigationBorder,
                         thickness = 1.5.dp
                     )
                     BottomNavigationView(
@@ -183,7 +185,8 @@ fun HomeScreen(
                         3 -> {
                             SettingScreen(
                                 viewModel,
-                                session = session
+                                session = session,
+                                themeViewModel = themeViewModel
                             )
                         }
                     }
@@ -240,12 +243,11 @@ fun BottomNavigationView(
         BottomNavItem.Submission,
         BottomNavItem.Setting
     )
-    val colorPalette = LocalCustomColorsPalette.current
+    val colorPalette = WorxCustomColorsPalette.current
     val scope = rememberCoroutineScope()
     if (showBotNav) {
         BottomNavigation(
-            backgroundColor = colorPalette.formItemContainer,
-            modifier = Modifier
+            backgroundColor = colorPalette.formItemContainer
         ) {
             items.forEachIndexed { index, item ->
                 BottomNavigationItem(
@@ -266,7 +268,6 @@ fun BottomNavigationView(
                                     modifier = Modifier
                                         .size(28.dp)
                                         .clip(RoundedCornerShape(4.dp)),
-//                                    tint = if (index == pagerState.currentPage) colorPalette.iconBackground else unselectedColor,
                                     tint = Color.Unspecified,
                                     painter = painterResource(id = if (index == pagerState.currentPage) item.selectedIcon else item.icon),
                                     contentDescription = stringResource(id = item.title),
@@ -310,7 +311,7 @@ fun MainTopAppBar(
 
     TopAppBar(
         modifier = Modifier.fillMaxWidth(),
-        backgroundColor = LocalCustomColorsPalette.current.appBar,
+        backgroundColor = WorxCustomColorsPalette.current.appBar,
         contentColor = Color.White
     ) {
         if (!searchMode) {
@@ -477,17 +478,6 @@ fun FormSubmitted(
         onDismissRequest = {}
     )
 }
-
-//@Preview(showSystemUi = true)
-//@Composable
-//private fun BottomNavPreview(
-//    viewModel: HomeViewModel = hiltViewModel(),
-//    detailVM: DetailFormViewModel = hiltViewModel(),
-//    session: Session = Session(LocalContext.current)
-//) {
-//    val list = arrayListOf<EmptyForm>()
-//    HomeScreen(list, arrayListOf(), arrayListOf(), viewModel, detailVM,session,MainActivity())
-//}
 
 @OptIn(ExperimentalPagerApi::class)
 @Preview(showBackground = true)

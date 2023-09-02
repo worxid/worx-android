@@ -12,14 +12,10 @@ import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ChevronRight
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -29,7 +25,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
-import androidx.hilt.navigation.compose.hiltViewModel
 import id.worx.device.client.BuildConfig
 import id.worx.device.client.R
 import id.worx.device.client.Util
@@ -44,7 +39,6 @@ import id.worx.device.client.viewmodel.HomeVMPrev
 import id.worx.device.client.viewmodel.HomeViewModel
 import id.worx.device.client.viewmodel.ThemeVMMock
 import id.worx.device.client.viewmodel.ThemeViewModel
-import id.worx.device.client.viewmodel.ThemeViewModelImpl
 
 object SettingTheme {
     val System = "System default"
@@ -65,7 +59,7 @@ enum class AppTheme(val theme: String) {
 fun SettingScreen(
     viewModel: HomeViewModel,
     session: Session,
-    themeViewModel: ThemeViewModel = hiltViewModel<ThemeViewModelImpl>()
+    themeViewModel: ThemeViewModel
 ) {
     val theme = session.theme
     val showDialogLeave = remember { mutableStateOf(false) }

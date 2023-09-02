@@ -60,9 +60,9 @@ import id.worx.device.client.model.FormSortModel
 import id.worx.device.client.model.FormSortOrderBy
 import id.worx.device.client.model.SubmitForm
 import id.worx.device.client.screen.components.WorxBoxPullRefresh
-import id.worx.device.client.theme.LocalCustomColorsPalette
 import id.worx.device.client.theme.PrimaryMain
 import id.worx.device.client.theme.Typography
+import id.worx.device.client.theme.WorxCustomColorsPalette
 import id.worx.device.client.theme.fontRoboto
 import id.worx.device.client.viewmodel.DetailFormViewModel
 import id.worx.device.client.viewmodel.HomeViewModelImpl
@@ -93,7 +93,7 @@ fun FormScreen(
         Column(
             modifier = Modifier
                 .fillMaxHeight()
-                .background(LocalCustomColorsPalette.current.homeBackground),
+                .background(WorxCustomColorsPalette.current.homeBackground),
         ) {
             if (data.isNullOrEmpty()) {
                 EmptyList(type, titleForEmpty, descriptionForEmpty)
@@ -143,7 +143,7 @@ fun NoConnectionFound(modifier: Modifier = Modifier) {
         modifier = modifier
             .fillMaxWidth()
             .height(56.dp)
-            .background(LocalCustomColorsPalette.current.iconBackground)
+            .background(WorxCustomColorsPalette.current.iconBackground)
             .padding(horizontal = 16.dp, vertical = 8.dp)
     ) {
         Icon(
@@ -231,7 +231,7 @@ fun ListItemValidForm(
         modifier = Modifier
             .fillMaxWidth()
             .clip(RoundedCornerShape(4.dp))
-            .background(LocalCustomColorsPalette.current.formItemContainer)
+            .background(WorxCustomColorsPalette.current.formItemContainer)
             .clickable(
                 onClick = {
                     viewModel.goToDetailScreen()
@@ -245,7 +245,7 @@ fun ListItemValidForm(
                 .align(Alignment.CenterVertically),
             painter = painterResource(id = R.drawable.ic_form),
             contentDescription = "Form Icon",
-            tint = LocalCustomColorsPalette.current.iconV2
+            tint = WorxCustomColorsPalette.current.iconV2
         )
         Column(modifier = Modifier.padding(vertical = 13.dp)) {
             Text(
@@ -354,7 +354,7 @@ fun SubmissionItemForm(
         modifier = Modifier
             .fillMaxWidth()
             .clip(RoundedCornerShape(4.dp))
-            .background(LocalCustomColorsPalette.current.formItemContainer)
+            .background(WorxCustomColorsPalette.current.formItemContainer)
             .clickable(
                 onClick = {
                     viewModel.goToDetailScreen()

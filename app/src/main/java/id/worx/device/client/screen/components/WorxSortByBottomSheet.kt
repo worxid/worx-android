@@ -35,7 +35,7 @@ import id.worx.device.client.R
 import id.worx.device.client.model.FormSortModel
 import id.worx.device.client.model.FormSortOrderBy
 import id.worx.device.client.model.FormSortType
-import id.worx.device.client.theme.LocalCustomColorsPalette
+import id.worx.device.client.theme.WorxCustomColorsPalette
 import id.worx.device.client.theme.PrimaryMain
 import id.worx.device.client.theme.WorxTheme
 import kotlinx.coroutines.launch
@@ -59,7 +59,7 @@ fun WorxSortByBottomSheet(
                 }
             )
         },
-        sheetBackgroundColor = LocalCustomColorsPalette.current.bottomSheetBackground
+        sheetBackgroundColor = WorxCustomColorsPalette.current.bottomSheetBackground
     ) {
         content(openSortByBottomSheet = { scope.launch { sheetState.show() } })
     }
@@ -70,7 +70,7 @@ private fun WorxSortByContent(
     selectedSort: FormSortModel,
     onSortClicked: (newSort: FormSortModel) -> Unit
 ) {
-    val colorPalette = LocalCustomColorsPalette.current
+    val colorPalette = WorxCustomColorsPalette.current
     Column(
         modifier = Modifier
             .background(colorPalette.bottomSheetBackground)

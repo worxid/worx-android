@@ -35,7 +35,7 @@ import androidx.compose.ui.unit.dp
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import id.worx.device.client.screen.main.SettingTheme
 import id.worx.device.client.screen.welcome.WelcomeEvent
-import id.worx.device.client.theme.LocalCustomColorsPalette
+import id.worx.device.client.theme.WorxCustomColorsPalette
 import id.worx.device.client.theme.Typography
 
 enum class TransparentButtonType {
@@ -55,7 +55,7 @@ fun RedFullWidthButton(
             .fillMaxWidth()
             .padding(horizontal = 16.dp),
         colors = ButtonDefaults.buttonColors(
-            backgroundColor = LocalCustomColorsPalette.current.button,
+            backgroundColor = WorxCustomColorsPalette.current.button,
             contentColor = Color.White
         ),
         border = BorderStroke(
@@ -78,7 +78,7 @@ fun TransparentButton(
     transparentButtonType: TransparentButtonType = TransparentButtonType.NORMAL
 ) {
     val contentColor =
-        if (transparentButtonType == TransparentButtonType.NORMAL) LocalCustomColorsPalette.current.button else MaterialTheme.colors.onSecondary.copy(
+        if (transparentButtonType == TransparentButtonType.NORMAL) WorxCustomColorsPalette.current.button else MaterialTheme.colors.onSecondary.copy(
             alpha = 0.6f
         )
     OutlinedButton(

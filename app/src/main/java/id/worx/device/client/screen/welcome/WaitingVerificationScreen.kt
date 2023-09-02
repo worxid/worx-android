@@ -25,7 +25,7 @@ import androidx.compose.ui.unit.dp
 import id.worx.device.client.R
 import id.worx.device.client.data.database.Session
 import id.worx.device.client.screen.components.TransparentButton
-import id.worx.device.client.theme.LocalCustomColorsPalette
+import id.worx.device.client.theme.WorxCustomColorsPalette
 import id.worx.device.client.theme.Typography
 import id.worx.device.client.theme.WorxTheme
 
@@ -57,7 +57,7 @@ fun WaitingVerificationScreen(
             Image(
                 painter = painterResource(R.drawable.ic_icon_waiting),
                 contentDescription = "Waiting icon",
-                colorFilter = ColorFilter.tint(color = LocalCustomColorsPalette.current.icon)
+                colorFilter = ColorFilter.tint(color = WorxCustomColorsPalette.current.icon)
             )
             Spacer(modifier = Modifier.height(12.dp))
             Text(
