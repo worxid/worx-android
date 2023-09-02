@@ -12,8 +12,10 @@ import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ChevronRight
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -33,6 +35,7 @@ import id.worx.device.client.Util
 import id.worx.device.client.data.database.Session
 import id.worx.device.client.screen.components.TransparentButton
 import id.worx.device.client.screen.components.WorxDialog
+import id.worx.device.client.screen.components.WorxThemeBottomSheet
 import id.worx.device.client.screen.components.getActivity
 import id.worx.device.client.theme.*
 import id.worx.device.client.viewmodel.HomeVMPrev
@@ -48,6 +51,13 @@ object SettingTheme {
     val Blue = "Blue"
 }
 
+enum class AppTheme(val theme: String) {
+    LIGHT("Light"),
+    DARK("Dark"),
+    DEVICE_SYSTEM("Device System")
+}
+
+@OptIn(ExperimentalMaterialApi::class)
 @SuppressLint("HardwareIds")
 @Composable
 fun SettingScreen(
@@ -56,10 +66,10 @@ fun SettingScreen(
     themeViewModel: ThemeViewModel = hiltViewModel<ThemeViewModelImpl>()
 ) {
     val theme = session.theme
-    val showDialogLeave = remember {
-        mutableStateOf(false)
-    }
+    val showDialogLeave = remember { mutableStateOf(false) }
+    var selectedTheme by remember { mutableStateOf(AppTheme.LIGHT) }
     val context = LocalContext.current
+    val sheetState = rememberModalBottomSheetState(initialValue = ModalBottomSheetValue.Hidden)
 
     if (showDialogLeave.value) {
         WorxDialog(
@@ -88,46 +98,49 @@ fun SettingScreen(
     val verticalScroll = rememberScrollState()
     val colorPalette = LocalCustomColorsPalette.current
 
-    Column(
-        modifier = Modifier
-            .verticalScroll(verticalScroll)
-            .background(colorPalette.homeBackground)
-            .padding(16.dp)
-    ) {
-        HeaderTileSetting(
+    WorxThemeBottomSheet(sheetState = sheetState, selectedTheme = selectedTheme, onThemeClicked = {
+        selectedTheme = it
+    }) { openThemeBottomSheet ->
+        Column(
             modifier = Modifier
-                .fillMaxWidth()
-                .padding(bottom = 8.dp),
-            title = stringResource(id = R.string.organization_details)
-        )
-        TileItemSetting(
-            title = stringResource(id = R.string.organizations),
-            subtitle = session.organization,
-            iconRes = R.drawable.ic_organization,
-            session = session,
-            modifier = Modifier.clip(RoundedCornerShape(topStart = 4.dp, topEnd = 4.dp))
-        )
-        SettingDivider()
-        TileItemSetting(
-            title = stringResource(id = R.string.organizations_key),
-            subtitle = session.organizationKey,
-            iconRes = R.drawable.ic_organization_key,
-            session = session
-        )
-        SettingDivider()
-        TileItemSetting(
-            title = stringResource(id = R.string.device_name),
-            subtitle = session.deviceName,
-            iconRes = R.drawable.ic_device_name,
-            session = session,
-            modifier = Modifier.clip(RoundedCornerShape(bottomStart = 4.dp, bottomEnd = 4.dp))
-        )
-        HeaderTileSetting(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(top = 16.dp, bottom = 8.dp),
-            title = stringResource(id = R.string.devices_settings)
-        )
+                .verticalScroll(verticalScroll)
+                .background(colorPalette.homeBackground)
+                .padding(16.dp)
+        ) {
+            HeaderTileSetting(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(bottom = 8.dp),
+                title = stringResource(id = R.string.organization_details)
+            )
+            TileItemSetting(
+                title = stringResource(id = R.string.organizations),
+                subtitle = session.organization,
+                iconRes = R.drawable.ic_organization,
+                session = session,
+                modifier = Modifier.clip(RoundedCornerShape(topStart = 4.dp, topEnd = 4.dp))
+            )
+            SettingDivider()
+            TileItemSetting(
+                title = stringResource(id = R.string.organizations_key),
+                subtitle = session.organizationKey,
+                iconRes = R.drawable.ic_organization_key,
+                session = session
+            )
+            SettingDivider()
+            TileItemSetting(
+                title = stringResource(id = R.string.device_name),
+                subtitle = session.deviceName,
+                iconRes = R.drawable.ic_device_name,
+                session = session,
+                modifier = Modifier.clip(RoundedCornerShape(bottomStart = 4.dp, bottomEnd = 4.dp))
+            )
+            HeaderTileSetting(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 16.dp, bottom = 8.dp),
+                title = stringResource(id = R.string.devices_settings)
+            )
 //        TileItemSetting(
 //            title = stringResource(id = R.string.advance_settings),
 //            subtitle = stringResource(id = R.string.switch_to_server),
@@ -136,73 +149,76 @@ fun SettingScreen(
 //            toggleActive = false,
 //            session = session
 //        )
-        TileItemSetting(
-            title = stringResource(id = R.string.theme),
-            subtitle = session.theme,
-            iconRes = R.drawable.ic_color_theme,
-            showChevron = true,
-            session = session,
-            modifier = Modifier.clip(RoundedCornerShape(topStart = 4.dp, topEnd = 4.dp))
-        )
-        TileItemSetting(
-            title = stringResource(id = R.string.save_image_in_gallery),
-            subtitle = stringResource(id = R.string.save_image_in_gallery_sub),
-            iconRes = R.drawable.ic_collections,
-            toggleActive = true,
-            session = session,
-            modifier = Modifier.clip(RoundedCornerShape(bottomStart = 4.dp, bottomEnd = 4.dp))
-        )
-        HeaderTileSetting(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(top = 16.dp, bottom = 8.dp),
-            title = stringResource(id = R.string.about_this_app)
-        )
-        TileItemSetting(
-            title = stringResource(id = R.string.app_version),
-            subtitle = BuildConfig.VERSION_NAME,
-            iconRes = R.drawable.ic_app_version,
-            session = session,
-            modifier = Modifier.clip(RoundedCornerShape(topStart = 4.dp, topEnd = 4.dp))
-        )
-        SettingDivider()
-        TileItemSetting(
-            title = stringResource(id = R.string.app_version_code),
-            subtitle = BuildConfig.VERSION_CODE.toString(),
-            iconRes = R.drawable.ic_app_version_code,
-            session = session
-        )
-        SettingDivider()
-        TileItemSetting(
-            title = stringResource(id = R.string.app_package_name),
-            subtitle = BuildConfig.APPLICATION_ID,
-            iconRes = R.drawable.ic_package_name,
-            session = session,
-            modifier = Modifier.clip(RoundedCornerShape(bottomStart = 4.dp, bottomEnd = 4.dp))
-        )
-        HeaderTileSetting(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(top = 16.dp, bottom = 8.dp),
-            title = stringResource(id = R.string.legal),
-        )
-        TileItemSetting(
-            title = stringResource(id = R.string.open_source_licenses), onPress = {
-                viewModel.goToLicencesScreen()
-            },
-            iconRes = R.drawable.ic_organization,
-            session = session,
-            subtitle = stringResource(id = R.string.open_source),
-            modifier = Modifier.clip(RoundedCornerShape(4.dp))
-        )
-        Spacer(modifier = Modifier.height(16.dp))
-        TransparentButton(
-            modifier = Modifier.fillMaxWidth(),
-            label = "Leave Organization",
-            onClickCallback = {
-                showDialogLeave.value = !showDialogLeave.value
-            }
-        )
+            TileItemSetting(
+                title = stringResource(id = R.string.theme),
+//                subtitle = session.theme,
+                subtitle = selectedTheme.theme,
+                iconRes = R.drawable.ic_color_theme,
+                showChevron = true,
+                session = session,
+                modifier = Modifier.clip(RoundedCornerShape(topStart = 4.dp, topEnd = 4.dp)),
+                onPress = { openThemeBottomSheet() }
+            )
+            TileItemSetting(
+                title = stringResource(id = R.string.save_image_in_gallery),
+                subtitle = stringResource(id = R.string.save_image_in_gallery_sub),
+                iconRes = R.drawable.ic_collections,
+                toggleActive = true,
+                session = session,
+                modifier = Modifier.clip(RoundedCornerShape(bottomStart = 4.dp, bottomEnd = 4.dp))
+            )
+            HeaderTileSetting(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 16.dp, bottom = 8.dp),
+                title = stringResource(id = R.string.about_this_app)
+            )
+            TileItemSetting(
+                title = stringResource(id = R.string.app_version),
+                subtitle = BuildConfig.VERSION_NAME,
+                iconRes = R.drawable.ic_app_version,
+                session = session,
+                modifier = Modifier.clip(RoundedCornerShape(topStart = 4.dp, topEnd = 4.dp))
+            )
+            SettingDivider()
+            TileItemSetting(
+                title = stringResource(id = R.string.app_version_code),
+                subtitle = BuildConfig.VERSION_CODE.toString(),
+                iconRes = R.drawable.ic_app_version_code,
+                session = session
+            )
+            SettingDivider()
+            TileItemSetting(
+                title = stringResource(id = R.string.app_package_name),
+                subtitle = BuildConfig.APPLICATION_ID,
+                iconRes = R.drawable.ic_package_name,
+                session = session,
+                modifier = Modifier.clip(RoundedCornerShape(bottomStart = 4.dp, bottomEnd = 4.dp))
+            )
+            HeaderTileSetting(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 16.dp, bottom = 8.dp),
+                title = stringResource(id = R.string.legal),
+            )
+            TileItemSetting(
+                title = stringResource(id = R.string.open_source_licenses), onPress = {
+                    viewModel.goToLicencesScreen()
+                },
+                iconRes = R.drawable.ic_organization,
+                session = session,
+                subtitle = stringResource(id = R.string.open_source),
+                modifier = Modifier.clip(RoundedCornerShape(4.dp))
+            )
+            Spacer(modifier = Modifier.height(16.dp))
+            TransparentButton(
+                modifier = Modifier.fillMaxWidth(),
+                label = "Leave Organization",
+                onClickCallback = {
+                    showDialogLeave.value = !showDialogLeave.value
+                }
+            )
+        }
     }
 }
 
