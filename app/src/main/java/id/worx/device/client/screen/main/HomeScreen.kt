@@ -199,6 +199,7 @@ fun HomeScreen(
                     viewModel = viewModel,
                     detailVM = detailVM,
                     session = session,
+                    selectedSort = selectedSort,
                     syncWithServer = syncWithServer,
                     openSortBottomSheet = openSortBottomSheet,
                     modifier = modifier
@@ -220,7 +221,7 @@ fun HomeScreen(
                 visible = showSubmittedStatus
             )
             {
-                FormSubmitted(session = session) {
+                FormSubmitted {
                     viewModel.showNotification(0)
                     showSubmittedStatus = false
                 }
@@ -444,10 +445,8 @@ fun SearchBar(
 
 @Composable
 fun FormSubmitted(
-    session: Session,
     closeNotification: () -> Unit
 ) {
-    val theme = session.theme
     Dialog(
         content = {
             Column(
@@ -470,8 +469,7 @@ fun FormSubmitted(
                 RedFullWidthButton(
                     onClickCallback = { closeNotification() },
                     label = "Oke",
-                    modifier = Modifier.padding(bottom = 20.dp),
-                    theme = theme
+                    modifier = Modifier.padding(bottom = 20.dp)
                 )
             }
         },

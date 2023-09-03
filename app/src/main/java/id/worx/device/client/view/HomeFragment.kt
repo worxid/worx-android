@@ -55,15 +55,7 @@ class HomeFragment : Fragment() {
         return ComposeView(requireContext()).apply {
             setContent {
                 val theme = themeViewModel.theme.value
-                val systemUiController = rememberSystemUiController()
                 WorxTheme(theme = theme) {
-
-                    SideEffect {
-                        if (theme == SettingTheme.Dark) {
-                            systemUiController.setStatusBarColor(RedDark)
-                        }
-                    }
-
                     val uiState = viewModel.uiState.collectAsState()
 
                     HomeScreen(

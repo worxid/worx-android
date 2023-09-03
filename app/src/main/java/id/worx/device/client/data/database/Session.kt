@@ -8,7 +8,7 @@ class Session(context: Context) {
     var pref: SharedPreferences
     var editor: SharedPreferences.Editor
 
-    val theme get() = pref.getString(SETTING_THEME, AppTheme.LIGHT.value) ?: AppTheme.LIGHT.value
+    val theme get() = pref.getString(SETTING_THEME, AppTheme.DEVICE_SYSTEM.value) ?: AppTheme.DEVICE_SYSTEM.value
     val isSaveImageToGallery get() = pref.getBoolean(SETTING_SAVE_IMAGE, false)
     val latitude get() = pref.getString(LATITUDE, "-5.1966")
     val longitude get() = pref.getString(LONGITUDE, " 119.4926")

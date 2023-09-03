@@ -60,7 +60,15 @@ fun String.getAppTheme(): AppTheme {
     }
 }
 
-
+fun AppTheme.getAppLogoDrawable(): Int {
+    return when (this) {
+        AppTheme.LIGHT -> R.drawable.worx_logo_red
+        AppTheme.DARK -> R.drawable.worx_logo_white
+        else -> {
+            R.drawable.worx_logo
+        }
+    }
+}
 
 @OptIn(ExperimentalMaterialApi::class)
 @SuppressLint("HardwareIds")
@@ -102,10 +110,13 @@ fun SettingScreen(
     val verticalScroll = rememberScrollState()
     val colorPalette = WorxCustomColorsPalette.current
 
-    WorxThemeBottomSheet(sheetState = sheetState, selectedTheme = selectedTheme, onThemeClicked = {
-        themeViewModel.onThemeChanged(it.value)
-        session.setTheme(it.value)
-    }) { openThemeBottomSheet ->
+    WorxThemeBottomSheet(
+        sheetState = sheetState,
+        selectedTheme = selectedTheme,
+        onThemeClicked = {
+            themeViewModel.onThemeChanged(it.value)
+            session.setTheme(it.value)
+        }) { openThemeBottomSheet ->
         Column(
             modifier = Modifier
                 .verticalScroll(verticalScroll)
@@ -138,7 +149,12 @@ fun SettingScreen(
                 subtitle = session.deviceName,
                 iconRes = R.drawable.ic_device_name,
                 session = session,
-                modifier = Modifier.clip(RoundedCornerShape(bottomStart = 4.dp, bottomEnd = 4.dp))
+                modifier = Modifier.clip(
+                    RoundedCornerShape(
+                        bottomStart = 4.dp,
+                        bottomEnd = 4.dp
+                    )
+                )
             )
             HeaderTileSetting(
                 modifier = Modifier
@@ -170,7 +186,12 @@ fun SettingScreen(
                 iconRes = R.drawable.ic_collections,
                 toggleActive = true,
                 session = session,
-                modifier = Modifier.clip(RoundedCornerShape(bottomStart = 4.dp, bottomEnd = 4.dp))
+                modifier = Modifier.clip(
+                    RoundedCornerShape(
+                        bottomStart = 4.dp,
+                        bottomEnd = 4.dp
+                    )
+                )
             )
             HeaderTileSetting(
                 modifier = Modifier
@@ -198,7 +219,12 @@ fun SettingScreen(
                 subtitle = BuildConfig.APPLICATION_ID,
                 iconRes = R.drawable.ic_package_name,
                 session = session,
-                modifier = Modifier.clip(RoundedCornerShape(bottomStart = 4.dp, bottomEnd = 4.dp))
+                modifier = Modifier.clip(
+                    RoundedCornerShape(
+                        bottomStart = 4.dp,
+                        bottomEnd = 4.dp
+                    )
+                )
             )
             HeaderTileSetting(
                 modifier = Modifier
@@ -241,7 +267,9 @@ fun SettingDivider() {
 @Composable
 fun TestDialog() {
     WorxTheme() {
-        WorxDialog(content = { LeaveOrganizationDialog(setShowDialog = {}) }, setShowDialog = {})
+        WorxDialog(
+            content = { LeaveOrganizationDialog(setShowDialog = {}) },
+            setShowDialog = {})
     }
 }
 
@@ -409,9 +437,9 @@ fun TileItemSetting(
                     bottom.linkTo(parent.bottom)
                 },
                 colors = SwitchDefaults.colors(
-                    checkedThumbColor = MaterialTheme.colors.primary,
+                    checkedThumbColor = WorxCustomColorsPalette.current.button,
                     uncheckedThumbColor = MaterialTheme.colors.surface,
-                    checkedTrackColor = MaterialTheme.colors.primary,
+                    checkedTrackColor = WorxCustomColorsPalette.current.button.copy(alpha = 0.5f),
                     uncheckedTrackColor = MaterialTheme.colors.surface,
                 )
             )

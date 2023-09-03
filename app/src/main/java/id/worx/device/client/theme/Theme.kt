@@ -52,6 +52,7 @@ val DarkThemeColorsSystem = darkColors(
 
 @Immutable
 data class WorxColorsPalette(
+    val splashBackground: Color = Color.Unspecified,
     val textFieldContainer: Color = Color.Unspecified,
     val textFieldUnfocusedLabel: Color = Color.Unspecified,
     val textFieldColor: Color = Color.Unspecified,
@@ -70,6 +71,7 @@ data class WorxColorsPalette(
 )
 
 val WorxLightColorsPalette = WorxColorsPalette(
+    splashBackground = PrimaryMain,
     textFieldContainer = backgroundFormList,
     textFieldUnfocusedLabel = LightThemeColorsSystem.onSecondary.copy(alpha = 0.6f),
     textFieldColor = LightThemeColorsSystem.onSecondary.copy(alpha = 0.87f),
@@ -88,6 +90,7 @@ val WorxLightColorsPalette = WorxColorsPalette(
 )
 
 val WorxDarkColorsPalette = WorxColorsPalette(
+    splashBackground = Splash,
     textFieldContainer = MineShaft,
     textFieldUnfocusedLabel = DarkThemeColorsSystem.onSecondary.copy(alpha = 0.6f),
     textFieldColor = DarkThemeColorsSystem.onSecondary.copy(alpha = 0.87f),
@@ -101,7 +104,7 @@ val WorxDarkColorsPalette = WorxColorsPalette(
     iconBackground = Pomegranate,
     bottomSheetBackground = CapeCod,
     bottomSheetDragHandle = Abbey,
-    homeBackground = Shark,
+    homeBackground = Shark2,
     bottomNavigationBorder = Abbey2
 )
 
@@ -113,14 +116,14 @@ fun WorxTheme(
     theme: String = AppTheme.LIGHT.value,
     content: @Composable() () -> Unit
 ) {
-    val (colors, customColors) = when (theme.getAppTheme()) {
-        AppTheme.LIGHT -> Pair(LightThemeColorsSystem, WorxLightColorsPalette)
-        AppTheme.DARK -> Pair(DarkThemeColorsSystem, WorxDarkColorsPalette)
+    val (colors, customColors, isLightTheme) = when (theme.getAppTheme()) {
+        AppTheme.LIGHT -> Triple(LightThemeColorsSystem, WorxLightColorsPalette, true)
+        AppTheme.DARK -> Triple(DarkThemeColorsSystem, WorxDarkColorsPalette, false)
         else ->
             if (darkTheme) {
-                Pair(DarkThemeColorsSystem, WorxDarkColorsPalette)
+                Triple(DarkThemeColorsSystem, WorxDarkColorsPalette, false)
             } else {
-                Pair(LightThemeColorsSystem, WorxLightColorsPalette)
+                Triple(LightThemeColorsSystem, WorxLightColorsPalette, true)
             }
 
     }
@@ -143,8 +146,7 @@ fun WorxTheme(
             val window = activity.window
             window.statusBarColor = colors.primaryVariant.toArgb()
 
-            WindowCompat.getInsetsController(window, view)
-                .isAppearanceLightStatusBars = !darkTheme
+            WindowCompat.getInsetsController(window, view).isAppearanceLightStatusBars = isLightTheme
         }
     }
 }

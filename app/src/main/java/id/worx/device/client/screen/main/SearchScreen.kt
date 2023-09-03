@@ -22,6 +22,7 @@ import com.google.accompanist.pager.rememberPagerState
 import id.worx.device.client.R
 import id.worx.device.client.data.database.Session
 import id.worx.device.client.model.EmptyForm
+import id.worx.device.client.model.FormSortModel
 import id.worx.device.client.model.SubmitForm
 import id.worx.device.client.theme.PrimaryMain
 import id.worx.device.client.theme.Typography
@@ -45,6 +46,7 @@ fun SearchScreen(
     viewModel: HomeViewModelImpl,
     detailVM: DetailFormViewModel,
     session: Session,
+    selectedSort: FormSortModel,
     syncWithServer: () -> Unit,
     openSortBottomSheet: () -> Unit,
     modifier: Modifier
@@ -109,9 +111,9 @@ fun SearchScreen(
                 count = 3,
                 state = pagerState,
                 modifier = Modifier.constrainAs(tabcontent){
-                top.linkTo(tablayout.bottom)
-            }
-                ) { page ->
+                    top.linkTo(tablayout.bottom)
+                }
+            ) { page ->
                 when (page) {
                     0 -> FormScreen(
                         formData,
@@ -121,6 +123,7 @@ fun SearchScreen(
                         stringResource(R.string.no_forms),
                         stringResource(R.string.empty_description_form),
                         session = session,
+                        selectedSort = selectedSort,
                         openSortBottomSheet = openSortBottomSheet,
                         syncWithServer = syncWithServer
                     )
@@ -132,6 +135,7 @@ fun SearchScreen(
                         stringResource(R.string.no_drafts),
                         stringResource(R.string.empty_description_drafts),
                         session = session,
+                        selectedSort = selectedSort,
                         openSortBottomSheet = openSortBottomSheet,
                         syncWithServer = syncWithServer
                     )
@@ -143,6 +147,7 @@ fun SearchScreen(
                         stringResource(R.string.no_submission),
                         stringResource(R.string.empty_description_submission),
                         session = session,
+                        selectedSort = selectedSort,
                         openSortBottomSheet = openSortBottomSheet,
                         syncWithServer = syncWithServer
                     )
@@ -163,6 +168,7 @@ fun PreviewSearchScreen() {
             viewModel = hiltViewModel(),
             detailVM = hiltViewModel(),
             session = Session(LocalContext.current),
+            selectedSort = FormSortModel(),
             openSortBottomSheet = {},
             syncWithServer = {},
             modifier = Modifier

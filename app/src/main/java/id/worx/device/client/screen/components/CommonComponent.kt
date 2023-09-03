@@ -47,8 +47,7 @@ enum class TransparentButtonType {
 fun RedFullWidthButton(
     onClickCallback: () -> Unit,
     label: String,
-    modifier: Modifier,
-    theme: String?
+    modifier: Modifier
 ) {
     OutlinedButton(
         modifier = modifier
@@ -198,14 +197,13 @@ fun WhiteFullWidthButton(
     modifier: Modifier,
     label: String,
     onClickEvent: () -> Unit = {},
-    theme: String?,
     onClickCallback: (WelcomeEvent) -> Unit
 ) {
     OutlinedButton(
         modifier = modifier,
         colors = ButtonDefaults.buttonColors(
             backgroundColor = MaterialTheme.colors.primary.copy(0.2f),
-            contentColor = if (theme == SettingTheme.Dark) Color.White else MaterialTheme.colors.primary
+            contentColor = MaterialTheme.colors.primary
         ),
         border = BorderStroke(1.5.dp, MaterialTheme.colors.onSecondary),
         shape = RoundedCornerShape(1),
@@ -219,13 +217,9 @@ fun WhiteFullWidthButton(
 }
 
 @Composable
-fun WorxThemeStatusBar(
-    theme: String? = null
-) {
+fun WorxThemeStatusBar() {
     val systemUiController = rememberSystemUiController()
-    val useDarkIcons = MaterialTheme.colors.isLight
-    val statusBarColor =
-        if (theme == SettingTheme.Dark) MaterialTheme.colors.secondary else MaterialTheme.colors.primaryVariant
+    val statusBarColor = MaterialTheme.colors.primaryVariant
 
     SideEffect {
         systemUiController.setStatusBarColor(statusBarColor)

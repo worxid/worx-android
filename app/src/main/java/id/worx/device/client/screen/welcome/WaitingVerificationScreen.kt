@@ -25,6 +25,8 @@ import androidx.compose.ui.unit.dp
 import id.worx.device.client.R
 import id.worx.device.client.data.database.Session
 import id.worx.device.client.screen.components.TransparentButton
+import id.worx.device.client.screen.main.getAppLogoDrawable
+import id.worx.device.client.screen.main.getAppTheme
 import id.worx.device.client.theme.WorxCustomColorsPalette
 import id.worx.device.client.theme.Typography
 import id.worx.device.client.theme.WorxTheme
@@ -36,9 +38,11 @@ sealed class VerificationEvent {
 
 @Composable
 fun WaitingVerificationScreen(
-    session: Session, onEvent: (VerificationEvent) -> Unit
+    session: Session,
+    onEvent: (VerificationEvent) -> Unit
 ) {
     val theme = session.theme
+    val appLogoResourceId = theme.getAppTheme().getAppLogoDrawable()
     Surface(
         modifier = Modifier.fillMaxSize(),
     ) {
@@ -50,7 +54,7 @@ fun WaitingVerificationScreen(
         ) {
             Image(
                 modifier = Modifier.size(78.dp, 24.dp),
-                painter = painterResource(R.drawable.worx_logo),
+                painter = painterResource(appLogoResourceId),
                 contentDescription = "Worx Logo"
             )
             Spacer(modifier = Modifier.weight(1f))

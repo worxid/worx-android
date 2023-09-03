@@ -77,7 +77,7 @@ fun FormScreen(
     titleForEmpty: String,
     descriptionForEmpty: String,
     session: Session,
-    selectedSort: FormSortModel? = null,
+    selectedSort: FormSortModel,
     openSortBottomSheet: () -> Unit,
     syncWithServer: () -> Unit
 ) {
