@@ -143,8 +143,7 @@ fun CreateTeamScreen(
                     )
                 },
                 label = "Create New Team",
-                modifier = Modifier.padding(vertical = 20.dp),
-                theme = theme
+                modifier = Modifier.padding(vertical = 20.dp)
             )
         }
     }

@@ -10,13 +10,14 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.SideEffect
-import androidx.compose.runtime.staticCompositionLocalOf
+import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalView
 import androidx.core.view.WindowCompat
 import dagger.hilt.android.internal.managers.FragmentComponentManager
-import id.worx.device.client.screen.main.SettingTheme
+import id.worx.device.client.screen.main.AppTheme
+import id.worx.device.client.screen.main.getAppTheme
 
 //System default
 @SuppressLint("ConflictingOnColor")
@@ -51,6 +52,7 @@ val DarkThemeColorsSystem = darkColors(
 
 @Immutable
 data class WorxColorsPalette(
+    val splashBackground: Color = Color.Unspecified,
     val textFieldContainer: Color = Color.Unspecified,
     val textFieldUnfocusedLabel: Color = Color.Unspecified,
     val textFieldColor: Color = Color.Unspecified,
@@ -65,9 +67,11 @@ data class WorxColorsPalette(
     val bottomSheetBackground: Color = Color.Unspecified,
     val bottomSheetDragHandle: Color = Color.Unspecified,
     val homeBackground: Color = Color.Unspecified,
+    val bottomNavigationBorder: Color = Color.Unspecified,
 )
 
 val WorxLightColorsPalette = WorxColorsPalette(
+    splashBackground = PrimaryMain,
     textFieldContainer = backgroundFormList,
     textFieldUnfocusedLabel = LightThemeColorsSystem.onSecondary.copy(alpha = 0.6f),
     textFieldColor = LightThemeColorsSystem.onSecondary.copy(alpha = 0.87f),
@@ -81,10 +85,12 @@ val WorxLightColorsPalette = WorxColorsPalette(
     iconBackground = PrimaryMain,
     bottomSheetBackground = Color.White,
     bottomSheetDragHandle = DragHandle,
-    homeBackground = backgroundFormList
+    homeBackground = backgroundFormList,
+    bottomNavigationBorder = LightThemeColorsSystem.onSecondary
 )
 
 val WorxDarkColorsPalette = WorxColorsPalette(
+    splashBackground = Splash,
     textFieldContainer = MineShaft,
     textFieldUnfocusedLabel = DarkThemeColorsSystem.onSecondary.copy(alpha = 0.6f),
     textFieldColor = DarkThemeColorsSystem.onSecondary.copy(alpha = 0.87f),
@@ -98,25 +104,32 @@ val WorxDarkColorsPalette = WorxColorsPalette(
     iconBackground = Pomegranate,
     bottomSheetBackground = CapeCod,
     bottomSheetDragHandle = Abbey,
-    homeBackground = Shark
+    homeBackground = Shark2,
+    bottomNavigationBorder = Abbey2
 )
 
-val LocalCustomColorsPalette = staticCompositionLocalOf { WorxColorsPalette() }
+val WorxCustomColorsPalette = compositionLocalOf { WorxColorsPalette() }
 
 @Composable
 fun WorxTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
-    theme: String = SettingTheme.System,
+    theme: String = AppTheme.LIGHT.value,
     content: @Composable() () -> Unit
 ) {
-    val (colors, customColors) = if (darkTheme) {
-        Pair(DarkThemeColorsSystem, WorxDarkColorsPalette)
-    } else {
-        Pair(LightThemeColorsSystem, WorxLightColorsPalette)
+    val (colors, customColors, isLightTheme) = when (theme.getAppTheme()) {
+        AppTheme.LIGHT -> Triple(LightThemeColorsSystem, WorxLightColorsPalette, true)
+        AppTheme.DARK -> Triple(DarkThemeColorsSystem, WorxDarkColorsPalette, false)
+        else ->
+            if (darkTheme) {
+                Triple(DarkThemeColorsSystem, WorxDarkColorsPalette, false)
+            } else {
+                Triple(LightThemeColorsSystem, WorxLightColorsPalette, true)
+            }
+
     }
 
     CompositionLocalProvider(
-        LocalCustomColorsPalette provides customColors
+        WorxCustomColorsPalette provides customColors
     ) {
         MaterialTheme(
             colors = colors,
@@ -133,8 +146,7 @@ fun WorxTheme(
             val window = activity.window
             window.statusBarColor = colors.primaryVariant.toArgb()
 
-            WindowCompat.getInsetsController(window, view)
-                .isAppearanceLightStatusBars = !darkTheme
+            WindowCompat.getInsetsController(window, view).isAppearanceLightStatusBars = isLightTheme
         }
     }
 }

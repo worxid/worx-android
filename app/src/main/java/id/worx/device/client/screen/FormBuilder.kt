@@ -290,8 +290,7 @@ fun DetailForm(
                         start.linkTo(parent.start)
                         end.linkTo(parent.end)
                         width = Dimension.fillToConstraints
-                    },
-                theme = theme
+                    }
             )
         }
     }
@@ -368,8 +367,7 @@ fun DialogSubmitForm(
                 RedFullWidthButton(
                     onClickCallback = { submitForm() },
                     label = "Submit Form",
-                    modifier = Modifier.padding(),
-                    theme = theme
+                    modifier = Modifier.padding()
                 )
                 Text(
                     modifier = Modifier

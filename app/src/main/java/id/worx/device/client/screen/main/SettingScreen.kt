@@ -14,32 +14,31 @@ import androidx.compose.material.icons.filled.ChevronRight
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
-import androidx.hilt.navigation.compose.hiltViewModel
 import id.worx.device.client.BuildConfig
 import id.worx.device.client.R
 import id.worx.device.client.Util
 import id.worx.device.client.data.database.Session
 import id.worx.device.client.screen.components.TransparentButton
+import id.worx.device.client.screen.components.TransparentButtonType
 import id.worx.device.client.screen.components.WorxDialog
+import id.worx.device.client.screen.components.WorxThemeBottomSheet
 import id.worx.device.client.screen.components.getActivity
 import id.worx.device.client.theme.*
 import id.worx.device.client.viewmodel.HomeVMPrev
 import id.worx.device.client.viewmodel.HomeViewModel
 import id.worx.device.client.viewmodel.ThemeVMMock
 import id.worx.device.client.viewmodel.ThemeViewModel
-import id.worx.device.client.viewmodel.ThemeViewModelImpl
 
 object SettingTheme {
     val System = "System default"
@@ -48,18 +47,41 @@ object SettingTheme {
     val Blue = "Blue"
 }
 
+enum class AppTheme(val value: String) {
+    LIGHT("Light"),
+    DARK("Dark"),
+    DEVICE_SYSTEM("Device System")
+}
+
+fun String.getAppTheme(): AppTheme {
+    return when (this) {
+        "Device System" -> AppTheme.DEVICE_SYSTEM
+        else -> AppTheme.valueOf(this.uppercase())
+    }
+}
+
+fun AppTheme.getAppLogoDrawable(): Int {
+    return when (this) {
+        AppTheme.LIGHT -> R.drawable.worx_logo_red
+        AppTheme.DARK -> R.drawable.worx_logo_white
+        else -> {
+            R.drawable.worx_logo
+        }
+    }
+}
+
+@OptIn(ExperimentalMaterialApi::class)
 @SuppressLint("HardwareIds")
 @Composable
 fun SettingScreen(
     viewModel: HomeViewModel,
     session: Session,
-    themeViewModel: ThemeViewModel = hiltViewModel<ThemeViewModelImpl>()
+    themeViewModel: ThemeViewModel
 ) {
-    val theme = session.theme
-    val showDialogLeave = remember {
-        mutableStateOf(false)
-    }
+    val selectedTheme = session.theme.getAppTheme()
+    val showDialogLeave = remember { mutableStateOf(false) }
     val context = LocalContext.current
+    val sheetState = rememberModalBottomSheetState(initialValue = ModalBottomSheetValue.Hidden)
 
     if (showDialogLeave.value) {
         WorxDialog(
@@ -86,48 +108,60 @@ fun SettingScreen(
     }
 
     val verticalScroll = rememberScrollState()
-    val colorPalette = LocalCustomColorsPalette.current
+    val colorPalette = WorxCustomColorsPalette.current
 
-    Column(
-        modifier = Modifier
-            .verticalScroll(verticalScroll)
-            .background(colorPalette.homeBackground)
-            .padding(16.dp)
-    ) {
-        HeaderTileSetting(
+    WorxThemeBottomSheet(
+        sheetState = sheetState,
+        selectedTheme = selectedTheme,
+        onThemeClicked = {
+            themeViewModel.onThemeChanged(it.value)
+            session.setTheme(it.value)
+        }) { openThemeBottomSheet ->
+        Column(
             modifier = Modifier
-                .fillMaxWidth()
-                .padding(bottom = 8.dp),
-            title = stringResource(id = R.string.organization_details)
-        )
-        TileItemSetting(
-            title = stringResource(id = R.string.organizations),
-            subtitle = session.organization,
-            iconRes = R.drawable.ic_organization,
-            session = session,
-            modifier = Modifier.clip(RoundedCornerShape(topStart = 4.dp, topEnd = 4.dp))
-        )
-        SettingDivider()
-        TileItemSetting(
-            title = stringResource(id = R.string.organizations_key),
-            subtitle = session.organizationKey,
-            iconRes = R.drawable.ic_organization_key,
-            session = session
-        )
-        SettingDivider()
-        TileItemSetting(
-            title = stringResource(id = R.string.device_name),
-            subtitle = session.deviceName,
-            iconRes = R.drawable.ic_device_name,
-            session = session,
-            modifier = Modifier.clip(RoundedCornerShape(bottomStart = 4.dp, bottomEnd = 4.dp))
-        )
-        HeaderTileSetting(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(top = 16.dp, bottom = 8.dp),
-            title = stringResource(id = R.string.devices_settings)
-        )
+                .verticalScroll(verticalScroll)
+                .background(colorPalette.homeBackground)
+                .padding(16.dp)
+        ) {
+            HeaderTileSetting(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(bottom = 8.dp),
+                title = stringResource(id = R.string.organization_details)
+            )
+            TileItemSetting(
+                title = stringResource(id = R.string.organizations),
+                subtitle = session.organization,
+                iconRes = R.drawable.ic_organization,
+                session = session,
+                modifier = Modifier.clip(RoundedCornerShape(topStart = 4.dp, topEnd = 4.dp))
+            )
+            SettingDivider()
+            TileItemSetting(
+                title = stringResource(id = R.string.organizations_key),
+                subtitle = session.organizationKey,
+                iconRes = R.drawable.ic_organization_key,
+                session = session
+            )
+            SettingDivider()
+            TileItemSetting(
+                title = stringResource(id = R.string.device_name),
+                subtitle = session.deviceName,
+                iconRes = R.drawable.ic_device_name,
+                session = session,
+                modifier = Modifier.clip(
+                    RoundedCornerShape(
+                        bottomStart = 4.dp,
+                        bottomEnd = 4.dp
+                    )
+                )
+            )
+            HeaderTileSetting(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 16.dp, bottom = 8.dp),
+                title = stringResource(id = R.string.devices_settings)
+            )
 //        TileItemSetting(
 //            title = stringResource(id = R.string.advance_settings),
 //            subtitle = stringResource(id = R.string.switch_to_server),
@@ -136,73 +170,86 @@ fun SettingScreen(
 //            toggleActive = false,
 //            session = session
 //        )
-        TileItemSetting(
-            title = stringResource(id = R.string.theme),
-            subtitle = session.theme,
-            iconRes = R.drawable.ic_color_theme,
-            showChevron = true,
-            session = session,
-            modifier = Modifier.clip(RoundedCornerShape(topStart = 4.dp, topEnd = 4.dp))
-        )
-        TileItemSetting(
-            title = stringResource(id = R.string.save_image_in_gallery),
-            subtitle = stringResource(id = R.string.save_image_in_gallery_sub),
-            iconRes = R.drawable.ic_collections,
-            toggleActive = true,
-            session = session,
-            modifier = Modifier.clip(RoundedCornerShape(bottomStart = 4.dp, bottomEnd = 4.dp))
-        )
-        HeaderTileSetting(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(top = 16.dp, bottom = 8.dp),
-            title = stringResource(id = R.string.about_this_app)
-        )
-        TileItemSetting(
-            title = stringResource(id = R.string.app_version),
-            subtitle = BuildConfig.VERSION_NAME,
-            iconRes = R.drawable.ic_app_version,
-            session = session,
-            modifier = Modifier.clip(RoundedCornerShape(topStart = 4.dp, topEnd = 4.dp))
-        )
-        SettingDivider()
-        TileItemSetting(
-            title = stringResource(id = R.string.app_version_code),
-            subtitle = BuildConfig.VERSION_CODE.toString(),
-            iconRes = R.drawable.ic_app_version_code,
-            session = session
-        )
-        SettingDivider()
-        TileItemSetting(
-            title = stringResource(id = R.string.app_package_name),
-            subtitle = BuildConfig.APPLICATION_ID,
-            iconRes = R.drawable.ic_package_name,
-            session = session,
-            modifier = Modifier.clip(RoundedCornerShape(bottomStart = 4.dp, bottomEnd = 4.dp))
-        )
-        HeaderTileSetting(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(top = 16.dp, bottom = 8.dp),
-            title = stringResource(id = R.string.legal),
-        )
-        TileItemSetting(
-            title = stringResource(id = R.string.open_source_licenses), onPress = {
-                viewModel.goToLicencesScreen()
-            },
-            iconRes = R.drawable.ic_organization,
-            session = session,
-            subtitle = stringResource(id = R.string.open_source),
-            modifier = Modifier.clip(RoundedCornerShape(4.dp))
-        )
-        Spacer(modifier = Modifier.height(16.dp))
-        TransparentButton(
-            modifier = Modifier.fillMaxWidth(),
-            label = "Leave Organization",
-            onClickCallback = {
-                showDialogLeave.value = !showDialogLeave.value
-            }
-        )
+            TileItemSetting(
+                title = stringResource(id = R.string.theme),
+//                subtitle = session.theme,
+                subtitle = session.theme,
+                iconRes = R.drawable.ic_color_theme,
+                showChevron = true,
+                session = session,
+                modifier = Modifier.clip(RoundedCornerShape(topStart = 4.dp, topEnd = 4.dp)),
+                onPress = { openThemeBottomSheet() }
+            )
+            TileItemSetting(
+                title = stringResource(id = R.string.save_image_in_gallery),
+                subtitle = stringResource(id = R.string.save_image_in_gallery_sub),
+                iconRes = R.drawable.ic_collections,
+                toggleActive = true,
+                session = session,
+                modifier = Modifier.clip(
+                    RoundedCornerShape(
+                        bottomStart = 4.dp,
+                        bottomEnd = 4.dp
+                    )
+                )
+            )
+            HeaderTileSetting(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 16.dp, bottom = 8.dp),
+                title = stringResource(id = R.string.about_this_app)
+            )
+            TileItemSetting(
+                title = stringResource(id = R.string.app_version),
+                subtitle = BuildConfig.VERSION_NAME,
+                iconRes = R.drawable.ic_app_version,
+                session = session,
+                modifier = Modifier.clip(RoundedCornerShape(topStart = 4.dp, topEnd = 4.dp))
+            )
+            SettingDivider()
+            TileItemSetting(
+                title = stringResource(id = R.string.app_version_code),
+                subtitle = BuildConfig.VERSION_CODE.toString(),
+                iconRes = R.drawable.ic_app_version_code,
+                session = session
+            )
+            SettingDivider()
+            TileItemSetting(
+                title = stringResource(id = R.string.app_package_name),
+                subtitle = BuildConfig.APPLICATION_ID,
+                iconRes = R.drawable.ic_package_name,
+                session = session,
+                modifier = Modifier.clip(
+                    RoundedCornerShape(
+                        bottomStart = 4.dp,
+                        bottomEnd = 4.dp
+                    )
+                )
+            )
+            HeaderTileSetting(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 16.dp, bottom = 8.dp),
+                title = stringResource(id = R.string.legal),
+            )
+            TileItemSetting(
+                title = stringResource(id = R.string.open_source_licenses), onPress = {
+                    viewModel.goToLicencesScreen()
+                },
+                iconRes = R.drawable.ic_organization,
+                session = session,
+                subtitle = stringResource(id = R.string.open_source),
+                modifier = Modifier.clip(RoundedCornerShape(4.dp))
+            )
+            Spacer(modifier = Modifier.height(16.dp))
+            TransparentButton(
+                modifier = Modifier.fillMaxWidth(),
+                label = "Leave Organization",
+                onClickCallback = {
+                    showDialogLeave.value = !showDialogLeave.value
+                }
+            )
+        }
     }
 }
 
@@ -220,7 +267,9 @@ fun SettingDivider() {
 @Composable
 fun TestDialog() {
     WorxTheme() {
-        WorxDialog(content = { LeaveOrganizationDialog(setShowDialog = {}) }, setShowDialog = {})
+        WorxDialog(
+            content = { LeaveOrganizationDialog(setShowDialog = {}) },
+            setShowDialog = {})
     }
 }
 
@@ -234,11 +283,13 @@ fun LeaveOrganizationDialog(
             .fillMaxWidth()
             .background(MaterialTheme.colors.secondary)
     ) {
-        val (tvTitle, tvYes, tvCancel) = createRefs()
+        val (tvTitle, tvDesc, tvYes, tvCancel) = createRefs()
 
         Text(
-            text = stringResource(id = R.string.leave_organization),
-            style = Typography.body2.copy(MaterialTheme.colors.onSecondary),
+            text = stringResource(id = R.string.leave_organization_title),
+            style = Typography.h6,
+            color = MaterialTheme.colors.onSecondary.copy(alpha = 0.87f),
+            lineHeight = 27.sp,
             modifier = Modifier.constrainAs(tvTitle) {
                 top.linkTo(parent.top)
                 start.linkTo(parent.start)
@@ -246,134 +297,51 @@ fun LeaveOrganizationDialog(
                 width = Dimension.fillToConstraints
             }
         )
+
         Text(
-            text = stringResource(id = R.string.yes),
-            style = Typography.body2.copy(MaterialTheme.colors.onBackground),
+            text = stringResource(id = R.string.leave_organization),
+            style = Typography.body2,
+            lineHeight = 24.sp,
+            color = MaterialTheme.colors.onSecondary.copy(alpha = 0.87f),
+            modifier = Modifier.constrainAs(tvDesc) {
+                top.linkTo(tvTitle.bottom, 8.dp)
+                start.linkTo(parent.start)
+                end.linkTo(parent.end)
+                width = Dimension.fillToConstraints
+            }
+        )
+
+        TransparentButton(
+            label = stringResource(id = R.string.confirm),
             modifier = Modifier
                 .constrainAs(tvYes) {
-                    top.linkTo(tvTitle.bottom, 32.dp)
+                    top.linkTo(tvDesc.bottom, 8.dp)
                     bottom.linkTo(parent.bottom)
-                    end.linkTo(parent.end)
-                    width = Dimension.fillToConstraints
-                }
-                .clickable {
-                    setShowDialog(false)
-                    onPositiveButton()
-                }
-        )
-        Text(
-            text = stringResource(id = R.string.cancel),
-            style = Typography.body2.copy(MaterialTheme.colors.onSecondary),
-            modifier = Modifier
-                .constrainAs(tvCancel) {
-                    top.linkTo(tvTitle.bottom, 32.dp)
-                    bottom.linkTo(parent.bottom)
-                    end.linkTo(tvYes.start, 38.dp)
-                    width = Dimension.fillToConstraints
-                }
-                .clickable {
-                    setShowDialog(false)
-                }
-        )
-    }
-}
-
-
-@Composable
-fun TileItemTheme(
-    themeViewModel: ThemeViewModel,
-    session: Session
-) {
-    ConstraintLayout(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 18.dp, vertical = 8.dp)
-    ) {
-        val (icon, tvTitle, red, dark, green, blue) = createRefs()
-        Icon(
-            painter = painterResource(id = R.drawable.ic_baseline_color_lens_24),
-            contentDescription = "Icon",
-            modifier = Modifier.constrainAs(icon) {
-                top.linkTo(parent.top)
-                bottom.linkTo(parent.bottom)
-                start.linkTo(parent.start)
-            },
-            tint = MaterialTheme.colors.onSecondary
-        )
-        Text(
-            text = stringResource(id = R.string.theme),
-            modifier = Modifier
-                .constrainAs(tvTitle) {
-                    top.linkTo(parent.top)
-                    start.linkTo(
-                        icon.end,
-                        18.dp
-                    )
                     end.linkTo(parent.end)
                     width = Dimension.fillToConstraints
                 },
-            style = Typography.body2,
-            color = MaterialTheme.colors.onSecondary,
-        )
-        BoxTheme(
-            Modifier.constrainAs(red) {
-                top.linkTo(tvTitle.bottom, 7.dp)
-                bottom.linkTo(parent.bottom)
-                start.linkTo(tvTitle.start)
-            }, SettingTheme.System, themeViewModel, session, PrimaryMain
-        )
-
-        BoxTheme(Modifier.constrainAs(dark) {
-            top.linkTo(red.top)
-            bottom.linkTo(red.bottom)
-            start.linkTo(red.end, 20.dp)
-        }, SettingTheme.Dark, themeViewModel, session, PrimaryMainDark)
-
-        BoxTheme(Modifier.constrainAs(blue) {
-            top.linkTo(dark.top)
-            bottom.linkTo(dark.bottom)
-            start.linkTo(dark.end, 20.dp)
-        }, SettingTheme.Blue, themeViewModel, session, PrimaryMainBlue)
-
-        BoxTheme(Modifier.constrainAs(green) {
-            top.linkTo(blue.top)
-            bottom.linkTo(blue.bottom)
-            start.linkTo(blue.end, 20.dp)
-        }, SettingTheme.Green, themeViewModel, session, PrimaryMainGreen)
-    }
-}
-
-@Composable
-private fun BoxTheme(
-    modifier: Modifier,
-    selectedTheme: String,
-    themeViewModel: ThemeViewModel,
-    session: Session,
-    themeColor: Color
-) {
-    Box(
-        modifier = modifier
-            .clickable {
-                themeViewModel.onThemeChanged(selectedTheme)
-                session.setTheme(selectedTheme)
+            onClickCallback = {
+                setShowDialog(false)
+                onPositiveButton()
             }
-            .clip(RoundedCornerShape(2.dp))
-            .background(
-                if (session.theme?.equals(selectedTheme) == true) MaterialTheme.colors.primary.copy(
-                    0.2f
-                ) else Color.White.copy(0f)
-            )
-            .size(36.dp), contentAlignment = Alignment.Center
-    ) {
-        Box(
+        )
+
+        TransparentButton(
+            label = stringResource(id = R.string.cancel),
             modifier = Modifier
-                .clip(RoundedCornerShape(2.dp))
-                .background(themeColor)
-                .size(32.dp)
+                .constrainAs(tvCancel) {
+                    top.linkTo(tvDesc.bottom, 8.dp)
+                    bottom.linkTo(parent.bottom)
+                    end.linkTo(tvYes.start, 8.dp)
+                    width = Dimension.fillToConstraints
+                },
+            onClickCallback = {
+                setShowDialog(false)
+            },
+            transparentButtonType = TransparentButtonType.NEGATIVE
         )
     }
 }
-
 
 @Composable
 fun TileItemSetting(
@@ -392,7 +360,7 @@ fun TileItemSetting(
         modifier = modifier
             .fillMaxWidth()
             .clickable { onPress() }
-            .background(LocalCustomColorsPalette.current.bottomSheetBackground)
+            .background(WorxCustomColorsPalette.current.bottomSheetBackground)
             .padding(vertical = 8.dp, horizontal = 12.dp)
     ) {
         val (icon, tvTitle, tvSubtitle, button) = createRefs()
@@ -448,7 +416,7 @@ fun TileItemSetting(
             Icon(
                 imageVector = Icons.Filled.ChevronRight,
                 contentDescription = "Chevron Right",
-                tint = LocalCustomColorsPalette.current.button,
+                tint = WorxCustomColorsPalette.current.button,
                 modifier = modifier.constrainAs(button) {
                     top.linkTo(parent.top)
                     end.linkTo(parent.end)
@@ -469,9 +437,9 @@ fun TileItemSetting(
                     bottom.linkTo(parent.bottom)
                 },
                 colors = SwitchDefaults.colors(
-                    checkedThumbColor = MaterialTheme.colors.primary,
+                    checkedThumbColor = WorxCustomColorsPalette.current.button,
                     uncheckedThumbColor = MaterialTheme.colors.surface,
-                    checkedTrackColor = MaterialTheme.colors.primary,
+                    checkedTrackColor = WorxCustomColorsPalette.current.button.copy(alpha = 0.5f),
                     uncheckedTrackColor = MaterialTheme.colors.surface,
                 )
             )

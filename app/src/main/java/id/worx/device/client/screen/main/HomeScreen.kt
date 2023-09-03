@@ -46,12 +46,13 @@ import id.worx.device.client.model.FormSortModel
 import id.worx.device.client.model.SubmitForm
 import id.worx.device.client.screen.components.RedFullWidthButton
 import id.worx.device.client.screen.components.WorxSortByBottomSheet
-import id.worx.device.client.theme.LocalCustomColorsPalette
+import id.worx.device.client.theme.WorxCustomColorsPalette
 import id.worx.device.client.theme.Typography
 import id.worx.device.client.theme.backgroundFormList
 import id.worx.device.client.viewmodel.DetailFormViewModel
 import id.worx.device.client.viewmodel.HomeUiEvent
 import id.worx.device.client.viewmodel.HomeViewModelImpl
+import id.worx.device.client.viewmodel.ThemeViewModel
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
@@ -79,6 +80,7 @@ fun HomeScreen(
     submissionList: List<SubmitForm>,
     viewModel: HomeViewModelImpl,
     detailVM: DetailFormViewModel,
+    themeViewModel: ThemeViewModel,
     session: Session,
     syncWithServer: () -> Unit,
     selectedSort: FormSortModel
@@ -116,6 +118,10 @@ fun HomeScreen(
                     if (!isConnected) {
                         NoConnectionFound()
                     }
+                    Divider(
+                        color = WorxCustomColorsPalette.current.bottomNavigationBorder,
+                        thickness = 1.5.dp
+                    )
                     BottomNavigationView(
                         showBadge = showBadge,
                         showBotNav = showBotNav,
@@ -179,7 +185,8 @@ fun HomeScreen(
                         3 -> {
                             SettingScreen(
                                 viewModel,
-                                session = session
+                                session = session,
+                                themeViewModel = themeViewModel
                             )
                         }
                     }
@@ -192,6 +199,7 @@ fun HomeScreen(
                     viewModel = viewModel,
                     detailVM = detailVM,
                     session = session,
+                    selectedSort = selectedSort,
                     syncWithServer = syncWithServer,
                     openSortBottomSheet = openSortBottomSheet,
                     modifier = modifier
@@ -213,7 +221,7 @@ fun HomeScreen(
                 visible = showSubmittedStatus
             )
             {
-                FormSubmitted(session = session) {
+                FormSubmitted {
                     viewModel.showNotification(0)
                     showSubmittedStatus = false
                 }
@@ -236,17 +244,17 @@ fun BottomNavigationView(
         BottomNavItem.Submission,
         BottomNavItem.Setting
     )
-    val colorPalette = LocalCustomColorsPalette.current
+    val colorPalette = WorxCustomColorsPalette.current
     val scope = rememberCoroutineScope()
     if (showBotNav) {
         BottomNavigation(
-            backgroundColor = colorPalette.formItemContainer,
-            modifier = Modifier
-                .border(2.dp, Color.Black)
+            backgroundColor = colorPalette.formItemContainer
         ) {
             items.forEachIndexed { index, item ->
                 BottomNavigationItem(
-                    modifier = Modifier.align(Alignment.CenterVertically).offset(y = 4.dp),
+                    modifier = Modifier
+                        .align(Alignment.CenterVertically)
+                        .offset(y = 4.dp),
                     icon = {
                         BadgedBox(badge = {
                             if (item.title == showBadge) {
@@ -261,7 +269,6 @@ fun BottomNavigationView(
                                     modifier = Modifier
                                         .size(28.dp)
                                         .clip(RoundedCornerShape(4.dp)),
-//                                    tint = if (index == pagerState.currentPage) colorPalette.iconBackground else unselectedColor,
                                     tint = Color.Unspecified,
                                     painter = painterResource(id = if (index == pagerState.currentPage) item.selectedIcon else item.icon),
                                     contentDescription = stringResource(id = item.title),
@@ -305,7 +312,7 @@ fun MainTopAppBar(
 
     TopAppBar(
         modifier = Modifier.fillMaxWidth(),
-        backgroundColor = LocalCustomColorsPalette.current.appBar,
+        backgroundColor = WorxCustomColorsPalette.current.appBar,
         contentColor = Color.White
     ) {
         if (!searchMode) {
@@ -438,10 +445,8 @@ fun SearchBar(
 
 @Composable
 fun FormSubmitted(
-    session: Session,
     closeNotification: () -> Unit
 ) {
-    val theme = session.theme
     Dialog(
         content = {
             Column(
@@ -464,25 +469,13 @@ fun FormSubmitted(
                 RedFullWidthButton(
                     onClickCallback = { closeNotification() },
                     label = "Oke",
-                    modifier = Modifier.padding(bottom = 20.dp),
-                    theme = theme
+                    modifier = Modifier.padding(bottom = 20.dp)
                 )
             }
         },
         onDismissRequest = {}
     )
 }
-
-//@Preview(showSystemUi = true)
-//@Composable
-//private fun BottomNavPreview(
-//    viewModel: HomeViewModel = hiltViewModel(),
-//    detailVM: DetailFormViewModel = hiltViewModel(),
-//    session: Session = Session(LocalContext.current)
-//) {
-//    val list = arrayListOf<EmptyForm>()
-//    HomeScreen(list, arrayListOf(), arrayListOf(), viewModel, detailVM,session,MainActivity())
-//}
 
 @OptIn(ExperimentalPagerApi::class)
 @Preview(showBackground = true)

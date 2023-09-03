@@ -91,8 +91,7 @@ fun AdvanceSettingsScreen(
             RedFullWidthButton(
                 onClickCallback = {onEvent(AdvanceSettingsEvent.SaveUrl(urlServer))},
                 label = stringResource(R.string.connect),
-                modifier = Modifier.padding(vertical = 20.dp),
-                theme = theme
+                modifier = Modifier.padding(vertical = 20.dp)
             )
         }
     }

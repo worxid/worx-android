@@ -22,6 +22,7 @@ class VerificationRejectedFragment : Fragment() {
 
     private val viewModel by viewModels<WelcomeViewModel>()
     private val themeViewModel by viewModels<ThemeViewModelImpl>()
+
     @Inject lateinit var session: Session
 
     override fun onCreateView(
@@ -31,12 +32,11 @@ class VerificationRejectedFragment : Fragment() {
     ): View? {
         return ComposeView(requireContext()).apply {
             setContent {
-
                 val theme = themeViewModel.theme.value
                 WorxTheme(theme = theme) {
                     WorxThemeStatusBar()
                     VerificationRejectedScreen(
-                        session,
+                        session = session,
                         onEvent = { event ->
                             when (event) {
                                 is VerificationEvent.MakeNewRequest -> {

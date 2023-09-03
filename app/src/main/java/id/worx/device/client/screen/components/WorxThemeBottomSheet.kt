@@ -6,21 +6,15 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.material.ExperimentalMaterialApi
-import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.ModalBottomSheetLayout
 import androidx.compose.material.ModalBottomSheetState
 import androidx.compose.material.ModalBottomSheetValue
 import androidx.compose.material.Text
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowDownward
-import androidx.compose.material.icons.filled.ArrowUpward
 import androidx.compose.material.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
@@ -32,9 +26,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import id.worx.device.client.R
-import id.worx.device.client.model.FormSortModel
-import id.worx.device.client.model.FormSortOrderBy
-import id.worx.device.client.model.FormSortType
+import id.worx.device.client.screen.main.AppTheme
 import id.worx.device.client.theme.WorxCustomColorsPalette
 import id.worx.device.client.theme.PrimaryMain
 import id.worx.device.client.theme.WorxTheme
@@ -42,19 +34,20 @@ import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
-fun WorxSortByBottomSheet(
+fun WorxThemeBottomSheet(
     sheetState: ModalBottomSheetState,
-    selectedSort: FormSortModel,
-    onSortClicked: (newSort: FormSortModel) -> Unit,
+    selectedTheme: AppTheme,
+    onThemeClicked: (theme: AppTheme) -> Unit,
     content: @Composable (openSortByBottomSheet: () -> Unit) -> Unit,
 ) {
     val scope = rememberCoroutineScope()
     ModalBottomSheetLayout(
         sheetState = sheetState,
         sheetContent = {
-            WorxSortByContent(
-                selectedSort = selectedSort, onSortClicked = {
-                    onSortClicked.invoke(it)
+            WorxThemeContent(
+                selectedTheme = selectedTheme,
+                onThemeClicked = {
+                    onThemeClicked.invoke(it)
                     scope.launch { sheetState.hide() }
                 }
             )
@@ -66,9 +59,9 @@ fun WorxSortByBottomSheet(
 }
 
 @Composable
-private fun WorxSortByContent(
-    selectedSort: FormSortModel,
-    onSortClicked: (newSort: FormSortModel) -> Unit
+private fun WorxThemeContent(
+    selectedTheme: AppTheme,
+    onThemeClicked: (theme: AppTheme) -> Unit
 ) {
     val colorPalette = WorxCustomColorsPalette.current
     Column(
@@ -84,46 +77,32 @@ private fun WorxSortByContent(
         ) {
             Canvas(modifier = Modifier
                 .size(80.dp, 4.dp)
-                .align(Alignment.Center), onDraw = {
-                drawRoundRect(
-                    color = colorPalette.bottomSheetDragHandle,
-                    cornerRadius = CornerRadius(2f, 2f)
-                )
-            })
+                .align(Alignment.Center),
+                onDraw = {
+                    drawRoundRect(
+                        color = colorPalette.bottomSheetDragHandle,
+                        cornerRadius = CornerRadius(2f, 2f)
+                    )
+                })
         }
         Text(
-            text = stringResource(R.string.text_sort_by),
+            text = stringResource(R.string.theme),
             style = MaterialTheme.typography.h6.copy(),
             color = MaterialTheme.colors.onSecondary.copy(0.87f),
             modifier = Modifier.padding(start = 16.dp, end = 16.dp, bottom = 8.dp)
         )
-        for (model in FormSortType.values()) {
-            val isSelected = model.value == selectedSort.formSortType.value
+        for (model in AppTheme.values()) {
+            val isSelected = model.value == selectedTheme.value
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
                     .background(if (isSelected) PrimaryMain.copy(alpha = 0.16f) else colorPalette.bottomSheetBackground)
-                    .clickable {
-                        if (isSelected) {
-                            onSortClicked(selectedSort.toggleSortOrderBy())
-                        } else {
-                            onSortClicked(FormSortModel(model))
-                        }
-                    }
+                    .clickable { onThemeClicked(model) }
                     .padding(
-                        horizontal = if (isSelected) 16.dp else 36.dp,
+                        horizontal = 16.dp,
                         vertical = 10.dp
                     )
             ) {
-                if (isSelected) {
-                    Icon(
-                        imageVector = if (selectedSort.formSortOrderBy == FormSortOrderBy.ASC) Icons.Filled.ArrowUpward else Icons.Filled.ArrowDownward,
-                        contentDescription = "Arrow Upward",
-                        tint = colorPalette.button,
-                        modifier = Modifier.size(20.dp)
-                    )
-                }
-                Spacer(modifier = Modifier.width(8.dp))
                 Text(
                     text = model.value,
                     style = MaterialTheme.typography.body1,
@@ -138,13 +117,13 @@ private fun WorxSortByContent(
 @OptIn(ExperimentalMaterialApi::class)
 @Preview
 @Composable
-fun WorxSortByBottomSheet_Preview() {
+fun WorxThemeBottomSheet_Preview() {
     WorxTheme {
         val sheetState = rememberModalBottomSheetState(initialValue = ModalBottomSheetValue.Hidden)
-        WorxSortByBottomSheet(
+        WorxThemeBottomSheet(
             sheetState = sheetState,
-            selectedSort = FormSortModel(),
-            onSortClicked = {}
+            selectedTheme = AppTheme.LIGHT,
+            onThemeClicked = {}
         ) {}
     }
 }

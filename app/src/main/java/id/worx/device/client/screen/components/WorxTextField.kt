@@ -27,7 +27,7 @@ import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import id.worx.device.client.R
-import id.worx.device.client.theme.LocalCustomColorsPalette
+import id.worx.device.client.theme.WorxCustomColorsPalette
 import id.worx.device.client.theme.PrimaryMain
 import id.worx.device.client.theme.Typography
 import id.worx.device.client.theme.fontRoboto
@@ -60,10 +60,10 @@ fun WorxTextField(
         var passwordVisible by rememberSaveable { mutableStateOf(false) }
         TextField(
             colors = TextFieldDefaults.textFieldColors(
-                backgroundColor = LocalCustomColorsPalette.current.textFieldContainer,
-                focusedLabelColor = LocalCustomColorsPalette.current.textFieldFocusedLabel,
-                unfocusedLabelColor = LocalCustomColorsPalette.current.textFieldUnfocusedLabel,
-                focusedIndicatorColor = LocalCustomColorsPalette.current.textFieldFocusedIndicator,
+                backgroundColor = WorxCustomColorsPalette.current.textFieldContainer,
+                focusedLabelColor = WorxCustomColorsPalette.current.textFieldFocusedLabel,
+                unfocusedLabelColor = WorxCustomColorsPalette.current.textFieldUnfocusedLabel,
+                focusedIndicatorColor = WorxCustomColorsPalette.current.textFieldFocusedIndicator,
                 cursorColor = MaterialTheme.colors.onSecondary
             ),
             modifier = Modifier

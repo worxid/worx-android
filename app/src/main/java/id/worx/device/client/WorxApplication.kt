@@ -7,7 +7,6 @@ import android.content.Context
 import android.os.Build
 import android.util.Log
 import androidx.annotation.RequiresApi
-import androidx.appcompat.app.AppCompatDelegate
 import dagger.hilt.android.HiltAndroidApp
 import id.worx.device.client.data.upload.CustomPlaceholdersProcessor
 import id.worx.device.client.data.upload.GlobalRequestObserverDelegate
@@ -46,7 +45,6 @@ class WorxApplication : AppCore() {
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate() {
         super.onCreate()
-        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
 
         createNotificationChannel()
         initUploadInBackGround()
