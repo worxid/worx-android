@@ -1,5 +1,6 @@
 package id.worx.device.client.screen.components
 
+import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -103,7 +104,9 @@ fun WorxFormSubmitButton(
                     text = label,
                     fontWeight = FontWeight.Bold,
                     style = Typography.button,
-                    modifier = Modifier.constrainAs(text) {
+                    modifier = Modifier
+                        .animateContentSize()
+                        .constrainAs(text) {
                         top.linkTo(parent.top)
                         bottom.linkTo(parent.bottom)
                         end.linkTo(parent.end)

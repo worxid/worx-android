@@ -135,6 +135,9 @@ fun DetailForm(
     val formStatus = viewModel.uiState.collectAsState().value.status
     val detailForm = viewModel.uiState.collectAsState().value.detailForm
 
+    val submitText = stringResource(R.string.text_submit)
+    var submitLabel by remember { mutableStateOf(submitText) }
+
     LaunchedEffect(key1 = listState.isScrollInProgress) {
         if (!listState.isScrollInProgress) {
             viewModel.indexScroll.value = listState.firstVisibleItemIndex
@@ -281,7 +284,7 @@ fun DetailForm(
         if (detailForm is EmptyForm || (detailForm is SubmitForm && detailForm.status == 0)) {
             WorxFormSubmitButton(
                 onClickCallback = { showSubmitDialog() },
-                label = "Submit",
+                label = submitLabel,
                 modifier = Modifier
                     .constrainAs(btnSubmit) {
                         bottom.linkTo(parent.bottom, 16.dp)
