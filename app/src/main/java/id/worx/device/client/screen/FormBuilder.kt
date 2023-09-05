@@ -76,25 +76,13 @@ fun ValidFormBuilder(
             scannerViewModel,
             session,
             validation,
+            showSubmitDialog = {
+                showSubmitDialog = true
+                scope.launch {
+                    state.animateTo(ModalBottomSheetValue.Expanded)
+                }
+            }
         )
-
-        val detailForm = viewModel.uiState.collectAsState().value.detailForm
-
-        if (detailForm is EmptyForm || (detailForm is SubmitForm && detailForm.status == 0)) {
-            RedFullWidthButton(
-                onClickCallback = {
-                    showSubmitDialog = true
-                    scope.launch {
-                        state.animateTo(ModalBottomSheetValue.Expanded)
-                    }
-                },
-                label = "Submit",
-                modifier = Modifier
-                    .padding(vertical = 16.dp)
-                    .align(Alignment.BottomEnd),
-                theme = theme
-            )
-        }
 
         if (showSubmitDialog) {
             DialogSubmitForm(
@@ -127,6 +115,7 @@ fun DetailForm(
     scannerViewModel: ScannerViewModel,
     session: Session,
     validation: Boolean,
+    showSubmitDialog: () -> Unit,
 ) {
     val theme = session.theme
     val listState = rememberLazyListState(viewModel.indexScroll.value, viewModel.offset.value)
@@ -147,23 +136,22 @@ fun DetailForm(
             .fillMaxSize()
     ) {
         val (lazyColumn, btnSubmit) = createRefs()
-        var modifier = Modifier
-            .constrainAs(lazyColumn) {
-                top.linkTo(parent.top)
-                start.linkTo(parent.start)
-                bottom.linkTo(parent.bottom)
-                end.linkTo(parent.end)
-                width = Dimension.fillToConstraints
-                height = Dimension.fillToConstraints
-            }
-            .navigationBarsPadding()
-            .imePadding()
-            .padding(vertical = 12.dp)
-
 
         LazyColumn(
             state = listState,
-            modifier = modifier,
+            modifier = Modifier
+                .constrainAs(lazyColumn) {
+                    top.linkTo(parent.top)
+                    start.linkTo(parent.start)
+                    bottom.linkTo(parent.bottom)
+                    end.linkTo(parent.end)
+                    width = Dimension.fillToConstraints
+                    height = Dimension.fillToConstraints
+                }
+                .navigationBarsPadding()
+                .imePadding()
+                .padding(vertical = 12.dp)
+            ,
             contentPadding = WindowInsets.statusBars.only(WindowInsetsSides.Horizontal + WindowInsetsSides.Top)
                 .asPaddingValues()
         ) {
@@ -275,6 +263,19 @@ fun DetailForm(
                     }
                 }
             }
+        }
+
+        if (detailForm is EmptyForm || (detailForm is SubmitForm && detailForm.status == 0)) {
+            WorxFormSubmitButton(
+                onClickCallback = { showSubmitDialog() },
+                label = "Submit",
+                modifier = Modifier
+                    .constrainAs(btnSubmit) {
+                        bottom.linkTo(parent.bottom, 16.dp)
+                        end.linkTo(parent.end, 16.dp)
+                    },
+                theme = theme
+            )
         }
     }
 }
