@@ -48,6 +48,7 @@ fun RedFullWidthButton(
 ) {
     OutlinedButton(
         modifier = modifier
+            .fillMaxWidth()
             .padding(horizontal = 16.dp),
         colors = ButtonDefaults.buttonColors(
             backgroundColor = if (theme == SettingTheme.Dark || theme == SettingTheme.System) RedDarkButton else MaterialTheme.colors.primary,
