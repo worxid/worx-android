@@ -35,8 +35,7 @@ import id.worx.device.client.theme.WorxTheme
 fun WorxFormSubmitButton(
     onClickCallback: () -> Unit,
     label: String,
-    modifier: Modifier,
-    theme: String?
+    modifier: Modifier
 ) {
     ConstraintLayout(
         modifier = modifier.clickable {
@@ -71,7 +70,8 @@ fun WorxFormSubmitButton(
                     bottom.linkTo(parent.bottom, 2.dp)
                 },
             colors = ButtonDefaults.buttonColors(
-                backgroundColor = if (theme == SettingTheme.Dark || theme == SettingTheme.System) RedDarkButton else MaterialTheme.colors.primary,
+//                backgroundColor = if (theme == SettingTheme.Dark || theme == SettingTheme.System) RedDarkButton else MaterialTheme.colors.primary,
+                backgroundColor = MaterialTheme.colors.primary,
                 contentColor = Color.White
             ),
             border = BorderStroke(
@@ -126,7 +126,6 @@ fun WorxFormSubmitButtonPreview() {
             onClickCallback = {  },
             label = "Submit",
             modifier = Modifier,
-            theme = null
         )
     }
 }
