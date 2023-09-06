@@ -62,6 +62,6 @@ fun WorxBaseField(
         } else {
             form.isValid = true
         }
-        Divider(color = GrayDivider, modifier = Modifier.padding(vertical = 16.dp))
+        Divider(color = WorxCustomColorsPalette.current.divider, modifier = Modifier.padding(vertical = 16.dp))
     }
 }
