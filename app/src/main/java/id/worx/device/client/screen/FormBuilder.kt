@@ -114,7 +114,6 @@ fun ValidFormBuilder(
         }
         if (showDraftDialog) {
             DialogDraftForm(
-                theme = theme,
                 { onEvent(DetailFormEvent.SaveDraft) },
                 { showDraftDialog = false })
         }
@@ -483,7 +482,6 @@ fun DialogSubmitForm(
 
 @Composable
 fun DialogDraftForm(
-    theme: String?,
     saveDraft: () -> Unit,
     closeDialog: () -> Unit,
 ) {
@@ -498,7 +496,7 @@ fun DialogDraftForm(
             ) {
                 Text(
                     text = "Save draft",
-                    style = Typography.body2.copy(Color.Black.copy(0.87f)),
+                    style = Typography.body2.copy(WorxCustomColorsPalette.current.textFieldColor),
                     fontWeight = FontWeight.Bold,
                 )
 
@@ -506,8 +504,11 @@ fun DialogDraftForm(
 
                 Text(
                     text = "You can optionally add a description to the saved draft",
-                    style = Typography.body2.copy(Color.Black.copy(0.87f))
+                    style = Typography.body2.copy(WorxCustomColorsPalette.current.textFieldColor)
                 )
+
+                Spacer(modifier = Modifier.height(8.dp))
+
                 WorxTextField(
                     label = "",
                     hint = stringResource(R.string.draft_descr),
@@ -587,7 +588,6 @@ fun DialogSubmitFormPreview() {
 fun DialogDraftFormPreview() {
     WorxTheme {
         DialogDraftForm(
-            theme = null,
             saveDraft = {},
             closeDialog = {},
         )
