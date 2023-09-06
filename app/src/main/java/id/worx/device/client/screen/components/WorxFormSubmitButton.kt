@@ -17,11 +17,13 @@ import androidx.compose.material.icons.outlined.Send
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
+import id.worx.device.client.R
 import id.worx.device.client.theme.Typography
 import id.worx.device.client.theme.WorxCustomColorsPalette
 import id.worx.device.client.theme.WorxTheme
@@ -88,7 +90,7 @@ fun WorxFormSubmitButton(
                 ) = createRefs()
 
                 Icon(
-                    imageVector = Icons.Outlined.Send,
+                    painter = painterResource(id = R.drawable.ic_send),
                     contentDescription = "Send Icon",
                     modifier = Modifier.constrainAs(logo) {
                         top.linkTo(parent.top)

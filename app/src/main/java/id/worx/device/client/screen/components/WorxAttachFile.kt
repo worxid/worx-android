@@ -88,7 +88,7 @@ private fun AttachFileButton(
 
     ActionRedButton(
         modifier = modifier,
-        iconRes = R.drawable.ic_baseline_attach_file_24,
+        iconRes = R.drawable.ic_clip,
         title = stringResource(id = R.string.add_file),
         actionClick = {
             if (!isMaxFilesNotAchieved) {
