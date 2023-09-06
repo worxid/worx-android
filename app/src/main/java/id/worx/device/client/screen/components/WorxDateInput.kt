@@ -30,6 +30,7 @@ import id.worx.device.client.model.fieldmodel.DateField
 import id.worx.device.client.model.fieldmodel.DateValue
 import id.worx.device.client.screen.main.SettingTheme
 import id.worx.device.client.theme.Typography
+import id.worx.device.client.theme.WorxCustomColorsPalette
 import id.worx.device.client.viewmodel.DetailFormViewModel
 import id.worx.device.client.viewmodel.EventStatus
 import java.text.SimpleDateFormat
@@ -95,12 +96,11 @@ fun WorxDateInput(indexForm: Int, viewModel: DetailFormViewModel, session: Sessi
         ) {
             TextField(
                 modifier = Modifier
-                    .padding(end = 12.dp)
                     .weight(1f)
                     .clickable { showDatePicker = true },
                 enabled = false,
                 colors = TextFieldDefaults.textFieldColors(
-                    backgroundColor = Color.Black.copy(0.06f)
+                    backgroundColor = WorxCustomColorsPalette.current.homeBackground,
                 ),
                 textStyle = if (value.value.isNullOrEmpty()) {
                     Typography.body2.copy(color = MaterialTheme.colors.onSecondary.copy(0.54f))
@@ -114,16 +114,20 @@ fun WorxDateInput(indexForm: Int, viewModel: DetailFormViewModel, session: Sessi
                             EventStatus.Submitted
                         ).contains(formStatus)
                     ) {
-                        Icon(
-                            painterResource(id = R.drawable.ic_delete_circle),
-                            contentDescription = "Clear Text",
+                        Box(
                             modifier = Modifier
-                                .clickable {
-                                    viewModel.setComponentData(indexForm, null)
-                                    value.value = null
-                                },
-                            tint = MaterialTheme.colors.onSecondary
-                        )
+                                .clickable { showDatePicker = true }
+                                .height(TextFieldDefaults.MinHeight)
+                        ) {
+                            Icon(
+                                painter = painterResource(id = R.drawable.ic_calendar),
+                                contentDescription = "Date Picker",
+                                modifier = Modifier
+                                    .align(Alignment.Center)
+                                    .padding(16.dp),
+                                tint = WorxCustomColorsPalette.current.textFieldIcon
+                            )
+                        }
                     }
                 },
                 value = if (value.value == null) {
@@ -131,25 +135,8 @@ fun WorxDateInput(indexForm: Int, viewModel: DetailFormViewModel, session: Sessi
                 } else {
                     value.value ?: ""
                 },
-                onValueChange = {})
-            Box(modifier = Modifier
-                .clip(RoundedCornerShape(4.dp))
-                .background(
-                    if (theme == SettingTheme.Dark) Color.White else MaterialTheme.colors.background.copy(
-                        0.10f
-                    )
-                )
-                .clickable { showDatePicker = true }
-                .height(TextFieldDefaults.MinHeight)) {
-                Icon(
-                    painter = painterResource(id = R.drawable.ic_date_icon),
-                    contentDescription = "Date Picker",
-                    modifier = Modifier
-                        .align(Alignment.Center)
-                        .padding(16.dp),
-                    tint = MaterialTheme.colors.onBackground
-                )
-            }
+                onValueChange = {}
+            )
         }
     }
     if (showDatePicker && !arrayListOf(
