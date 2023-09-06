@@ -291,8 +291,7 @@ fun DetailForm(
                     .constrainAs(btnSubmit) {
                         bottom.linkTo(parent.bottom, 16.dp)
                         end.linkTo(parent.end, 16.dp)
-                    },
-                theme = theme
+                    }
             )
         }
     }

@@ -35,23 +35,26 @@ import androidx.compose.ui.unit.dp
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import id.worx.device.client.screen.main.SettingTheme
 import id.worx.device.client.screen.welcome.WelcomeEvent
-import id.worx.device.client.theme.PrimaryMain
-import id.worx.device.client.theme.RedDarkButton
+import id.worx.device.client.theme.WorxCustomColorsPalette
 import id.worx.device.client.theme.Typography
+
+enum class TransparentButtonType {
+    NEGATIVE,
+    NORMAL
+}
 
 @Composable
 fun RedFullWidthButton(
     onClickCallback: () -> Unit,
     label: String,
-    modifier: Modifier,
-    theme: String?
+    modifier: Modifier
 ) {
     OutlinedButton(
         modifier = modifier
             .fillMaxWidth()
             .padding(horizontal = 16.dp),
         colors = ButtonDefaults.buttonColors(
-            backgroundColor = if (theme == SettingTheme.Dark || theme == SettingTheme.System) RedDarkButton else MaterialTheme.colors.primary,
+            backgroundColor = WorxCustomColorsPalette.current.button,
             contentColor = Color.White
         ),
         border = BorderStroke(
@@ -70,15 +73,18 @@ fun RedFullWidthButton(
 fun TransparentButton(
     onClickCallback: () -> Unit,
     label: String,
-    modifier: Modifier
+    modifier: Modifier,
+    transparentButtonType: TransparentButtonType = TransparentButtonType.NORMAL
 ) {
+    val contentColor =
+        if (transparentButtonType == TransparentButtonType.NORMAL) WorxCustomColorsPalette.current.button else MaterialTheme.colors.onSecondary.copy(
+            alpha = 0.6f
+        )
     OutlinedButton(
-        modifier = modifier
-            .fillMaxWidth()
-            .padding(horizontal = 16.dp),
+        modifier = modifier,
         colors = ButtonDefaults.buttonColors(
             backgroundColor = Color.Transparent,
-            contentColor = PrimaryMain
+            contentColor = contentColor
         ),
         border = BorderStroke(
             0.dp,
@@ -191,14 +197,13 @@ fun WhiteFullWidthButton(
     modifier: Modifier,
     label: String,
     onClickEvent: () -> Unit = {},
-    theme: String?,
     onClickCallback: (WelcomeEvent) -> Unit
 ) {
     OutlinedButton(
         modifier = modifier,
         colors = ButtonDefaults.buttonColors(
             backgroundColor = MaterialTheme.colors.primary.copy(0.2f),
-            contentColor = if (theme == SettingTheme.Dark) Color.White else MaterialTheme.colors.primary
+            contentColor = MaterialTheme.colors.primary
         ),
         border = BorderStroke(1.5.dp, MaterialTheme.colors.onSecondary),
         shape = RoundedCornerShape(1),
@@ -212,13 +217,9 @@ fun WhiteFullWidthButton(
 }
 
 @Composable
-fun WorxThemeStatusBar(
-    theme: String? = null
-) {
+fun WorxThemeStatusBar() {
     val systemUiController = rememberSystemUiController()
-    val useDarkIcons = MaterialTheme.colors.isLight
-    val statusBarColor =
-        if (theme == SettingTheme.Dark) MaterialTheme.colors.secondary else MaterialTheme.colors.primaryVariant
+    val statusBarColor = MaterialTheme.colors.primaryVariant
 
     SideEffect {
         systemUiController.setStatusBarColor(statusBarColor)

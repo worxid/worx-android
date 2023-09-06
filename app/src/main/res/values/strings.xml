@@ -39,6 +39,7 @@
     <string name="form">Forms</string>
     <string name="draft">Drafts</string>
     <string name="submission">Submissions</string>
+    <string name="text_sort_by">Sort By</string>
     <string name="add_file">Add File</string>
     <string name="gallery">Gallery</string>
     <string name="camera">Camera</string>
@@ -52,10 +53,10 @@
     <string name="draft_descr">Description (Optional)</string>
     <string name="empty_description_form">You currently not signed to any forms. Please contact your admin to add forms to your device.</string>
     <string name="no_forms">No Forms</string>
-    <string name="no_drafts">No Saved Drafts</string>
+    <string name="no_drafts">No Drafts</string>
     <string name="empty_description_drafts">You currently not saving any forms.</string>
     <string name="empty_description_submission">You currently not submit any forms.</string>
-    <string name="no_submission">No Recent Submission</string>
+    <string name="no_submission">No Submission</string>
     <string name="settings">Settings</string>
     <string name="open_source_licences_cap">Open Source Licences</string>
     <string name="organization_details">Organization details</string>
@@ -64,7 +65,7 @@
     <string name="organizations_key">Organization key</string>
     <string name="device_name">Device name</string>
     <string name="devices_settings">Devices Settings</string>
-    <string name="theme">Theme</string>
+    <string name="theme">Color Theme</string>
     <string name="save_image_in_gallery">Save image in gallery</string>
     <string name="save_image_in_gallery_sub">Images you capture will be saved to your gallery</string>
     <string name="about_this_app">About this app</string>
@@ -73,9 +74,12 @@
     <string name="app_package_name">App package name</string>
     <string name="legal">Legal</string>
     <string name="open_source_licenses">Open source licenses</string>
+    <string name="open_source">Open source</string>
     <string name="yes">Yes</string>
     <string name="no">No</string>
+    <string name="confirm">Confirm</string>
     <string name="cancel">Cancel</string>
+    <string name="leave_organization_title">Leave Organization</string>
     <string name="leave_organization">Are you sure you want to leave the organization?</string>
     <string name="leave_form">Leave This Form?</string>
     <string name="leave_form_sub">Are you sure you want to leave this page? if you leave this form, your existing work will be included in the draft</string>

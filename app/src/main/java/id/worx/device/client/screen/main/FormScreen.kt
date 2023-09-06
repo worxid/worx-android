@@ -4,7 +4,21 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -12,17 +26,24 @@ import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
-import androidx.compose.runtime.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowDownward
+import androidx.compose.material.icons.filled.ArrowUpward
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.ColorFilter
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
@@ -35,14 +56,17 @@ import id.worx.device.client.Util.initProgress
 import id.worx.device.client.Util.isNetworkAvailable
 import id.worx.device.client.data.database.Session
 import id.worx.device.client.model.BasicForm
+import id.worx.device.client.model.FormSortModel
+import id.worx.device.client.model.FormSortOrderBy
 import id.worx.device.client.model.SubmitForm
 import id.worx.device.client.screen.components.WorxBoxPullRefresh
 import id.worx.device.client.theme.PrimaryMain
-import id.worx.device.client.theme.RedBackground
 import id.worx.device.client.theme.Typography
-import id.worx.device.client.theme.openSans
+import id.worx.device.client.theme.WorxCustomColorsPalette
+import id.worx.device.client.theme.fontRoboto
 import id.worx.device.client.viewmodel.DetailFormViewModel
 import id.worx.device.client.viewmodel.HomeViewModelImpl
+import kotlinx.coroutines.launch
 
 @Composable
 fun FormScreen(
@@ -53,11 +77,12 @@ fun FormScreen(
     titleForEmpty: String,
     descriptionForEmpty: String,
     session: Session,
+    selectedSort: FormSortModel,
+    openSortBottomSheet: () -> Unit,
     syncWithServer: () -> Unit
 ) {
     val searchInput = viewModel.uiState.collectAsState().value.searchInput
     val theme = session.theme
-    val title = arrayListOf(R.string.form, R.string.draft, R.string.submission)
     val context = LocalContext.current
     var isConnected by remember { mutableStateOf(isNetworkAvailable(context)) }
 
@@ -68,39 +93,41 @@ fun FormScreen(
         Column(
             modifier = Modifier
                 .fillMaxHeight()
-                .background(MaterialTheme.colors.secondary),
+                .background(WorxCustomColorsPalette.current.homeBackground),
         ) {
-            if (!isConnected) {
-                NoConnectionFound(
-                    modifier = Modifier
-                        .background(RedBackground)
-                )
-            }
-            Text(
-                text = stringResource(id = title[type]),
-                style = Typography.subtitle2.copy(MaterialTheme.colors.onSecondary),
-                modifier = Modifier.padding(horizontal = 16.dp, vertical = 16.dp)
-            )
             if (data.isNullOrEmpty()) {
-                EmptyList(type, titleForEmpty, descriptionForEmpty, session)
+                EmptyList(type, titleForEmpty, descriptionForEmpty)
             } else {
+                if (selectedSort != null) {
+                    FormSort(
+                        selectedSort = selectedSort,
+                        openSortByBottomSheet = openSortBottomSheet
+                    )
+                }
                 LazyColumn(
-                    modifier = Modifier.padding(start = 16.dp, bottom = 88.dp, end= 16.dp),
-                    verticalArrangement = Arrangement.spacedBy(12.dp)
+                    modifier = Modifier.padding(start = 16.dp, end = 16.dp),
+                    verticalArrangement = Arrangement.spacedBy(12.dp),
+                    contentPadding = PaddingValues(bottom = 12.dp)
                 ) {
                     when (type) {
                         0 -> items(items = data, itemContent = { item ->
-                            ListItemValidForm(item, viewModel, detailFormViewModel, theme)
+                            ListItemValidForm(item, viewModel, detailFormViewModel)
                         })
+
                         1 -> items(items = data, itemContent = { item ->
-                            DraftItemForm(item as SubmitForm, viewModel, detailFormViewModel, theme)
-                        })
-                        2 -> items(items = data, itemContent = { item ->
-                            SubmissionItemForm(
+                            DraftItemForm(
                                 item as SubmitForm,
                                 viewModel,
                                 detailFormViewModel,
                                 theme
+                            )
+                        })
+
+                        2 -> items(items = data, itemContent = { item ->
+                            SubmissionItemForm(
+                                item as SubmitForm,
+                                viewModel,
+                                detailFormViewModel
                             )
                         })
                     }
@@ -111,53 +138,86 @@ fun FormScreen(
 }
 
 @Composable
-fun NoConnectionFound(modifier: Modifier) {
-    ConstraintLayout(
+fun NoConnectionFound(modifier: Modifier = Modifier) {
+    Row(
         modifier = modifier
-            .height(54.dp)
             .fillMaxWidth()
-            .padding(horizontal = 17.dp, vertical = 8.dp)
+            .height(56.dp)
+            .background(WorxCustomColorsPalette.current.iconBackground)
+            .padding(horizontal = 16.dp, vertical = 8.dp)
     ) {
-        val (icNoInternet, tvTitle, tvSubtitle) = createRefs()
         Icon(
             painter = painterResource(id = R.drawable.ic_no_internet),
             contentDescription = "Icon No Connection",
-            tint = PrimaryMain,
-            modifier = Modifier.constrainAs(icNoInternet) {
+            tint = MaterialTheme.colors.onPrimary,
+            modifier = Modifier.align(Alignment.CenterVertically)
+        )
+        Spacer(modifier = Modifier.width(12.dp))
+        Column {
+            Text(
+                text = stringResource(id = R.string.no_connection),
+                style = Typography.subtitle2.copy(
+                    fontFamily = fontRoboto,
+                    fontWeight = FontWeight.SemiBold,
+                    color = MaterialTheme.colors.onPrimary,
+                    fontSize = 14.sp
+                )
+            )
+            Spacer(modifier = Modifier.height(2.dp))
+            Text(
+                text = stringResource(id = R.string.check_network),
+                style = Typography.caption.copy(
+                    fontFamily = fontRoboto,
+                    fontSize = 12.sp,
+                    color = MaterialTheme.colors.onPrimary,
+                )
+            )
+        }
+    }
+}
+
+@Composable
+fun FormSort(
+    selectedSort: FormSortModel,
+    openSortByBottomSheet: suspend () -> Unit
+) {
+    val scope = rememberCoroutineScope()
+    ConstraintLayout(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(top = 16.dp, start = 16.dp, end = 16.dp, bottom = 12.dp)
+            .clickable(
+                indication = null,
+                interactionSource = MutableInteractionSource()
+            ) { scope.launch { openSortByBottomSheet() } }
+    ) {
+        val (tvSort, icChevron) = createRefs()
+        Text(
+            text = selectedSort.formSortType.value,
+            style = Typography.body2.copy(
+                fontFamily = fontRoboto,
+                fontWeight = FontWeight.W400,
+                color = MaterialTheme.colors.onSecondary.copy(alpha = 0.54f),
+                fontSize = 14.sp
+            ),
+            modifier = Modifier.constrainAs(tvSort) {
                 top.linkTo(parent.top)
                 start.linkTo(parent.start)
-                bottom.linkTo(parent.bottom)
-                width = Dimension.fillToConstraints
-            })
-        Text(
-            text = stringResource(id = R.string.no_connection),
-            style = Typography.body2.copy(
-                fontFamily = openSans,
-                fontWeight = FontWeight.W600,
-                color = PrimaryMain
-            ),
-            modifier = Modifier.constrainAs(tvTitle) {
-                top.linkTo(parent.top)
-                start.linkTo(icNoInternet.end, 11.dp)
-                end.linkTo(parent.end)
-                width = Dimension.fillToConstraints
+                width = Dimension.wrapContent
             }
         )
-        Text(
-            text = stringResource(id = R.string.check_network),
-            style = Typography.body1.copy(
-                fontFamily = openSans,
-                fontSize = 10.sp,
-                color = Color.Black.copy(alpha = 0.7f)
-            ),
-            modifier = Modifier.constrainAs(tvSubtitle) {
-                top.linkTo(tvTitle.bottom)
-                start.linkTo(tvTitle.start)
-                end.linkTo(tvTitle.end)
-                bottom.linkTo(parent.bottom)
-                width = Dimension.fillToConstraints
-            }
-        )
+        Icon(
+            imageVector = if (selectedSort.formSortOrderBy == FormSortOrderBy.ASC) Icons.Filled.ArrowUpward else Icons.Filled.ArrowDownward,
+            contentDescription = "Arrow Upward",
+            tint = MaterialTheme.colors.onSecondary.copy(alpha = 0.54f),
+            modifier = Modifier
+                .size(20.dp)
+                .constrainAs(icChevron) {
+                    top.linkTo(tvSort.top)
+                    start.linkTo(tvSort.end, 2.dp)
+                    bottom.linkTo(tvSort.bottom)
+                    width = Dimension.fillToConstraints
+                })
     }
 }
 
@@ -165,51 +225,44 @@ fun NoConnectionFound(modifier: Modifier) {
 fun ListItemValidForm(
     item: BasicForm,
     viewModel: HomeViewModelImpl,
-    detailFormViewModel: DetailFormViewModel,
-    theme: String?
+    detailFormViewModel: DetailFormViewModel
 ) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .background(
-                if (theme == SettingTheme.Dark
-                ) Color.Unspecified else Color.White
-            )
-            .border(
-                1.dp,
-                color = if (theme == SettingTheme.Dark)
-                    MaterialTheme.colors.onSecondary
-                else MaterialTheme.colors.onSecondary.copy(0.1f),
-                RoundedCornerShape(8.dp)
-            )
+            .clip(RoundedCornerShape(4.dp))
+            .background(WorxCustomColorsPalette.current.formItemContainer)
             .clickable(
                 onClick = {
                     viewModel.goToDetailScreen()
                     detailFormViewModel.navigateFromHomeScreen(item)
-                })
+                }
+            )
     ) {
-        Image(
+        Icon(
             modifier = Modifier
                 .padding(horizontal = 16.dp)
                 .align(Alignment.CenterVertically),
-            painter = painterResource(id = if (theme == SettingTheme.Dark) R.drawable.ic_form_white else R.drawable.ic_form_gray),
-            contentDescription = "Form Icon"
+            painter = painterResource(id = R.drawable.ic_form),
+            contentDescription = "Form Icon",
+            tint = WorxCustomColorsPalette.current.iconV2
         )
         Column(modifier = Modifier.padding(vertical = 13.dp)) {
             Text(
                 text = item.label ?: "",
-                fontSize = 14.sp,
-                fontFamily = FontFamily.Monospace,
-                color = MaterialTheme.colors.onSecondary,
                 overflow = TextOverflow.Ellipsis,
                 maxLines = 1,
-                fontWeight = FontWeight.W400
+                style = MaterialTheme.typography.body1,
+                color = MaterialTheme.colors.onSecondary.copy(alpha = 0.87f),
             )
+            Spacer(modifier = Modifier.height(2.dp))
             Text(
                 text = item.description ?: "",
                 overflow = TextOverflow.Ellipsis,
                 maxLines = 1,
-                style = Typography.body1.copy(color = MaterialTheme.colors.onSecondary.copy(alpha = 0.54f))
+                style = MaterialTheme.typography.caption,
+                color = MaterialTheme.colors.onSecondary.copy(alpha = 0.6f),
+                fontWeight = FontWeight.W400
             )
         }
     }
@@ -234,7 +287,8 @@ fun DraftItemForm(
                 color = if (theme == SettingTheme.Dark)
                     MaterialTheme.colors.onSecondary
                 else MaterialTheme.colors.onSecondary.copy(0.1f),
-                RoundedCornerShape(8.dp))
+                RoundedCornerShape(8.dp)
+            )
             .clickable(
                 onClick = {
                     viewModel.goToDetailScreen()
@@ -294,22 +348,13 @@ fun DraftItemForm(
 fun SubmissionItemForm(
     item: SubmitForm,
     viewModel: HomeViewModelImpl,
-    detailFormViewModel: DetailFormViewModel,
-    theme: String?
+    detailFormViewModel: DetailFormViewModel
 ) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .background(
-                if (theme == SettingTheme.Dark
-                ) Color.Unspecified else Color.White
-            )
-            .border(
-                1.dp,
-                color = if (theme == SettingTheme.Dark)
-                    MaterialTheme.colors.onSecondary
-                else MaterialTheme.colors.onSecondary.copy(0.1f),
-                RoundedCornerShape(8.dp))
+            .clip(RoundedCornerShape(4.dp))
+            .background(WorxCustomColorsPalette.current.formItemContainer)
             .clickable(
                 onClick = {
                     viewModel.goToDetailScreen()
@@ -328,23 +373,25 @@ fun SubmissionItemForm(
                 text = item.label ?: "",
                 overflow = TextOverflow.Ellipsis,
                 maxLines = 1,
-                style = Typography.button.copy(MaterialTheme.colors.onSecondary)
+                style = MaterialTheme.typography.body1,
+                color = MaterialTheme.colors.onSecondary.copy(alpha = 0.87f)
             )
+            Spacer(modifier = Modifier.height(4.dp))
             Text(
                 text = "Submitted on ${item.lastUpdated}",
                 overflow = TextOverflow.Ellipsis,
                 maxLines = 1,
-                style = Typography.body1.copy(color = MaterialTheme.colors.onSecondary.copy(alpha = 0.54f))
+                style = MaterialTheme.typography.caption,
+                color = MaterialTheme.colors.onSecondary.copy(alpha = 0.6f),
+                fontWeight = FontWeight.W400
             )
         }
     }
 }
 
 @Composable
-fun EmptyList(type: Int, text: String, description: String, session: Session) {
-    val theme = session.theme
-    val bg = arrayListOf(R.drawable.bg_emptylist_form, R.drawable.bg_emptylist_draft, R.drawable.bg_emptylist_submission)
-    val icon = arrayListOf(R.drawable.ic_form, R.drawable.ic_draft, R.drawable.ic_tick)
+fun EmptyList(type: Int, text: String, description: String) {
+    val icon = arrayListOf(R.drawable.ic_form_square, R.drawable.ic_draft, R.drawable.ic_tick)
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -352,33 +399,25 @@ fun EmptyList(type: Int, text: String, description: String, session: Session) {
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
-        Box(contentAlignment = Alignment.Center){
+        Box(contentAlignment = Alignment.Center) {
             Image(
-                painter = painterResource(id = bg[type]),
-                colorFilter = ColorFilter.tint(
-                    if (theme == SettingTheme.Dark) PrimaryMain else MaterialTheme.colors.primary
-                ) ,
-                contentDescription = "Empty Icon"
-            )
-            Image(
-                modifier = Modifier.height(56.dp)
+                modifier = Modifier
+                    .height(56.dp)
                     .width(56.dp),
-                contentScale = ContentScale.Fit,
                 painter = painterResource(id = icon[type]),
                 contentDescription = "Empty Icon"
             )
         }
+        Spacer(modifier = Modifier.height(20.dp))
         Text(
-            modifier = Modifier.padding(top = 28.dp, bottom = 12.dp),
             text = text,
-            style = Typography.subtitle1.copy(MaterialTheme.colors.onSecondary)
+            style = Typography.h6.copy(MaterialTheme.colors.onSecondary)
         )
+        Spacer(modifier = Modifier.height(8.dp))
         Text(
             text = description,
-            style = Typography.body2.copy(
-                MaterialTheme.colors.onSecondary.copy(0.54f),
-                textAlign = TextAlign.Center
-            )
+            style = Typography.body2.copy(MaterialTheme.colors.onSecondary.copy(0.6f)),
+            textAlign = TextAlign.Center
         )
     }
 }

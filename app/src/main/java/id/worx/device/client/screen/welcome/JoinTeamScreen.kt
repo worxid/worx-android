@@ -1,5 +1,6 @@
 package id.worx.device.client.screen.welcome
 
+import android.content.res.Configuration
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
@@ -33,6 +34,8 @@ import id.worx.device.client.R
 import id.worx.device.client.data.database.Session
 import id.worx.device.client.screen.components.RedFullWidthButton
 import id.worx.device.client.screen.components.WorxTextField
+import id.worx.device.client.screen.main.getAppLogoDrawable
+import id.worx.device.client.screen.main.getAppTheme
 import id.worx.device.client.theme.Typography
 import id.worx.device.client.theme.WorxTheme
 
@@ -53,6 +56,7 @@ fun JoinTeamScreen(
     var namePr by remember { mutableStateOf(0) }
     var orgPr by remember { mutableStateOf(0) }
     val theme = session.theme
+    val appLogoResourceId = theme.getAppTheme().getAppLogoDrawable()
 
     Scaffold { padding ->
         Column(
@@ -67,7 +71,7 @@ fun JoinTeamScreen(
             var organization by remember { mutableStateOf("") }
 
             Image(
-                painter = painterResource(R.drawable.worx_logo_red),
+                painter = painterResource(appLogoResourceId),
                 contentDescription = "Worx Logo",
                 modifier = Modifier
                     .align(Alignment.CenterHorizontally)
@@ -119,8 +123,7 @@ fun JoinTeamScreen(
             RedFullWidthButton(
                 onClickCallback = { onEvent(JoinTeamEvent.JoinTeam(name, organization)) },
                 label = stringResource(R.string.join_an_existing_team),
-                modifier = Modifier,
-                theme = theme
+                modifier = Modifier
             )
         }
     }
@@ -129,6 +132,16 @@ fun JoinTeamScreen(
 @Preview(name = "JoinTeam Screen", showSystemUi = true)
 @Composable
 fun JoinTeamScreenPreview() {
+    WorxTheme {
+        JoinTeamScreen(Session(LocalContext.current), {})
+    }
+}
+
+@Preview(name = "JoinTeam Screen", showSystemUi = true,
+    uiMode = Configuration.UI_MODE_NIGHT_YES or Configuration.UI_MODE_TYPE_NORMAL
+)
+@Composable
+fun JoinTeamScreenNightPreview() {
     WorxTheme {
         JoinTeamScreen(Session(LocalContext.current), {})
     }
