@@ -35,6 +35,7 @@ import androidx.compose.ui.unit.dp
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import id.worx.device.client.screen.main.SettingTheme
 import id.worx.device.client.screen.welcome.WelcomeEvent
+import id.worx.device.client.theme.PrimaryMain
 import id.worx.device.client.theme.WorxCustomColorsPalette
 import id.worx.device.client.theme.Typography
 
@@ -106,28 +107,23 @@ fun ActionRedButton(
     actionClick: () -> Unit
 ) {
     Row(
-        modifier = modifier
-            .clip(shape = RoundedCornerShape(4.dp))
-            .background(
-                if (theme == SettingTheme.Dark)
-                    Color.White else MaterialTheme.colors.background.copy(
-                    alpha = 0.1f
-                )
-            )
-            .clickable { actionClick() }
-            .padding(8.dp),
+        modifier = modifier.clickable { actionClick() },
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
         Icon(
+            modifier = Modifier
+                .clip(RoundedCornerShape(2.dp))
+                .background(WorxCustomColorsPalette.current.textFieldFocusedLabel)
+                .padding(8.dp),
             painter = painterResource(id = iconRes),
             contentDescription = "Icon",
-            tint = MaterialTheme.colors.onBackground
+            tint = Color.White,
         )
         Text(
             modifier = Modifier.padding(start = 8.dp, end = 1.dp),
             text = title,
-            style = Typography.body2.copy(MaterialTheme.colors.onBackground),
+            style = Typography.body2.copy(WorxCustomColorsPalette.current.textFieldFocusedLabel),
         )
     }
 }
