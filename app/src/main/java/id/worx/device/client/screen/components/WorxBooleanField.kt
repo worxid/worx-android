@@ -19,6 +19,7 @@ import id.worx.device.client.data.database.Session
 import id.worx.device.client.model.fieldmodel.BooleanField
 import id.worx.device.client.model.fieldmodel.BooleanValue
 import id.worx.device.client.theme.Typography
+import id.worx.device.client.theme.WorxCustomColorsPalette
 import id.worx.device.client.viewmodel.DetailFormViewModel
 import id.worx.device.client.viewmodel.EventStatus
 
@@ -82,7 +83,7 @@ fun WorxBooleanField(
                         },
                         colors = RadioButtonDefaults.colors(
                             selectedColor = MaterialTheme.colors.onBackground,
-                            unselectedColor = MaterialTheme.colors.onSecondary
+                            unselectedColor = WorxCustomColorsPalette.current.optionBorder,
                         ),
                         modifier = Modifier.padding(start = 4.dp)
                     )
@@ -129,7 +130,7 @@ fun WorxBooleanField(
                         },
                         colors = RadioButtonDefaults.colors(
                             selectedColor = MaterialTheme.colors.onBackground,
-                            unselectedColor = MaterialTheme.colors.onSecondary
+                            unselectedColor = WorxCustomColorsPalette.current.optionBorder,
                         ),
                         modifier = Modifier.padding(start = 4.dp)
                     )
