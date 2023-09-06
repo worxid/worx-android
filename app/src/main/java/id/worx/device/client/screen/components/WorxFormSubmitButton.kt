@@ -10,7 +10,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.Icon
-import androidx.compose.material.MaterialTheme
 import androidx.compose.material.OutlinedButton
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
@@ -23,9 +22,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
-import id.worx.device.client.screen.main.SettingTheme
-import id.worx.device.client.theme.RedDarkButton
 import id.worx.device.client.theme.Typography
+import id.worx.device.client.theme.WorxCustomColorsPalette
 import id.worx.device.client.theme.WorxTheme
 
 /**
@@ -70,13 +68,12 @@ fun WorxFormSubmitButton(
                     bottom.linkTo(parent.bottom, 2.dp)
                 },
             colors = ButtonDefaults.buttonColors(
-//                backgroundColor = if (theme == SettingTheme.Dark || theme == SettingTheme.System) RedDarkButton else MaterialTheme.colors.primary,
-                backgroundColor = MaterialTheme.colors.primary,
+                backgroundColor = WorxCustomColorsPalette.current.button,
                 contentColor = Color.White
             ),
             border = BorderStroke(
                 1.5.dp,
-                color = MaterialTheme.colors.onSecondary
+                color = Color.Black
             ),
             shape = RoundedCornerShape(1),
             contentPadding = PaddingValues(vertical = 14.dp),
