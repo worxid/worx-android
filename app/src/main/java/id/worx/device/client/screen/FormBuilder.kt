@@ -2,10 +2,10 @@ package id.worx.device.client.screen
 
 import android.util.Log
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -282,6 +282,8 @@ fun DetailForm(
         }
 
         if (detailForm is EmptyForm || (detailForm is SubmitForm && detailForm.status == 0)) {
+            submitLabel = if (listState.isScrollingUp()) submitText else ""
+
             WorxFormSubmitButton(
                 onClickCallback = { showSubmitDialog() },
                 label = submitLabel,
@@ -532,6 +534,24 @@ fun DialogDraftForm(
         },
         onDismissRequest = {}
     )
+}
+
+@Composable
+private fun LazyListState.isScrollingUp(): Boolean {
+    var previousIndex by remember(this) { mutableStateOf(firstVisibleItemIndex) }
+    var previousScrollOffset by remember(this) { mutableStateOf(firstVisibleItemScrollOffset) }
+    return remember(this) {
+        derivedStateOf {
+            if (previousIndex != firstVisibleItemIndex) {
+                previousIndex > firstVisibleItemIndex
+            } else {
+                previousScrollOffset >= firstVisibleItemScrollOffset
+            }.also {
+                previousIndex = firstVisibleItemIndex
+                previousScrollOffset = firstVisibleItemScrollOffset
+            }
+        }
+    }.value
 }
 
 @Preview(name = "PreviewDetailForm", showSystemUi = true)
