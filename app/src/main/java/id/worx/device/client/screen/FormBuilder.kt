@@ -41,6 +41,7 @@ import id.worx.device.client.screen.components.*
 import id.worx.device.client.theme.GrayDivider
 import id.worx.device.client.theme.PrimaryMainGreen
 import id.worx.device.client.theme.Typography
+import id.worx.device.client.theme.WorxCustomColorsPalette
 import id.worx.device.client.theme.WorxTheme
 import id.worx.device.client.viewmodel.CameraViewModel
 import id.worx.device.client.viewmodel.DetailFormViewModel
@@ -356,7 +357,7 @@ fun DialogSubmitForm(
 
                 Text(
                     text = "Submit Form",
-                    style = Typography.body2.copy(Color.Black.copy(0.87f)),
+                    style = Typography.body2.copy(WorxCustomColorsPalette.current.textFieldColor),
                     fontWeight = FontWeight.Bold,
                     textAlign = TextAlign.Center,
                     modifier = Modifier.constrainAs(title) {
@@ -403,7 +404,7 @@ fun DialogSubmitForm(
 
                 Text(
                     text = "$fieldFilled of $fieldTotal field answered",
-                    style = Typography.body2.copy(Color.Black.copy(0.87f)),
+                    style = Typography.body2.copy(WorxCustomColorsPalette.current.textFieldColor),
                     modifier = Modifier.constrainAs(description) {
                         top.linkTo(icon.bottom, 16.dp)
                         start.linkTo(title.start)
@@ -412,6 +413,7 @@ fun DialogSubmitForm(
                 )
 
                 Divider(
+                    color = WorxCustomColorsPalette.current.divider,
                     modifier = Modifier.constrainAs(divider1) {
                         top.linkTo(description.bottom, 24.dp)
                         start.linkTo(parent.start)
@@ -421,7 +423,7 @@ fun DialogSubmitForm(
 
                 Text(
                     text = "Submit",
-                    style = Typography.body2.copy(MaterialTheme.colors.primary),
+                    style = Typography.body2.copy(WorxCustomColorsPalette.current.textFieldFocusedLabel),
                     modifier = Modifier
                         .clickable { submitForm() }
                         .constrainAs(submit) {
@@ -432,6 +434,7 @@ fun DialogSubmitForm(
                 )
 
                 Divider(
+                    color = WorxCustomColorsPalette.current.divider,
                     modifier = Modifier.constrainAs(divider2) {
                         top.linkTo(submit.bottom, 16.dp)
                         start.linkTo(parent.start)
@@ -441,7 +444,7 @@ fun DialogSubmitForm(
 
                 Text(
                     text = "Save Draft",
-                    style = Typography.body2.copy(MaterialTheme.colors.onSecondary.copy(0.54f)),
+                    style = Typography.body2.copy(WorxCustomColorsPalette.current.textFieldUnfocusedLabel),
                     modifier = Modifier
                         .clickable { saveDraftForm() }
                         .constrainAs(saveDraft) {
@@ -452,6 +455,7 @@ fun DialogSubmitForm(
                 )
 
                 Divider(
+                    color = WorxCustomColorsPalette.current.divider,
                     modifier = Modifier.constrainAs(divider3) {
                         top.linkTo(saveDraft.bottom, 16.dp)
                         start.linkTo(parent.start)
@@ -461,7 +465,7 @@ fun DialogSubmitForm(
 
                 Text(
                     text = "Cancel",
-                    style = Typography.body2.copy(MaterialTheme.colors.onSecondary.copy(0.54f)),
+                    style = Typography.body2.copy(WorxCustomColorsPalette.current.textFieldUnfocusedLabel),
                     modifier = Modifier
                         .clickable { onCancel() }
                         .constrainAs(cancel) {
