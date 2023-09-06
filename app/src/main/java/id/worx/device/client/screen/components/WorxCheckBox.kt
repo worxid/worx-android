@@ -14,6 +14,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import id.worx.device.client.data.database.Session
 import id.worx.device.client.model.fieldmodel.CheckBoxField
@@ -106,7 +107,7 @@ fun WorxCheckBox(
                         },
                         colors = CheckboxDefaults.colors(
                             checkedColor = MaterialTheme.colors.onBackground,
-                            checkmarkColor = MaterialTheme.colors.secondary,
+                            checkmarkColor = Color.White,
                             uncheckedColor = MaterialTheme.colors.onSecondary
                         ),
                         modifier = Modifier.padding(start = 4.dp)
