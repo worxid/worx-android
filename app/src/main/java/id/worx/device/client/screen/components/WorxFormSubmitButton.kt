@@ -107,11 +107,11 @@ fun WorxFormSubmitButton(
                     modifier = Modifier
                         .animateContentSize()
                         .constrainAs(text) {
-                        top.linkTo(parent.top)
-                        bottom.linkTo(parent.bottom)
-                        end.linkTo(parent.end)
-                        start.linkTo(logo.end, 8.dp)
-                    }
+                            top.linkTo(parent.top)
+                            bottom.linkTo(parent.bottom)
+                            end.linkTo(parent.end)
+                            start.linkTo(logo.end, if (label.isEmpty()) 0.dp else 8.dp)
+                        }
                 )
             }
         }
