@@ -273,8 +273,10 @@ fun DetailForm(
                                 text = "Unknown component ${item.type}",
                                 style = Typography.body1.copy(color = Color.Black)
                             )
-                            Divider(color = GrayDivider,
-                                modifier = Modifier.padding(vertical = 16.dp))
+                            Divider(
+                                color = WorxCustomColorsPalette.current.divider,
+                                modifier = Modifier.padding(vertical = 16.dp)
+                            )
                         }
                     }
                 }
