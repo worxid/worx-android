@@ -109,7 +109,9 @@ val WorxDarkColorsPalette = WorxColorsPalette(
     bottomSheetBackground = CapeCod,
     bottomSheetDragHandle = Abbey,
     homeBackground = Shark2,
-    bottomNavigationBorder = Abbey2
+    bottomNavigationBorder = Abbey2,
+    draftLinearProgressIndicator = DoveGray,
+    draftCompletedLinearProgressIndicator = PrimaryMainGreen
 )
 
 val WorxCustomColorsPalette = compositionLocalOf { WorxColorsPalette() }

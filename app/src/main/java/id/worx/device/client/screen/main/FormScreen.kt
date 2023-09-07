@@ -59,7 +59,6 @@ import id.worx.device.client.R
 import id.worx.device.client.Util.initProgress
 import id.worx.device.client.Util.isNetworkAvailable
 import id.worx.device.client.model.BasicForm
-import id.worx.device.client.model.DraftForm
 import id.worx.device.client.model.FormSortModel
 import id.worx.device.client.model.FormSortOrderBy
 import id.worx.device.client.model.SubmitForm
@@ -118,7 +117,7 @@ fun FormScreen(
                         })
 
                         1 -> items(items = data, itemContent = { item ->
-                            DraftWrapper(item as DraftForm, viewModel, detailFormViewModel)
+                            DraftWrapper(item as SubmitForm, viewModel, detailFormViewModel)
                         })
 
                         2 -> items(items = data, itemContent = { item ->
@@ -265,7 +264,7 @@ fun ListItemValidForm(
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun DraftWrapper(
-    item: DraftForm,
+    item: SubmitForm,
     viewModel: HomeViewModelImpl,
     detailFormViewModel: DetailFormViewModel
 ) {
@@ -279,6 +278,7 @@ fun DraftWrapper(
                     draftForm = item,
                     draftDescription = it
                 )
+                showDuplicateDialog = false
             }
         ) {
             showDuplicateDialog = false
@@ -307,8 +307,6 @@ fun DraftWrapper(
         leftSwipeCard = {
             Column(
                 modifier = Modifier
-                    .width(96.dp)
-                    .fillMaxHeight()
                     .clip(RoundedCornerShape(4.dp))
                     .background(PrimaryMain),
                 horizontalAlignment = Alignment.CenterHorizontally,
@@ -316,7 +314,7 @@ fun DraftWrapper(
             ) {
                 Icon(
                     painter = painterResource(id = R.drawable.ic_delete),
-                    contentDescription = stringResource(R.string.text_duplicate),
+                    contentDescription = stringResource(R.string.text_delete),
                     tint = MaterialTheme.colors.onPrimary
                 )
                 Spacer(modifier = Modifier.height(4.dp))
@@ -330,9 +328,7 @@ fun DraftWrapper(
         rightSwipeCard = {
             Column(
                 modifier = Modifier
-                    .width(96.dp)
                     .clip(RoundedCornerShape(4.dp))
-                    .fillMaxHeight()
                     .background(PrimaryMainBlue),
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.Center
@@ -361,7 +357,7 @@ fun DraftWrapper(
 
 @Composable
 fun DraftItemForm(
-    item: DraftForm,
+    item: SubmitForm,
     viewModel: HomeViewModelImpl,
     detailFormViewModel: DetailFormViewModel
 ) {
@@ -400,7 +396,7 @@ fun DraftItemForm(
                     Text(
                         text = "Draft",
                         style = Typography.body1,
-                        color = PrimaryMain
+                        color = WorxCustomColorsPalette.current.iconBackground
                     )
                 }
                 Spacer(modifier = Modifier.height(2.dp))
@@ -426,7 +422,8 @@ fun DraftItemForm(
             Icon(
                 imageVector = if (isExpanded) Icons.Outlined.ArrowBackIosNew else Icons.Outlined.KeyboardArrowDown,
                 contentDescription = null,
-                modifier = Modifier.clickable { isExpanded = !isExpanded }
+                modifier = Modifier.clickable { isExpanded = !isExpanded },
+                tint = MaterialTheme.colors.onSecondary.copy(alpha = 0.54f)
             )
         }
         Box(

@@ -9,7 +9,11 @@ import android.util.Log
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.mutableStateOf
-import androidx.lifecycle.*
+import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import id.worx.device.client.Event
 import id.worx.device.client.MainScreen
@@ -19,8 +23,17 @@ import id.worx.device.client.Util.initProgress
 import id.worx.device.client.WorxApplication
 import id.worx.device.client.data.api.SyncServer
 import id.worx.device.client.data.database.Session
-import id.worx.device.client.model.*
-import id.worx.device.client.model.fieldmodel.*
+import id.worx.device.client.model.BasicForm
+import id.worx.device.client.model.SubmitForm
+import id.worx.device.client.model.SubmitLocation
+import id.worx.device.client.model.Type
+import id.worx.device.client.model.Value
+import id.worx.device.client.model.fieldmodel.CheckBoxField
+import id.worx.device.client.model.fieldmodel.CheckBoxValue
+import id.worx.device.client.model.fieldmodel.FileValue
+import id.worx.device.client.model.fieldmodel.ImageValue
+import id.worx.device.client.model.fieldmodel.SignatureValue
+import id.worx.device.client.model.fieldmodel.SketchValue
 import id.worx.device.client.repository.SourceDataRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -30,8 +43,9 @@ import kotlinx.coroutines.withContext
 import net.gotev.uploadservice.protocols.binary.BinaryUploadRequest
 import java.io.File
 import java.io.FileOutputStream
-import java.util.*
+import java.util.Locale
 import javax.inject.Inject
+import kotlin.collections.set
 
 enum class EventStatus {
     Loading, Filling, Submitted, Done, Saved
@@ -90,12 +104,6 @@ class DetailFormViewModel @Inject constructor(
                     if (form.status == 2 || form.status == 1) {
                         status = EventStatus.Done
                     }
-                    it.copy(detailForm = form, values = form.values.toMutableMap(), status = status)
-                }
-
-                is DraftForm -> {
-                    _formProgress.value = initProgress(form.values.toMutableMap(), form.fields)
-                    val status = EventStatus.Filling
                     it.copy(detailForm = form, values = form.values.toMutableMap(), status = status)
                 }
 
@@ -320,7 +328,13 @@ class DetailFormViewModel @Inject constructor(
             } else {
                 dataSourceRepo.insertOrUpdateSubmitForm(form.copy(status = 1)) //insertSubmission to db
             }
-            form.dbId?.let { dbId -> dataSourceRepo.deleteSubmitFormById(dbId) } // if it is draft delete from DB
+            if (uiState.value.detailForm is SubmitForm) {
+                (uiState.value.detailForm as SubmitForm).dbId?.let { dbId ->
+                    dataSourceRepo.deleteSubmitFormById(
+                        dbId
+                    )
+                } // if it is draft delete from DB
+            }
             _formProgress.value = 0
             uiState.update {
                 it.copy(
@@ -369,12 +383,15 @@ class DetailFormViewModel @Inject constructor(
 
     fun saveFormAsDraft(draftDescription: String, actionAfterSaved: () -> Unit) {
         viewModelScope.launch {
-            val currentForm = uiState.value.detailForm
-            var draftForm = createDraftForm(draftDescription)
-            if (currentForm is DraftForm) {
-                draftForm = draftForm.copy(dbId = (uiState.value.detailForm as DraftForm).dbId)
+            if (uiState.value.detailForm is SubmitForm) {
+                (uiState.value.detailForm as SubmitForm).dbId?.let { dbId ->
+                    dataSourceRepo.deleteSubmitFormById(
+                        dbId
+                    )
+                }
             }
-            dataSourceRepo.insertDraft(draftForm)
+            val form = createSubmitForm(draftDescription)
+            dataSourceRepo.insertOrUpdateSubmitForm(form.copy(status = 0))
             actionAfterSaved()
             _formProgress.value = 0
 
@@ -391,20 +408,18 @@ class DetailFormViewModel @Inject constructor(
         }
     }
 
-    fun deleteDraft(draftForm: DraftForm) {
-        viewModelScope.launch {
-            withContext(Dispatchers.IO) {
-                draftForm.dbId?.let {
-                    dataSourceRepo.deleteDraft(it)
-                }
+    fun deleteDraft(draftForm: SubmitForm) {
+        viewModelScope.launch(Dispatchers.IO) {
+            draftForm.dbId?.let {
+                dataSourceRepo.deleteSubmitFormById(it)
             }
         }
     }
 
-    fun duplicateDraft(draftForm: DraftForm, draftDescription: String) {
+    fun duplicateDraft(draftForm: SubmitForm, draftDescription: String) {
         viewModelScope.launch {
             val newDraftForm = createDraftForm(draftForm, draftDescription)
-            dataSourceRepo.insertDraft(newDraftForm)
+            dataSourceRepo.insertOrUpdateSubmitForm(newDraftForm)
             _formProgress.value = 0
 
             uiState.update {
@@ -417,11 +432,10 @@ class DetailFormViewModel @Inject constructor(
             }
             _formProgress.value = 0
             _navigateTo.value = Event(MainScreen.Home)
-
         }
     }
 
-    private fun createDraftForm(draftDescription: String = ""): DraftForm {
+    private fun createDraftForm(draftForm: SubmitForm, draftDescription: String = ""): SubmitForm {
         val latitude = session.latitude ?: "0.0010"
         val longitude = session.longitude ?: "-109.3222"
         val geocoder = Geocoder(application.applicationContext, Locale.getDefault())
@@ -436,34 +450,8 @@ class DetailFormViewModel @Inject constructor(
             longitude.toDouble()
         )
 
-        return DraftForm(
-            label = uiState.value.detailForm!!.label,
-            description = draftDescription.ifBlank { uiState.value.detailForm!!.description },
-            fields = uiState.value.detailForm!!.fields,
-            values = uiState.value.values,
-            templateId = uiState.value.detailForm!!.id,
-            lastUpdated = getCurrentDate("dd/MM/yyyy hh:mm a"),
-            submitLocation = submitLocation,
-            status = 0
-        )
-    }
-
-    private fun createDraftForm(draftForm: DraftForm, draftDescription: String = ""): DraftForm {
-        val latitude = session.latitude ?: "0.0010"
-        val longitude = session.longitude ?: "-109.3222"
-        val geocoder = Geocoder(application.applicationContext, Locale.getDefault())
-        val address = geocoder.getFromLocation(
-            latitude.toDouble(),
-            longitude.toDouble(),
-            1
-        )?.get(0) ?: Address(Locale.getDefault())
-        val submitLocation = SubmitLocation(
-            address.getAddressLine(0),
-            latitude.toDouble(),
-            longitude.toDouble()
-        )
-
-        return DraftForm(
+        return SubmitForm(
+            id = draftForm.id,
             label = draftForm.label,
             description = draftDescription.ifBlank { draftForm.description },
             fields = draftForm.fields,

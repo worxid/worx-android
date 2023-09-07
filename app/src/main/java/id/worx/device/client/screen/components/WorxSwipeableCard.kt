@@ -5,6 +5,7 @@ import androidx.compose.animation.core.tween
 import androidx.compose.foundation.gestures.Orientation
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.offset
+import androidx.compose.foundation.layout.width
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.FractionalThreshold
 import androidx.compose.material.Surface
@@ -12,18 +13,19 @@ import androidx.compose.material.ThresholdConfig
 import androidx.compose.material.rememberSwipeableState
 import androidx.compose.material.swipeable
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalConfiguration
-import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
+import id.worx.device.client.util.dpToPx
 import kotlinx.coroutines.launch
 import kotlin.math.roundToInt
 
@@ -33,7 +35,7 @@ enum class SwipeCardState {
     RIGHT
 }
 
-private const val MAXIMUM_DISTANCE = 90
+private const val SWIPE_THRESHOLD = 76
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
@@ -47,7 +49,7 @@ fun WorxSwipeableCard(
     animationSpec: AnimationSpec<Float> = tween(250),
     thresholds: (from: SwipeCardState, to: SwipeCardState) -> ThresholdConfig = { _, _ ->
         FractionalThreshold(
-            0.2f
+            0.6f
         )
     },
     velocityThreshold: Dp = 125.dp
@@ -60,35 +62,34 @@ fun WorxSwipeableCard(
         )
         val coroutineScope = rememberCoroutineScope()
 
-        val swipeLeftCardVisible = remember { mutableStateOf(false) }
+        var swipeLeftCardVisible by remember { mutableStateOf(false) }
 
-        val swipeEnabled = remember { mutableStateOf(true) }
+        var swipeEnabled by remember { mutableStateOf(true) }
 
-        val maxWidthInPx = with(LocalDensity.current) {
-            LocalConfiguration.current.screenWidthDp.dp.toPx()
-        }
+        val maxDistance = SWIPE_THRESHOLD.dp.dpToPx()
 
         val anchors = hashMapOf(0f to SwipeCardState.DEFAULT)
         if (leftSwipeCard != null)
-            anchors[-maxWidthInPx] = SwipeCardState.LEFT
+            anchors[-maxDistance] = SwipeCardState.LEFT
 
         if (rightSwipeCard != null)
-            anchors[maxWidthInPx] = SwipeCardState.RIGHT
+            anchors[maxDistance] = SwipeCardState.RIGHT
 
         Surface(
             color = Color.Transparent,
-            content = if (swipeLeftCardVisible.value) {
+            content = if (swipeLeftCardVisible) {
                 leftSwipeCard
             } else {
                 rightSwipeCard
             } ?: {},
             modifier = Modifier
+                .width(96.dp)
                 .constrainAs(actionCardRef) {
                     top.linkTo(mainCardRef.top)
-                    if (swipeLeftCardVisible.value) {
-                        end.linkTo(mainCardRef.end)
+                    if (swipeLeftCardVisible) {
+                        end.linkTo(parent.end)
                     } else {
-                        start.linkTo(mainCardRef.start)
+                        start.linkTo(parent.start)
                     }
                     bottom.linkTo(mainCardRef.bottom)
                     height = Dimension.fillToConstraints
@@ -100,11 +101,7 @@ fun WorxSwipeableCard(
             modifier = Modifier
                 .fillMaxWidth()
                 .offset {
-                    val tempOffset = swipeableState.offset.value.roundToInt()
-                    val swipeToRight = tempOffset > 0
-                    var offset =
-                        if (swipeToRight) tempOffset.coerceAtMost(MAXIMUM_DISTANCE.dp.roundToPx())
-                        else tempOffset.coerceAtLeast(-MAXIMUM_DISTANCE.dp.roundToPx())
+                    var offset = swipeableState.offset.value.roundToInt()
                     if (offset < 0 && leftSwipeCard == null) offset = 0
                     if (offset > 0 && rightSwipeCard == null) offset = 0
                     IntOffset(offset, 0)
@@ -113,32 +110,32 @@ fun WorxSwipeableCard(
                     state = swipeableState,
                     anchors = anchors,
                     orientation = Orientation.Horizontal,
-                    enabled = swipeEnabled.value,
+                    enabled = swipeEnabled,
                     thresholds = thresholds,
                     velocityThreshold = velocityThreshold
                 )
                 .constrainAs(mainCardRef) {
                     top.linkTo(parent.top)
                     bottom.linkTo(parent.bottom)
-                }) {
-
+                }
+        ) {
             if (swipeableState.currentValue == SwipeCardState.LEFT && !swipeableState.isAnimationRunning) {
                 leftSwiped?.invoke()
                 coroutineScope.launch {
-                    swipeEnabled.value = false
+                    swipeEnabled = false
                     swipeableState.animateTo(SwipeCardState.DEFAULT)
-                    swipeEnabled.value = true
+                    swipeEnabled = true
                 }
             } else if (swipeableState.currentValue == SwipeCardState.RIGHT && !swipeableState.isAnimationRunning) {
                 rightSwiped?.invoke()
                 coroutineScope.launch {
-                    swipeEnabled.value = false
+                    swipeEnabled = false
                     swipeableState.animateTo(SwipeCardState.DEFAULT)
-                    swipeEnabled.value = true
+                    swipeEnabled = true
                 }
             }
 
-            swipeLeftCardVisible.value = swipeableState.offset.value <= 0
+            swipeLeftCardVisible = swipeableState.offset.value <= 0
 
             mainCard()
         }

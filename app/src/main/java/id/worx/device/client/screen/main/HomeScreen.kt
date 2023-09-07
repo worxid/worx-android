@@ -41,7 +41,6 @@ import com.google.accompanist.pager.rememberPagerState
 import id.worx.device.client.R
 import id.worx.device.client.Util
 import id.worx.device.client.data.database.Session
-import id.worx.device.client.model.DraftForm
 import id.worx.device.client.model.EmptyForm
 import id.worx.device.client.model.FormSortModel
 import id.worx.device.client.model.SubmitForm
@@ -77,7 +76,7 @@ sealed class BottomNavItem(var title: Int, var icon: Int, var selectedIcon: Int)
 @Composable
 fun HomeScreen(
     formList: List<EmptyForm>,
-    draftList: List<DraftForm>,
+    draftList: List<SubmitForm>,
     submissionList: List<SubmitForm>,
     viewModel: HomeViewModelImpl,
     detailVM: DetailFormViewModel,

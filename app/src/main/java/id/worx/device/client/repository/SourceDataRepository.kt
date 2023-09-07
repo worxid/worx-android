@@ -2,10 +2,8 @@ package id.worx.device.client.repository
 
 import androidx.sqlite.db.SimpleSQLiteQuery
 import id.worx.device.client.data.api.WorxApi
-import id.worx.device.client.data.dao.DraftDAO
 import id.worx.device.client.data.dao.FormDAO
 import id.worx.device.client.data.dao.SubmitFormDAO
-import id.worx.device.client.model.DraftForm
 import id.worx.device.client.model.EmptyForm
 import id.worx.device.client.model.FormSortModel
 import id.worx.device.client.model.ListFormResponse
@@ -23,7 +21,6 @@ class SourceDataRepository @Inject constructor(
     private val retrofitService: WorxApi,
     private val dao: FormDAO,
     private val submitFormDAO: SubmitFormDAO,
-    private val draftFormDAO: DraftDAO
 ) {
 
     companion object {
@@ -46,10 +43,10 @@ class SourceDataRepository @Inject constructor(
         return dao.getSortedAllForms(query)
     }
 
-    fun getAllDraftForm(formSortModel: FormSortModel): Flow<List<DraftForm>> {
-        val rawQuery = "SELECT * FROM draft_form WHERE status = 0 ORDER BY ${formSortModel.getSortQuery()}"
+    fun getAllDraftForm(formSortModel: FormSortModel): Flow<List<SubmitForm>> {
+        val rawQuery = "SELECT * FROM submit_form WHERE status = 0 ORDER BY ${formSortModel.getSortQuery()}"
         val query = SimpleSQLiteQuery(rawQuery)
-        return draftFormDAO.getSortedDraftForms(query)
+        return submitFormDAO.getSubmitForm(query)
     }
 
     fun getAllSubmission(formSortModel: FormSortModel): Flow<List<SubmitForm>> {
@@ -79,23 +76,19 @@ class SourceDataRepository @Inject constructor(
     suspend fun addSubmissionFromApiToDb(list: List<SubmitForm>) =
         submitFormDAO.addSubmissionFromApi(list)
 
-    suspend fun getEmptyFormByID (id:Int) : EmptyForm? {
+    suspend fun getEmptyFormByID(id: Int): EmptyForm? {
         val list = dao.loadFormById(id)
-        if (list.isNotEmpty()){
+        if (list.isNotEmpty()) {
             return list[0]
         }
         return null
     }
 
-    suspend fun getSubmissionById(id: Int) : SubmitForm? {
+    suspend fun getSubmissionById(id: Int): SubmitForm? {
         val list = submitFormDAO.loadSubmitFormById(id)
-        if (list.isNotEmpty()){
+        if (list.isNotEmpty()) {
             return list[0]
         }
         return null
     }
-
-    suspend fun insertDraft(draftForm: DraftForm) = draftFormDAO.insertOrUpdateForm(draftForm)
-
-    suspend fun deleteDraft(draftId: Int) = draftFormDAO.deleteDraftForm(draftId)
 }

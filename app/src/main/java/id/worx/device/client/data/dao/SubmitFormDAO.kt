@@ -10,6 +10,9 @@ interface SubmitFormDAO {
     @RawQuery(observedEntities = [SubmitForm::class])
     fun getSubmitForm(query: SupportSQLiteQuery): Flow<List<SubmitForm>>
 
+    @Query("SELECT * FROM submit_form WHERE status = 0")
+    fun getAllDraft(): Flow<List<SubmitForm>>
+
     @Query("SELECT * FROM submit_form WHERE status = 1")
     fun getAllUnsubmitted(): Flow<List<SubmitForm>>
 

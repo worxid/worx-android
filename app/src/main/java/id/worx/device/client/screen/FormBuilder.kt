@@ -26,7 +26,6 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import id.worx.device.client.MainScreen
 import id.worx.device.client.R
 import id.worx.device.client.data.database.Session
-import id.worx.device.client.model.DraftForm
 import id.worx.device.client.model.EmptyForm
 import id.worx.device.client.model.Fields
 import id.worx.device.client.model.SubmitForm
@@ -280,7 +279,7 @@ fun DetailForm(
             }
         }
 
-        if (detailForm is EmptyForm || detailForm is DraftForm) {
+        if (detailForm is EmptyForm || (detailForm is SubmitForm && detailForm.status == 0)) {
             RedFullWidthButton(
                 onClickCallback = { showSubmitDialog() },
                 label = "Submit",

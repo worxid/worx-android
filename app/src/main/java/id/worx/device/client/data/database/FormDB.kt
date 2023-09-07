@@ -9,7 +9,7 @@ import id.worx.device.client.data.dao.FormDAO
 import id.worx.device.client.model.EmptyForm
 
 
-@Database(entities = [EmptyForm::class], version = 5, exportSchema = true)
+@Database(entities = [EmptyForm::class], version = 4, exportSchema = true)
 @TypeConverters(SubmitFormTypeConverter::class)
 abstract class FormDB : RoomDatabase() {
 

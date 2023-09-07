@@ -21,7 +21,6 @@ import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.rememberPagerState
 import id.worx.device.client.R
 import id.worx.device.client.data.database.Session
-import id.worx.device.client.model.DraftForm
 import id.worx.device.client.model.EmptyForm
 import id.worx.device.client.model.FormSortModel
 import id.worx.device.client.model.SubmitForm
@@ -42,7 +41,7 @@ val tabItems = listOf(
 @Composable
 fun SearchScreen(
     formList: List<EmptyForm>,
-    draftList: List<DraftForm>,
+    draftList: List<SubmitForm>,
     submissionList: List<SubmitForm>,
     viewModel: HomeViewModelImpl,
     detailVM: DetailFormViewModel,

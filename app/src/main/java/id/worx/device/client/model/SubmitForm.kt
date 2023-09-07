@@ -23,25 +23,6 @@ data class SubmitForm(
     var status: Int = 2, //0 -> Draft, 1 -> Finish not submitted yet, 2 -> Submitted
 ) : BasicForm
 
-@Entity(tableName = "draft_form")
-data class DraftForm(
-    @PrimaryKey(autoGenerate = true) var dbId: Int? = null,
-    @SerializedName("id") override var id: Int? = null,
-    @SerializedName("label") override var label: String? = null,
-    @SerializedName("description") override var description: String? = null,
-    @SerializedName("fields") override var fields: ArrayList<Fields> = arrayListOf(),
-    @SerializedName("values") var values: Map<String, Value> = mapOf(),
-    @SerializedName("source") var source: Source? = Source(),
-    @SerializedName("attachments") var attachments : ArrayList<Attachment>? = arrayListOf(),
-    @SerializedName("template_id") var templateId: Int? = 0,
-    @SerializedName("submit_in_zone") override var submitInZone: Boolean? = true,
-    @SerializedName("submit_location") var submitLocation: SubmitLocation? = SubmitLocation(),
-    @SerializedName("created_on"     ) override var created      : String?           = null,
-    @SerializedName("modified_on"    ) override var lastUpdated     : String?           = null,
-    @SerializedName("submit_date"    ) var submitDate     : String?           = null,
-    var status: Int = 2, //0 -> Draft, 1 -> Finish not submitted yet, 2 -> Submitted
-) : BasicForm
-
 interface Value{
     var type      : String?
 }
