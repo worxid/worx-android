@@ -21,6 +21,7 @@ import androidx.compose.ui.unit.dp
 import id.worx.device.client.data.database.Session
 import id.worx.device.client.model.IntegerValue
 import id.worx.device.client.theme.Typography
+import id.worx.device.client.theme.WorxCustomColorsPalette
 import id.worx.device.client.theme.fontRoboto
 import id.worx.device.client.viewmodel.DetailFormViewModel
 import id.worx.device.client.viewmodel.EventStatus
@@ -55,7 +56,9 @@ fun WorxIntegerField(
                 .padding(horizontal = 16.dp),
             enabled = !arrayListOf(EventStatus.Done, EventStatus.Submitted).contains(formStatus),
             colors = TextFieldDefaults.textFieldColors(
-                backgroundColor = Color.Black.copy(0.06f)
+                backgroundColor = WorxCustomColorsPalette.current.homeBackground,
+                unfocusedIndicatorColor = WorxCustomColorsPalette.current.textFieldUnfocusedIndicator,
+                focusedIndicatorColor = WorxCustomColorsPalette.current.textFieldFocusedIndicator
             ),
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
             textStyle = if (value.value.isNullOrEmpty()) {
