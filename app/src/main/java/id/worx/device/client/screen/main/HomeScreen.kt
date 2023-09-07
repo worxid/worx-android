@@ -150,7 +150,6 @@ fun HomeScreen(
                             detailVM,
                             stringResource(R.string.no_forms),
                             stringResource(R.string.empty_description_form),
-                            session = session,
                             selectedSort = selectedSort,
                             openSortBottomSheet = openSortBottomSheet,
                             syncWithServer
@@ -163,7 +162,6 @@ fun HomeScreen(
                             detailVM,
                             stringResource(R.string.no_drafts),
                             stringResource(R.string.empty_description_drafts),
-                            session = session,
                             selectedSort = selectedSort,
                             openSortBottomSheet = openSortBottomSheet,
                             syncWithServer
@@ -176,7 +174,6 @@ fun HomeScreen(
                             detailVM,
                             stringResource(R.string.no_submission),
                             stringResource(R.string.empty_description_submission),
-                            session = session,
                             selectedSort = selectedSort,
                             openSortBottomSheet = openSortBottomSheet,
                             syncWithServer

@@ -54,7 +54,6 @@ fun ValidFormBuilder(
     var showDraftDialog by remember { mutableStateOf(false) }
     var validation by remember { mutableStateOf(false) }
     var isValid by remember { mutableStateOf(false) }
-    val theme = session.theme
     val scope = rememberCoroutineScope()
     val state = rememberModalBottomSheetState(
         initialValue = ModalBottomSheetValue.Hidden,
@@ -99,9 +98,11 @@ fun ValidFormBuilder(
         }
         if (showDraftDialog) {
             DialogDraftForm(
-                theme = theme,
-                { onEvent(DetailFormEvent.SaveDraft) },
-                { showDraftDialog = false })
+                saveDraft = { draftDescription ->
+                    onEvent(DetailFormEvent.SaveDraft(draftDescription))
+                },
+                closeDialog = { showDraftDialog = false }
+            )
         }
     }
 }
@@ -116,7 +117,6 @@ fun DetailForm(
     validation: Boolean,
     showSubmitDialog: () -> Unit,
 ) {
-    val theme = session.theme
     val listState = rememberLazyListState(viewModel.indexScroll.value, viewModel.offset.value)
     val formStatus = viewModel.uiState.collectAsState().value.status
     val detailForm = viewModel.uiState.collectAsState().value.detailForm
@@ -312,7 +312,6 @@ fun DialogSubmitForm(
         viewModel.uiState.collectAsState().value.detailForm?.fields?.size?.minus(
             it)
     }
-    val theme = session.theme
 
     ModalBottomSheetLayout(
         sheetState = state,
@@ -384,10 +383,10 @@ fun DialogSubmitForm(
 
 @Composable
 fun DialogDraftForm(
-    theme: String?,
-    saveDraft: () -> Unit,
+    saveDraft: (draftDescription: String) -> Unit,
     closeDialog: () -> Unit,
 ) {
+    var draftDescription by remember { mutableStateOf("") }
     Dialog(
         content = {
             Column(
@@ -404,14 +403,14 @@ fun DialogDraftForm(
                     style = Typography.button.copy(MaterialTheme.colors.onSecondary)
                 )
                 Text(
-                    text = "You can optionally add a description to the saved draft",
+                    text = stringResource(R.string.text_save_draft_desc),
                     style = Typography.body2.copy(MaterialTheme.colors.onSecondary.copy(0.54f))
                 )
                 WorxTextField(
                     label = "",
                     hint = stringResource(R.string.draft_descr),
                     inputType = KeyboardOptions(keyboardType = KeyboardType.Text),
-                    onValueChange = {},
+                    onValueChange = { draftDescription = it },
                     allowMultiline = false
                 )
                 Row(
@@ -425,7 +424,7 @@ fun DialogDraftForm(
                         modifier = Modifier.clickable { closeDialog() })
                     Text(text = "Save",
                         style = Typography.button.copy(MaterialTheme.colors.onBackground),
-                        modifier = Modifier.clickable { saveDraft() })
+                        modifier = Modifier.clickable { saveDraft(draftDescription.trim()) })
                 }
             }
         },
