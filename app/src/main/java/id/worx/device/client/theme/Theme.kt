@@ -99,7 +99,7 @@ val WorxLightColorsPalette = WorxColorsPalette(
 
 val WorxDarkColorsPalette = WorxColorsPalette(
     splashBackground = Splash,
-    textFieldContainer = MineShaft,
+    textFieldContainer = Shark2,
     textFieldUnfocusedLabel = DarkThemeColorsSystem.onSecondary.copy(alpha = 0.6f),
     textFieldColor = DarkThemeColorsSystem.onSecondary.copy(alpha = 0.87f),
     textFieldFocusedLabel = Cinnabar,

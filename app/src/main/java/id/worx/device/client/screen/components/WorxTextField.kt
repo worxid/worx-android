@@ -67,8 +67,9 @@ fun WorxTextField(
             colors = TextFieldDefaults.textFieldColors(
                 backgroundColor = WorxCustomColorsPalette.current.textFieldContainer,
                 focusedLabelColor = WorxCustomColorsPalette.current.textFieldFocusedLabel,
-                unfocusedLabelColor = WorxCustomColorsPalette.current.textFieldUnfocusedLabel,
                 focusedIndicatorColor = WorxCustomColorsPalette.current.textFieldFocusedIndicator,
+                unfocusedLabelColor = WorxCustomColorsPalette.current.textFieldUnfocusedLabel,
+                unfocusedIndicatorColor = WorxCustomColorsPalette.current.textFieldUnfocusedIndicator,
                 cursorColor = MaterialTheme.colors.onSecondary
             ),
             modifier = Modifier
@@ -124,7 +125,7 @@ fun WorxTextField(
                             .clickable {
                                 textValue = TextFieldValue("")
                             },
-                        tint = MaterialTheme.colors.onSecondary
+                        tint = WorxCustomColorsPalette.current.textFieldIcon
                     )
                 }
             }
