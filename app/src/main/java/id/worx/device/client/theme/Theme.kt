@@ -76,6 +76,7 @@ data class WorxColorsPalette(
     val optionBorder: Color = Color.Unspecified,
     val unselectedStar: Color = Color.Unspecified,
     val selectedStar: Color = Color.Unspecified,
+    val documentBackground: Color = Color.Unspecified,
 )
 
 val WorxLightColorsPalette = WorxColorsPalette(
@@ -103,6 +104,7 @@ val WorxLightColorsPalette = WorxColorsPalette(
     optionBorder = Color.Black.copy(alpha = 0.54f),
     unselectedStar = Color.Black.copy(alpha = 0.38f),
     selectedStar = Star,
+    documentBackground = DragHandle,
 )
 
 val WorxDarkColorsPalette = WorxColorsPalette(
@@ -130,6 +132,7 @@ val WorxDarkColorsPalette = WorxColorsPalette(
     optionBorder = Color.White.copy(alpha = 0.54f),
     unselectedStar = Color.White.copy(alpha = 0.38f),
     selectedStar = Star,
+    documentBackground = Abbey,
 )
 
 val WorxCustomColorsPalette = compositionLocalOf { WorxColorsPalette() }
