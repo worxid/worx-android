@@ -16,6 +16,7 @@ import id.worx.device.client.MainScreen
 import id.worx.device.client.data.api.SyncServer
 import id.worx.device.client.data.database.Session
 import id.worx.device.client.model.DeviceInfo
+import id.worx.device.client.model.DraftForm
 import id.worx.device.client.model.EmptyForm
 import id.worx.device.client.model.FormSortModel
 import id.worx.device.client.model.ResponseDeviceInfo
@@ -38,7 +39,7 @@ private val DRAFT = 2
 
 data class HomeUiState(
     var list: List<EmptyForm> = emptyList(),
-    var drafts: List<SubmitForm> = emptyList(),
+    var drafts: List<DraftForm> = emptyList(),
     var submission: List<SubmitForm> = emptyList(),
     var isLoading: Boolean = false,
     var errorMessages: String = "",

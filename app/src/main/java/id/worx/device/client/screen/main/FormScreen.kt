@@ -1,8 +1,8 @@
 package id.worx.device.client.screen.main
 
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
@@ -22,15 +22,18 @@ import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.CircularProgressIndicator
+import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.Icon
+import androidx.compose.material.LinearProgressIndicator
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDownward
 import androidx.compose.material.icons.filled.ArrowUpward
+import androidx.compose.material.icons.outlined.ArrowBackIosNew
+import androidx.compose.material.icons.outlined.KeyboardArrowDown
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -39,28 +42,33 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.window.Dialog
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
 import id.worx.device.client.R
 import id.worx.device.client.Util.initProgress
 import id.worx.device.client.Util.isNetworkAvailable
-import id.worx.device.client.data.database.Session
 import id.worx.device.client.model.BasicForm
+import id.worx.device.client.model.DraftForm
 import id.worx.device.client.model.FormSortModel
 import id.worx.device.client.model.FormSortOrderBy
 import id.worx.device.client.model.SubmitForm
+import id.worx.device.client.screen.components.TransparentButton
 import id.worx.device.client.screen.components.WorxBoxPullRefresh
+import id.worx.device.client.screen.components.WorxSwipeableCard
+import id.worx.device.client.screen.components.WorxTextField
 import id.worx.device.client.theme.PrimaryMain
+import id.worx.device.client.theme.PrimaryMainBlue
 import id.worx.device.client.theme.Typography
 import id.worx.device.client.theme.WorxCustomColorsPalette
 import id.worx.device.client.theme.fontRoboto
@@ -76,13 +84,10 @@ fun FormScreen(
     detailFormViewModel: DetailFormViewModel,
     titleForEmpty: String,
     descriptionForEmpty: String,
-    session: Session,
     selectedSort: FormSortModel,
     openSortBottomSheet: () -> Unit,
     syncWithServer: () -> Unit
 ) {
-    val searchInput = viewModel.uiState.collectAsState().value.searchInput
-    val theme = session.theme
     val context = LocalContext.current
     var isConnected by remember { mutableStateOf(isNetworkAvailable(context)) }
 
@@ -98,12 +103,10 @@ fun FormScreen(
             if (data.isNullOrEmpty()) {
                 EmptyList(type, titleForEmpty, descriptionForEmpty)
             } else {
-                if (selectedSort != null) {
-                    FormSort(
-                        selectedSort = selectedSort,
-                        openSortByBottomSheet = openSortBottomSheet
-                    )
-                }
+                FormSort(
+                    selectedSort = selectedSort,
+                    openSortByBottomSheet = openSortBottomSheet
+                )
                 LazyColumn(
                     modifier = Modifier.padding(start = 16.dp, end = 16.dp),
                     verticalArrangement = Arrangement.spacedBy(12.dp),
@@ -115,20 +118,11 @@ fun FormScreen(
                         })
 
                         1 -> items(items = data, itemContent = { item ->
-                            DraftItemForm(
-                                item as SubmitForm,
-                                viewModel,
-                                detailFormViewModel,
-                                theme
-                            )
+                            DraftWrapper(item as DraftForm, viewModel, detailFormViewModel)
                         })
 
                         2 -> items(items = data, itemContent = { item ->
-                            SubmissionItemForm(
-                                item as SubmitForm,
-                                viewModel,
-                                detailFormViewModel
-                            )
+                            SubmissionItemForm(item as SubmitForm, viewModel, detailFormViewModel)
                         })
                     }
                 }
@@ -268,80 +262,307 @@ fun ListItemValidForm(
     }
 }
 
+@OptIn(ExperimentalMaterialApi::class)
 @Composable
-fun DraftItemForm(
-    item: SubmitForm,
+fun DraftWrapper(
+    item: DraftForm,
     viewModel: HomeViewModelImpl,
-    detailFormViewModel: DetailFormViewModel,
-    theme: String?
+    detailFormViewModel: DetailFormViewModel
 ) {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .background(
-                if (theme == SettingTheme.Dark
-                ) Color.Unspecified else Color.White
-            )
-            .border(
-                1.dp,
-                color = if (theme == SettingTheme.Dark)
-                    MaterialTheme.colors.onSecondary
-                else MaterialTheme.colors.onSecondary.copy(0.1f),
-                RoundedCornerShape(8.dp)
-            )
-            .clickable(
-                onClick = {
-                    viewModel.goToDetailScreen()
-                    detailFormViewModel.navigateFromHomeScreen(item)
-                }),
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        Image(
-            modifier = Modifier
-                .padding(horizontal = 16.dp),
-            painter = painterResource(id = if (theme == SettingTheme.Dark) R.drawable.ic_form_white else R.drawable.ic_form_gray),
-            contentDescription = "Form Icon",
-        )
-        Column(modifier = Modifier.padding(vertical = 13.dp)) {
-            Row() {
-                Text(
-                    text = "${item.label} - ",
-                    overflow = TextOverflow.Ellipsis,
-                    maxLines = 1,
-                    style = Typography.button.copy(MaterialTheme.colors.onSecondary),
-                )
-                Text(
-                    text = "Draft",
-                    style = Typography.button.copy(PrimaryMain)
+    var showDuplicateDialog by remember { mutableStateOf(false) }
+    var showDeleteDialog by remember { mutableStateOf(false) }
+
+    if (showDuplicateDialog) {
+        DialogDuplicateDraftForm(
+            saveDraft = {
+                detailFormViewModel.duplicateDraft(
+                    draftForm = item,
+                    draftDescription = it
                 )
             }
-            Text(
-                text = "Saved on ${item.lastUpdated}",
-                overflow = TextOverflow.Ellipsis,
-                maxLines = 1,
-                style = Typography.body1.copy(color = MaterialTheme.colors.onSecondary.copy(alpha = 0.54f))
+        ) {
+            showDuplicateDialog = false
+        }
+    }
+
+    if (showDeleteDialog) {
+        DialogDeleteDraftForm(
+            deleteDraft = {
+                detailFormViewModel.deleteDraft(item)
+                showDeleteDialog = false
+            }
+        ) {
+            showDeleteDialog = false
+        }
+    }
+
+    WorxSwipeableCard(
+        mainCard = {
+            DraftItemForm(
+                item = item,
+                viewModel = viewModel,
+                detailFormViewModel = detailFormViewModel
+            )
+        },
+        leftSwipeCard = {
+            Column(
+                modifier = Modifier
+                    .width(96.dp)
+                    .fillMaxHeight()
+                    .clip(RoundedCornerShape(4.dp))
+                    .background(PrimaryMain),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center
+            ) {
+                Icon(
+                    painter = painterResource(id = R.drawable.ic_delete),
+                    contentDescription = stringResource(R.string.text_duplicate),
+                    tint = MaterialTheme.colors.onPrimary
+                )
+                Spacer(modifier = Modifier.height(4.dp))
+                Text(
+                    text = stringResource(R.string.text_delete),
+                    style = Typography.caption,
+                    color = MaterialTheme.colors.onPrimary
+                )
+            }
+        },
+        rightSwipeCard = {
+            Column(
+                modifier = Modifier
+                    .width(96.dp)
+                    .clip(RoundedCornerShape(4.dp))
+                    .fillMaxHeight()
+                    .background(PrimaryMainBlue),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center
+            ) {
+                Icon(
+                    painter = painterResource(id = R.drawable.ic_duplicate),
+                    contentDescription = stringResource(R.string.text_duplicate),
+                    tint = MaterialTheme.colors.onPrimary
+                )
+                Spacer(modifier = Modifier.height(4.dp))
+                Text(
+                    text = stringResource(id = R.string.text_duplicate),
+                    style = Typography.caption,
+                    color = MaterialTheme.colors.onPrimary
+                )
+            }
+        },
+        leftSwiped = {
+            showDeleteDialog = true
+        },
+        rightSwiped = {
+            showDuplicateDialog = true
+        }
+    )
+}
+
+@Composable
+fun DraftItemForm(
+    item: DraftForm,
+    viewModel: HomeViewModelImpl,
+    detailFormViewModel: DetailFormViewModel
+) {
+    var isExpanded by remember { mutableStateOf(false) }
+    Column(
+        modifier = Modifier.fillMaxWidth()
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .clip(RoundedCornerShape(topStart = 4.dp, topEnd = 4.dp))
+                .background(WorxCustomColorsPalette.current.formItemContainer)
+                .padding(horizontal = 12.dp, vertical = 8.dp)
+                .clickable(
+                    onClick = {
+                        viewModel.goToDetailScreen()
+                        detailFormViewModel.navigateFromHomeScreen(item)
+                    }),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Icon(
+                painter = painterResource(id = R.drawable.ic_form),
+                contentDescription = "Form Icon",
+                tint = WorxCustomColorsPalette.current.iconV2
+            )
+            Spacer(modifier = Modifier.width(12.dp))
+            Column {
+                Row {
+                    Text(
+                        text = "${item.label} - ",
+                        overflow = TextOverflow.Ellipsis,
+                        maxLines = 1,
+                        style = Typography.body1,
+                        color = MaterialTheme.colors.onSecondary.copy(0.87f)
+                    )
+                    Text(
+                        text = "Draft",
+                        style = Typography.body1,
+                        color = PrimaryMain
+                    )
+                }
+                Spacer(modifier = Modifier.height(2.dp))
+                AnimatedVisibility(visible = isExpanded) {
+                    Text(
+                        text = item.description.toString(),
+                        overflow = TextOverflow.Ellipsis,
+                        maxLines = 1,
+                        style = Typography.caption,
+                        color = MaterialTheme.colors.onSecondary.copy(alpha = 0.6f)
+                    )
+                    Spacer(modifier = Modifier.height(4.dp))
+                }
+                Text(
+                    text = "Saved on ${item.lastUpdated}",
+                    overflow = TextOverflow.Ellipsis,
+                    maxLines = 1,
+                    style = Typography.caption,
+                    color = MaterialTheme.colors.onSecondary.copy(alpha = 0.6f)
+                )
+            }
+            Spacer(modifier = Modifier.weight(1f))
+            Icon(
+                imageVector = if (isExpanded) Icons.Outlined.ArrowBackIosNew else Icons.Outlined.KeyboardArrowDown,
+                contentDescription = null,
+                modifier = Modifier.clickable { isExpanded = !isExpanded }
             )
         }
-        Spacer(modifier = Modifier.weight(1f))
-        Box(modifier = Modifier.wrapContentSize()) {
-            CircularProgressIndicator(
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .clip(RoundedCornerShape(bottomStart = 4.dp, bottomEnd = 4.dp))
+        ) {
+            LinearProgressIndicator(
                 progress = 1f,
-                modifier = Modifier
-                    .padding(horizontal = 16.dp)
-                    .scale(0.75f),
-                color = Color.LightGray,
-                strokeWidth = 3.dp,
+                modifier = Modifier.fillMaxWidth(),
+                color = WorxCustomColorsPalette.current.draftLinearProgressIndicator
             )
-            CircularProgressIndicator(
+            LinearProgressIndicator(
                 progress = initProgress(item.values.toMutableMap(), item.fields) / 100.toFloat(),
-                modifier = Modifier
-                    .padding(horizontal = 16.dp)
-                    .scale(0.75f),
-                color = if (theme == SettingTheme.Dark) MaterialTheme.colors.onSecondary else MaterialTheme.colors.primary,
-                strokeWidth = 3.dp,
+                modifier = Modifier.fillMaxWidth(),
+                color = WorxCustomColorsPalette.current.draftCompletedLinearProgressIndicator,
+                backgroundColor = Color.Transparent
             )
         }
     }
+}
+
+@Composable
+fun DialogDuplicateDraftForm(
+    saveDraft: (draftDescription: String) -> Unit,
+    closeDialog: () -> Unit,
+) {
+    var draftDescription by remember { mutableStateOf("") }
+    Dialog(
+        content = {
+            Column(
+                modifier = Modifier
+                    .wrapContentSize()
+                    .background(WorxCustomColorsPalette.current.bottomSheetBackground)
+            ) {
+                Text(
+                    modifier = Modifier.padding(top = 16.dp, start = 16.dp, end = 16.dp),
+                    text = stringResource(R.string.text_duplicate_draft),
+                    style = Typography.h6,
+                    color = MaterialTheme.colors.onSecondary.copy(0.87f),
+                    lineHeight = 24.sp
+                )
+                Text(
+                    modifier = Modifier.padding(top = 4.dp, start = 16.dp, end = 16.dp),
+                    text = stringResource(R.string.text_save_draft_desc),
+                    style = Typography.body2,
+                    color = MaterialTheme.colors.onSecondary.copy(0.87f),
+                    lineHeight = 24.sp
+                )
+                Spacer(modifier = Modifier.height(8.dp))
+                WorxTextField(
+                    label = "",
+                    hint = stringResource(R.string.text_hint_description_optional),
+                    inputType = KeyboardOptions(keyboardType = KeyboardType.Text),
+                    onValueChange = { draftDescription = it },
+                    allowMultiline = false
+                )
+                Spacer(modifier = Modifier.height(16.dp))
+                Row(
+                    modifier = Modifier
+                        .align(Alignment.End)
+                        .padding(end = 16.dp, bottom = 8.dp),
+                    horizontalArrangement = Arrangement.spacedBy(20.dp)
+                ) {
+                    TransparentButton(
+                        label = "Cancel",
+                        modifier = Modifier,
+                        onClickCallback = { closeDialog() }
+                    )
+                    TransparentButton(label = "Save",
+                        modifier = Modifier,
+                        onClickCallback = {
+                            saveDraft(draftDescription.trim())
+                        }
+                    )
+                }
+            }
+        },
+        onDismissRequest = {
+            closeDialog()
+        }
+    )
+}
+
+@Composable
+fun DialogDeleteDraftForm(
+    deleteDraft: () -> Unit,
+    closeDialog: () -> Unit,
+) {
+    Dialog(
+        content = {
+            Column(
+                modifier = Modifier
+                    .wrapContentSize()
+                    .background(WorxCustomColorsPalette.current.bottomSheetBackground)
+            ) {
+                Text(
+                    modifier = Modifier.padding(top = 16.dp, start = 16.dp, end = 16.dp),
+                    text = stringResource(R.string.text_delete_draft),
+                    style = Typography.h6,
+                    color = MaterialTheme.colors.onSecondary.copy(0.87f),
+                    lineHeight = 24.sp
+                )
+                Text(
+                    modifier = Modifier.padding(top = 4.dp, start = 16.dp, end = 16.dp),
+                    text = stringResource(R.string.text_are_you_sure_you_want_to_delete_this_form),
+                    style = Typography.body2,
+                    color = MaterialTheme.colors.onSecondary.copy(0.87f),
+                    lineHeight = 24.sp
+                )
+                Spacer(modifier = Modifier.height(16.dp))
+                Row(
+                    modifier = Modifier
+                        .align(Alignment.End)
+                        .padding(end = 16.dp, bottom = 8.dp),
+                    horizontalArrangement = Arrangement.spacedBy(20.dp)
+                ) {
+                    TransparentButton(
+                        label = "Cancel",
+                        modifier = Modifier,
+                        onClickCallback = { closeDialog() }
+                    )
+                    TransparentButton(
+                        label = "Delete",
+                        modifier = Modifier,
+                        onClickCallback = {
+                            deleteDraft()
+                        }
+                    )
+                }
+            }
+        },
+        onDismissRequest = {
+            closeDialog()
+        }
+    )
 }
 
 @Composable
@@ -417,7 +638,8 @@ fun EmptyList(type: Int, text: String, description: String) {
         Text(
             text = description,
             style = Typography.body2.copy(MaterialTheme.colors.onSecondary.copy(0.6f)),
-            textAlign = TextAlign.Center
+            textAlign = TextAlign.Center,
+            modifier = Modifier.padding(horizontal = 16.dp)
         )
     }
 }

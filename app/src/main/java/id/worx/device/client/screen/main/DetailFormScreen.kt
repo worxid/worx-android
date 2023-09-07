@@ -39,9 +39,8 @@ import id.worx.device.client.viewmodel.ScannerViewModel
 
 sealed class DetailFormEvent {
     object SubmitForm : DetailFormEvent()
-    object SaveDraft : DetailFormEvent()
+    data class SaveDraft(val draftDescription: String) : DetailFormEvent()
     object BackPressed : DetailFormEvent()
-    object NavigateToCameraFragment : DetailFormEvent()
 }
 
 @Composable

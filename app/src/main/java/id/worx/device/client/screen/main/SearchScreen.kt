@@ -21,6 +21,7 @@ import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.rememberPagerState
 import id.worx.device.client.R
 import id.worx.device.client.data.database.Session
+import id.worx.device.client.model.DraftForm
 import id.worx.device.client.model.EmptyForm
 import id.worx.device.client.model.FormSortModel
 import id.worx.device.client.model.SubmitForm
@@ -41,7 +42,7 @@ val tabItems = listOf(
 @Composable
 fun SearchScreen(
     formList: List<EmptyForm>,
-    draftList: List<SubmitForm>,
+    draftList: List<DraftForm>,
     submissionList: List<SubmitForm>,
     viewModel: HomeViewModelImpl,
     detailVM: DetailFormViewModel,
@@ -122,7 +123,6 @@ fun SearchScreen(
                         detailVM,
                         stringResource(R.string.no_forms),
                         stringResource(R.string.empty_description_form),
-                        session = session,
                         selectedSort = selectedSort,
                         openSortBottomSheet = openSortBottomSheet,
                         syncWithServer = syncWithServer
@@ -134,7 +134,6 @@ fun SearchScreen(
                         detailVM,
                         stringResource(R.string.no_drafts),
                         stringResource(R.string.empty_description_drafts),
-                        session = session,
                         selectedSort = selectedSort,
                         openSortBottomSheet = openSortBottomSheet,
                         syncWithServer = syncWithServer
@@ -146,7 +145,6 @@ fun SearchScreen(
                         detailVM,
                         stringResource(R.string.no_submission),
                         stringResource(R.string.empty_description_submission),
-                        session = session,
                         selectedSort = selectedSort,
                         openSortBottomSheet = openSortBottomSheet,
                         syncWithServer = syncWithServer

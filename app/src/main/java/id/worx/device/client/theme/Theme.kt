@@ -68,6 +68,8 @@ data class WorxColorsPalette(
     val bottomSheetDragHandle: Color = Color.Unspecified,
     val homeBackground: Color = Color.Unspecified,
     val bottomNavigationBorder: Color = Color.Unspecified,
+    val draftLinearProgressIndicator: Color = Color.Unspecified,
+    val draftCompletedLinearProgressIndicator: Color = Color.Unspecified,
 )
 
 val WorxLightColorsPalette = WorxColorsPalette(
@@ -86,7 +88,9 @@ val WorxLightColorsPalette = WorxColorsPalette(
     bottomSheetBackground = Color.White,
     bottomSheetDragHandle = DragHandle,
     homeBackground = backgroundFormList,
-    bottomNavigationBorder = LightThemeColorsSystem.onSecondary
+    bottomNavigationBorder = LightThemeColorsSystem.onSecondary,
+    draftLinearProgressIndicator = Alto,
+    draftCompletedLinearProgressIndicator = PrimaryMainGreen
 )
 
 val WorxDarkColorsPalette = WorxColorsPalette(

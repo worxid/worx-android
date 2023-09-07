@@ -70,7 +70,7 @@ class DetailFormFragment : Fragment() {
                                 }
                             }
                             is DetailFormEvent.SaveDraft -> {
-                                viewModel.saveFormAsDraft {
+                                viewModel.saveFormAsDraft(event.draftDescription) {
                                     homeViewModel.showBadge(R.string.draft)
                                 }
                             }

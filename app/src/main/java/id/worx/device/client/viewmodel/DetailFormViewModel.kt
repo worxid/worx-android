@@ -83,16 +83,26 @@ class DetailFormViewModel @Inject constructor(
      */
     fun navigateFromHomeScreen(form: BasicForm) {
         uiState.update {
-            if (form is SubmitForm) {
-                _formProgress.value = initProgress(form.values.toMutableMap(), form.fields)
-                var status = EventStatus.Filling
-                if (form.status == 2 || form.status == 1) {
-                    status = EventStatus.Done
+            when (form) {
+                is SubmitForm -> {
+                    _formProgress.value = initProgress(form.values.toMutableMap(), form.fields)
+                    var status = EventStatus.Filling
+                    if (form.status == 2 || form.status == 1) {
+                        status = EventStatus.Done
+                    }
+                    it.copy(detailForm = form, values = form.values.toMutableMap(), status = status)
                 }
-                it.copy(detailForm = form, values = form.values.toMutableMap(), status = status)
-            } else {
-                _formProgress.value = 0
-                it.copy(detailForm = form, values = mutableMapOf(), status = EventStatus.Filling)
+
+                is DraftForm -> {
+                    _formProgress.value = initProgress(form.values.toMutableMap(), form.fields)
+                    val status = EventStatus.Filling
+                    it.copy(detailForm = form, values = form.values.toMutableMap(), status = status)
+                }
+
+                else -> {
+                    _formProgress.value = 0
+                    it.copy(detailForm = form, values = mutableMapOf(), status = EventStatus.Filling)
+                }
             }
         }
     }
@@ -352,13 +362,10 @@ class DetailFormViewModel @Inject constructor(
         }
     }
 
-    fun saveFormAsDraft(actionAfterSaved: () -> Unit) {
+    fun saveFormAsDraft(draftDescription: String, actionAfterSaved: () -> Unit) {
         viewModelScope.launch {
-            if (uiState.value.detailForm is SubmitForm) {
-                (uiState.value.detailForm as SubmitForm).dbId?.let { dbId -> dataSourceRepo.deleteSubmitFormById(dbId) }
-            }
-            val form = createSubmitForm()
-            dataSourceRepo.insertOrUpdateSubmitForm(form.copy(status = 0))
+            val draftForm = createDraftForm(draftDescription)
+            dataSourceRepo.insertDraft(draftForm)
             actionAfterSaved()
             _formProgress.value = 0
 
@@ -376,7 +383,91 @@ class DetailFormViewModel @Inject constructor(
         }
     }
 
-    private fun createSubmitForm(): SubmitForm {
+    fun deleteDraft(draftForm: DraftForm) {
+        viewModelScope.launch {
+            withContext(Dispatchers.IO) {
+                draftForm.dbId?.let {
+                    dataSourceRepo.deleteDraft(it)
+                }
+            }
+        }
+    }
+
+    fun duplicateDraft(draftForm: DraftForm, draftDescription: String) {
+        viewModelScope.launch {
+            val newDraftForm = createDraftForm(draftForm, draftDescription)
+            dataSourceRepo.insertDraft(newDraftForm)
+            _formProgress.value = 0
+
+            uiState.update {
+                it.copy(
+                    detailForm = null,
+                    values = mutableMapOf(),
+                    currentComponent = -1,
+                    status = EventStatus.Saved,
+                )
+            }
+            _formProgress.value = 0
+            _navigateTo.value = Event(MainScreen.Home)
+
+        }
+    }
+
+    private fun createDraftForm(draftDescription: String = ""): DraftForm {
+        val latitude = session.latitude ?: "0.0010"
+        val longitude = session.longitude ?: "-109.3222"
+        val geocoder = Geocoder(application.applicationContext, Locale.getDefault())
+        val address = geocoder.getFromLocation(
+            latitude.toDouble(),
+            longitude.toDouble(),
+            1
+        )?.get(0) ?: Address(Locale.getDefault())
+        val submitLocation = SubmitLocation(
+            address.getAddressLine(0),
+            latitude.toDouble(),
+            longitude.toDouble()
+        )
+
+        return DraftForm(
+            label = uiState.value.detailForm!!.label,
+            description = draftDescription.ifBlank { uiState.value.detailForm!!.description },
+            fields = uiState.value.detailForm!!.fields,
+            values = uiState.value.values,
+            templateId = uiState.value.detailForm!!.id,
+            lastUpdated = getCurrentDate("dd/MM/yyyy hh:mm a"),
+            submitLocation = submitLocation,
+            status = 0
+        )
+    }
+
+    private fun createDraftForm(draftForm: DraftForm, draftDescription: String = ""): DraftForm {
+        val latitude = session.latitude ?: "0.0010"
+        val longitude = session.longitude ?: "-109.3222"
+        val geocoder = Geocoder(application.applicationContext, Locale.getDefault())
+        val address = geocoder.getFromLocation(
+            latitude.toDouble(),
+            longitude.toDouble(),
+            1
+        )?.get(0) ?: Address(Locale.getDefault())
+        val submitLocation = SubmitLocation(
+            address.getAddressLine(0),
+            latitude.toDouble(),
+            longitude.toDouble()
+        )
+
+        return DraftForm(
+            label = draftForm.label,
+            description = draftDescription.ifBlank { draftForm.description },
+            fields = draftForm.fields,
+            values = draftForm.values,
+            templateId = draftForm.id,
+            lastUpdated = getCurrentDate("dd/MM/yyyy hh:mm a"),
+            submitLocation = submitLocation,
+            status = 0
+        )
+    }
+
+    private fun createSubmitForm(draftDescription: String = ""): SubmitForm {
         val latitude = session.latitude ?: "0.0010"
         val longitude = session.longitude ?: "-109.3222"
         val geocoder = Geocoder(application.applicationContext, Locale.getDefault())
@@ -394,7 +485,7 @@ class DetailFormViewModel @Inject constructor(
         return SubmitForm(
             id = uiState.value.detailForm!!.id,
             label = uiState.value.detailForm!!.label,
-            description = uiState.value.detailForm!!.description,
+            description = draftDescription.ifBlank { uiState.value.detailForm!!.description },
             fields = uiState.value.detailForm!!.fields,
             values = uiState.value.values,
             templateId = uiState.value.detailForm!!.id,

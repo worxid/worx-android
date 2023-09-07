@@ -10,14 +10,8 @@ interface SubmitFormDAO {
     @RawQuery(observedEntities = [SubmitForm::class])
     fun getSubmitForm(query: SupportSQLiteQuery): Flow<List<SubmitForm>>
 
-    @Query("SELECT * FROM submit_form WHERE status = 0")
-    fun getAllDraft(): Flow<List<SubmitForm>>
-
     @Query("SELECT * FROM submit_form WHERE status = 1")
     fun getAllUnsubmitted(): Flow<List<SubmitForm>>
-
-    @Query("SELECT * FROM submit_form WHERE status IN (1,2)")
-    fun getAllSubmission(): Flow<List<SubmitForm>>
 
     @Query("DELETE FROM submit_form WHERE dbId = :id")
     suspend fun deleteSubmitForm(id: Int)
@@ -27,9 +21,6 @@ interface SubmitFormDAO {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertOrUpdateForm(form: SubmitForm)
-
-    @Update
-    suspend fun updateForm(form: SubmitForm)
 
     @Query("DELETE FROM submit_form WHERE status = 2")
     suspend fun deleteExistingApiSubmission()
