@@ -101,6 +101,8 @@ fun WorxDateInput(indexForm: Int, viewModel: DetailFormViewModel, session: Sessi
                 enabled = false,
                 colors = TextFieldDefaults.textFieldColors(
                     backgroundColor = WorxCustomColorsPalette.current.homeBackground,
+                    unfocusedIndicatorColor = WorxCustomColorsPalette.current.textFieldUnfocusedIndicator,
+                    focusedIndicatorColor = WorxCustomColorsPalette.current.textFieldFocusedIndicator
                 ),
                 textStyle = if (value.value.isNullOrEmpty()) {
                     Typography.body2.copy(color = MaterialTheme.colors.onSecondary.copy(0.54f))

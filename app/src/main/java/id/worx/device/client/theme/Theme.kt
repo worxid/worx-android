@@ -71,6 +71,7 @@ data class WorxColorsPalette(
     val divider: Color = Color.Unspecified,
     val optionBorder: Color = Color.Unspecified,
     val textFieldIcon: Color = Color.Unspecified,
+    val textFieldUnfocusedIndicator: Color = Color.Unspecified,
 )
 
 val WorxLightColorsPalette = WorxColorsPalette(
@@ -93,6 +94,7 @@ val WorxLightColorsPalette = WorxColorsPalette(
     divider = Color.Black.copy(alpha = 0.12f),
     optionBorder = Color.Black.copy(alpha = 0.54f),
     textFieldIcon = Color.Black.copy(alpha = 0.54f),
+    textFieldUnfocusedIndicator = Color.Black.copy(alpha = 0.54f),
 )
 
 val WorxDarkColorsPalette = WorxColorsPalette(
@@ -115,6 +117,7 @@ val WorxDarkColorsPalette = WorxColorsPalette(
     divider = Color.White.copy(alpha = 0.12f),
     optionBorder = Color.White.copy(alpha = 0.54f),
     textFieldIcon = Color.White.copy(alpha = 0.54f),
+    textFieldUnfocusedIndicator = Color.White.copy(alpha = 0.54f),
 )
 
 val WorxCustomColorsPalette = compositionLocalOf { WorxColorsPalette() }
