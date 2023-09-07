@@ -58,6 +58,8 @@ data class WorxColorsPalette(
     val textFieldColor: Color = Color.Unspecified,
     val textFieldFocusedLabel: Color = Color.Unspecified,
     val textFieldFocusedIndicator: Color = Color.Unspecified,
+    val textFieldIcon: Color = Color.Unspecified,
+    val textFieldUnfocusedIndicator: Color = Color.Unspecified,
     val button: Color = Color.Unspecified,
     val icon: Color = Color.Unspecified,
     val iconV2: Color = Color.Unspecified,
@@ -70,8 +72,8 @@ data class WorxColorsPalette(
     val bottomNavigationBorder: Color = Color.Unspecified,
     val divider: Color = Color.Unspecified,
     val optionBorder: Color = Color.Unspecified,
-    val textFieldIcon: Color = Color.Unspecified,
-    val textFieldUnfocusedIndicator: Color = Color.Unspecified,
+    val unselectedStar: Color = Color.Unspecified,
+    val selectedStar: Color = Color.Unspecified,
 )
 
 val WorxLightColorsPalette = WorxColorsPalette(
@@ -81,6 +83,8 @@ val WorxLightColorsPalette = WorxColorsPalette(
     textFieldColor = LightThemeColorsSystem.onSecondary.copy(alpha = 0.87f),
     textFieldFocusedLabel = PrimaryMain,
     textFieldFocusedIndicator = PrimaryMain,
+    textFieldIcon = Color.Black.copy(alpha = 0.54f),
+    textFieldUnfocusedIndicator = Color.Black.copy(alpha = 0.54f),
     button = PrimaryMain,
     icon = Silver,
     iconV2 = Silver,
@@ -93,8 +97,8 @@ val WorxLightColorsPalette = WorxColorsPalette(
     bottomNavigationBorder = LightThemeColorsSystem.onSecondary,
     divider = Color.Black.copy(alpha = 0.12f),
     optionBorder = Color.Black.copy(alpha = 0.54f),
-    textFieldIcon = Color.Black.copy(alpha = 0.54f),
-    textFieldUnfocusedIndicator = Color.Black.copy(alpha = 0.54f),
+    unselectedStar = Color.Black.copy(alpha = 0.38f),
+    selectedStar = Star,
 )
 
 val WorxDarkColorsPalette = WorxColorsPalette(
@@ -104,6 +108,8 @@ val WorxDarkColorsPalette = WorxColorsPalette(
     textFieldColor = DarkThemeColorsSystem.onSecondary.copy(alpha = 0.87f),
     textFieldFocusedLabel = Cinnabar,
     textFieldFocusedIndicator = Cinnabar,
+    textFieldIcon = Color.White.copy(alpha = 0.54f),
+    textFieldUnfocusedIndicator = Color.White.copy(alpha = 0.54f),
     button = Cinnabar,
     icon = Boulder,
     iconV2 = Edward,
@@ -116,8 +122,8 @@ val WorxDarkColorsPalette = WorxColorsPalette(
     bottomNavigationBorder = Abbey2,
     divider = Color.White.copy(alpha = 0.12f),
     optionBorder = Color.White.copy(alpha = 0.54f),
-    textFieldIcon = Color.White.copy(alpha = 0.54f),
-    textFieldUnfocusedIndicator = Color.White.copy(alpha = 0.54f),
+    unselectedStar = Color.White.copy(alpha = 0.38f),
+    selectedStar = Star,
 )
 
 val WorxCustomColorsPalette = compositionLocalOf { WorxColorsPalette() }

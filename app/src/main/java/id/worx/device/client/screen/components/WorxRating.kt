@@ -19,6 +19,7 @@ import id.worx.device.client.data.database.Session
 import id.worx.device.client.model.fieldmodel.RatingField
 import id.worx.device.client.model.fieldmodel.RatingValue
 import id.worx.device.client.theme.SecondaryMain
+import id.worx.device.client.theme.WorxCustomColorsPalette
 import id.worx.device.client.viewmodel.DetailFormViewModel
 import id.worx.device.client.viewmodel.EventStatus
 
@@ -81,9 +82,9 @@ fun WorxRating(indexForm: Int, viewModel: DetailFormViewModel,validation : Boole
                     painter = painterResource(id = R.drawable.star_big_off),
                     contentDescription = "Star Icon",
                     tint = if (index < (rating.value ?: 0)) {
-                        SecondaryMain
+                        WorxCustomColorsPalette.current.selectedStar
                     } else {
-                        Color(0xFFE0E0E0)
+                        WorxCustomColorsPalette.current.unselectedStar
                     }
                 )
             }
