@@ -142,11 +142,11 @@ fun FileDataView(
         ) {
             Text(
                 text = filePath.substringAfterLast("/"),
-                style = Typography.body2.copy(MaterialTheme.colors.onSecondary)
+                style = Typography.body2.copy(WorxCustomColorsPalette.current.text)
             )
             if (fileSize > 0) Text(
                 text = "$fileSize kb",
-                style = Typography.body2.copy(MaterialTheme.colors.onSecondary)
+                style = Typography.body2.copy(WorxCustomColorsPalette.current.subText)
             )
         }
         if (showCloseButton) {
@@ -156,7 +156,7 @@ fun FileDataView(
                     .clickable { onClick() }
                     .align(Alignment.CenterVertically),
                 painter = painterResource(id = R.drawable.ic_delete_circle),
-                tint = Color.Black.copy(0.54f),
+                tint = WorxCustomColorsPalette.current.textFieldIcon,
                 contentDescription = "Clear File"
             )
         }

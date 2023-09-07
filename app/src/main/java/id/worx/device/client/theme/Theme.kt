@@ -53,6 +53,8 @@ val DarkThemeColorsSystem = darkColors(
 @Immutable
 data class WorxColorsPalette(
     val splashBackground: Color = Color.Unspecified,
+    val text: Color = Color.Unspecified,
+    val subText: Color = Color.Unspecified,
     val textFieldContainer: Color = Color.Unspecified,
     val textFieldUnfocusedLabel: Color = Color.Unspecified,
     val textFieldColor: Color = Color.Unspecified,
@@ -78,6 +80,8 @@ data class WorxColorsPalette(
 
 val WorxLightColorsPalette = WorxColorsPalette(
     splashBackground = PrimaryMain,
+    text = Color.Black.copy(alpha = 0.87f),
+    subText = Color.Black.copy(alpha = 0.6f),
     textFieldContainer = backgroundFormList,
     textFieldUnfocusedLabel = LightThemeColorsSystem.onSecondary.copy(alpha = 0.6f),
     textFieldColor = LightThemeColorsSystem.onSecondary.copy(alpha = 0.87f),
@@ -103,6 +107,8 @@ val WorxLightColorsPalette = WorxColorsPalette(
 
 val WorxDarkColorsPalette = WorxColorsPalette(
     splashBackground = Splash,
+    text = Color.White.copy(alpha = 0.87f),
+    subText = Color.White.copy(alpha = 0.6f),
     textFieldContainer = Shark2,
     textFieldUnfocusedLabel = DarkThemeColorsSystem.onSecondary.copy(alpha = 0.6f),
     textFieldColor = DarkThemeColorsSystem.onSecondary.copy(alpha = 0.87f),
