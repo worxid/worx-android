@@ -31,6 +31,7 @@ import id.worx.device.client.model.fieldmodel.TimeValue
 import id.worx.device.client.screen.main.SettingTheme
 import id.worx.device.client.theme.PrimaryMain
 import id.worx.device.client.theme.Typography
+import id.worx.device.client.theme.WorxCustomColorsPalette
 import id.worx.device.client.viewmodel.DetailFormViewModel
 import id.worx.device.client.viewmodel.EventStatus
 import java.time.LocalTime
@@ -89,12 +90,13 @@ fun WorxTimeInput(indexForm: Int, viewModel: DetailFormViewModel, session: Sessi
         ) {
             TextField(
                 modifier = Modifier
-                    .padding(end = 12.dp)
                     .weight(1f)
                     .clickable { showTimePicker = true },
                 enabled = false,
                 colors = TextFieldDefaults.textFieldColors(
-                    backgroundColor = Color.Black.copy(0.06f)
+                    backgroundColor = WorxCustomColorsPalette.current.homeBackground,
+                    unfocusedIndicatorColor = WorxCustomColorsPalette.current.textFieldUnfocusedIndicator,
+                    focusedIndicatorColor = WorxCustomColorsPalette.current.textFieldFocusedIndicator
                 ),
                 textStyle = if (value.value == null) {
                     Typography.body2.copy(color = MaterialTheme.colors.onSecondary.copy(0.54f))
@@ -107,25 +109,26 @@ fun WorxTimeInput(indexForm: Int, viewModel: DetailFormViewModel, session: Sessi
                 } else {
                     value.value!!
                 },
-                onValueChange = {})
-            Box(modifier = Modifier
-                .clip(RoundedCornerShape(4.dp))
-                .background(
-                    if (theme == SettingTheme.Dark) Color.White else MaterialTheme.colors.background.copy(
-                        0.10f
-                    )
-                )
-                .clickable { showTimePicker = true }
-                .height(TextFieldDefaults.MinHeight)) {
-                Icon(
-                    painter = painterResource(id = R.drawable.ic_clock),
-                    contentDescription = "Time Picker",
-                    modifier = Modifier
-                        .align(Alignment.Center)
-                        .padding(16.dp),
-                    tint = MaterialTheme.colors.onBackground
-                )
-            }
+                trailingIcon = {
+                    Box(
+                        modifier = Modifier
+                            .clickable { showTimePicker = true }
+                            .height(TextFieldDefaults.MinHeight)
+                    ) {
+                        Icon(
+                            painter = painterResource(id = R.drawable.ic_clock),
+                            contentDescription = "Time Picker",
+                            modifier = Modifier
+                                .align(Alignment.Center)
+                                .padding(16.dp),
+                            tint = WorxCustomColorsPalette.current.textFieldIcon.copy(
+                                alpha = 0.3f
+                            )
+                        )
+                    }
+                },
+                onValueChange = {}
+            )
         }
     }
         if (showTimePicker && !arrayListOf(
