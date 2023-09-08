@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material.Divider
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
@@ -25,8 +26,10 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.input.VisualTransformation
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import id.worx.device.client.R
+import id.worx.device.client.theme.GrayDivider
 import id.worx.device.client.theme.WorxCustomColorsPalette
 import id.worx.device.client.theme.PrimaryMain
 import id.worx.device.client.theme.Typography
@@ -47,7 +50,9 @@ fun WorxTextField(
     isEnabled: Boolean = true,
     viewModel: DetailFormViewModel? = null,
     index: Int = -1,
-    allowMultiline: Boolean = false
+    allowMultiline: Boolean = false,
+    isShowDivider: Boolean = true,
+    horizontalPadding: Dp = 16.dp,
 ) {
     var textValue by remember { mutableStateOf(initialValue) }
     val data = viewModel?.uiState?.collectAsState()?.value?.detailForm?.fields?.getOrNull(index)
@@ -55,15 +60,16 @@ fun WorxTextField(
     Log.i("MULTILIN", allowMultiline.toString())
 
     Column(
-        modifier = Modifier.padding(horizontal = 16.dp)
+        modifier = Modifier.padding(horizontal = horizontalPadding)
     ) {
         var passwordVisible by rememberSaveable { mutableStateOf(false) }
         TextField(
             colors = TextFieldDefaults.textFieldColors(
                 backgroundColor = WorxCustomColorsPalette.current.textFieldContainer,
                 focusedLabelColor = WorxCustomColorsPalette.current.textFieldFocusedLabel,
-                unfocusedLabelColor = WorxCustomColorsPalette.current.textFieldUnfocusedLabel,
                 focusedIndicatorColor = WorxCustomColorsPalette.current.textFieldFocusedIndicator,
+                unfocusedLabelColor = WorxCustomColorsPalette.current.textFieldUnfocusedLabel,
+                unfocusedIndicatorColor = WorxCustomColorsPalette.current.textFieldUnfocusedIndicator,
                 cursorColor = MaterialTheme.colors.onSecondary
             ),
             modifier = Modifier
@@ -123,7 +129,7 @@ fun WorxTextField(
                             .clickable {
                                 textValue = TextFieldValue("")
                             },
-                        tint = MaterialTheme.colors.onSecondary
+                        tint = WorxCustomColorsPalette.current.textFieldIcon
                     )
                 }
             }
@@ -139,6 +145,13 @@ fun WorxTextField(
             data?.isValid = false
         } else {
             data?.isValid = true
+        }
+
+        if (isShowDivider) {
+            Divider(
+                color = GrayDivider,
+                modifier = Modifier.padding(vertical = 16.dp)
+            )
         }
     }
 }

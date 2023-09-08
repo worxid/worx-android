@@ -106,11 +106,11 @@ fun ImageDataView(
         ) {
             Text(
                 text = filePath.substringAfterLast("/"),
-                style = Typography.body2.copy(MaterialTheme.colors.onSecondary)
+                style = Typography.body2.copy(WorxCustomColorsPalette.current.text)
             )
             if (fileSize > 0) Text(
                 text = "$fileSize kb",
-                style = Typography.body2.copy(MaterialTheme.colors.onSecondary)
+                style = Typography.body2.copy(WorxCustomColorsPalette.current.subText)
             )
         }
         if (showCloseButton) {
@@ -121,7 +121,7 @@ fun ImageDataView(
                     .align(Alignment.CenterVertically),
                 painter = painterResource(id = R.drawable.ic_delete_circle),
                 contentDescription = "Clear File",
-                tint = MaterialTheme.colors.onSecondary
+                tint = WorxCustomColorsPalette.current.textFieldIcon
             )
         }
     }
@@ -162,7 +162,7 @@ private fun TakeImageButton(
 
     ActionRedButton(
         modifier = Modifier.padding(0.dp),
-        iconRes = R.drawable.ic_photo_camera,
+        iconRes = R.drawable.ic_camera,
         title = "Camera",
         actionClick = {
             if (!isMaxFilesNumberNotAchieved) {
@@ -226,7 +226,7 @@ private fun GalleryImageButton(
 
     ActionRedButton(
         modifier = Modifier.padding(horizontal = 16.dp),
-        iconRes = R.drawable.ic_image,
+        iconRes = R.drawable.ic_gallery,
         title = stringResource(R.string.gallery),
         actionClick = {
             if (!isMaxFilesNumberNotAchieved) {

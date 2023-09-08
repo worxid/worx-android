@@ -85,7 +85,7 @@ private fun AttachSignatureButton(
 
     ActionRedButton(
         modifier = Modifier.padding(horizontal = 16.dp),
-        iconRes = R.drawable.ic_signature_icon,
+        iconRes = R.drawable.ic_signature,
         title = stringResource(id = R.string.add_signature),
         actionClick = { goToSignaturePad() },
         theme = theme

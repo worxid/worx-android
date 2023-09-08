@@ -2,21 +2,26 @@ package id.worx.device.client.screen
 
 import android.util.Log
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
@@ -34,7 +39,10 @@ import id.worx.device.client.model.fieldmodel.TextField
 import id.worx.device.client.model.fieldmodel.TextFieldValue
 import id.worx.device.client.screen.components.*
 import id.worx.device.client.theme.GrayDivider
+import id.worx.device.client.theme.PrimaryMainGreen
 import id.worx.device.client.theme.Typography
+import id.worx.device.client.theme.WorxCustomColorsPalette
+import id.worx.device.client.theme.WorxTheme
 import id.worx.device.client.viewmodel.CameraViewModel
 import id.worx.device.client.viewmodel.DetailFormViewModel
 import id.worx.device.client.viewmodel.EventStatus
@@ -75,26 +83,33 @@ fun ValidFormBuilder(
             scannerViewModel,
             session,
             validation,
-        )
-        {
-            showSubmitDialog = true
-            scope.launch {
-                state.animateTo(ModalBottomSheetValue.Expanded)
+            showSubmitDialog = {
+                showSubmitDialog = true
+                scope.launch {
+                    state.animateTo(ModalBottomSheetValue.Expanded)
+                }
             }
-        }
+        )
+
         if (showSubmitDialog) {
             DialogSubmitForm(
-                viewModel,
-                session,
-                state,
-                {
+                viewModel = viewModel,
+                session = session,
+                submitForm = {
                     validation = true
                     if (totalNonValidData == 0) {
                         onEvent(DetailFormEvent.SubmitForm)
                     }
                     showSubmitDialog = false
                 },
-                { showDraftDialog = true })
+                saveDraftForm = {
+                    showSubmitDialog = false
+                    showDraftDialog = true
+                },
+                onCancel = {
+                    showSubmitDialog = false
+                }
+            )
         }
         if (showDraftDialog) {
             DialogDraftForm(
@@ -121,6 +136,9 @@ fun DetailForm(
     val formStatus = viewModel.uiState.collectAsState().value.status
     val detailForm = viewModel.uiState.collectAsState().value.detailForm
 
+    val submitText = stringResource(R.string.text_submit)
+    var submitLabel by remember { mutableStateOf(submitText) }
+
     LaunchedEffect(key1 = listState.isScrollInProgress) {
         if (!listState.isScrollInProgress) {
             viewModel.indexScroll.value = listState.firstVisibleItemIndex
@@ -135,26 +153,14 @@ fun DetailForm(
             .fillMaxSize()
     ) {
         val (lazyColumn, btnSubmit) = createRefs()
-        var modifier = Modifier
-            .constrainAs(lazyColumn) {
-                top.linkTo(parent.top)
-                start.linkTo(parent.start)
-                bottom.linkTo(parent.bottom)
-                end.linkTo(parent.end)
-                width = Dimension.fillToConstraints
-                height = Dimension.fillToConstraints
-            }
-            .navigationBarsPadding()
-            .imePadding()
-            .padding(vertical = 12.dp)
 
-
-        if (detailForm is EmptyForm || (detailForm is SubmitForm && detailForm.status == 0)) {
+        LazyColumn(
+            state = listState,
             modifier = Modifier
                 .constrainAs(lazyColumn) {
                     top.linkTo(parent.top)
                     start.linkTo(parent.start)
-                    bottom.linkTo(btnSubmit.top)
+                    bottom.linkTo(parent.bottom)
                     end.linkTo(parent.end)
                     width = Dimension.fillToConstraints
                     height = Dimension.fillToConstraints
@@ -162,10 +168,7 @@ fun DetailForm(
                 .navigationBarsPadding()
                 .imePadding()
                 .padding(vertical = 12.dp)
-        }
-        LazyColumn(
-            state = listState,
-            modifier = modifier,
+            ,
             contentPadding = WindowInsets.statusBars.only(WindowInsetsSides.Horizontal + WindowInsetsSides.Top)
                 .asPaddingValues()
         ) {
@@ -271,8 +274,10 @@ fun DetailForm(
                                 text = "Unknown component ${item.type}",
                                 style = Typography.body1.copy(color = Color.Black)
                             )
-                            Divider(color = GrayDivider,
-                                modifier = Modifier.padding(vertical = 16.dp))
+                            Divider(
+                                color = WorxCustomColorsPalette.current.divider,
+                                modifier = Modifier.padding(vertical = 16.dp)
+                            )
                         }
                     }
                 }
@@ -280,104 +285,201 @@ fun DetailForm(
         }
 
         if (detailForm is EmptyForm || (detailForm is SubmitForm && detailForm.status == 0)) {
-            RedFullWidthButton(
+            submitLabel = if (listState.isScrollingUp()) submitText else ""
+
+            WorxFormSubmitButton(
                 onClickCallback = { showSubmitDialog() },
-                label = "Submit",
+                label = submitLabel,
                 modifier = Modifier
-                    .padding(vertical = 16.dp)
                     .constrainAs(btnSubmit) {
-                        bottom.linkTo(parent.bottom)
-                        start.linkTo(parent.start)
-                        end.linkTo(parent.end)
-                        width = Dimension.fillToConstraints
+                        bottom.linkTo(parent.bottom, 16.dp)
+                        end.linkTo(parent.end, 16.dp)
                     }
             )
         }
     }
 }
 
-@OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun DialogSubmitForm(
     viewModel: DetailFormViewModel,
     session: Session,
-    state: ModalBottomSheetState,
     submitForm: () -> Unit,
     saveDraftForm: () -> Unit,
+    onCancel: () -> Unit,
 ) {
     val progress = viewModel.formProgress.value
     val separatorCount =
         viewModel.uiState.collectAsState().value.detailForm?.fields?.count { it.type == Type.Separator.type }
-    val fieldsNo = separatorCount?.let {
-        viewModel.uiState.collectAsState().value.detailForm?.fields?.size?.minus(
-            it)
-    }
+    val fieldTotal = separatorCount?.let {
+        viewModel.uiState.collectAsState().value.detailForm?.fields?.size?.minus(it) ?: 0
+    } ?: 0
+    val fieldFilled = viewModel.uiState.collectAsState().value.values.count { it.value != null }
 
-    ModalBottomSheetLayout(
-        sheetState = state,
-        sheetContent = {
-            Column(
+    DialogSubmitForm(
+        session = session,
+        progress = progress,
+        fieldTotal = fieldTotal,
+        fieldFilled = fieldFilled,
+        submitForm = submitForm,
+        saveDraftForm = saveDraftForm,
+        onCancel = onCancel,
+    )
+}
+
+@Composable
+fun DialogSubmitForm(
+    session: Session,
+    progress: Int,
+    fieldTotal: Int,
+    fieldFilled: Int,
+    submitForm: () -> Unit,
+    saveDraftForm: () -> Unit,
+    onCancel: () -> Unit,
+) {
+    Dialog(
+        content = {
+            ConstraintLayout(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .wrapContentHeight()
+                    .clip(shape = RoundedCornerShape(2.dp))
                     .background(MaterialTheme.colors.secondary),
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.spacedBy(20.dp)
             ) {
+                val (
+                    title,
+                    icon,
+                    description,
+                    divider1,
+                    submit,
+                    divider2,
+                    saveDraft,
+                    divider3,
+                    cancel,
+                ) = createRefs()
+
                 Text(
-                    modifier = Modifier.padding(top = 24.dp),
-                    text = "Submit",
-                    style = Typography.subtitle1.copy(MaterialTheme.colors.onSecondary)
+                    text = "Submit Form",
+                    style = Typography.body2.copy(WorxCustomColorsPalette.current.textFieldColor),
+                    fontWeight = FontWeight.Bold,
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier.constrainAs(title) {
+                        top.linkTo(parent.top, 24.dp)
+                        start.linkTo(parent.start, 16.dp)
+                        end.linkTo(parent.end, 16.dp)
+
+                        width = Dimension.fillToConstraints
+                    }
                 )
+
                 Box(
                     modifier = Modifier
-                        .align(Alignment.CenterHorizontally)
                         .wrapContentSize()
+                        .constrainAs(icon) {
+                            top.linkTo(title.bottom, 16.dp)
+                            start.linkTo(title.start)
+                            end.linkTo(title.end)
+                        }
                 ) {
                     CircularProgressIndicator(
                         progress = 1f,
                         modifier = Modifier
-                            .width(102.dp)
-                            .height(102.dp),
+                            .width(56.dp)
+                            .height(56.dp),
                         color = Color(0xFFEAEAEA),
                         strokeWidth = 3.5.dp
                     )
                     CircularProgressIndicator(
                         progress = progress / 100.toFloat(),
                         modifier = Modifier
-                            .width(102.dp)
-                            .height(102.dp),
-                        color = MaterialTheme.colors.onBackground,
+                            .width(56.dp)
+                            .height(56.dp),
+                        color = PrimaryMainGreen,
                         strokeWidth = 3.5.dp
                     )
-                    Icon(
-                        modifier = Modifier.align(Alignment.Center),
-                        painter = painterResource(R.drawable.ic_red_triangle_warning),
-                        contentDescription = "Image Warning",
-                        tint = MaterialTheme.colors.onBackground
-                    )
+//                    Icon(
+//                        modifier = Modifier.align(Alignment.Center),
+//                        painter = painterResource(R.drawable.ic_red_triangle_warning),
+//                        contentDescription = "Image Warning",
+//                        tint = MaterialTheme.colors.onBackground
+//                    )
                 }
-                val fieldFilled =
-                    viewModel.uiState.collectAsState().value.values.count { it.value != null }
+
                 Text(
-                    text = "$fieldFilled of $fieldsNo Fields Answered",
-                    style = Typography.body2.copy(MaterialTheme.colors.onSecondary.copy(0.54f))
+                    text = "$fieldFilled of $fieldTotal field answered",
+                    style = Typography.body2.copy(WorxCustomColorsPalette.current.textFieldColor),
+                    modifier = Modifier.constrainAs(description) {
+                        top.linkTo(icon.bottom, 16.dp)
+                        start.linkTo(title.start)
+                        end.linkTo(title.end)
+                    }
                 )
-                RedFullWidthButton(
-                    onClickCallback = { submitForm() },
-                    label = "Submit Form",
-                    modifier = Modifier.padding()
+
+                Divider(
+                    color = WorxCustomColorsPalette.current.divider,
+                    modifier = Modifier.constrainAs(divider1) {
+                        top.linkTo(description.bottom, 24.dp)
+                        start.linkTo(parent.start)
+                        end.linkTo(parent.end)
+                    }
                 )
+
                 Text(
+                    text = "Submit",
+                    style = Typography.body2.copy(WorxCustomColorsPalette.current.textFieldFocusedLabel),
+                    modifier = Modifier
+                        .clickable { submitForm() }
+                        .constrainAs(submit) {
+                            top.linkTo(divider1.bottom, 16.dp)
+                            start.linkTo(title.start)
+                            end.linkTo(title.end)
+                        }
+                )
+
+                Divider(
+                    color = WorxCustomColorsPalette.current.divider,
+                    modifier = Modifier.constrainAs(divider2) {
+                        top.linkTo(submit.bottom, 16.dp)
+                        start.linkTo(parent.start)
+                        end.linkTo(parent.end)
+                    }
+                )
+
+                Text(
+                    text = "Save Draft",
+                    style = Typography.body2.copy(WorxCustomColorsPalette.current.textFieldUnfocusedLabel),
                     modifier = Modifier
                         .clickable { saveDraftForm() }
-                        .padding(bottom = 24.dp),
-                    text = "Save Draft",
-                    style = Typography.button.copy(MaterialTheme.colors.onBackground)
+                        .constrainAs(saveDraft) {
+                            top.linkTo(divider2.bottom, 16.dp)
+                            start.linkTo(title.start)
+                            end.linkTo(title.end)
+                        }
+                )
+
+                Divider(
+                    color = WorxCustomColorsPalette.current.divider,
+                    modifier = Modifier.constrainAs(divider3) {
+                        top.linkTo(saveDraft.bottom, 16.dp)
+                        start.linkTo(parent.start)
+                        end.linkTo(parent.end)
+                    }
+                )
+
+                Text(
+                    text = "Cancel",
+                    style = Typography.body2.copy(WorxCustomColorsPalette.current.textFieldUnfocusedLabel),
+                    modifier = Modifier
+                        .clickable { onCancel() }
+                        .constrainAs(cancel) {
+                            top.linkTo(divider3.bottom, 16.dp)
+                            start.linkTo(title.start)
+                            end.linkTo(title.end)
+                            bottom.linkTo(parent.bottom, 16.dp)
+                        }
                 )
             }
         },
-        content = {}
+        onDismissRequest = {}
     )
 }
 
@@ -392,31 +494,41 @@ fun DialogDraftForm(
             Column(
                 modifier = Modifier
                     .wrapContentSize()
+                    .clip(shape = RoundedCornerShape(2.dp))
                     .background(MaterialTheme.colors.secondary)
-                    .border(1.5.dp, Color.Black)
-                    .padding(20.dp),
-                verticalArrangement = Arrangement.spacedBy(20.dp)
+                    .padding(horizontal = 16.dp, vertical = 24.dp),
             ) {
                 Text(
-                    modifier = Modifier.padding(top = 20.dp),
-                    text = "Save draft?",
-                    style = Typography.button.copy(MaterialTheme.colors.onSecondary)
+                    text = "Save draft",
+                    style = Typography.body2.copy(WorxCustomColorsPalette.current.textFieldColor),
+                    fontWeight = FontWeight.Bold,
                 )
+
+                Spacer(modifier = Modifier.height(8.dp))
+
                 Text(
                     text = stringResource(R.string.text_save_draft_desc),
-                    style = Typography.body2.copy(MaterialTheme.colors.onSecondary.copy(0.54f))
+                    style = Typography.body2.copy(WorxCustomColorsPalette.current.textFieldColor)
                 )
+
+                Spacer(modifier = Modifier.height(8.dp))
+
                 WorxTextField(
                     label = "",
                     hint = stringResource(R.string.draft_descr),
                     inputType = KeyboardOptions(keyboardType = KeyboardType.Text),
                     onValueChange = { draftDescription = it },
-                    allowMultiline = false
+                    allowMultiline = false,
+                    isShowDivider = false,
+                    horizontalPadding = 0.dp,
                 )
+
+                Spacer(modifier = Modifier.height(24.dp))
+
                 Row(
                     modifier = Modifier
                         .align(Alignment.End)
-                        .padding(bottom = 20.dp),
+                        .padding(end = 16.dp),
                     horizontalArrangement = Arrangement.spacedBy(20.dp)
                 ) {
                     Text(text = "Cancel",
@@ -432,6 +544,24 @@ fun DialogDraftForm(
     )
 }
 
+@Composable
+private fun LazyListState.isScrollingUp(): Boolean {
+    var previousIndex by remember(this) { mutableStateOf(firstVisibleItemIndex) }
+    var previousScrollOffset by remember(this) { mutableStateOf(firstVisibleItemScrollOffset) }
+    return remember(this) {
+        derivedStateOf {
+            if (previousIndex != firstVisibleItemIndex) {
+                previousIndex > firstVisibleItemIndex
+            } else {
+                previousScrollOffset >= firstVisibleItemScrollOffset
+            }.also {
+                previousIndex = firstVisibleItemIndex
+                previousScrollOffset = firstVisibleItemScrollOffset
+            }
+        }
+    }.value
+}
+
 @Preview(name = "PreviewDetailForm", showSystemUi = true)
 @Composable
 fun PreviewFormComponent() {
@@ -439,4 +569,31 @@ fun PreviewFormComponent() {
     val cameraViewModel: CameraViewModel = hiltViewModel()
 
     //ValidFormBuilder(list, viewModel, cameraViewModel)
+}
+
+@Preview
+@Composable
+fun DialogSubmitFormPreview() {
+    WorxTheme {
+        DialogSubmitForm(
+            session = Session(LocalContext.current),
+            progress = 30,
+            fieldTotal = 6,
+            fieldFilled = 1,
+            submitForm = {},
+            saveDraftForm = {},
+            onCancel = {}
+        )
+    }
+}
+
+@Preview
+@Composable
+fun DialogDraftFormPreview() {
+    WorxTheme {
+        DialogDraftForm(
+            saveDraft = {},
+            closeDialog = {},
+        )
+    }
 }

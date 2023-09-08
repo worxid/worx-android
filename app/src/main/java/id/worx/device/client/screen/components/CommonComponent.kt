@@ -5,6 +5,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -12,6 +13,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.CircularProgressIndicator
+import androidx.compose.material.Divider
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
@@ -35,6 +37,7 @@ import androidx.compose.ui.unit.dp
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import id.worx.device.client.screen.main.SettingTheme
 import id.worx.device.client.screen.welcome.WelcomeEvent
+import id.worx.device.client.theme.PrimaryMain
 import id.worx.device.client.theme.WorxCustomColorsPalette
 import id.worx.device.client.theme.Typography
 
@@ -106,28 +109,23 @@ fun ActionRedButton(
     actionClick: () -> Unit
 ) {
     Row(
-        modifier = modifier
-            .clip(shape = RoundedCornerShape(4.dp))
-            .background(
-                if (theme == SettingTheme.Dark)
-                    Color.White else MaterialTheme.colors.background.copy(
-                    alpha = 0.1f
-                )
-            )
-            .clickable { actionClick() }
-            .padding(8.dp),
+        modifier = modifier.clickable { actionClick() },
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
         Icon(
+            modifier = Modifier
+                .clip(RoundedCornerShape(2.dp))
+                .background(WorxCustomColorsPalette.current.textFieldFocusedLabel)
+                .padding(8.dp),
             painter = painterResource(id = iconRes),
             contentDescription = "Icon",
-            tint = MaterialTheme.colors.onBackground
+            tint = Color.White,
         )
         Text(
             modifier = Modifier.padding(start = 8.dp, end = 1.dp),
             text = title,
-            style = Typography.body2.copy(MaterialTheme.colors.onBackground),
+            style = Typography.body2.copy(WorxCustomColorsPalette.current.textFieldFocusedLabel),
         )
     }
 }
@@ -137,58 +135,73 @@ fun WorxTopAppBar(
     onBack: () -> Unit,
     progress: Int? = null,
     title: String,
-    useProgressBar: Boolean = true
+    useProgressBar: Boolean = true,
+    isShowBackButton: Boolean = true,
 ) {
-    TopAppBar(
-        modifier = Modifier.fillMaxWidth(),
-        backgroundColor = MaterialTheme.colors.primary,
-        contentColor = MaterialTheme.colors.onPrimary
-    ) {
-        Row(
+    Column {
+        TopAppBar(
             modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
+            backgroundColor = WorxCustomColorsPalette.current.appBar,
+            contentColor = Color.White
         ) {
-            IconButton(
-                onClick = onBack,
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
             ) {
-                Icon(Icons.Default.ArrowBack, contentDescription = "Back Button")
-            }
-            Text(
-                text = title,
-                style = Typography.h6,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis,
-                modifier = Modifier
-                    .weight(1f, fill = true),
-                textAlign = TextAlign.Center
-            )
-            Box {
-                if (progress != null) {
-                    CircularProgressIndicator(
-                        progress = progress / 100.toFloat(),
-                        modifier = Modifier
-                            .padding(horizontal = 16.dp)
-                            .align(Alignment.CenterEnd)
-                            .scale(0.75f),
-                        color = Color.White,
-                        strokeWidth = 3.dp,
-                    )
+                if (isShowBackButton) {
+                    IconButton(
+                        onClick = onBack,
+                    ) {
+                        Icon(
+                            Icons.Default.ArrowBack,
+                            contentDescription = "Back Button",
+                            tint = Color.White,
+                        )
+                    }
                 }
-                if (useProgressBar) {
-                    CircularProgressIndicator(
-                        progress = 1f,
-                        modifier = Modifier
-                            .padding(horizontal = 16.dp)
-                            .align(Alignment.CenterEnd)
-                            .scale(0.75f),
-                        color = Color.White.copy(0.3f),
-                        strokeWidth = 3.dp,
-                    )
-                }
-            }
 
+                Text(
+                    text = title,
+                    style = Typography.h6,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                    modifier = Modifier
+                        .weight(1f, fill = true),
+                    textAlign = TextAlign.Center,
+                    color = Color.White,
+                )
+                Box {
+                    if (progress != null) {
+                        CircularProgressIndicator(
+                            progress = progress / 100.toFloat(),
+                            modifier = Modifier
+                                .padding(horizontal = 16.dp)
+                                .align(Alignment.CenterEnd)
+                                .scale(0.75f),
+                            color = Color.White,
+                            strokeWidth = 3.dp,
+                        )
+                    }
+                    if (useProgressBar) {
+                        CircularProgressIndicator(
+                            progress = 1f,
+                            modifier = Modifier
+                                .padding(horizontal = 16.dp)
+                                .align(Alignment.CenterEnd)
+                                .scale(0.75f),
+                            color = Color.White.copy(0.3f),
+                            strokeWidth = 3.dp,
+                        )
+                    }
+                }
+            }
         }
+
+        Divider(
+            modifier = Modifier.fillMaxWidth(),
+            color = WorxCustomColorsPalette.current.appBarDivider,
+        )
     }
 }
 
