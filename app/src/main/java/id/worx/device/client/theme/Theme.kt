@@ -106,8 +106,7 @@ val WorxLightColorsPalette = WorxColorsPalette(
     homeBackground = backgroundFormList,
     bottomNavigationBorder = LightThemeColorsSystem.onSecondary,
     draftLinearProgressIndicator = Alto,
-    draftCompletedLinearProgressIndicator = PrimaryMainGreen
-    bottomNavigationBorder = LightThemeColorsSystem.onSecondary,
+    draftCompletedLinearProgressIndicator = PrimaryMainGreen,
     divider = Color.Black.copy(alpha = 0.12f),
     optionBorder = Color.Black.copy(alpha = 0.54f),
     unselectedStar = Color.Black.copy(alpha = 0.38f),
@@ -140,8 +139,7 @@ val WorxDarkColorsPalette = WorxColorsPalette(
     homeBackground = Shark2,
     bottomNavigationBorder = Abbey2,
     draftLinearProgressIndicator = DoveGray,
-    draftCompletedLinearProgressIndicator = PrimaryMainGreen
-    bottomNavigationBorder = Abbey2,
+    draftCompletedLinearProgressIndicator = PrimaryMainGreen,
     divider = Color.White.copy(alpha = 0.12f),
     optionBorder = Color.White.copy(alpha = 0.54f),
     unselectedStar = Color.White.copy(alpha = 0.38f),
