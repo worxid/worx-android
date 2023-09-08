@@ -135,7 +135,8 @@ fun WorxTopAppBar(
     onBack: () -> Unit,
     progress: Int? = null,
     title: String,
-    useProgressBar: Boolean = true
+    useProgressBar: Boolean = true,
+    isShowBackButton: Boolean = true,
 ) {
     Column {
         TopAppBar(
@@ -148,15 +149,18 @@ fun WorxTopAppBar(
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                IconButton(
-                    onClick = onBack,
-                ) {
-                    Icon(
-                        Icons.Default.ArrowBack,
-                        contentDescription = "Back Button",
-                        tint = Color.White,
-                    )
+                if (isShowBackButton) {
+                    IconButton(
+                        onClick = onBack,
+                    ) {
+                        Icon(
+                            Icons.Default.ArrowBack,
+                            contentDescription = "Back Button",
+                            tint = Color.White,
+                        )
+                    }
                 }
+
                 Text(
                     text = title,
                     style = Typography.h6,

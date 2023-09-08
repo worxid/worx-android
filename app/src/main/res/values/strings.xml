@@ -48,6 +48,7 @@
     <string name="erase">Hapus</string>
     <string name="preview">Preview</string>
     <string name="clear">Clear</string>
+    <string name="clear_signature">Clear Signature</string>
     <string name="save">Simpan</string>
     <string name="save_eng">Save</string>
     <string name="draft_descr">Description (Optional)</string>
