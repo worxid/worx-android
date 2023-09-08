@@ -8,8 +8,10 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.CircularProgressIndicator
@@ -22,6 +24,7 @@ import androidx.compose.material.Text
 import androidx.compose.material.TopAppBar
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.SideEffect
 import androidx.compose.ui.Alignment
@@ -35,11 +38,9 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
-import id.worx.device.client.screen.main.SettingTheme
 import id.worx.device.client.screen.welcome.WelcomeEvent
-import id.worx.device.client.theme.PrimaryMain
-import id.worx.device.client.theme.WorxCustomColorsPalette
 import id.worx.device.client.theme.Typography
+import id.worx.device.client.theme.WorxCustomColorsPalette
 
 enum class TransparentButtonType {
     NEGATIVE,
@@ -105,7 +106,6 @@ fun ActionRedButton(
     modifier: Modifier,
     iconRes: Int,
     title: String,
-    theme: String?,
     actionClick: () -> Unit
 ) {
     Row(
@@ -137,6 +137,8 @@ fun WorxTopAppBar(
     title: String,
     useProgressBar: Boolean = true,
     isShowBackButton: Boolean = true,
+    isShowMoreOptions: Boolean = false,
+    onClickMoreOptions: () -> Unit = {}
 ) {
     Column {
         TopAppBar(
@@ -194,6 +196,16 @@ fun WorxTopAppBar(
                             strokeWidth = 3.dp,
                         )
                     }
+                }
+
+                if (isShowMoreOptions) {
+                    Spacer(modifier = Modifier.width(10.dp))
+                    Icon(
+                        modifier = Modifier.
+                        clickable { onClickMoreOptions() },
+                        imageVector = Icons.Default.MoreVert,
+                        contentDescription = "option more"
+                    )
                 }
             }
         }

@@ -118,7 +118,7 @@ private fun AttachFileButton(
                     }
                 }
             }
-        }, theme = theme
+        }
     )
 }
 

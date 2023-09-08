@@ -408,10 +408,13 @@ class DetailFormViewModel @Inject constructor(
         }
     }
 
-    fun deleteDraft(draftForm: SubmitForm) {
+    fun deleteDraft(draftForm: SubmitForm, isFromDetailPage: Boolean = false) {
         viewModelScope.launch(Dispatchers.IO) {
             draftForm.dbId?.let {
                 dataSourceRepo.deleteSubmitFormById(it)
+            }
+            if (isFromDetailPage) {
+                _navigateTo.value = Event(MainScreen.Home)
             }
         }
     }

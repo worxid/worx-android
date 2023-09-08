@@ -361,7 +361,6 @@ fun DraftItemForm(
     viewModel: HomeViewModelImpl,
     detailFormViewModel: DetailFormViewModel
 ) {
-    var isExpanded by remember { mutableStateOf(false) }
     Column(
         modifier = Modifier.fillMaxWidth()
     ) {
@@ -400,7 +399,7 @@ fun DraftItemForm(
                     )
                 }
                 Spacer(modifier = Modifier.height(2.dp))
-                AnimatedVisibility(visible = isExpanded) {
+//                AnimatedVisibility(visible = isExpanded) {
                     Text(
                         text = item.description.toString(),
                         overflow = TextOverflow.Ellipsis,
@@ -409,7 +408,7 @@ fun DraftItemForm(
                         color = MaterialTheme.colors.onSecondary.copy(alpha = 0.6f)
                     )
                     Spacer(modifier = Modifier.height(4.dp))
-                }
+//                }
                 Text(
                     text = "Saved on ${item.lastUpdated}",
                     overflow = TextOverflow.Ellipsis,
@@ -419,12 +418,12 @@ fun DraftItemForm(
                 )
             }
             Spacer(modifier = Modifier.weight(1f))
-            Icon(
-                imageVector = if (isExpanded) Icons.Outlined.ArrowBackIosNew else Icons.Outlined.KeyboardArrowDown,
-                contentDescription = null,
-                modifier = Modifier.clickable { isExpanded = !isExpanded },
-                tint = MaterialTheme.colors.onSecondary.copy(alpha = 0.54f)
-            )
+//            Icon(
+//                imageVector = if (isExpanded) Icons.Outlined.ArrowBackIosNew else Icons.Outlined.KeyboardArrowDown,
+//                contentDescription = null,
+//                modifier = Modifier.clickable { isExpanded = !isExpanded },
+//                tint = MaterialTheme.colors.onSecondary.copy(alpha = 0.54f)
+//            )
         }
         Box(
             modifier = Modifier
