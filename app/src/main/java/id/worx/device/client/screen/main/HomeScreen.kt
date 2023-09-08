@@ -195,7 +195,6 @@ fun HomeScreen(
                     submissionList = submissionList,
                     viewModel = viewModel,
                     detailVM = detailVM,
-                    session = session,
                     selectedSort = selectedSort,
                     syncWithServer = syncWithServer,
                     openSortBottomSheet = openSortBottomSheet,
