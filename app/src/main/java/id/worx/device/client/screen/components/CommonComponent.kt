@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.ButtonDefaults
@@ -180,7 +181,7 @@ fun WorxTopAppBar(
                             modifier = Modifier
                                 .padding(horizontal = 16.dp)
                                 .align(Alignment.CenterEnd)
-                                .scale(0.75f),
+                                .size(20.dp),
                             color = Color.White,
                             strokeWidth = 3.dp,
                         )
@@ -191,7 +192,7 @@ fun WorxTopAppBar(
                             modifier = Modifier
                                 .padding(horizontal = 16.dp)
                                 .align(Alignment.CenterEnd)
-                                .scale(0.75f),
+                                .size(20.dp),
                             color = Color.White.copy(0.3f),
                             strokeWidth = 3.dp,
                         )
@@ -199,13 +200,13 @@ fun WorxTopAppBar(
                 }
 
                 if (isShowMoreOptions) {
-                    Spacer(modifier = Modifier.width(10.dp))
                     Icon(
                         modifier = Modifier.
                         clickable { onClickMoreOptions() },
                         imageVector = Icons.Default.MoreVert,
                         contentDescription = "option more"
                     )
+                    Spacer(modifier = Modifier.width(16.dp))
                 }
             }
         }
