@@ -2,7 +2,6 @@ package id.worx.device.client.viewmodel
 
 import android.os.Build
 import android.util.Log
-import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
@@ -58,7 +57,7 @@ abstract class HomeViewModel : ViewModel() {
     abstract fun onSearchInputChanged(searchInput: String)
     abstract fun showNotification(typeOfNotification: Int)
     abstract fun showBadge(typeOfBadge: Int)
-    abstract fun syncWithServer(typeData: Int, viewLifecycleOwner: LifecycleOwner)
+    abstract fun syncWithServer(typeData: Int)
     abstract fun leaveTeam(
         onSuccess: () -> Unit,
         onError: () -> Unit,
@@ -91,7 +90,7 @@ class HomeViewModelImpl @Inject constructor(
     val showBadge: StateFlow<Int> = _showBadge
 
     init {
-        refreshData()
+        updateData()
     }
 
     override fun goToDetailScreen() {
@@ -115,7 +114,7 @@ class HomeViewModelImpl @Inject constructor(
     }
 
     fun onEvent(homeUiEvent: HomeUiEvent) {
-        when(homeUiEvent) {
+        when (homeUiEvent) {
             is HomeUiEvent.OnSortClicked -> onSortUpdated(homeUiEvent.sortModel)
         }
     }
@@ -124,41 +123,31 @@ class HomeViewModelImpl @Inject constructor(
         uiState.update {
             it.copy(selectedSort = formSortModel)
         }
-        refreshData()
+        syncWithServer(SyncServer.DOWNLOADFROMSERVER)
     }
 
     /**
      * Refresh data and update the UI state accordingly
      */
-    private fun refreshData() {
+    fun updateData() {
         // Ui state is refreshing
         uiState.value.isLoading = true
         val selectedSort = uiState.value.selectedSort
 
-        viewModelScope.launch {
-            repository.getAllDraftForm(formSortModel = selectedSort).collect { list ->
-                uiState.update {
-                    it.copy(drafts = list)
-                }
-            }
-        }
+        viewModelScope.launch(Dispatchers.IO) {
+            val getAllFormFromDB = repository.getAllFormFromDB(formSortModel = selectedSort)
+            val getAllDraft = repository.getAllDraftForm(formSortModel = selectedSort)
+            val getAllSubmission = repository.getAllSubmission(formSortModel = selectedSort)
 
-        viewModelScope.launch {
-            repository.getAllSubmission(formSortModel = selectedSort).collect { list ->
-                uiState.update {
-                    it.copy(submission = list)
-                }
+            uiState.update {
+                it.copy(
+                    list = getAllFormFromDB,
+                    drafts = getAllDraft,
+                    submission = getAllSubmission,
+                    isLoading = false,
+                    errorMessages = ""
+                )
             }
-        }
-
-        viewModelScope.launch {
-            repository.getAllFormFromDB(formSortModel = selectedSort).collect { list ->
-                uiState.update {
-                    it.copy(list = list, isLoading = false)
-                }
-            }
-            uiState.value.isLoading = false
-            uiState.value.errorMessages = ""
         }
     }
 
@@ -185,9 +174,9 @@ class HomeViewModelImpl @Inject constructor(
         _showBadge.value = typeOfBadge
     }
 
-    override fun syncWithServer(typeData: Int, viewLifecycleOwner: LifecycleOwner) {
+    override fun syncWithServer(typeData: Int) {
         viewModelScope.launch {
-            syncServerWork.syncWithServer(typeData, viewLifecycleOwner) { refreshData() }
+            syncServerWork.syncWithServer(typeData)
         }
     }
 
@@ -224,7 +213,8 @@ class HomeViewModelImpl @Inject constructor(
                     session.saveOrganizationCode(organizationKey)
                 } else if (response.code() == 404) {
                     val jsonString = response.errorBody()!!.charStream()
-                    val errorResponse = Gson().fromJson(jsonString, ResponseDeviceInfo::class.java)
+                    val errorResponse =
+                        Gson().fromJson(jsonString, ResponseDeviceInfo::class.java)
                     if (errorResponse?.error?.status == "ENTITY_NOT_FOUND_ERROR")
                         uiHandler.showToast(errorResponse.error?.status!!)
                 } else {
@@ -277,7 +267,7 @@ class HomeVMPrev : HomeViewModel() {
     override fun onSearchInputChanged(searchInput: String) {}
     override fun showNotification(typeOfNotification: Int) {}
     override fun showBadge(typeOfBadge: Int) {}
-    override fun syncWithServer(typeData: Int, viewLifecycleOwner: LifecycleOwner) {}
+    override fun syncWithServer(typeData: Int) {}
     override fun leaveTeam(onSuccess: () -> Unit, onError: () -> Unit, deviceCode: String) {}
     override fun getDeviceInfo(session: Session) {}
     override fun updateDeviceInfo(session: Session) {}

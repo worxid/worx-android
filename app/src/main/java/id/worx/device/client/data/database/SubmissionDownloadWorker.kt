@@ -2,23 +2,18 @@ package id.worx.device.client.data.database
 
 import android.content.Context
 import android.util.Log
-import androidx.work.Worker
+import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
 import dagger.hilt.android.EntryPointAccessors
 import id.worx.device.client.repository.SourceDataRepository
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
 class SubmissionDownloadWorker(appContext: Context, workerParams: WorkerParameters) :
-    Worker(appContext, workerParams) {
+    CoroutineWorker(appContext, workerParams) {
 
-    @Inject
-    lateinit var repo: SourceDataRepository
+    @Inject lateinit var repo: SourceDataRepository
 
     init {
         val repoFactory = EntryPointAccessors.fromApplication(
@@ -28,7 +23,7 @@ class SubmissionDownloadWorker(appContext: Context, workerParams: WorkerParamete
         repo = repoFactory.formRepo
     }
 
-    override fun doWork(): Result {
+    override suspend fun doWork(): Result {
         return try {
             fetchSubmission(repo)
             Result.success()
@@ -37,20 +32,16 @@ class SubmissionDownloadWorker(appContext: Context, workerParams: WorkerParamete
         }
     }
 
-    private fun fetchSubmission(repo: SourceDataRepository) {
-        CoroutineScope(Dispatchers.IO).launch {
-            val response = repo.fetchAllSubmission()
-            withContext(Dispatchers.Main) {
-                if (response.isSuccessful) {
-                    val list = response.body()?.list
-                    if (list != null) {
-                        repo.addSubmissionFromApiToDb(list)
-                    }
-                } else {
-                    val errorMessage = "Error " + response.code().toString()
-                    Log.d(SourceDataRepository.TAG, errorMessage)
-                }
+    private suspend fun fetchSubmission(repo: SourceDataRepository) {
+        val response = repo.fetchAllSubmission()
+        if (response.isSuccessful) {
+            val list = response.body()?.list
+            if (list != null) {
+                repo.addSubmissionFromApiToDb(list)
             }
+        } else {
+            val errorMessage = "Error " + response.code().toString()
+            Log.d(SourceDataRepository.TAG, errorMessage)
         }
     }
 }
