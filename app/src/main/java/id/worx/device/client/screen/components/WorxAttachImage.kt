@@ -183,7 +183,7 @@ private fun TakeImageButton(
             } else {
                 launcherPermission.launch(requiredPermissions)
             }
-        }, theme = theme
+        }
     )
 }
 
@@ -259,7 +259,7 @@ private fun GalleryImageButton(
                     }
                 }
             }
-        }, theme = theme
+        }
     )
 }
 

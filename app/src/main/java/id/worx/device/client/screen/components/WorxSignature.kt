@@ -69,7 +69,7 @@ fun WorxSignature(indexForm: Int, viewModel: DetailFormViewModel, session: Sessi
                     formStatus
                 )
             ) {
-                AttachSignatureButton(theme = theme) {
+                AttachSignatureButton() {
                     viewModel.goToSignaturePad(indexForm)
                 }
             }
@@ -79,7 +79,6 @@ fun WorxSignature(indexForm: Int, viewModel: DetailFormViewModel, session: Sessi
 
 @Composable
 private fun AttachSignatureButton(
-    theme: String?,
     goToSignaturePad: () -> Unit,
 ) {
 
@@ -87,8 +86,7 @@ private fun AttachSignatureButton(
         modifier = Modifier.padding(horizontal = 16.dp),
         iconRes = R.drawable.ic_signature,
         title = stringResource(id = R.string.add_signature),
-        actionClick = { goToSignaturePad() },
-        theme = theme
+        actionClick = { goToSignaturePad() }
     )
 }
 

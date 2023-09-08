@@ -107,8 +107,7 @@ fun WorxSketch(
                 ActionRedButton(
                     modifier = Modifier,
                     iconRes = R.drawable.ic_line_thick,
-                    title = stringResource(id = R.string.draw_sketch),
-                    theme = theme
+                    title = stringResource(id = R.string.draw_sketch)
                 ) {
                     viewModel.goToSketch(indexForm)
                 }
