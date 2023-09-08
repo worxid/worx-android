@@ -7,11 +7,9 @@ import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface SubmitFormDAO {
-    @RawQuery(observedEntities = [SubmitForm::class])
-    fun getSubmitForm(query: SupportSQLiteQuery): Flow<List<SubmitForm>>
 
-    @Query("SELECT * FROM submit_form WHERE status = 0")
-    fun getAllDraft(): Flow<List<SubmitForm>>
+    @RawQuery(observedEntities = [SubmitForm::class])
+    suspend fun getSubmitForm(query: SupportSQLiteQuery): List<SubmitForm>
 
     @Query("SELECT * FROM submit_form WHERE status = 1")
     fun getAllUnsubmitted(): Flow<List<SubmitForm>>

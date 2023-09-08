@@ -10,7 +10,6 @@ import id.worx.device.client.model.ListFormResponse
 import id.worx.device.client.model.ListSubmissionResponse
 import id.worx.device.client.model.SubmitForm
 import id.worx.device.client.model.fieldmodel.FilePresignedUrlResponse
-import kotlinx.coroutines.flow.Flow
 import retrofit2.Response
 import javax.inject.Inject
 
@@ -34,7 +33,7 @@ class SourceDataRepository @Inject constructor(
         dao.deleteAndCreate(list)
     }
 
-    fun getAllFormFromDB(formSortModel: FormSortModel? = null): Flow<List<EmptyForm>> {
+    suspend fun getAllFormFromDB(formSortModel: FormSortModel? = null): List<EmptyForm> {
         if (formSortModel == null) {
             return dao.getAllForm()
         }
@@ -43,13 +42,13 @@ class SourceDataRepository @Inject constructor(
         return dao.getSortedAllForms(query)
     }
 
-    fun getAllDraftForm(formSortModel: FormSortModel): Flow<List<SubmitForm>> {
+    suspend fun getAllDraftForm(formSortModel: FormSortModel): List<SubmitForm> {
         val rawQuery = "SELECT * FROM submit_form WHERE status = 0 ORDER BY ${formSortModel.getSortQuery()}"
         val query = SimpleSQLiteQuery(rawQuery)
         return submitFormDAO.getSubmitForm(query)
     }
 
-    fun getAllSubmission(formSortModel: FormSortModel): Flow<List<SubmitForm>> {
+    suspend fun getAllSubmission(formSortModel: FormSortModel): List<SubmitForm> {
         val rawQuery = "SELECT * FROM submit_form WHERE status IN (1,2) ORDER BY ${formSortModel.getSortQuery()}"
         val query = SimpleSQLiteQuery(rawQuery)
         return submitFormDAO.getSubmitForm(query)

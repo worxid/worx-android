@@ -9,7 +9,6 @@ import android.util.Log
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.mutableStateOf
-import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -493,7 +492,7 @@ class DetailFormViewModel @Inject constructor(
         )
     }
 
-    private fun refreshData() {
+    fun refreshData() {
         viewModelScope.launch {
             val submitForm =
                 uiState.value.detailForm?.id?.let { dataSourceRepo.getSubmissionById(it) }
@@ -511,9 +510,9 @@ class DetailFormViewModel @Inject constructor(
     }
 
 
-    fun syncWithServer(typeData: Int, viewLifecycleOwner: LifecycleOwner) {
+    fun syncWithServer(typeData: Int) {
         viewModelScope.launch {
-            syncServerWork.syncWithServer(typeData, viewLifecycleOwner) { refreshData() }
+            syncServerWork.syncWithServer(typeData)
         }
     }
 }

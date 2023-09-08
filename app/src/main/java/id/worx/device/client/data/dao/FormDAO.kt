@@ -3,7 +3,6 @@ package id.worx.device.client.data.dao
 import androidx.room.*
 import androidx.sqlite.db.SupportSQLiteQuery
 import id.worx.device.client.model.EmptyForm
-import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface FormDAO {
@@ -14,10 +13,10 @@ interface FormDAO {
     }
 
     @RawQuery(observedEntities = [EmptyForm::class])
-    fun getSortedAllForms(query: SupportSQLiteQuery): Flow<List<EmptyForm>>
+    suspend fun getSortedAllForms(query: SupportSQLiteQuery): List<EmptyForm>
 
     @Query("SELECT * FROM form ORDER BY id ASC")
-    fun getAllForm(): Flow<List<EmptyForm>>
+    suspend fun getAllForm(): List<EmptyForm>
 
     @Query("SELECT * FROM form WHERE id IN (:id)")
     suspend fun loadFormById(id:Int): List<EmptyForm>
@@ -31,7 +30,7 @@ interface FormDAO {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertOrUpdateForm(form: EmptyForm)
 
-    @Insert
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insertAll(templateList: List<EmptyForm>)
 
 }

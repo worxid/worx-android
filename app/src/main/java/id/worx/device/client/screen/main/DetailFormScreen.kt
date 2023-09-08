@@ -31,7 +31,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -76,7 +75,6 @@ fun DetailFormScreen(
     val uistate = viewModel.uiState.collectAsState().value
     val formStatus = viewModel.uiState.collectAsState().value.status
     val showDialogLeaveForm = remember { mutableStateOf(false) }
-    val lifecycleOwner = LocalLifecycleOwner.current
     val sheetState = rememberModalBottomSheetState(initialValue = ModalBottomSheetValue.Hidden)
 
     BackHandler {
@@ -122,7 +120,7 @@ fun DetailFormScreen(
                 })
 
             WorxBoxPullRefresh(
-                onRefresh = { viewModel.syncWithServer(DOWNLOADFROMSERVER, lifecycleOwner) }
+                onRefresh = { viewModel.syncWithServer(DOWNLOADFROMSERVER) }
             ) {
 
                 ValidFormBuilder(

@@ -18,21 +18,21 @@ import javax.inject.Inject
 class SplashViewModel @Inject constructor(
     private val deviceInfoRepository: DeviceInfoRepository,
     private val sourceDataRepository: SourceDataRepository
-    ) : ViewModel() {
+) : ViewModel() {
 
     lateinit var uiHandler: UIHandler
 
-    private var _deviceStatus= MutableLiveData<String?>()
+    private var _deviceStatus = MutableLiveData<String?>()
     val deviceStatus: LiveData<String?> = _deviceStatus
 
-    fun getDeviceStatus(){
+    fun getDeviceStatus() {
         viewModelScope.launch {
-             val response = deviceInfoRepository.getDeviceStatus()
-            withContext(Dispatchers.Main){
-                if (response.isSuccessful){
+            val response = deviceInfoRepository.getDeviceStatus()
+            withContext(Dispatchers.Main) {
+                if (response.isSuccessful) {
                     val deviceStatus = response.body()?.value?.deviceStatus
                     _deviceStatus.postValue(deviceStatus)
-                } else if (response.code() == 404 ){
+                } else if (response.code() == 404) {
                     val jsonString = response.errorBody()!!.charStream()
                     val errorResponse = Gson().fromJson(jsonString, ResponseDeviceInfo::class.java)
                     if (errorResponse?.error?.status == "ENTITY_NOT_FOUND_ERROR")
@@ -46,11 +46,10 @@ class SplashViewModel @Inject constructor(
     }
 
     fun checkDatabase() {
-        viewModelScope.launch {
-            sourceDataRepository.getAllFormFromDB().collect {
-                if (it.isNotEmpty()){
-                    _deviceStatus.postValue("APPROVED")
-                }
+        viewModelScope.launch(Dispatchers.IO) {
+            val forms = sourceDataRepository.getAllFormFromDB()
+            if (forms.isNotEmpty()) {
+                _deviceStatus.postValue("APPROVED")
             }
         }
     }
