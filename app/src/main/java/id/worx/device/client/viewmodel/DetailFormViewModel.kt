@@ -9,7 +9,11 @@ import android.util.Log
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.mutableStateOf
-import androidx.lifecycle.*
+import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import id.worx.device.client.Event
 import id.worx.device.client.MainScreen
@@ -19,8 +23,17 @@ import id.worx.device.client.Util.initProgress
 import id.worx.device.client.WorxApplication
 import id.worx.device.client.data.api.SyncServer
 import id.worx.device.client.data.database.Session
-import id.worx.device.client.model.*
-import id.worx.device.client.model.fieldmodel.*
+import id.worx.device.client.model.BasicForm
+import id.worx.device.client.model.SubmitForm
+import id.worx.device.client.model.SubmitLocation
+import id.worx.device.client.model.Type
+import id.worx.device.client.model.Value
+import id.worx.device.client.model.fieldmodel.CheckBoxField
+import id.worx.device.client.model.fieldmodel.CheckBoxValue
+import id.worx.device.client.model.fieldmodel.FileValue
+import id.worx.device.client.model.fieldmodel.ImageValue
+import id.worx.device.client.model.fieldmodel.SignatureValue
+import id.worx.device.client.model.fieldmodel.SketchValue
 import id.worx.device.client.repository.SourceDataRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -30,8 +43,9 @@ import kotlinx.coroutines.withContext
 import net.gotev.uploadservice.protocols.binary.BinaryUploadRequest
 import java.io.File
 import java.io.FileOutputStream
-import java.util.*
+import java.util.Locale
 import javax.inject.Inject
+import kotlin.collections.set
 
 enum class EventStatus {
     Loading, Filling, Submitted, Done, Saved
@@ -59,7 +73,7 @@ class DetailFormViewModel @Inject constructor(
     var uiState = MutableStateFlow(DetailUiState())
 
     private val _toastMessage = MutableLiveData<Event<String>>()
-    val toastMessage : LiveData<Event<String>> = _toastMessage
+    val toastMessage: LiveData<Event<String>> = _toastMessage
 
     private val _navigateTo = MutableLiveData<Event<MainScreen>>()
     val navigateTo: LiveData<Event<MainScreen>> = _navigateTo
@@ -83,16 +97,24 @@ class DetailFormViewModel @Inject constructor(
      */
     fun navigateFromHomeScreen(form: BasicForm) {
         uiState.update {
-            if (form is SubmitForm) {
-                _formProgress.value = initProgress(form.values.toMutableMap(), form.fields)
-                var status = EventStatus.Filling
-                if (form.status == 2 || form.status == 1) {
-                    status = EventStatus.Done
+            when (form) {
+                is SubmitForm -> {
+                    _formProgress.value = initProgress(form.values.toMutableMap(), form.fields)
+                    var status = EventStatus.Filling
+                    if (form.status == 2 || form.status == 1) {
+                        status = EventStatus.Done
+                    }
+                    it.copy(detailForm = form, values = form.values.toMutableMap(), status = status)
                 }
-                it.copy(detailForm = form, values = form.values.toMutableMap(), status = status)
-            } else {
-                _formProgress.value = 0
-                it.copy(detailForm = form, values = mutableMapOf(), status = EventStatus.Filling)
+
+                else -> {
+                    _formProgress.value = 0
+                    it.copy(
+                        detailForm = form,
+                        values = mutableMapOf(),
+                        status = EventStatus.Filling
+                    )
+                }
             }
         }
     }
@@ -126,7 +148,7 @@ class DetailFormViewModel @Inject constructor(
     }
 
     fun goToCameraPhoto(index: Int? = null, navigateFrom: MainScreen) {
-        if (index != null){
+        if (index != null) {
             uiState.update {
                 it.copy(currentComponent = index)
             }
@@ -135,7 +157,7 @@ class DetailFormViewModel @Inject constructor(
         _navigateFrom.value = navigateFrom
     }
 
-    fun goToScannerBarcode(index: Int){
+    fun goToScannerBarcode(index: Int) {
         uiState.update {
             it.copy(currentComponent = index)
         }
@@ -149,7 +171,7 @@ class DetailFormViewModel @Inject constructor(
         _navigateTo.value = Event(MainScreen.SignaturePad)
     }
 
-    fun goToSketch(index: Int){
+    fun goToSketch(index: Int) {
         uiState.update {
             it.copy(currentComponent = index)
         }
@@ -164,7 +186,7 @@ class DetailFormViewModel @Inject constructor(
         _navigateTo.value = Event(MainScreen.Detail)
     }
 
-    fun saveSketch(bitmap: Bitmap, index: Int){
+    fun saveSketch(bitmap: Bitmap, index: Int) {
         val fileName = "sketch${uiState.value.detailForm!!.fields[index].id}"
         val filePath = createFileFromBitmap(fileName, bitmap)
         getPresignedUrlForSketch(index, bitmap, filePath)
@@ -187,7 +209,7 @@ class DetailFormViewModel @Inject constructor(
         }
     }
 
-    fun setCameraResultUri(uri: Uri){
+    fun setCameraResultUri(uri: Uri) {
         _cameraResultUri.value = null
         _cameraResultUri.value = uri
     }
@@ -202,7 +224,7 @@ class DetailFormViewModel @Inject constructor(
      * @param typeValue 1 == File, 2 == Image
      */
     fun getPresignedUrl(fileNames: ArrayList<String>, indexForm: Int, typeValue: Int) {
-        val value: Value = if (typeValue == 2){
+        val value: Value = if (typeValue == 2) {
             uiState.value.values[uiState.value.detailForm!!.fields[indexForm].id] ?: ImageValue()
         } else {
             uiState.value.values[uiState.value.detailForm!!.fields[indexForm].id] ?: FileValue()
@@ -260,12 +282,12 @@ class DetailFormViewModel @Inject constructor(
         }
     }
 
-    private fun getPresignedUrlForSketch(indexForm: Int, bitmap: Bitmap, fileName: String){
+    private fun getPresignedUrlForSketch(indexForm: Int, bitmap: Bitmap, fileName: String) {
         viewModelScope.launch {
             val file = File(fileName)
             val response = dataSourceRepo.getPresignedUrl(fileName)
-            withContext(Dispatchers.Main){
-                if (response.isSuccessful){
+            withContext(Dispatchers.Main) {
+                if (response.isSuccessful) {
                     uploadMedia(response.body()!!.url!!, file, "Sketch $fileName")
                     setComponentData(
                         indexForm,
@@ -306,7 +328,13 @@ class DetailFormViewModel @Inject constructor(
             } else {
                 dataSourceRepo.insertOrUpdateSubmitForm(form.copy(status = 1)) //insertSubmission to db
             }
-            form.dbId?.let { dbId -> dataSourceRepo.deleteSubmitFormById(dbId) } // if it is draft delete from DB
+            if (uiState.value.detailForm is SubmitForm) {
+                (uiState.value.detailForm as SubmitForm).dbId?.let { dbId ->
+                    dataSourceRepo.deleteSubmitFormById(
+                        dbId
+                    )
+                } // if it is draft delete from DB
+            }
             _formProgress.value = 0
             uiState.update {
                 it.copy(
@@ -330,10 +358,10 @@ class DetailFormViewModel @Inject constructor(
         fields.forEach { it ->
             var totalCheck = 0
             var minCheck = 0
-            if (it.type == Type.Checkbox.name){
-               val checkBoxValue = value[it.id] as CheckBoxValue
-               minCheck = (it as CheckBoxField).minChecked ?: 0
-               totalCheck = checkBoxValue.value.filter { it }.size
+            if (it.type == Type.Checkbox.name) {
+                val checkBoxValue = value[it.id] as CheckBoxValue
+                minCheck = (it as CheckBoxField).minChecked ?: 0
+                totalCheck = checkBoxValue.value.filter { it }.size
             }
 
             if (totalCheck in 1 until minCheck) {
@@ -347,17 +375,22 @@ class DetailFormViewModel @Inject constructor(
             submitForm { actionAfterSubmitted() }
         } else {
             _toastMessage.value = Event("Form is not complete!")
-            uiState.update { it.copy(status = EventStatus.Filling,)
+            uiState.update {
+                it.copy(status = EventStatus.Filling)
             }
         }
     }
 
-    fun saveFormAsDraft(actionAfterSaved: () -> Unit) {
+    fun saveFormAsDraft(draftDescription: String, actionAfterSaved: () -> Unit) {
         viewModelScope.launch {
             if (uiState.value.detailForm is SubmitForm) {
-                (uiState.value.detailForm as SubmitForm).dbId?.let { dbId -> dataSourceRepo.deleteSubmitFormById(dbId) }
+                (uiState.value.detailForm as SubmitForm).dbId?.let { dbId ->
+                    dataSourceRepo.deleteSubmitFormById(
+                        dbId
+                    )
+                }
             }
-            val form = createSubmitForm()
+            val form = createSubmitForm(draftDescription)
             dataSourceRepo.insertOrUpdateSubmitForm(form.copy(status = 0))
             actionAfterSaved()
             _formProgress.value = 0
@@ -372,11 +405,65 @@ class DetailFormViewModel @Inject constructor(
             }
             _formProgress.value = 0
             _navigateTo.value = Event(MainScreen.Home)
-
         }
     }
 
-    private fun createSubmitForm(): SubmitForm {
+    fun deleteDraft(draftForm: SubmitForm) {
+        viewModelScope.launch(Dispatchers.IO) {
+            draftForm.dbId?.let {
+                dataSourceRepo.deleteSubmitFormById(it)
+            }
+        }
+    }
+
+    fun duplicateDraft(draftForm: SubmitForm, draftDescription: String) {
+        viewModelScope.launch {
+            val newDraftForm = createDraftForm(draftForm, draftDescription)
+            dataSourceRepo.insertOrUpdateSubmitForm(newDraftForm)
+            _formProgress.value = 0
+
+            uiState.update {
+                it.copy(
+                    detailForm = null,
+                    values = mutableMapOf(),
+                    currentComponent = -1,
+                    status = EventStatus.Saved,
+                )
+            }
+            _formProgress.value = 0
+            _navigateTo.value = Event(MainScreen.Home)
+        }
+    }
+
+    private fun createDraftForm(draftForm: SubmitForm, draftDescription: String = ""): SubmitForm {
+        val latitude = session.latitude ?: "0.0010"
+        val longitude = session.longitude ?: "-109.3222"
+        val geocoder = Geocoder(application.applicationContext, Locale.getDefault())
+        val address = geocoder.getFromLocation(
+            latitude.toDouble(),
+            longitude.toDouble(),
+            1
+        )?.get(0) ?: Address(Locale.getDefault())
+        val submitLocation = SubmitLocation(
+            address.getAddressLine(0),
+            latitude.toDouble(),
+            longitude.toDouble()
+        )
+
+        return SubmitForm(
+            id = draftForm.id,
+            label = draftForm.label,
+            description = draftDescription.ifBlank { draftForm.description },
+            fields = draftForm.fields,
+            values = draftForm.values,
+            templateId = draftForm.id,
+            lastUpdated = getCurrentDate("dd/MM/yyyy hh:mm a"),
+            submitLocation = submitLocation,
+            status = 0
+        )
+    }
+
+    private fun createSubmitForm(draftDescription: String = ""): SubmitForm {
         val latitude = session.latitude ?: "0.0010"
         val longitude = session.longitude ?: "-109.3222"
         val geocoder = Geocoder(application.applicationContext, Locale.getDefault())
@@ -394,7 +481,7 @@ class DetailFormViewModel @Inject constructor(
         return SubmitForm(
             id = uiState.value.detailForm!!.id,
             label = uiState.value.detailForm!!.label,
-            description = uiState.value.detailForm!!.description,
+            description = draftDescription.ifBlank { uiState.value.detailForm!!.description },
             fields = uiState.value.detailForm!!.fields,
             values = uiState.value.values,
             templateId = uiState.value.detailForm!!.id,
@@ -421,7 +508,7 @@ class DetailFormViewModel @Inject constructor(
     }
 
 
-    fun syncWithServer(typeData : Int, viewLifecycleOwner: LifecycleOwner){
+    fun syncWithServer(typeData: Int, viewLifecycleOwner: LifecycleOwner) {
         viewModelScope.launch {
             syncServerWork.syncWithServer(typeData, viewLifecycleOwner) { refreshData() }
         }

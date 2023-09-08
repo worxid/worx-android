@@ -70,7 +70,7 @@ class SplashFragment : Fragment(), SplashViewModel.UIHandler {
     }
 
     private fun goToWelcomeScreen(){
-        navigate(WelcomeScreen.Welcome, WelcomeScreen.Splash)
+        navigate(WelcomeScreen.JoinTeam, WelcomeScreen.Splash)
     }
 
     private fun goToWaitingScreen(){

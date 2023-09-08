@@ -72,6 +72,8 @@ data class WorxColorsPalette(
     val bottomSheetDragHandle: Color = Color.Unspecified,
     val homeBackground: Color = Color.Unspecified,
     val bottomNavigationBorder: Color = Color.Unspecified,
+    val draftLinearProgressIndicator: Color = Color.Unspecified,
+    val draftCompletedLinearProgressIndicator: Color = Color.Unspecified,
     val divider: Color = Color.Unspecified,
     val optionBorder: Color = Color.Unspecified,
     val unselectedStar: Color = Color.Unspecified,
@@ -103,6 +105,9 @@ val WorxLightColorsPalette = WorxColorsPalette(
     bottomSheetDragHandle = DragHandle,
     homeBackground = backgroundFormList,
     bottomNavigationBorder = LightThemeColorsSystem.onSecondary,
+    draftLinearProgressIndicator = Alto,
+    draftCompletedLinearProgressIndicator = PrimaryMainGreen
+    bottomNavigationBorder = LightThemeColorsSystem.onSecondary,
     divider = Color.Black.copy(alpha = 0.12f),
     optionBorder = Color.Black.copy(alpha = 0.54f),
     unselectedStar = Color.Black.copy(alpha = 0.38f),
@@ -133,6 +138,9 @@ val WorxDarkColorsPalette = WorxColorsPalette(
     bottomSheetBackground = CapeCod,
     bottomSheetDragHandle = Abbey,
     homeBackground = Shark2,
+    bottomNavigationBorder = Abbey2,
+    draftLinearProgressIndicator = DoveGray,
+    draftCompletedLinearProgressIndicator = PrimaryMainGreen
     bottomNavigationBorder = Abbey2,
     divider = Color.White.copy(alpha = 0.12f),
     optionBorder = Color.White.copy(alpha = 0.54f),

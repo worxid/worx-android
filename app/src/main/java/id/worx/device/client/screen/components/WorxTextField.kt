@@ -81,12 +81,16 @@ fun WorxTextField(
                 textValue = it
             },
             enabled = isEnabled,
-            label = {
-                Text(
-                    text = label,
-                    style = Typography.caption,
-                    fontFamily = fontRoboto
-                )
+            label = if (label.isNotBlank()) {
+                {
+                    Text(
+                        text = label,
+                        style = Typography.caption,
+                        fontFamily = fontRoboto
+                    )
+                }
+            } else {
+                null
             },
             placeholder = {
                 Text(
@@ -130,8 +134,8 @@ fun WorxTextField(
                 }
             }
         )
-        if (isRequired && textValue.text.isEmpty()){
-            if (validation){
+        if (isRequired && textValue.text.isEmpty()) {
+            if (validation) {
                 Text(
                     text = "$label is required",
                     modifier = Modifier.padding(top = 4.dp),
