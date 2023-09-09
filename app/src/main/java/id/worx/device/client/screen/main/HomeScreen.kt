@@ -1,8 +1,6 @@
 package id.worx.device.client.screen.main
 
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.EnterTransition
-import androidx.compose.animation.ExitTransition
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -24,7 +22,6 @@ import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.TextFieldValue
@@ -39,20 +36,22 @@ import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.PagerState
 import com.google.accompanist.pager.rememberPagerState
 import id.worx.device.client.R
-import id.worx.device.client.Util
 import id.worx.device.client.data.database.Session
 import id.worx.device.client.model.EmptyForm
 import id.worx.device.client.model.FormSortModel
 import id.worx.device.client.model.SubmitForm
 import id.worx.device.client.screen.components.RedFullWidthButton
 import id.worx.device.client.screen.components.WorxSortByBottomSheet
-import id.worx.device.client.theme.WorxCustomColorsPalette
 import id.worx.device.client.theme.Typography
+import id.worx.device.client.theme.WorxCustomColorsPalette
 import id.worx.device.client.theme.backgroundFormList
+import id.worx.device.client.util.connectivityState
+import id.worx.device.client.util.isNoInternet
 import id.worx.device.client.viewmodel.DetailFormViewModel
 import id.worx.device.client.viewmodel.HomeUiEvent
 import id.worx.device.client.viewmodel.HomeViewModelImpl
 import id.worx.device.client.viewmodel.ThemeViewModel
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
@@ -72,7 +71,9 @@ sealed class BottomNavItem(var title: Int, var icon: Int, var selectedIcon: Int)
 
 }
 
-@OptIn(ExperimentalPagerApi::class, ExperimentalMaterialApi::class)
+@OptIn(ExperimentalPagerApi::class, ExperimentalMaterialApi::class,
+    ExperimentalCoroutinesApi::class
+)
 @Composable
 fun HomeScreen(
     formList: List<EmptyForm>,
@@ -85,7 +86,6 @@ fun HomeScreen(
     syncWithServer: () -> Unit,
     selectedSort: FormSortModel
 ) {
-    val context = LocalContext.current
     val notificationType by viewModel.showNotification.collectAsState()
     val showBadge by viewModel.showBadge.collectAsState()
     var showSubmittedStatus by remember { mutableStateOf(notificationType == 1) }
@@ -93,7 +93,7 @@ fun HomeScreen(
     val pagerState = rememberPagerState(0)
     val sheetState = rememberModalBottomSheetState(initialValue = ModalBottomSheetValue.Hidden)
     val title = arrayListOf(R.string.form, R.string.draft, R.string.submission, R.string.settings)
-    val isConnected by remember { mutableStateOf(Util.isNetworkAvailable(context)) }
+    val connectionState by connectivityState()
 
     WorxSortByBottomSheet(
         sheetState = sheetState,
@@ -115,7 +115,7 @@ fun HomeScreen(
             },
             bottomBar = {
                 Column {
-                    if (!isConnected) {
+                    if (connectionState.isNoInternet()) {
                         NoConnectionFound()
                     }
                     Divider(
@@ -152,7 +152,7 @@ fun HomeScreen(
                             stringResource(R.string.empty_description_form),
                             selectedSort = selectedSort,
                             openSortBottomSheet = openSortBottomSheet,
-                            syncWithServer
+                            syncWithServer = syncWithServer
                         )
 
                         1 -> FormScreen(
@@ -164,7 +164,7 @@ fun HomeScreen(
                             stringResource(R.string.empty_description_drafts),
                             selectedSort = selectedSort,
                             openSortBottomSheet = openSortBottomSheet,
-                            syncWithServer
+                            syncWithServer = syncWithServer
                         )
 
                         2 -> FormScreen(
@@ -176,7 +176,7 @@ fun HomeScreen(
                             stringResource(R.string.empty_description_submission),
                             selectedSort = selectedSort,
                             openSortBottomSheet = openSortBottomSheet,
-                            syncWithServer
+                            syncWithServer = syncWithServer
                         )
 
                         3 -> {
@@ -201,18 +201,19 @@ fun HomeScreen(
                     modifier = modifier
                 )
             }
-            AnimatedVisibility(
-                visible = viewModel.uiState.collectAsState().value.isLoading,
-                enter = EnterTransition.None,
-                exit = ExitTransition.None
-            ) {
-                Box(
-                    modifier = Modifier
-                        .fillMaxSize()
-                ) {
-                    CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
-                }
-            }
+
+//            AnimatedVisibility(
+//                visible = viewModel.uiState.collectAsState().value.isLoading,
+//                enter = EnterTransition.None,
+//                exit = ExitTransition.None
+//            ) {
+//                Box(
+//                    modifier = Modifier
+//                        .fillMaxSize()
+//                ) {
+//                    CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
+//                }
+//            }
             AnimatedVisibility(
                 visible = showSubmittedStatus
             )

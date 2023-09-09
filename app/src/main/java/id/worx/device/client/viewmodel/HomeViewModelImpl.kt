@@ -130,8 +130,9 @@ class HomeViewModelImpl @Inject constructor(
      * Refresh data and update the UI state accordingly
      */
     fun updateData() {
-        // Ui state is refreshing
-        uiState.value.isLoading = true
+        uiState.update {
+            it.copy(isLoading = true)
+        }
         val selectedSort = uiState.value.selectedSort
 
         viewModelScope.launch(Dispatchers.IO) {

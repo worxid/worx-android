@@ -1,6 +1,5 @@
 package id.worx.device.client.screen.main
 
-import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -21,8 +20,10 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.Icon
 import androidx.compose.material.LinearProgressIndicator
@@ -31,9 +32,8 @@ import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDownward
 import androidx.compose.material.icons.filled.ArrowUpward
-import androidx.compose.material.icons.outlined.ArrowBackIosNew
-import androidx.compose.material.icons.outlined.KeyboardArrowDown
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -43,7 +43,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -57,15 +56,16 @@ import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
 import id.worx.device.client.R
 import id.worx.device.client.Util.initProgress
-import id.worx.device.client.Util.isNetworkAvailable
 import id.worx.device.client.model.BasicForm
 import id.worx.device.client.model.FormSortModel
 import id.worx.device.client.model.FormSortOrderBy
 import id.worx.device.client.model.SubmitForm
+import id.worx.device.client.screen.components.ShimmerListItem
 import id.worx.device.client.screen.components.TransparentButton
 import id.worx.device.client.screen.components.WorxBoxPullRefresh
 import id.worx.device.client.screen.components.WorxSwipeableCard
 import id.worx.device.client.screen.components.WorxTextField
+import id.worx.device.client.screen.components.shimmerEffect
 import id.worx.device.client.theme.PrimaryMain
 import id.worx.device.client.theme.PrimaryMainBlue
 import id.worx.device.client.theme.Typography
@@ -84,50 +84,74 @@ fun FormScreen(
     titleForEmpty: String,
     descriptionForEmpty: String,
     selectedSort: FormSortModel,
+    shouldShowEmptyResult: Boolean = true,
     openSortBottomSheet: () -> Unit,
     syncWithServer: () -> Unit
 ) {
-    val context = LocalContext.current
-    var isConnected by remember { mutableStateOf(isNetworkAvailable(context)) }
+    val isLoading = viewModel.uiState.collectAsState().value.isLoading
 
-    WorxBoxPullRefresh(onRefresh = {
-        syncWithServer()
-        isConnected = isNetworkAvailable(context)
-    }) {
-        Column(
-            modifier = Modifier
-                .fillMaxHeight()
-                .background(WorxCustomColorsPalette.current.homeBackground),
-        ) {
-            if (data.isNullOrEmpty()) {
-                EmptyList(type, titleForEmpty, descriptionForEmpty)
-            } else {
-                FormSort(
-                    selectedSort = selectedSort,
-                    openSortByBottomSheet = openSortBottomSheet
-                )
-                LazyColumn(
-                    modifier = Modifier.padding(start = 16.dp, end = 16.dp),
-                    verticalArrangement = Arrangement.spacedBy(12.dp),
-                    contentPadding = PaddingValues(bottom = 12.dp)
-                ) {
-                    when (type) {
-                        0 -> items(items = data, itemContent = { item ->
-                            ListItemValidForm(item, viewModel, detailFormViewModel)
-                        })
+   Box {
+       WorxBoxPullRefresh(onRefresh = {
+           syncWithServer()
+       }) {
+           Column(
+               modifier = Modifier
+                   .fillMaxHeight()
+                   .background(WorxCustomColorsPalette.current.homeBackground),
+           ) {
+               if (data.isNullOrEmpty()) {
+                   if (shouldShowEmptyResult) {
+                       EmptyList(type, titleForEmpty, descriptionForEmpty)
+                   }
+               } else {
+                   FormSort(
+                       selectedSort = selectedSort,
+                       openSortByBottomSheet = openSortBottomSheet
+                   )
+                   LazyColumn(
+                       modifier = Modifier.padding(start = 16.dp, end = 16.dp),
+                       verticalArrangement = Arrangement.spacedBy(12.dp),
+                       contentPadding = PaddingValues(bottom = 12.dp)
+                   ) {
+                       when (type) {
+                           0 -> items(items = data, itemContent = { item ->
+                               ListItemValidForm(item, viewModel, detailFormViewModel)
+                           })
 
-                        1 -> items(items = data, itemContent = { item ->
-                            DraftWrapper(item as SubmitForm, viewModel, detailFormViewModel)
-                        })
+                           1 -> items(items = data, itemContent = { item ->
+                               DraftWrapper(item as SubmitForm, viewModel, detailFormViewModel)
+                           })
 
-                        2 -> items(items = data, itemContent = { item ->
-                            SubmissionItemForm(item as SubmitForm, viewModel, detailFormViewModel)
-                        })
-                    }
-                }
-            }
-        }
-    }
+                           2 -> items(items = data, itemContent = { item ->
+                               SubmissionItemForm(item as SubmitForm, viewModel, detailFormViewModel)
+                           })
+                       }
+                   }
+               }
+           }
+       }
+
+       if (isLoading) {
+           Column(
+               modifier = Modifier
+                   .verticalScroll(rememberScrollState())
+                   .background(WorxCustomColorsPalette.current.homeBackground)
+                   .padding(top = 16.dp, end = 16.dp, start = 16.dp, bottom = 8.dp)
+           ) {
+               Box(
+                   modifier = Modifier
+                       .width(72.dp)
+                       .height(24.dp)
+                       .shimmerEffect()
+               )
+               Spacer(modifier = Modifier.height(12.dp))
+               for (i in 1..20) {
+                   ShimmerListItem()
+                   Spacer(modifier = Modifier.height(12.dp))
+               }
+           }
+       }
+   }
 }
 
 @Composable
@@ -400,14 +424,14 @@ fun DraftItemForm(
                 }
                 Spacer(modifier = Modifier.height(2.dp))
 //                AnimatedVisibility(visible = isExpanded) {
-                    Text(
-                        text = item.description.toString(),
-                        overflow = TextOverflow.Ellipsis,
-                        maxLines = 1,
-                        style = Typography.caption,
-                        color = MaterialTheme.colors.onSecondary.copy(alpha = 0.6f)
-                    )
-                    Spacer(modifier = Modifier.height(4.dp))
+                Text(
+                    text = item.description.toString(),
+                    overflow = TextOverflow.Ellipsis,
+                    maxLines = 1,
+                    style = Typography.caption,
+                    color = MaterialTheme.colors.onSecondary.copy(alpha = 0.6f)
+                )
+                Spacer(modifier = Modifier.height(4.dp))
 //                }
                 Text(
                     text = "Saved on ${item.lastUpdated}",

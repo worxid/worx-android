@@ -31,15 +31,16 @@ object Util {
     fun isNetworkAvailable(context: Context): Boolean {
         val connectivityManager =
             context.getSystemService(ConnectivityManager::class.java) as ConnectivityManager
+        return isConnectedToInternet(connectivityManager)
+    }
 
+    fun isConnectedToInternet(connectivityManager: ConnectivityManager): Boolean {
         val network = connectivityManager.activeNetwork
         val connection = connectivityManager.getNetworkCapabilities(network)
         if (connection != null) {
             val hasInternetCapabilities = connection.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
             val hasValidatedCapabilities = connection.hasCapability(NetworkCapabilities.NET_CAPABILITY_VALIDATED)
-            val hasCellularConnection = connection.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR)
-            val hasWifiConnection = connection.hasTransport(NetworkCapabilities.TRANSPORT_WIFI)
-            return (hasInternetCapabilities && hasValidatedCapabilities && (hasCellularConnection || hasWifiConnection))
+            return hasInternetCapabilities && hasValidatedCapabilities
         }
         return false
     }
