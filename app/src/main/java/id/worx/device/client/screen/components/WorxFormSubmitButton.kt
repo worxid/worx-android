@@ -1,5 +1,6 @@
 package id.worx.device.client.screen.components
 
+import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -9,7 +10,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.Icon
-import androidx.compose.material.MaterialTheme
 import androidx.compose.material.OutlinedButton
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
@@ -17,14 +17,15 @@ import androidx.compose.material.icons.outlined.Send
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
-import id.worx.device.client.screen.main.SettingTheme
-import id.worx.device.client.theme.RedDarkButton
+import id.worx.device.client.R
 import id.worx.device.client.theme.Typography
+import id.worx.device.client.theme.WorxCustomColorsPalette
 import id.worx.device.client.theme.WorxTheme
 
 /**
@@ -34,8 +35,7 @@ import id.worx.device.client.theme.WorxTheme
 fun WorxFormSubmitButton(
     onClickCallback: () -> Unit,
     label: String,
-    modifier: Modifier,
-    theme: String?
+    modifier: Modifier
 ) {
     ConstraintLayout(
         modifier = modifier.clickable {
@@ -70,12 +70,12 @@ fun WorxFormSubmitButton(
                     bottom.linkTo(parent.bottom, 2.dp)
                 },
             colors = ButtonDefaults.buttonColors(
-                backgroundColor = if (theme == SettingTheme.Dark || theme == SettingTheme.System) RedDarkButton else MaterialTheme.colors.primary,
+                backgroundColor = WorxCustomColorsPalette.current.button,
                 contentColor = Color.White
             ),
             border = BorderStroke(
                 1.5.dp,
-                color = MaterialTheme.colors.onSecondary
+                color = Color.Black
             ),
             shape = RoundedCornerShape(1),
             contentPadding = PaddingValues(vertical = 14.dp),
@@ -90,7 +90,7 @@ fun WorxFormSubmitButton(
                 ) = createRefs()
 
                 Icon(
-                    imageVector = Icons.Outlined.Send,
+                    painter = painterResource(id = R.drawable.ic_send),
                     contentDescription = "Send Icon",
                     modifier = Modifier.constrainAs(logo) {
                         top.linkTo(parent.top)
@@ -98,17 +98,19 @@ fun WorxFormSubmitButton(
                         start.linkTo(parent.start)
                     }
                 )
-                
+
                 Text(
                     text = label,
                     fontWeight = FontWeight.Bold,
                     style = Typography.button,
-                    modifier = Modifier.constrainAs(text) {
-                        top.linkTo(parent.top)
-                        bottom.linkTo(parent.bottom)
-                        end.linkTo(parent.end)
-                        start.linkTo(logo.end, 8.dp)
-                    }
+                    modifier = Modifier
+                        .animateContentSize()
+                        .constrainAs(text) {
+                            top.linkTo(parent.top)
+                            bottom.linkTo(parent.bottom)
+                            end.linkTo(parent.end)
+                            start.linkTo(logo.end, if (label.isEmpty()) 0.dp else 8.dp)
+                        }
                 )
             }
         }
@@ -123,7 +125,6 @@ fun WorxFormSubmitButtonPreview() {
             onClickCallback = {  },
             label = "Submit",
             modifier = Modifier,
-            theme = null
         )
     }
 }

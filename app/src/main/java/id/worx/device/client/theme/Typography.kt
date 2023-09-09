@@ -54,42 +54,46 @@ val Typography = Typography(
     subtitle2 = TextStyle(
         fontWeight = FontWeight.W700,
         fontSize = 20.sp,
-        fontFamily = FontFamily.Monospace,
-        letterSpacing = 0.15.sp
+        letterSpacing = 0.15.sp,
+        fontFamily = fontRoboto
     ),
     // app bar title
     h6 = TextStyle(
-        fontWeight = FontWeight.W500,
+        fontWeight = FontWeight.Bold,
         fontSize = 18.sp,
         letterSpacing = 0.15.sp,
-        fontFamily = FontFamily(Font(R.font.dmmono))
+        lineHeight = 30.sp,
+        fontFamily = fontRoboto
     ),
     subtitle1 = TextStyle(
         fontWeight = FontWeight.W500,
         fontSize = 20.sp,
-        fontFamily = FontFamily(Font(R.font.dmmono)),
-        letterSpacing = 0.15.sp
+        letterSpacing = 0.15.sp,
+        fontFamily = fontRoboto
     ),
     body1 = TextStyle(
         fontWeight = FontWeight.W400,
         fontSize = 14.sp,
-        fontFamily = FontFamily(Font(R.font.dmmono)),
         letterSpacing = 0.15.sp,
+        lineHeight = 24.sp,
+        fontFamily = fontRoboto
     ),
     body2 = TextStyle(
         fontWeight = FontWeight.W500,
-        fontSize = 16.sp,
-        fontFamily = FontFamily(Font(R.font.dmmono))),
+        fontSize = 14.sp,
+        fontFamily = fontRoboto
+    ),
     button = TextStyle(
         fontWeight = FontWeight.W500,
-        fontSize = 16.sp,
+        fontSize = 14.sp,
         letterSpacing = 0.15.sp,
-        fontFamily = FontFamily(Font(R.font.dmmono))
+        fontFamily = fontRoboto
     ),
     caption = TextStyle(
         fontWeight = FontWeight.W500,
         fontSize = 12.sp,
-        letterSpacing = 0.4.sp
+        letterSpacing = 0.4.sp,
+        fontFamily = fontRoboto
     ),
     overline = TextStyle(
         fontWeight = FontWeight.W600,

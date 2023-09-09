@@ -1,19 +1,17 @@
 package id.worx.device.client.data.dao
 
 import androidx.room.*
+import androidx.sqlite.db.SupportSQLiteQuery
 import id.worx.device.client.model.SubmitForm
-import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface SubmitFormDAO {
-    @Query("SELECT * FROM submit_form WHERE status = 0")
-    fun getAllDraft(): Flow<List<SubmitForm>>
+
+    @RawQuery(observedEntities = [SubmitForm::class])
+    suspend fun getSubmitForm(query: SupportSQLiteQuery): List<SubmitForm>
 
     @Query("SELECT * FROM submit_form WHERE status = 1")
-    fun getAllUnsubmitted(): Flow<List<SubmitForm>>
-
-    @Query("SELECT * FROM submit_form WHERE status IN (1,2)")
-    fun getAllSubmission(): Flow<List<SubmitForm>>
+    suspend fun getAllUnsubmitted(): List<SubmitForm>
 
     @Query("DELETE FROM submit_form WHERE dbId = :id")
     suspend fun deleteSubmitForm(id: Int)
@@ -23,9 +21,6 @@ interface SubmitFormDAO {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertOrUpdateForm(form: SubmitForm)
-
-    @Update
-    suspend fun updateForm(form: SubmitForm)
 
     @Query("DELETE FROM submit_form WHERE status = 2")
     suspend fun deleteExistingApiSubmission()

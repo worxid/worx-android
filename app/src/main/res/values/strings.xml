@@ -6,6 +6,8 @@
     <string name="welcome_messg_2">Easily &amp; Interactively</string>
     <string name="create_new_team">Create New Team</string>
     <string name="join_team">Join Existing Team</string>
+    <string name="join_an_existing_team">Join An Existing Team</string>
+    <string name="text_join_team_fill_form">Fill the form and waiting until admin from your company approve your device.</string>
     <string name="full_name">Full Name</string>
     <string name="check_email">Check Your Email</string>
     <string name="activate_acc_1">Click the link in your email to</string>
@@ -13,17 +15,17 @@
     <string name="open_email">Open Email App</string>
     <string name="not_receive_link">Didn\'t receive the link?</string>
     <string name="resend">Resend</string>
-    <string name="ready_to_join">Ready to join</string>
     <string name="admin_will_approve">Admin will approve your device</string>
-    <string name="name">Name</string>
+    <string name="name">Full Name</string>
     <string name="email">Email</string>
     <string name="password">Password</string>
     <string name="work_phone">Work Phone</string>
     <string name="organization_code">Organization Code</string>
-    <string name="send_request">Send Request</string>
-    <string name="back_to_join_request">Back To Join Request</string>
-    <string name="waiting_for_verification">Waiting for verification</string>
-    <string name="verification_rejected">Your verification was rejected</string>
+    <string name="cancel_request">Cancel Request</string>
+    <string name="request_success_sent">Request successfully sent</string>
+    <string name="verification_need_admin_approval">Need approval admin via Worx web to continue.</string>
+    <string name="verification_rejected">Verification Was Rejected</string>
+    <string name="verification_rejected_description">Make a new request and make sure your admin knows about your request.</string>
     <string name="make_new_request">Make A New Request</string>
     <string name="title_activity_main">MainActivity</string>
     <string name="advance_settings">Advance Settings</string>
@@ -37,6 +39,7 @@
     <string name="form">Forms</string>
     <string name="draft">Drafts</string>
     <string name="submission">Submissions</string>
+    <string name="text_sort_by">Sort By</string>
     <string name="add_file">Add File</string>
     <string name="gallery">Gallery</string>
     <string name="camera">Camera</string>
@@ -45,15 +48,16 @@
     <string name="erase">Hapus</string>
     <string name="preview">Preview</string>
     <string name="clear">Clear</string>
+    <string name="clear_signature">Clear Signature</string>
     <string name="save">Simpan</string>
     <string name="save_eng">Save</string>
     <string name="draft_descr">Description (Optional)</string>
     <string name="empty_description_form">You currently not signed to any forms. Please contact your admin to add forms to your device.</string>
     <string name="no_forms">No Forms</string>
-    <string name="no_drafts">No Saved Drafts</string>
+    <string name="no_drafts">No Drafts</string>
     <string name="empty_description_drafts">You currently not saving any forms.</string>
     <string name="empty_description_submission">You currently not submit any forms.</string>
-    <string name="no_submission">No Recent Submission</string>
+    <string name="no_submission">No Submission</string>
     <string name="settings">Settings</string>
     <string name="open_source_licences_cap">Open Source Licences</string>
     <string name="organization_details">Organization details</string>
@@ -62,7 +66,7 @@
     <string name="organizations_key">Organization key</string>
     <string name="device_name">Device name</string>
     <string name="devices_settings">Devices Settings</string>
-    <string name="theme">Theme</string>
+    <string name="theme">Color Theme</string>
     <string name="save_image_in_gallery">Save image in gallery</string>
     <string name="save_image_in_gallery_sub">Images you capture will be saved to your gallery</string>
     <string name="about_this_app">About this app</string>
@@ -71,9 +75,12 @@
     <string name="app_package_name">App package name</string>
     <string name="legal">Legal</string>
     <string name="open_source_licenses">Open source licenses</string>
+    <string name="open_source">Open source</string>
     <string name="yes">Yes</string>
     <string name="no">No</string>
+    <string name="confirm">Confirm</string>
     <string name="cancel">Cancel</string>
+    <string name="leave_organization_title">Leave Organization</string>
     <string name="leave_organization">Are you sure you want to leave the organization?</string>
     <string name="leave_form">Leave This Form?</string>
     <string name="leave_form_sub">Are you sure you want to leave this page? if you leave this form, your existing work will be included in the draft</string>
@@ -92,6 +99,7 @@
     <string name="point_barcode">Point the barcode in the scan area</string>
     <string name="check_network">Please check your network connection</string>
     <string name="number_picker_formatter">%02d</string>
+    <string name="text_submit">Submit</string>
 
 <!--    list error/notification message-->
     <string name="sync_form_message">Sync Empty Form DB with server is done</string>
@@ -99,4 +107,14 @@
     <string name="permission_rejected">Permissions not granted by the user</string>
     <string name="photo_taken">Photo was taken</string>
     <string name="max_files_message">Already achieved max files. Please remove one of the them first</string>
+    <string name="text_duplicate">Duplicate</string>
+    <string name="text_duplicate_draft">Duplicate Draft</string>
+    <string name="text_save_draft_desc">You can optionally add a description to the saved draft</string>
+    <string name="text_hint_description_optional">Description (optional)</string>
+    <string name="text_delete_draft">Delete Draft</string>
+    <string name="text_are_you_sure_you_want_to_delete_this_form">Are you sure you want to delete this form?</string>
+    <string name="text_delete">Delete</string>
+
+    <string name="text_search_empty_title">No Search Results</string>
+    <string name="text_search_empty_desc">Please check the menu tabs at the bottom of the screen for all results</string>
 </resources>

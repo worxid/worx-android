@@ -8,15 +8,19 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowCircleRight
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+import id.worx.device.client.R
 import id.worx.device.client.data.database.Session
 import id.worx.device.client.model.fieldmodel.DropDownField
 import id.worx.device.client.model.fieldmodel.DropDownValue
 import id.worx.device.client.theme.Typography
+import id.worx.device.client.theme.WorxCustomColorsPalette
 import id.worx.device.client.viewmodel.DetailFormViewModel
 import id.worx.device.client.viewmodel.EventStatus
 
@@ -54,12 +58,14 @@ fun WorxDropdown(indexForm: Int, viewModel: DetailFormViewModel, session: Sessio
         ) {
             TextField(
                 modifier = Modifier
-                    .clickable { expanded = true }
                     .fillMaxWidth()
-                    .padding(horizontal = 16.dp),
+                    .padding(horizontal = 16.dp)
+                    .clickable { expanded = true },
                 enabled = false,
                 colors = TextFieldDefaults.textFieldColors(
-                    backgroundColor = Color.Black.copy(0.06f)
+                    backgroundColor = WorxCustomColorsPalette.current.homeBackground,
+                    unfocusedIndicatorColor = WorxCustomColorsPalette.current.textFieldUnfocusedIndicator,
+                    focusedIndicatorColor = WorxCustomColorsPalette.current.textFieldFocusedIndicator
                 ),
                 textStyle = if (selected.value.value == null) {
                     Typography.body2.copy(color = MaterialTheme.colors.onSecondary.copy(0.54f))
@@ -69,9 +75,9 @@ fun WorxDropdown(indexForm: Int, viewModel: DetailFormViewModel, session: Sessio
                 shape = RoundedCornerShape(4.dp),
                 trailingIcon = {
                     Icon(
-                        Icons.Default.KeyboardArrowDown,
+                        painter = painterResource(id = R.drawable.ic_circle_arrow_right),
                         contentDescription = "DropDown",
-                        tint = MaterialTheme.colors.onSecondary
+                        tint = WorxCustomColorsPalette.current.textFieldIcon
                     )
                 },
                 value = if (selected.value.value != null) {
@@ -91,7 +97,7 @@ fun WorxDropdown(indexForm: Int, viewModel: DetailFormViewModel, session: Sessio
                 onDismissRequest = { expanded = false },
                 modifier = Modifier
                     .fillMaxWidth(0.94f)
-                    .background(Color.White),
+                    .background(WorxCustomColorsPalette.current.formItemContainer),
             ) {
                 optionTitles.forEachIndexed { index, item ->
                     DropdownMenuItem(
@@ -100,11 +106,13 @@ fun WorxDropdown(indexForm: Int, viewModel: DetailFormViewModel, session: Sessio
                             viewModel.setComponentData(indexForm, selected.value)
                             expanded = false
                         },
-                        modifier = Modifier.background(Color.White)
+                        modifier = Modifier.background(WorxCustomColorsPalette.current.formItemContainer)
                     ) {
                         Text(
                             text = item.label ?: "",
-                            style = Typography.body1.copy(color = Color.Black)
+                            style = Typography.body1.copy(
+                                color = WorxCustomColorsPalette.current.textFieldColor
+                            )
                         )
                     }
                 }

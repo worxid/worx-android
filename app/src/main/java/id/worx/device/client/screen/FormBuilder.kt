@@ -5,6 +5,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -40,6 +41,7 @@ import id.worx.device.client.screen.components.*
 import id.worx.device.client.theme.GrayDivider
 import id.worx.device.client.theme.PrimaryMainGreen
 import id.worx.device.client.theme.Typography
+import id.worx.device.client.theme.WorxCustomColorsPalette
 import id.worx.device.client.theme.WorxTheme
 import id.worx.device.client.viewmodel.CameraViewModel
 import id.worx.device.client.viewmodel.DetailFormViewModel
@@ -60,7 +62,6 @@ fun ValidFormBuilder(
     var showDraftDialog by remember { mutableStateOf(false) }
     var validation by remember { mutableStateOf(false) }
     var isValid by remember { mutableStateOf(false) }
-    val theme = session.theme
     val scope = rememberCoroutineScope()
     val state = rememberModalBottomSheetState(
         initialValue = ModalBottomSheetValue.Hidden,
@@ -82,13 +83,14 @@ fun ValidFormBuilder(
             scannerViewModel,
             session,
             validation,
-        )
-        {
-            showSubmitDialog = true
-            scope.launch {
-                state.animateTo(ModalBottomSheetValue.Expanded)
+            showSubmitDialog = {
+                showSubmitDialog = true
+                scope.launch {
+                    state.animateTo(ModalBottomSheetValue.Expanded)
+                }
             }
-        }
+        )
+
         if (showSubmitDialog) {
             DialogSubmitForm(
                 viewModel = viewModel,
@@ -111,9 +113,11 @@ fun ValidFormBuilder(
         }
         if (showDraftDialog) {
             DialogDraftForm(
-                theme = theme,
-                { onEvent(DetailFormEvent.SaveDraft) },
-                { showDraftDialog = false })
+                saveDraft = { draftDescription ->
+                    onEvent(DetailFormEvent.SaveDraft(draftDescription))
+                },
+                closeDialog = { showDraftDialog = false }
+            )
         }
     }
 }
@@ -128,10 +132,12 @@ fun DetailForm(
     validation: Boolean,
     showSubmitDialog: () -> Unit,
 ) {
-    val theme = session.theme
     val listState = rememberLazyListState(viewModel.indexScroll.value, viewModel.offset.value)
     val formStatus = viewModel.uiState.collectAsState().value.status
     val detailForm = viewModel.uiState.collectAsState().value.detailForm
+
+    val submitText = stringResource(R.string.text_submit)
+    var submitLabel by remember { mutableStateOf(submitText) }
 
     LaunchedEffect(key1 = listState.isScrollInProgress) {
         if (!listState.isScrollInProgress) {
@@ -161,7 +167,8 @@ fun DetailForm(
                 }
                 .navigationBarsPadding()
                 .imePadding()
-                .padding(vertical = 12.dp),
+                .padding(vertical = 12.dp)
+            ,
             contentPadding = WindowInsets.statusBars.only(WindowInsetsSides.Horizontal + WindowInsetsSides.Top)
                 .asPaddingValues()
         ) {
@@ -181,9 +188,7 @@ fun DetailForm(
                         Log.d("MUTILINE", textField.toString())
 
                         WorxTextField(
-                            theme = theme,
                             label = item.label ?: "Free Text",
-                            description = item.description ?: "",
                             hint = "Answer",
                             inputType = KeyboardOptions(keyboardType = KeyboardType.Text),
                             initialValue = androidx.compose.ui.text.input.TextFieldValue(
@@ -269,8 +274,10 @@ fun DetailForm(
                                 text = "Unknown component ${item.type}",
                                 style = Typography.body1.copy(color = Color.Black)
                             )
-                            Divider(color = GrayDivider,
-                                modifier = Modifier.padding(vertical = 16.dp))
+                            Divider(
+                                color = WorxCustomColorsPalette.current.divider,
+                                modifier = Modifier.padding(vertical = 16.dp)
+                            )
                         }
                     }
                 }
@@ -278,15 +285,16 @@ fun DetailForm(
         }
 
         if (detailForm is EmptyForm || (detailForm is SubmitForm && detailForm.status == 0)) {
+            submitLabel = if (listState.isScrollingUp()) submitText else ""
+
             WorxFormSubmitButton(
                 onClickCallback = { showSubmitDialog() },
-                label = "Submit",
+                label = submitLabel,
                 modifier = Modifier
                     .constrainAs(btnSubmit) {
                         bottom.linkTo(parent.bottom, 16.dp)
                         end.linkTo(parent.end, 16.dp)
-                    },
-                theme = theme
+                    }
             )
         }
     }
@@ -351,7 +359,7 @@ fun DialogSubmitForm(
 
                 Text(
                     text = "Submit Form",
-                    style = Typography.body2.copy(Color.Black.copy(0.87f)),
+                    style = Typography.body2.copy(WorxCustomColorsPalette.current.textFieldColor),
                     fontWeight = FontWeight.Bold,
                     textAlign = TextAlign.Center,
                     modifier = Modifier.constrainAs(title) {
@@ -398,7 +406,7 @@ fun DialogSubmitForm(
 
                 Text(
                     text = "$fieldFilled of $fieldTotal field answered",
-                    style = Typography.body2.copy(Color.Black.copy(0.87f)),
+                    style = Typography.body2.copy(WorxCustomColorsPalette.current.textFieldColor),
                     modifier = Modifier.constrainAs(description) {
                         top.linkTo(icon.bottom, 16.dp)
                         start.linkTo(title.start)
@@ -407,6 +415,7 @@ fun DialogSubmitForm(
                 )
 
                 Divider(
+                    color = WorxCustomColorsPalette.current.divider,
                     modifier = Modifier.constrainAs(divider1) {
                         top.linkTo(description.bottom, 24.dp)
                         start.linkTo(parent.start)
@@ -416,7 +425,7 @@ fun DialogSubmitForm(
 
                 Text(
                     text = "Submit",
-                    style = Typography.body2.copy(MaterialTheme.colors.primary),
+                    style = Typography.body2.copy(WorxCustomColorsPalette.current.textFieldFocusedLabel),
                     modifier = Modifier
                         .clickable { submitForm() }
                         .constrainAs(submit) {
@@ -427,6 +436,7 @@ fun DialogSubmitForm(
                 )
 
                 Divider(
+                    color = WorxCustomColorsPalette.current.divider,
                     modifier = Modifier.constrainAs(divider2) {
                         top.linkTo(submit.bottom, 16.dp)
                         start.linkTo(parent.start)
@@ -436,7 +446,7 @@ fun DialogSubmitForm(
 
                 Text(
                     text = "Save Draft",
-                    style = Typography.body2.copy(MaterialTheme.colors.onSecondary.copy(0.54f)),
+                    style = Typography.body2.copy(WorxCustomColorsPalette.current.textFieldUnfocusedLabel),
                     modifier = Modifier
                         .clickable { saveDraftForm() }
                         .constrainAs(saveDraft) {
@@ -447,6 +457,7 @@ fun DialogSubmitForm(
                 )
 
                 Divider(
+                    color = WorxCustomColorsPalette.current.divider,
                     modifier = Modifier.constrainAs(divider3) {
                         top.linkTo(saveDraft.bottom, 16.dp)
                         start.linkTo(parent.start)
@@ -456,7 +467,7 @@ fun DialogSubmitForm(
 
                 Text(
                     text = "Cancel",
-                    style = Typography.body2.copy(MaterialTheme.colors.onSecondary.copy(0.54f)),
+                    style = Typography.body2.copy(WorxCustomColorsPalette.current.textFieldUnfocusedLabel),
                     modifier = Modifier
                         .clickable { onCancel() }
                         .constrainAs(cancel) {
@@ -472,13 +483,12 @@ fun DialogSubmitForm(
     )
 }
 
-
 @Composable
 fun DialogDraftForm(
-    theme: String?,
-    saveDraft: () -> Unit,
+    saveDraft: (draftDescription: String) -> Unit,
     closeDialog: () -> Unit,
 ) {
+    var draftDescription by remember { mutableStateOf("") }
     Dialog(
         content = {
             Column(
@@ -490,23 +500,24 @@ fun DialogDraftForm(
             ) {
                 Text(
                     text = "Save draft",
-                    style = Typography.body2.copy(Color.Black.copy(0.87f)),
+                    style = Typography.body2.copy(WorxCustomColorsPalette.current.textFieldColor),
                     fontWeight = FontWeight.Bold,
                 )
 
                 Spacer(modifier = Modifier.height(8.dp))
 
                 Text(
-                    text = "You can optionally add a description to the saved draft",
-                    style = Typography.body2.copy(Color.Black.copy(0.87f))
+                    text = stringResource(R.string.text_save_draft_desc),
+                    style = Typography.body2.copy(WorxCustomColorsPalette.current.textFieldColor)
                 )
+
+                Spacer(modifier = Modifier.height(8.dp))
+
                 WorxTextField(
-                    theme = theme,
                     label = "",
-                    description = "",
                     hint = stringResource(R.string.draft_descr),
                     inputType = KeyboardOptions(keyboardType = KeyboardType.Text),
-                    onValueChange = {},
+                    onValueChange = { draftDescription = it },
                     allowMultiline = false,
                     isShowDivider = false,
                     horizontalPadding = 0.dp,
@@ -525,12 +536,30 @@ fun DialogDraftForm(
                         modifier = Modifier.clickable { closeDialog() })
                     Text(text = "Save",
                         style = Typography.button.copy(MaterialTheme.colors.onBackground),
-                        modifier = Modifier.clickable { saveDraft() })
+                        modifier = Modifier.clickable { saveDraft(draftDescription.trim()) })
                 }
             }
         },
         onDismissRequest = {}
     )
+}
+
+@Composable
+private fun LazyListState.isScrollingUp(): Boolean {
+    var previousIndex by remember(this) { mutableStateOf(firstVisibleItemIndex) }
+    var previousScrollOffset by remember(this) { mutableStateOf(firstVisibleItemScrollOffset) }
+    return remember(this) {
+        derivedStateOf {
+            if (previousIndex != firstVisibleItemIndex) {
+                previousIndex > firstVisibleItemIndex
+            } else {
+                previousScrollOffset >= firstVisibleItemScrollOffset
+            }.also {
+                previousIndex = firstVisibleItemIndex
+                previousScrollOffset = firstVisibleItemScrollOffset
+            }
+        }
+    }.value
 }
 
 @Preview(name = "PreviewDetailForm", showSystemUi = true)
@@ -563,7 +592,6 @@ fun DialogSubmitFormPreview() {
 fun DialogDraftFormPreview() {
     WorxTheme {
         DialogDraftForm(
-            theme = null,
             saveDraft = {},
             closeDialog = {},
         )

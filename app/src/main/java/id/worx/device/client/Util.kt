@@ -34,11 +34,14 @@ object Util {
 
         val network = connectivityManager.activeNetwork
         val connection = connectivityManager.getNetworkCapabilities(network)
-        return connection != null && (
-                connection.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR) ||
-                        connection.hasTransport(
-                            NetworkCapabilities.TRANSPORT_WIFI
-                        ))
+        if (connection != null) {
+            val hasInternetCapabilities = connection.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
+            val hasValidatedCapabilities = connection.hasCapability(NetworkCapabilities.NET_CAPABILITY_VALIDATED)
+            val hasCellularConnection = connection.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR)
+            val hasWifiConnection = connection.hasTransport(NetworkCapabilities.TRANSPORT_WIFI)
+            return (hasInternetCapabilities && hasValidatedCapabilities && (hasCellularConnection || hasWifiConnection))
+        }
+        return false
     }
 
     fun getCurrentDate(dateFormat: String): String {
@@ -101,7 +104,7 @@ object Util {
     /**
      * If the form is half filled, set the progress value
      */
-    fun initProgress(values: MutableMap<String, Value>, fields: ArrayList<Fields>): Int{
+    fun initProgress(values: MutableMap<String, Value>, fields: ArrayList<Fields>): Int {
         val separatorCount = fields.count { it.type == Type.Separator.type }
         val progressBit = 100 / (fields.size - separatorCount)
         if (values.isNotEmpty()) {
@@ -111,8 +114,10 @@ object Util {
     }
 
     fun getDeviceCode(context: Context): String {
-        return Settings.Secure.getString(context.contentResolver,
-        Settings.Secure.ANDROID_ID)
+        return Settings.Secure.getString(
+            context.contentResolver,
+            Settings.Secure.ANDROID_ID
+        )
     }
 
     /**

@@ -4,13 +4,18 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.material.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
@@ -21,9 +26,11 @@ import com.google.accompanist.pager.rememberPagerState
 import id.worx.device.client.R
 import id.worx.device.client.data.database.Session
 import id.worx.device.client.model.EmptyForm
+import id.worx.device.client.model.FormSortModel
 import id.worx.device.client.model.SubmitForm
 import id.worx.device.client.theme.PrimaryMain
 import id.worx.device.client.theme.Typography
+import id.worx.device.client.theme.WorxCustomColorsPalette
 import id.worx.device.client.theme.WorxTheme
 import id.worx.device.client.viewmodel.DetailFormViewModel
 import id.worx.device.client.viewmodel.HomeViewModelImpl
@@ -43,19 +50,20 @@ fun SearchScreen(
     submissionList: List<SubmitForm>,
     viewModel: HomeViewModelImpl,
     detailVM: DetailFormViewModel,
-    session: Session,
+    selectedSort: FormSortModel,
     syncWithServer: () -> Unit,
+    openSortBottomSheet: () -> Unit,
     modifier: Modifier
 ) {
     val searchInput = viewModel.uiState.collectAsState().value.searchInput
-    val formData = formList.filter { data -> data.label?.contains(searchInput, true) ?: false}
-    val draftData = draftList.filter { data -> data.label?.contains(searchInput, true) ?: false}
-    val submissionData = submissionList.filter { data -> data.label?.contains(searchInput, true) ?: false}
-    val theme = session.theme
+    val formData = formList.filter { data -> data.label?.contains(searchInput, true) ?: false }
+    val draftData = draftList.filter { data -> data.label?.contains(searchInput, true) ?: false }
+    val submissionData =
+        submissionList.filter { data -> data.label?.contains(searchInput, true) ?: false }
 
     Scaffold { padding ->
         ConstraintLayout(
-            modifier = modifier
+            modifier = modifier.padding(padding)
         ) {
             val (tablayout, tabcontent) = createRefs()
             val pagerState = rememberPagerState()
@@ -67,15 +75,13 @@ fun SearchScreen(
                     .constrainAs(tablayout) {
                         top.linkTo(parent.top)
                     },
-                backgroundColor = MaterialTheme.colors.secondary,
-                contentColor = if (theme == SettingTheme.Dark) PrimaryMain else MaterialTheme.colors.primary,
+                backgroundColor = WorxCustomColorsPalette.current.appBar,
+                contentColor = MaterialTheme.colors.onPrimary,
                 divider = {
-                    Box(
-                        modifier =
-                        Modifier
-                            .fillMaxWidth()
-                            .height(2.dp)
-                            .background(color = MaterialTheme.colors.onSecondary)
+                    TabRowDefaults.Divider(
+                        modifier = Modifier.wrapContentSize(Alignment.BottomStart),
+                        thickness = 2.dp,
+                        color = WorxCustomColorsPalette.current.appBarDivider
                     )
                 }
             ) {
@@ -93,11 +99,8 @@ fun SearchScreen(
                             Text(
                                 text = stringResource(id = tabItems[index].first),
                                 style = Typography.body1,
-                                color = if (pagerState.currentPage == index) {
-                                    if (theme == SettingTheme.Dark) PrimaryMain else MaterialTheme.colors.primary
-                                } else {
-                                    MaterialTheme.colors.onSecondary.copy(0.54f)
-                                }
+                                color = MaterialTheme.colors.onPrimary,
+                                fontWeight = if (pagerState.currentPage == index) FontWeight.Bold else FontWeight.W400
                             )
                         },
                     )
@@ -106,40 +109,45 @@ fun SearchScreen(
             HorizontalPager(
                 count = 3,
                 state = pagerState,
-                modifier = Modifier.constrainAs(tabcontent){
-                top.linkTo(tablayout.bottom)
-            }
-                ) { page ->
+                modifier = Modifier.constrainAs(tabcontent) {
+                    top.linkTo(tablayout.bottom)
+                }
+            ) { page ->
                 when (page) {
                     0 -> FormScreen(
                         formData,
                         0,
                         viewModel,
                         detailVM,
-                        stringResource(R.string.no_forms),
-                        stringResource(R.string.empty_description_form),
-                        session = session,
-                        syncWithServer
+                        stringResource(R.string.text_search_empty_title),
+                        stringResource(R.string.text_search_empty_desc),
+                        selectedSort = selectedSort,
+                        openSortBottomSheet = openSortBottomSheet,
+                        syncWithServer = syncWithServer
                     )
+
                     1 -> FormScreen(
                         draftData,
                         1,
                         viewModel,
                         detailVM,
-                        stringResource(R.string.no_drafts),
-                        stringResource(R.string.empty_description_drafts),
-                        session = session,
-                        syncWithServer
+                        stringResource(R.string.text_search_empty_title),
+                        stringResource(R.string.text_search_empty_desc),
+                        selectedSort = selectedSort,
+                        openSortBottomSheet = openSortBottomSheet,
+                        syncWithServer = syncWithServer
                     )
+
                     2 -> FormScreen(
                         submissionData,
                         2,
                         viewModel,
                         detailVM,
-                        stringResource(R.string.no_submission),
-                        stringResource(R.string.empty_description_submission),
-                        session = session,
-                        syncWithServer
+                        stringResource(R.string.text_search_empty_title),
+                        stringResource(R.string.text_search_empty_desc),
+                        selectedSort = selectedSort,
+                        openSortBottomSheet = openSortBottomSheet,
+                        syncWithServer = syncWithServer
                     )
                 }
             }
@@ -157,8 +165,9 @@ fun PreviewSearchScreen() {
             submissionList = arrayListOf(),
             viewModel = hiltViewModel(),
             detailVM = hiltViewModel(),
-            session = Session(LocalContext.current),
-            {  },
+            selectedSort = FormSortModel(),
+            openSortBottomSheet = {},
+            syncWithServer = {},
             modifier = Modifier
         )
     }

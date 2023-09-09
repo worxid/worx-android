@@ -15,8 +15,6 @@ import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.Font
-import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -28,6 +26,7 @@ import id.worx.device.client.screen.main.SettingTheme
 import id.worx.device.client.theme.PrimaryMain
 import id.worx.device.client.theme.Typography
 import id.worx.device.client.theme.WorxTheme
+import id.worx.device.client.theme.fontRoboto
 
 
 sealed class CreateTeamSubmittedEvent {
@@ -49,7 +48,7 @@ fun CreateTeamSubmittedScreen(session: Session, onEvent: (CreateTeamSubmittedEve
                 modifier = Modifier
                     .padding(vertical = 45.dp)
                     .scale(0.75f),
-                painter = painterResource(R.drawable.worx_logo),
+                painter = painterResource(R.drawable.worx_logo_red),
                 contentDescription = "Worx Logo",
                 colorFilter = ColorFilter.tint(
                     color = MaterialTheme.colors.onSecondary
@@ -64,7 +63,7 @@ fun CreateTeamSubmittedScreen(session: Session, onEvent: (CreateTeamSubmittedEve
                 stringResource(id = R.string.check_email),
                 fontSize = 20.sp,
                 fontWeight = FontWeight.W500,
-                fontFamily = FontFamily(Font(R.font.dmmono)),
+                fontFamily = fontRoboto,
                 color = MaterialTheme.colors.onSecondary,
                 modifier = Modifier.padding(top = 24.dp, bottom = 8.dp)
             )
@@ -79,8 +78,7 @@ fun CreateTeamSubmittedScreen(session: Session, onEvent: (CreateTeamSubmittedEve
             RedFullWidthButton(
                 onClickCallback = { onEvent(CreateTeamSubmittedEvent.OpenEmailApp) },
                 label = stringResource(id = R.string.open_email),
-                modifier = Modifier.padding(vertical = 20.dp),
-                theme = theme
+                modifier = Modifier.padding(vertical = 20.dp)
             )
             Row(modifier = Modifier.padding(top = 20.dp)) {
                 Text(

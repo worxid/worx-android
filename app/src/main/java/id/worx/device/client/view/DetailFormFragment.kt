@@ -9,6 +9,7 @@ import androidx.compose.ui.platform.ComposeView
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.findNavController
+import androidx.work.WorkManager
 import dagger.hilt.android.AndroidEntryPoint
 import id.worx.device.client.MainScreen
 import id.worx.device.client.R
@@ -70,7 +71,7 @@ class DetailFormFragment : Fragment() {
                                 }
                             }
                             is DetailFormEvent.SaveDraft -> {
-                                viewModel.saveFormAsDraft {
+                                viewModel.saveFormAsDraft(event.draftDescription) {
                                     homeViewModel.showBadge(R.string.draft)
                                 }
                             }
@@ -80,5 +81,14 @@ class DetailFormFragment : Fragment() {
                 }
             }
         }
+    }
+
+    private fun observeDownloadForm() {
+        WorkManager.getInstance(requireContext()).getWorkInfosForUniqueWorkLiveData("download_form")
+            .observe(viewLifecycleOwner) {
+                if (it.isNotEmpty() && it[0].state.isFinished) {
+                    viewModel.refreshData()
+                }
+            }
     }
 }

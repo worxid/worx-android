@@ -71,7 +71,6 @@ fun AdvanceSettingsScreen(
                 modifier = Modifier.padding(start = 16.dp, top = 8.dp, end = 16.dp, bottom = 40.dp)
             )
             WorxTextField(
-                theme = theme,
                 label = stringResource(R.string.server_url),
                 inputType = KeyboardOptions(keyboardType = KeyboardType.Text),
                 onValueChange = {
@@ -92,8 +91,7 @@ fun AdvanceSettingsScreen(
             RedFullWidthButton(
                 onClickCallback = {onEvent(AdvanceSettingsEvent.SaveUrl(urlServer))},
                 label = stringResource(R.string.connect),
-                modifier = Modifier.padding(vertical = 20.dp),
-                theme = theme
+                modifier = Modifier.padding(vertical = 20.dp)
             )
         }
     }

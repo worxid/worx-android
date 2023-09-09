@@ -1,9 +1,12 @@
 package id.worx.device.client.data.api
 
-import androidx.lifecycle.LifecycleOwner
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.Observer
-import androidx.work.*
+import androidx.work.Constraints
+import androidx.work.Data
+import androidx.work.ExistingWorkPolicy
+import androidx.work.NetworkType
+import androidx.work.OneTimeWorkRequestBuilder
+import androidx.work.WorkManager
+import androidx.work.workDataOf
 import com.google.gson.GsonBuilder
 import id.worx.device.client.WorxApplication
 import id.worx.device.client.data.database.FormDownloadWorker
@@ -12,6 +15,8 @@ import id.worx.device.client.data.database.SubmissionUploadWorker
 import id.worx.device.client.model.Fields
 import id.worx.device.client.model.Value
 import id.worx.device.client.repository.SourceDataRepository
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 class SyncServer @Inject constructor(
@@ -23,78 +28,57 @@ class SyncServer @Inject constructor(
         .setRequiredNetworkType(NetworkType.CONNECTED)
         .build()
 
-    suspend fun syncWithServer(
-        dataToSync: Int,
-        viewLifecycleOwner: LifecycleOwner,
-    onSuccessCallback: () -> Unit){
-        if (dataToSync == UPLOADTOSERVER) {
-            uploadSubmissionWork()
-        } else if (dataToSync == DOWNLOADFROMSERVER) {
-            downloadFormTemplate(viewLifecycleOwner, onSuccessCallback)
-            downloadSubmissionList(viewLifecycleOwner, onSuccessCallback)
-        } else {
-            downloadFormTemplate(viewLifecycleOwner, onSuccessCallback)
-            downloadSubmissionList(viewLifecycleOwner, onSuccessCallback)
-            uploadSubmissionWork()
+    suspend fun syncWithServer(dataToSync: Int) {
+        when (dataToSync) {
+            UPLOADTOSERVER -> {
+                uploadSubmissionWork()
+            }
+
+            DOWNLOADFROMSERVER -> {
+                downloadForms()
+            }
+
+            else -> {
+                downloadForms()
+                uploadSubmissionWork()
+            }
         }
     }
 
-    private val formTemplateWorkInfoItems: LiveData<List<WorkInfo>> =
-        workManager.getWorkInfosByTagLiveData("form_template")
-
-    private fun downloadFormTemplate(lifecycleOwner: LifecycleOwner, onSuccessCallback: () -> Unit) {
+    private suspend fun downloadForms() {
         val syncTemplateDBRequest = OneTimeWorkRequestBuilder<FormDownloadWorker>()
             .addTag("form_template")
             .setConstraints(networkConstraints)
             .build()
 
-        workManager.enqueue(syncTemplateDBRequest)
-
-        formTemplateWorkInfoItems.observe(lifecycleOwner) { list ->
-            val workInfo = list[0]
-            if (list.isNotEmpty() && workInfo.state.isFinished) {
-                onSuccessCallback()
-            }
-        }
-    }
-
-
-    private suspend fun uploadSubmissionWork() {
-            repository.getAllUnsubmitted().collect {
-
-                val gson = GsonBuilder()
-                    .registerTypeAdapter(Fields::class.java, FieldsDeserializer())
-                    .registerTypeAdapter(Value::class.java, ValueSerialize())
-                    .create()
-                val uploadData: Data = workDataOf("submit_form_list" to gson.toJson(it))
-
-                val uploadSubmisison = OneTimeWorkRequestBuilder<SubmissionUploadWorker>()
-                    .setInputData(uploadData)
-                    .addTag("upload_submission")
-                    .setConstraints(networkConstraints)
-                    .build()
-
-                workManager.enqueue(uploadSubmisison)
-            }
-    }
-
-    private val downloadSubmissionWorkInfoItems: LiveData<List<WorkInfo>> =
-        workManager.getWorkInfosByTagLiveData("submission_list")
-
-    private fun downloadSubmissionList(lifecycleOwner: LifecycleOwner, onSuccessCallback: () -> Unit) {
         val syncSubmitFormDBRequest = OneTimeWorkRequestBuilder<SubmissionDownloadWorker>()
             .addTag("submission_list")
             .setConstraints(networkConstraints)
             .build()
 
-        workManager.enqueue(syncSubmitFormDBRequest)
+        workManager.beginUniqueWork(
+            "download_form",
+            ExistingWorkPolicy.REPLACE,
+            listOf(syncTemplateDBRequest, syncSubmitFormDBRequest)
+        ).enqueue()
+    }
 
-        formTemplateWorkInfoItems.observe(lifecycleOwner, Observer { list ->
-            val workInfo = list[0]
-            if (list.isNotEmpty() && workInfo.state.isFinished) {
-                onSuccessCallback()
-            }
-        })
+    private suspend fun uploadSubmissionWork() {
+        val unSubmittedList = repository.getAllUnsubmitted()
+
+        val gson = GsonBuilder()
+            .registerTypeAdapter(Fields::class.java, FieldsDeserializer())
+            .registerTypeAdapter(Value::class.java, ValueSerialize())
+            .create()
+        val uploadData: Data = workDataOf("submit_form_list" to gson.toJson(unSubmittedList))
+
+        val uploadSubmisison = OneTimeWorkRequestBuilder<SubmissionUploadWorker>()
+            .setInputData(uploadData)
+            .addTag("upload_submission")
+            .setConstraints(networkConstraints)
+            .build()
+
+        workManager.enqueue(uploadSubmisison)
     }
 
     companion object {

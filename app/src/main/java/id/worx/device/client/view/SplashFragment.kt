@@ -41,8 +41,8 @@ class SplashFragment : Fragment(), SplashViewModel.UIHandler {
             setContent {
                 val theme = themeViewModel.theme.value
                 WorxTheme(theme = theme) {
-                    WorxThemeStatusBar(theme)
-                    SplashScreen(session)
+                    WorxThemeStatusBar()
+                    SplashScreen()
                 }
             }
         }
@@ -70,7 +70,7 @@ class SplashFragment : Fragment(), SplashViewModel.UIHandler {
     }
 
     private fun goToWelcomeScreen(){
-        navigate(WelcomeScreen.Welcome, WelcomeScreen.Splash)
+        navigate(WelcomeScreen.JoinTeam, WelcomeScreen.Splash)
     }
 
     private fun goToWaitingScreen(){

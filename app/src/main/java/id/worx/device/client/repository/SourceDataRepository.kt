@@ -1,14 +1,15 @@
 package id.worx.device.client.repository
 
+import androidx.sqlite.db.SimpleSQLiteQuery
 import id.worx.device.client.data.api.WorxApi
 import id.worx.device.client.data.dao.FormDAO
 import id.worx.device.client.data.dao.SubmitFormDAO
 import id.worx.device.client.model.EmptyForm
+import id.worx.device.client.model.FormSortModel
 import id.worx.device.client.model.ListFormResponse
 import id.worx.device.client.model.ListSubmissionResponse
 import id.worx.device.client.model.SubmitForm
 import id.worx.device.client.model.fieldmodel.FilePresignedUrlResponse
-import kotlinx.coroutines.flow.Flow
 import retrofit2.Response
 import javax.inject.Inject
 
@@ -32,17 +33,28 @@ class SourceDataRepository @Inject constructor(
         dao.deleteAndCreate(list)
     }
 
-    fun getAllFormFromDB(): Flow<List<EmptyForm>> =
-        dao.getAllForm()
+    suspend fun getAllFormFromDB(formSortModel: FormSortModel? = null): List<EmptyForm> {
+        if (formSortModel == null) {
+            return dao.getAllForm()
+        }
+        val rawQuery = "SELECT * FROM form ORDER BY ${formSortModel.getSortQuery()}"
+        val query = SimpleSQLiteQuery(rawQuery)
+        return dao.getSortedAllForms(query)
+    }
 
-    fun getAllDraftForm() =
-        submitFormDAO.getAllDraft()
+    suspend fun getAllDraftForm(formSortModel: FormSortModel): List<SubmitForm> {
+        val rawQuery = "SELECT * FROM submit_form WHERE status = 0 ORDER BY ${formSortModel.getSortQuery()}"
+        val query = SimpleSQLiteQuery(rawQuery)
+        return submitFormDAO.getSubmitForm(query)
+    }
 
-    fun getAllSubmission() =
-        submitFormDAO.getAllSubmission()
+    suspend fun getAllSubmission(formSortModel: FormSortModel): List<SubmitForm> {
+        val rawQuery = "SELECT * FROM submit_form WHERE status IN (1,2) ORDER BY ${formSortModel.getSortQuery()}"
+        val query = SimpleSQLiteQuery(rawQuery)
+        return submitFormDAO.getSubmitForm(query)
+    }
 
-    fun getAllUnsubmitted() =
-        submitFormDAO.getAllUnsubmitted()
+    suspend fun getAllUnsubmitted() = submitFormDAO.getAllUnsubmitted()
 
     suspend fun getPresignedUrl(fileName: String): Response<FilePresignedUrlResponse> =
         retrofitService.getPresignedUrl(fileName)
@@ -62,17 +74,17 @@ class SourceDataRepository @Inject constructor(
     suspend fun addSubmissionFromApiToDb(list: List<SubmitForm>) =
         submitFormDAO.addSubmissionFromApi(list)
 
-    suspend fun getEmptyFormByID (id:Int) : EmptyForm? {
+    suspend fun getEmptyFormByID(id: Int): EmptyForm? {
         val list = dao.loadFormById(id)
-        if (list.isNotEmpty()){
+        if (list.isNotEmpty()) {
             return list[0]
         }
         return null
     }
 
-    suspend fun getSubmissionById(id: Int) : SubmitForm? {
+    suspend fun getSubmissionById(id: Int): SubmitForm? {
         val list = submitFormDAO.loadSubmitFormById(id)
-        if (list.isNotEmpty()){
+        if (list.isNotEmpty()) {
             return list[0]
         }
         return null
