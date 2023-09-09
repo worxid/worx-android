@@ -108,7 +108,7 @@ fun SettingScreen(
     }
 
     val verticalScroll = rememberScrollState()
-    val colorPalette = WorxCustomColorsPalette.current
+    val colorPalette = LocalWorxColorsPalette.current
 
     WorxThemeBottomSheet(
         sheetState = sheetState,
@@ -360,7 +360,7 @@ fun TileItemSetting(
         modifier = modifier
             .fillMaxWidth()
             .clickable { onPress() }
-            .background(WorxCustomColorsPalette.current.bottomSheetBackground)
+            .background(LocalWorxColorsPalette.current.bottomSheetBackground)
             .padding(vertical = 8.dp, horizontal = 12.dp)
     ) {
         val (icon, tvTitle, tvSubtitle, button) = createRefs()
@@ -416,7 +416,7 @@ fun TileItemSetting(
             Icon(
                 imageVector = Icons.Filled.ChevronRight,
                 contentDescription = "Chevron Right",
-                tint = WorxCustomColorsPalette.current.button,
+                tint = LocalWorxColorsPalette.current.button,
                 modifier = modifier.constrainAs(button) {
                     top.linkTo(parent.top)
                     end.linkTo(parent.end)
@@ -437,9 +437,9 @@ fun TileItemSetting(
                     bottom.linkTo(parent.bottom)
                 },
                 colors = SwitchDefaults.colors(
-                    checkedThumbColor = WorxCustomColorsPalette.current.button,
+                    checkedThumbColor = LocalWorxColorsPalette.current.button,
                     uncheckedThumbColor = MaterialTheme.colors.surface,
-                    checkedTrackColor = WorxCustomColorsPalette.current.button.copy(alpha = 0.5f),
+                    checkedTrackColor = LocalWorxColorsPalette.current.button.copy(alpha = 0.5f),
                     uncheckedTrackColor = MaterialTheme.colors.surface,
                 )
             )

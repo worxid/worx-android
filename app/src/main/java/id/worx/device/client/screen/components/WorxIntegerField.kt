@@ -13,15 +13,12 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.font.Font
-import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import id.worx.device.client.data.database.Session
 import id.worx.device.client.model.IntegerValue
 import id.worx.device.client.theme.Typography
-import id.worx.device.client.theme.WorxCustomColorsPalette
+import id.worx.device.client.theme.LocalWorxColorsPalette
 import id.worx.device.client.theme.fontRoboto
 import id.worx.device.client.viewmodel.DetailFormViewModel
 import id.worx.device.client.viewmodel.EventStatus
@@ -56,9 +53,9 @@ fun WorxIntegerField(
                 .padding(horizontal = 16.dp),
             enabled = !arrayListOf(EventStatus.Done, EventStatus.Submitted).contains(formStatus),
             colors = TextFieldDefaults.textFieldColors(
-                backgroundColor = WorxCustomColorsPalette.current.homeBackground,
-                unfocusedIndicatorColor = WorxCustomColorsPalette.current.textFieldUnfocusedIndicator,
-                focusedIndicatorColor = WorxCustomColorsPalette.current.textFieldFocusedIndicator
+                backgroundColor = LocalWorxColorsPalette.current.homeBackground,
+                unfocusedIndicatorColor = LocalWorxColorsPalette.current.textFieldUnfocusedIndicator,
+                focusedIndicatorColor = LocalWorxColorsPalette.current.textFieldFocusedIndicator
             ),
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
             textStyle = if (value.value.isNullOrEmpty()) {

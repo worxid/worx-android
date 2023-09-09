@@ -43,7 +43,7 @@ import id.worx.device.client.model.SubmitForm
 import id.worx.device.client.screen.components.RedFullWidthButton
 import id.worx.device.client.screen.components.WorxSortByBottomSheet
 import id.worx.device.client.theme.Typography
-import id.worx.device.client.theme.WorxCustomColorsPalette
+import id.worx.device.client.theme.LocalWorxColorsPalette
 import id.worx.device.client.theme.backgroundFormList
 import id.worx.device.client.util.connectivityState
 import id.worx.device.client.util.isNoInternet
@@ -119,7 +119,7 @@ fun HomeScreen(
                         NoConnectionFound()
                     }
                     Divider(
-                        color = WorxCustomColorsPalette.current.bottomNavigationBorder,
+                        color = LocalWorxColorsPalette.current.bottomNavigationBorder,
                         thickness = 1.5.dp
                     )
                     BottomNavigationView(
@@ -241,7 +241,7 @@ fun BottomNavigationView(
         BottomNavItem.Submission,
         BottomNavItem.Setting
     )
-    val colorPalette = WorxCustomColorsPalette.current
+    val colorPalette = LocalWorxColorsPalette.current
     val scope = rememberCoroutineScope()
     if (showBotNav) {
         BottomNavigation(
@@ -309,7 +309,7 @@ fun MainTopAppBar(
 
     TopAppBar(
         modifier = Modifier.fillMaxWidth(),
-        backgroundColor = WorxCustomColorsPalette.current.appBar,
+        backgroundColor = LocalWorxColorsPalette.current.appBar,
         contentColor = Color.White
     ) {
         if (!searchMode) {

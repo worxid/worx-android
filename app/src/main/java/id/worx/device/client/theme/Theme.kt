@@ -150,13 +150,13 @@ val WorxDarkColorsPalette = WorxColorsPalette(
     signaturePenColor = Color.White,
 )
 
-val WorxCustomColorsPalette = compositionLocalOf { WorxColorsPalette() }
+val LocalWorxColorsPalette = compositionLocalOf { WorxColorsPalette() }
 
 @Composable
 fun WorxTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
     theme: String = AppTheme.LIGHT.value,
-    content: @Composable() () -> Unit
+    content: @Composable () -> Unit
 ) {
     val (colors, customColors, isLightTheme) = when (theme.getAppTheme()) {
         AppTheme.LIGHT -> Triple(LightThemeColorsSystem, WorxLightColorsPalette, true)
@@ -171,7 +171,7 @@ fun WorxTheme(
     }
 
     CompositionLocalProvider(
-        WorxCustomColorsPalette provides customColors
+        LocalWorxColorsPalette provides customColors
     ) {
         MaterialTheme(
             colors = colors,

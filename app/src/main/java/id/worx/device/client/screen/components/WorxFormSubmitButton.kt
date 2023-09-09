@@ -25,7 +25,7 @@ import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
 import id.worx.device.client.R
 import id.worx.device.client.theme.Typography
-import id.worx.device.client.theme.WorxCustomColorsPalette
+import id.worx.device.client.theme.LocalWorxColorsPalette
 import id.worx.device.client.theme.WorxTheme
 
 /**
@@ -70,7 +70,7 @@ fun WorxFormSubmitButton(
                     bottom.linkTo(parent.bottom, 2.dp)
                 },
             colors = ButtonDefaults.buttonColors(
-                backgroundColor = WorxCustomColorsPalette.current.button,
+                backgroundColor = LocalWorxColorsPalette.current.button,
                 contentColor = Color.White
             ),
             border = BorderStroke(

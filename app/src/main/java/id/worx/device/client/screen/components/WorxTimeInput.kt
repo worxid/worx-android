@@ -31,7 +31,7 @@ import id.worx.device.client.model.fieldmodel.TimeValue
 import id.worx.device.client.screen.main.SettingTheme
 import id.worx.device.client.theme.PrimaryMain
 import id.worx.device.client.theme.Typography
-import id.worx.device.client.theme.WorxCustomColorsPalette
+import id.worx.device.client.theme.LocalWorxColorsPalette
 import id.worx.device.client.viewmodel.DetailFormViewModel
 import id.worx.device.client.viewmodel.EventStatus
 import java.time.LocalTime
@@ -94,9 +94,9 @@ fun WorxTimeInput(indexForm: Int, viewModel: DetailFormViewModel, session: Sessi
                     .clickable { showTimePicker = true },
                 enabled = false,
                 colors = TextFieldDefaults.textFieldColors(
-                    backgroundColor = WorxCustomColorsPalette.current.homeBackground,
-                    unfocusedIndicatorColor = WorxCustomColorsPalette.current.textFieldUnfocusedIndicator,
-                    focusedIndicatorColor = WorxCustomColorsPalette.current.textFieldFocusedIndicator
+                    backgroundColor = LocalWorxColorsPalette.current.homeBackground,
+                    unfocusedIndicatorColor = LocalWorxColorsPalette.current.textFieldUnfocusedIndicator,
+                    focusedIndicatorColor = LocalWorxColorsPalette.current.textFieldFocusedIndicator
                 ),
                 textStyle = if (value.value == null) {
                     Typography.body2.copy(color = MaterialTheme.colors.onSecondary.copy(0.54f))
@@ -121,7 +121,7 @@ fun WorxTimeInput(indexForm: Int, viewModel: DetailFormViewModel, session: Sessi
                             modifier = Modifier
                                 .align(Alignment.Center)
                                 .padding(16.dp),
-                            tint = WorxCustomColorsPalette.current.textFieldIcon.copy(
+                            tint = LocalWorxColorsPalette.current.textFieldIcon.copy(
                                 alpha = 0.3f
                             )
                         )

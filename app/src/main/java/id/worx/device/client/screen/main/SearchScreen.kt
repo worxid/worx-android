@@ -23,7 +23,7 @@ import id.worx.device.client.model.EmptyForm
 import id.worx.device.client.model.FormSortModel
 import id.worx.device.client.model.SubmitForm
 import id.worx.device.client.theme.Typography
-import id.worx.device.client.theme.WorxCustomColorsPalette
+import id.worx.device.client.theme.LocalWorxColorsPalette
 import id.worx.device.client.theme.WorxTheme
 import id.worx.device.client.viewmodel.DetailFormViewModel
 import id.worx.device.client.viewmodel.HomeViewModelImpl
@@ -68,13 +68,13 @@ fun SearchScreen(
                     .constrainAs(tablayout) {
                         top.linkTo(parent.top)
                     },
-                backgroundColor = WorxCustomColorsPalette.current.appBar,
+                backgroundColor = LocalWorxColorsPalette.current.appBar,
                 contentColor = MaterialTheme.colors.onPrimary,
                 divider = {
                     TabRowDefaults.Divider(
                         modifier = Modifier.wrapContentSize(Alignment.BottomStart),
                         thickness = 2.dp,
-                        color = WorxCustomColorsPalette.current.appBarDivider
+                        color = LocalWorxColorsPalette.current.appBarDivider
                     )
                 }
             ) {

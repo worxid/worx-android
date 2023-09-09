@@ -41,7 +41,7 @@ import androidx.compose.ui.unit.dp
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import id.worx.device.client.screen.welcome.WelcomeEvent
 import id.worx.device.client.theme.Typography
-import id.worx.device.client.theme.WorxCustomColorsPalette
+import id.worx.device.client.theme.LocalWorxColorsPalette
 
 enum class TransparentButtonType {
     NEGATIVE,
@@ -59,7 +59,7 @@ fun RedFullWidthButton(
             .fillMaxWidth()
             .padding(horizontal = 16.dp),
         colors = ButtonDefaults.buttonColors(
-            backgroundColor = WorxCustomColorsPalette.current.button,
+            backgroundColor = LocalWorxColorsPalette.current.button,
             contentColor = Color.White
         ),
         border = BorderStroke(
@@ -82,7 +82,7 @@ fun TransparentButton(
     transparentButtonType: TransparentButtonType = TransparentButtonType.NORMAL
 ) {
     val contentColor =
-        if (transparentButtonType == TransparentButtonType.NORMAL) WorxCustomColorsPalette.current.button else MaterialTheme.colors.onSecondary.copy(
+        if (transparentButtonType == TransparentButtonType.NORMAL) LocalWorxColorsPalette.current.button else MaterialTheme.colors.onSecondary.copy(
             alpha = 0.6f
         )
     OutlinedButton(
@@ -117,7 +117,7 @@ fun ActionRedButton(
         Icon(
             modifier = Modifier
                 .clip(RoundedCornerShape(2.dp))
-                .background(WorxCustomColorsPalette.current.textFieldFocusedLabel)
+                .background(LocalWorxColorsPalette.current.textFieldFocusedLabel)
                 .padding(8.dp),
             painter = painterResource(id = iconRes),
             contentDescription = "Icon",
@@ -126,7 +126,7 @@ fun ActionRedButton(
         Text(
             modifier = Modifier.padding(start = 8.dp, end = 1.dp),
             text = title,
-            style = Typography.body2.copy(WorxCustomColorsPalette.current.textFieldFocusedLabel),
+            style = Typography.body2.copy(LocalWorxColorsPalette.current.textFieldFocusedLabel),
         )
     }
 }
@@ -144,7 +144,7 @@ fun WorxTopAppBar(
     Column {
         TopAppBar(
             modifier = Modifier.fillMaxWidth(),
-            backgroundColor = WorxCustomColorsPalette.current.appBar,
+            backgroundColor = LocalWorxColorsPalette.current.appBar,
             contentColor = Color.White
         ) {
             Row(
@@ -213,7 +213,7 @@ fun WorxTopAppBar(
 
         Divider(
             modifier = Modifier.fillMaxWidth(),
-            color = WorxCustomColorsPalette.current.appBarDivider,
+            color = LocalWorxColorsPalette.current.appBarDivider,
         )
     }
 }

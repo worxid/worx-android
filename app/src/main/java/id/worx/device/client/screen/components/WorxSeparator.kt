@@ -13,9 +13,8 @@ import androidx.compose.ui.unit.dp
 import id.worx.device.client.data.database.Session
 import id.worx.device.client.model.fieldmodel.Separator
 import id.worx.device.client.screen.main.SettingTheme
-import id.worx.device.client.theme.GrayDivider
 import id.worx.device.client.theme.Typography
-import id.worx.device.client.theme.WorxCustomColorsPalette
+import id.worx.device.client.theme.LocalWorxColorsPalette
 import id.worx.device.client.theme.textFormDescription
 import id.worx.device.client.theme.textFormDescriptionDark
 import id.worx.device.client.viewmodel.DetailFormViewModel
@@ -38,7 +37,7 @@ fun WorxSeparator(
 
         Divider(
             thickness = 6.dp,
-            color = WorxCustomColorsPalette.current.divider,
+            color = LocalWorxColorsPalette.current.divider,
             modifier = Modifier.padding(bottom = 8.dp)
         )
 
@@ -58,7 +57,7 @@ fun WorxSeparator(
 
 
         Divider(
-            color = WorxCustomColorsPalette.current.divider,
+            color = LocalWorxColorsPalette.current.divider,
             modifier = Modifier.padding(vertical = 16.dp)
         )
     }
