@@ -15,8 +15,6 @@ import id.worx.device.client.data.database.SubmissionUploadWorker
 import id.worx.device.client.model.Fields
 import id.worx.device.client.model.Value
 import id.worx.device.client.repository.SourceDataRepository
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 class SyncServer @Inject constructor(
