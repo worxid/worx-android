@@ -34,10 +34,10 @@ class WaitingVerificationFragment : Fragment(), WelcomeViewModel.UIHandler {
 
     private var mHandler: Handler? = Handler()
 
-    var mHandlerTask: Runnable = object : Runnable {
+    private var mHandlerTask: Runnable = object : Runnable {
         override fun run() {
             viewModel.getDeviceStatus(session)
-            mHandler!!.postDelayed(this, 60*1000)
+            mHandler!!.postDelayed(this, 10*1000)
         }
     }
 

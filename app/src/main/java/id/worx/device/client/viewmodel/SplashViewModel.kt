@@ -26,18 +26,23 @@ class SplashViewModel @Inject constructor(
     val deviceStatus: LiveData<String?> = _deviceStatus
 
     fun getDeviceStatus() {
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.IO) {
             val response = deviceInfoRepository.getDeviceStatus()
-            withContext(Dispatchers.Main) {
-                if (response.isSuccessful) {
-                    val deviceStatus = response.body()?.value?.deviceStatus
+            if (response.isSuccessful) {
+                val deviceStatus = response.body()?.value?.deviceStatus
+                withContext(Dispatchers.Main) {
                     _deviceStatus.postValue(deviceStatus)
-                } else if (response.code() == 404) {
-                    val jsonString = response.errorBody()!!.charStream()
-                    val errorResponse = Gson().fromJson(jsonString, ResponseDeviceInfo::class.java)
-                    if (errorResponse?.error?.status == "ENTITY_NOT_FOUND_ERROR")
+                }
+            } else if (response.code() == 404) {
+                val jsonString = response.errorBody()!!.charStream()
+                val errorResponse = Gson().fromJson(jsonString, ResponseDeviceInfo::class.java)
+                if (errorResponse?.error?.status == "ENTITY_NOT_FOUND_ERROR") {
+                    withContext(Dispatchers.Main) {
                         _deviceStatus.postValue(errorResponse.error?.status)
-                } else {
+                    }
+                }
+            } else {
+                withContext(Dispatchers.Main) {
                     val errorMessage = "Error " + response.code().toString()
                     uiHandler.showToast("$errorMessage fetching device info")
                 }
