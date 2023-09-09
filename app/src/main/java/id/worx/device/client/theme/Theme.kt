@@ -2,7 +2,6 @@ package id.worx.device.client.theme
 
 import android.annotation.SuppressLint
 import android.app.Activity
-import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.darkColors
 import androidx.compose.material.lightColors
@@ -18,6 +17,7 @@ import androidx.core.view.WindowCompat
 import dagger.hilt.android.internal.managers.FragmentComponentManager
 import id.worx.device.client.screen.main.AppTheme
 import id.worx.device.client.screen.main.getAppTheme
+import id.worx.device.client.screen.main.isLightMode
 
 //System default
 @SuppressLint("ConflictingOnColor")
@@ -151,27 +151,31 @@ val WorxDarkColorsPalette = WorxColorsPalette(
 )
 
 val LocalWorxColorsPalette = compositionLocalOf { WorxColorsPalette() }
+val LocalAppTheme = compositionLocalOf { AppTheme.DEVICE_SYSTEM }
 
 @Composable
 fun WorxTheme(
-    darkTheme: Boolean = isSystemInDarkTheme(),
     theme: String = AppTheme.LIGHT.value,
     content: @Composable () -> Unit
 ) {
-    val (colors, customColors, isLightTheme) = when (theme.getAppTheme()) {
-        AppTheme.LIGHT -> Triple(LightThemeColorsSystem, WorxLightColorsPalette, true)
-        AppTheme.DARK -> Triple(DarkThemeColorsSystem, WorxDarkColorsPalette, false)
-        else ->
-            if (darkTheme) {
-                Triple(DarkThemeColorsSystem, WorxDarkColorsPalette, false)
-            } else {
-                Triple(LightThemeColorsSystem, WorxLightColorsPalette, true)
-            }
+    val (colors, customColors, isLightTheme) = when {
+        theme.getAppTheme().isLightMode() -> Triple(
+            LightThemeColorsSystem,
+            WorxLightColorsPalette,
+            true
+        )
+
+        else -> Triple(
+            DarkThemeColorsSystem,
+            WorxDarkColorsPalette,
+            false
+        )
 
     }
 
     CompositionLocalProvider(
-        LocalWorxColorsPalette provides customColors
+        LocalWorxColorsPalette provides customColors,
+        LocalAppTheme provides theme.getAppTheme()
     ) {
         MaterialTheme(
             colors = colors,
@@ -188,7 +192,8 @@ fun WorxTheme(
             val window = activity.window
             window.statusBarColor = colors.primaryVariant.toArgb()
 
-            WindowCompat.getInsetsController(window, view).isAppearanceLightStatusBars = isLightTheme
+            WindowCompat.getInsetsController(window, view).isAppearanceLightStatusBars =
+                isLightTheme
         }
     }
 }

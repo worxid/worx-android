@@ -29,6 +29,8 @@ import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
+import id.worx.device.client.screen.main.isLightMode
+import id.worx.device.client.theme.LocalAppTheme
 import id.worx.device.client.theme.LocalWorxColorsPalette
 import id.worx.device.client.theme.WorxTheme
 
@@ -82,13 +84,23 @@ fun Modifier.shimmerEffect(): Modifier = composed {
         )
     )
 
+    val colors = if (LocalAppTheme.current.isLightMode()) {
+        listOf(
+            Color(0xFFEBEBF4),
+            Color(0xFFF4F4F4),
+            Color(0xFFEBEBF4)
+        )
+    } else {
+        listOf(
+            Color(0xFFB8B5B5),
+            Color(0xFF8F8B8B),
+            Color(0xFFB8B5B5),
+        )
+    }
+
     background(
         brush = Brush.linearGradient(
-            colors = listOf(
-                Color(0xFFEBEBF4),
-                Color(0xFFF4F4F4),
-                Color(0xFFEBEBF4)
-            ),
+            colors = colors,
             start = Offset(startOffsetX, 0f),
             end = Offset(startOffsetX + size.width.toFloat(), size.height.toFloat())
         )

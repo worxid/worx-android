@@ -1,6 +1,8 @@
 package id.worx.device.client.screen.main
 
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.EnterTransition
+import androidx.compose.animation.ExitTransition
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -202,18 +204,18 @@ fun HomeScreen(
                 )
             }
 
-//            AnimatedVisibility(
-//                visible = viewModel.uiState.collectAsState().value.isLoading,
-//                enter = EnterTransition.None,
-//                exit = ExitTransition.None
-//            ) {
-//                Box(
-//                    modifier = Modifier
-//                        .fillMaxSize()
-//                ) {
-//                    CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
-//                }
-//            }
+            AnimatedVisibility(
+                visible = viewModel.uiState.collectAsState().value.isLoading,
+                enter = EnterTransition.None,
+                exit = ExitTransition.None
+            ) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                ) {
+                    CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
+                }
+            }
             AnimatedVisibility(
                 visible = showSubmittedStatus
             )

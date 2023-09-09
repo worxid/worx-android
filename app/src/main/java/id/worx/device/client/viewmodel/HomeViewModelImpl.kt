@@ -145,7 +145,7 @@ class HomeViewModelImpl @Inject constructor(
                     list = getAllFormFromDB,
                     drafts = getAllDraft,
                     submission = getAllSubmission,
-//                    isLoading = false,
+                    isLoading = false,
                     errorMessages = ""
                 )
             }

@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -58,6 +59,11 @@ fun String.getAppTheme(): AppTheme {
         "Device System" -> AppTheme.DEVICE_SYSTEM
         else -> AppTheme.valueOf(this.uppercase())
     }
+}
+
+@Composable
+fun AppTheme.isLightMode(): Boolean {
+    return this == AppTheme.LIGHT || (this == AppTheme.DEVICE_SYSTEM && !isSystemInDarkTheme())
 }
 
 fun AppTheme.getAppLogoDrawable(): Int {
