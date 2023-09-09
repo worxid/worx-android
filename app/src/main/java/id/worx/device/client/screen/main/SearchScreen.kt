@@ -122,6 +122,7 @@ fun SearchScreen(
                         stringResource(R.string.text_search_empty_title),
                         stringResource(R.string.text_search_empty_desc),
                         selectedSort = selectedSort,
+                        shouldShowEmptyResult = searchInput.isNotEmpty(),
                         openSortBottomSheet = openSortBottomSheet,
                         syncWithServer = syncWithServer
                     )
@@ -134,6 +135,7 @@ fun SearchScreen(
                         stringResource(R.string.text_search_empty_title),
                         stringResource(R.string.text_search_empty_desc),
                         selectedSort = selectedSort,
+                        shouldShowEmptyResult = searchInput.isNotEmpty(),
                         openSortBottomSheet = openSortBottomSheet,
                         syncWithServer = syncWithServer
                     )
@@ -146,6 +148,7 @@ fun SearchScreen(
                         stringResource(R.string.text_search_empty_title),
                         stringResource(R.string.text_search_empty_desc),
                         selectedSort = selectedSort,
+                        shouldShowEmptyResult = searchInput.isNotEmpty(),
                         openSortBottomSheet = openSortBottomSheet,
                         syncWithServer = syncWithServer
                     )

@@ -152,7 +152,7 @@ fun HomeScreen(
                             stringResource(R.string.empty_description_form),
                             selectedSort = selectedSort,
                             openSortBottomSheet = openSortBottomSheet,
-                            syncWithServer
+                            syncWithServer = syncWithServer
                         )
 
                         1 -> FormScreen(
@@ -164,7 +164,7 @@ fun HomeScreen(
                             stringResource(R.string.empty_description_drafts),
                             selectedSort = selectedSort,
                             openSortBottomSheet = openSortBottomSheet,
-                            syncWithServer
+                            syncWithServer = syncWithServer
                         )
 
                         2 -> FormScreen(
@@ -176,7 +176,7 @@ fun HomeScreen(
                             stringResource(R.string.empty_description_submission),
                             selectedSort = selectedSort,
                             openSortBottomSheet = openSortBottomSheet,
-                            syncWithServer
+                            syncWithServer = syncWithServer
                         )
 
                         3 -> {

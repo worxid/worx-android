@@ -1,6 +1,5 @@
 package id.worx.device.client.screen.main
 
-import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -31,8 +30,6 @@ import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDownward
 import androidx.compose.material.icons.filled.ArrowUpward
-import androidx.compose.material.icons.outlined.ArrowBackIosNew
-import androidx.compose.material.icons.outlined.KeyboardArrowDown
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -84,6 +81,7 @@ fun FormScreen(
     titleForEmpty: String,
     descriptionForEmpty: String,
     selectedSort: FormSortModel,
+    shouldShowEmptyResult: Boolean = true,
     openSortBottomSheet: () -> Unit,
     syncWithServer: () -> Unit
 ) {
@@ -100,7 +98,9 @@ fun FormScreen(
                 .background(WorxCustomColorsPalette.current.homeBackground),
         ) {
             if (data.isNullOrEmpty()) {
-                EmptyList(type, titleForEmpty, descriptionForEmpty)
+                if (shouldShowEmptyResult) {
+                    EmptyList(type, titleForEmpty, descriptionForEmpty)
+                }
             } else {
                 FormSort(
                     selectedSort = selectedSort,
