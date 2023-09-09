@@ -15,6 +15,8 @@ import id.worx.device.client.data.database.SubmissionUploadWorker
 import id.worx.device.client.model.Fields
 import id.worx.device.client.model.Value
 import id.worx.device.client.repository.SourceDataRepository
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 class SyncServer @Inject constructor(
@@ -31,9 +33,11 @@ class SyncServer @Inject constructor(
             UPLOADTOSERVER -> {
                 uploadSubmissionWork()
             }
+
             DOWNLOADFROMSERVER -> {
                 downloadForms()
             }
+
             else -> {
                 downloadForms()
                 uploadSubmissionWork()
@@ -41,7 +45,7 @@ class SyncServer @Inject constructor(
         }
     }
 
-    private fun downloadForms() {
+    private suspend fun downloadForms() {
         val syncTemplateDBRequest = OneTimeWorkRequestBuilder<FormDownloadWorker>()
             .addTag("form_template")
             .setConstraints(networkConstraints)
@@ -59,24 +63,22 @@ class SyncServer @Inject constructor(
         ).enqueue()
     }
 
-
     private suspend fun uploadSubmissionWork() {
-        repository.getAllUnsubmitted().collect {
+        val unSubmittedList = repository.getAllUnsubmitted()
 
-            val gson = GsonBuilder()
-                .registerTypeAdapter(Fields::class.java, FieldsDeserializer())
-                .registerTypeAdapter(Value::class.java, ValueSerialize())
-                .create()
-            val uploadData: Data = workDataOf("submit_form_list" to gson.toJson(it))
+        val gson = GsonBuilder()
+            .registerTypeAdapter(Fields::class.java, FieldsDeserializer())
+            .registerTypeAdapter(Value::class.java, ValueSerialize())
+            .create()
+        val uploadData: Data = workDataOf("submit_form_list" to gson.toJson(unSubmittedList))
 
-            val uploadSubmisison = OneTimeWorkRequestBuilder<SubmissionUploadWorker>()
-                .setInputData(uploadData)
-                .addTag("upload_submission")
-                .setConstraints(networkConstraints)
-                .build()
+        val uploadSubmisison = OneTimeWorkRequestBuilder<SubmissionUploadWorker>()
+            .setInputData(uploadData)
+            .addTag("upload_submission")
+            .setConstraints(networkConstraints)
+            .build()
 
-            workManager.enqueue(uploadSubmisison)
-        }
+        workManager.enqueue(uploadSubmisison)
     }
 
     companion object {

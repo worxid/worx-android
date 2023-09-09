@@ -54,8 +54,7 @@ class SourceDataRepository @Inject constructor(
         return submitFormDAO.getSubmitForm(query)
     }
 
-    fun getAllUnsubmitted() =
-        submitFormDAO.getAllUnsubmitted()
+    suspend fun getAllUnsubmitted() = submitFormDAO.getAllUnsubmitted()
 
     suspend fun getPresignedUrl(fileName: String): Response<FilePresignedUrlResponse> =
         retrofitService.getPresignedUrl(fileName)
