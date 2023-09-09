@@ -42,7 +42,6 @@ import id.worx.device.client.viewmodel.ThemeVMMock
 import id.worx.device.client.viewmodel.ThemeViewModel
 
 object SettingTheme {
-    val System = "System default"
     val Dark = "Dark"
     val Green = "Green"
     val Blue = "Blue"

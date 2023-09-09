@@ -33,7 +33,7 @@ import id.worx.device.client.R
 import id.worx.device.client.data.database.Session
 import id.worx.device.client.screen.components.RedFullWidthButton
 import id.worx.device.client.screen.components.WhiteFullWidthButton
-import id.worx.device.client.screen.main.SettingTheme
+import id.worx.device.client.screen.main.AppTheme
 import id.worx.device.client.theme.PrimaryMain
 import id.worx.device.client.theme.Typography
 import id.worx.device.client.theme.WorxTheme
@@ -188,7 +188,7 @@ fun WelcomeScreenPreview() {
 @Preview(name = "Welcome Dark theme", showSystemUi = true, uiMode = Configuration.UI_MODE_NIGHT_YES)
 @Composable
 fun WelcomeScreenPreviewDark() {
-    WorxTheme(theme = SettingTheme.Dark) {
+    WorxTheme(theme = AppTheme.DARK.value) {
         WelcomeScreen({}, Session(LocalContext.current))
     }
 }
