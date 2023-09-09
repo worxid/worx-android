@@ -2,8 +2,6 @@ package id.worx.device.client.viewmodel
 
 import android.content.Context
 import android.graphics.Bitmap
-import android.location.Address
-import android.location.Geocoder
 import android.net.Uri
 import android.util.Log
 import androidx.compose.runtime.State
@@ -22,6 +20,8 @@ import id.worx.device.client.Util.initProgress
 import id.worx.device.client.WorxApplication
 import id.worx.device.client.data.api.SyncServer
 import id.worx.device.client.data.database.Session
+import id.worx.device.client.domain.GetSubmitLocationUseCase
+import id.worx.device.client.domain.request.GetSubmitLocationRequest
 import id.worx.device.client.model.BasicForm
 import id.worx.device.client.model.SubmitForm
 import id.worx.device.client.model.SubmitLocation
@@ -35,6 +35,7 @@ import id.worx.device.client.model.fieldmodel.SignatureValue
 import id.worx.device.client.model.fieldmodel.SketchValue
 import id.worx.device.client.repository.SourceDataRepository
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -42,7 +43,6 @@ import kotlinx.coroutines.withContext
 import net.gotev.uploadservice.protocols.binary.BinaryUploadRequest
 import java.io.File
 import java.io.FileOutputStream
-import java.util.Locale
 import javax.inject.Inject
 import kotlin.collections.set
 
@@ -66,7 +66,8 @@ class DetailFormViewModel @Inject constructor(
     private val application: WorxApplication,
     private val session: Session,
     private val dataSourceRepo: SourceDataRepository,
-    private val syncServerWork: SyncServer
+    private val syncServerWork: SyncServer,
+    private val getSubmitLocationUseCase: GetSubmitLocationUseCase
 ) : ViewModel() {
 
     var uiState = MutableStateFlow(DetailUiState())
@@ -202,12 +203,6 @@ class DetailFormViewModel @Inject constructor(
         return file.absolutePath
     }
 
-    fun currentComponentIndex(index: Int) {
-        uiState.update {
-            it.copy(currentComponent = index)
-        }
-    }
-
     fun setCameraResultUri(uri: Uri) {
         _cameraResultUri.value = null
         _cameraResultUri.value = uri
@@ -316,7 +311,17 @@ class DetailFormViewModel @Inject constructor(
 
     private fun submitForm(actionAfterSubmitted: () -> Unit) {
         viewModelScope.launch {
-            val form = createSubmitForm()
+            val submitLocation = withContext(Dispatchers.Default) {
+                return@withContext async {
+                    getSubmitLocationUseCase.execute(
+                        GetSubmitLocationRequest(
+                            application.applicationContext,
+                            session
+                        ),
+                    )
+                }.await()
+            }
+            val form = createSubmitForm(submitLocation)
             if (Util.isNetworkAvailable(application.applicationContext)) {
                 val result = dataSourceRepo.submitForm(form)
                 if (result.isSuccessful) {
@@ -389,7 +394,20 @@ class DetailFormViewModel @Inject constructor(
                     )
                 }
             }
-            val form = createSubmitForm(draftDescription)
+            val submitLocation = withContext(Dispatchers.Default) {
+                return@withContext async {
+                    getSubmitLocationUseCase.execute(
+                        GetSubmitLocationRequest(
+                            application.applicationContext,
+                            session
+                        )
+                    )
+                }.await()
+            }
+            val form = createSubmitForm(
+                submitLocation = submitLocation,
+                draftDescription = draftDescription
+            )
             dataSourceRepo.insertOrUpdateSubmitForm(form.copy(status = 0))
             actionAfterSaved()
             _formProgress.value = 0
@@ -420,7 +438,17 @@ class DetailFormViewModel @Inject constructor(
 
     fun duplicateDraft(draftForm: SubmitForm, draftDescription: String) {
         viewModelScope.launch {
-            val newDraftForm = createDraftForm(draftForm, draftDescription)
+            val submitLocation = withContext(Dispatchers.Default) {
+                return@withContext async {
+                    getSubmitLocationUseCase.execute(
+                        GetSubmitLocationRequest(
+                            application.applicationContext,
+                            session
+                        )
+                    )
+                }.await()
+            }
+            val newDraftForm = createDraftForm(draftForm, submitLocation, draftDescription)
             dataSourceRepo.insertOrUpdateSubmitForm(newDraftForm)
             _formProgress.value = 0
 
@@ -437,21 +465,11 @@ class DetailFormViewModel @Inject constructor(
         }
     }
 
-    private fun createDraftForm(draftForm: SubmitForm, draftDescription: String = ""): SubmitForm {
-        val latitude = session.latitude ?: "0.0010"
-        val longitude = session.longitude ?: "-109.3222"
-        val geocoder = Geocoder(application.applicationContext, Locale.getDefault())
-        val address = geocoder.getFromLocation(
-            latitude.toDouble(),
-            longitude.toDouble(),
-            1
-        )?.get(0) ?: Address(Locale.getDefault())
-        val submitLocation = SubmitLocation(
-            address.getAddressLine(0),
-            latitude.toDouble(),
-            longitude.toDouble()
-        )
-
+    private fun createDraftForm(
+        draftForm: SubmitForm,
+        submitLocation: SubmitLocation,
+        draftDescription: String = ""
+    ): SubmitForm {
         return SubmitForm(
             id = draftForm.id,
             label = draftForm.label,
@@ -465,21 +483,10 @@ class DetailFormViewModel @Inject constructor(
         )
     }
 
-    private fun createSubmitForm(draftDescription: String = ""): SubmitForm {
-        val latitude = session.latitude ?: "0.0010"
-        val longitude = session.longitude ?: "-109.3222"
-        val geocoder = Geocoder(application.applicationContext, Locale.getDefault())
-        val address = geocoder.getFromLocation(
-            latitude.toDouble(),
-            longitude.toDouble(),
-            1
-        )?.get(0) ?: Address(Locale.getDefault())
-        val submitLocation = SubmitLocation(
-            address.getAddressLine(0),
-            latitude.toDouble(),
-            longitude.toDouble()
-        )
-
+    private fun createSubmitForm(
+        submitLocation: SubmitLocation,
+        draftDescription: String = ""
+    ): SubmitForm {
         return SubmitForm(
             id = uiState.value.detailForm!!.id,
             label = uiState.value.detailForm!!.label,

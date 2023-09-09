@@ -3,7 +3,6 @@ package id.worx.device.client.data.dao
 import androidx.room.*
 import androidx.sqlite.db.SupportSQLiteQuery
 import id.worx.device.client.model.SubmitForm
-import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface SubmitFormDAO {
@@ -12,7 +11,7 @@ interface SubmitFormDAO {
     suspend fun getSubmitForm(query: SupportSQLiteQuery): List<SubmitForm>
 
     @Query("SELECT * FROM submit_form WHERE status = 1")
-    fun getAllUnsubmitted(): Flow<List<SubmitForm>>
+    suspend fun getAllUnsubmitted(): List<SubmitForm>
 
     @Query("DELETE FROM submit_form WHERE dbId = :id")
     suspend fun deleteSubmitForm(id: Int)

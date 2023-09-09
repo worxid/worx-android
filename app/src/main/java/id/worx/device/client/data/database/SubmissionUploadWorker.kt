@@ -8,12 +8,15 @@ import com.google.gson.reflect.TypeToken
 import dagger.hilt.android.EntryPointAccessors
 import id.worx.device.client.data.api.FieldsDeserializer
 import id.worx.device.client.data.api.ValueSerialize
+import id.worx.device.client.domain.GetSubmitLocationUseCase
+import id.worx.device.client.domain.request.GetSubmitLocationRequest
 import id.worx.device.client.model.Fields
 import id.worx.device.client.model.SubmitForm
 import id.worx.device.client.model.Value
 import id.worx.device.client.repository.SourceDataRepository
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -24,6 +27,12 @@ class SubmissionUploadWorker(appContext: Context, workerParams: WorkerParameters
 
     @Inject
     lateinit var repo: SourceDataRepository
+
+    @Inject
+    lateinit var getSubmitLocationUseCase: GetSubmitLocationUseCase
+
+    @Inject
+    lateinit var session: Session
 
     init {
         val repoFactory = EntryPointAccessors.fromApplication(
@@ -60,10 +69,24 @@ class SubmissionUploadWorker(appContext: Context, workerParams: WorkerParameters
     private suspend fun submitForm(form: SubmitForm): Boolean {
         val res = CompletableDeferred<Boolean>()
 
-        val response = repo.submitForm(form)
-        withContext(Dispatchers.Main) {
+        var newForm = form
+
+        withContext(Dispatchers.IO) {
+            if (form.submitLocation?.address.isNullOrEmpty()) {
+                val submitLocation = async {
+                    getSubmitLocationUseCase.execute(
+                        GetSubmitLocationRequest(
+                            applicationContext, session
+                        )
+                    )
+                }.await()
+
+                newForm = form.copy(submitLocation = submitLocation)
+            }
+
+            val response = repo.submitForm(newForm)
             if (response.isSuccessful) {
-                repo.insertOrUpdateSubmitForm(form.copy(status = 2))
+                repo.insertOrUpdateSubmitForm(newForm.copy(status = 2))
                 res.complete(true)
             }
         }
