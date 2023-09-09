@@ -56,13 +56,11 @@ class SyncServer @Inject constructor(
             .setConstraints(networkConstraints)
             .build()
 
-        withContext(Dispatchers.Main) {
-            workManager.beginUniqueWork(
-                "download_form",
-                ExistingWorkPolicy.REPLACE,
-                listOf(syncTemplateDBRequest, syncSubmitFormDBRequest)
-            ).enqueue()
-        }
+        workManager.beginUniqueWork(
+            "download_form",
+            ExistingWorkPolicy.REPLACE,
+            listOf(syncTemplateDBRequest, syncSubmitFormDBRequest)
+        ).enqueue()
     }
 
     private suspend fun uploadSubmissionWork() {
