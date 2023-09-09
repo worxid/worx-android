@@ -43,7 +43,7 @@ class SyncServer @Inject constructor(
         }
     }
 
-    private suspend fun downloadForms() {
+    private fun downloadForms() {
         val syncTemplateDBRequest = OneTimeWorkRequestBuilder<FormDownloadWorker>()
             .addTag("form_template")
             .setConstraints(networkConstraints)
