@@ -12,14 +12,12 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import id.worx.device.client.data.database.Session
 import id.worx.device.client.model.fieldmodel.RatingField
 import id.worx.device.client.model.fieldmodel.RatingValue
-import id.worx.device.client.theme.SecondaryMain
-import id.worx.device.client.theme.WorxCustomColorsPalette
+import id.worx.device.client.theme.LocalWorxColorsPalette
 import id.worx.device.client.viewmodel.DetailFormViewModel
 import id.worx.device.client.viewmodel.EventStatus
 
@@ -82,9 +80,9 @@ fun WorxRating(indexForm: Int, viewModel: DetailFormViewModel,validation : Boole
                     painter = painterResource(id = R.drawable.star_big_off),
                     contentDescription = "Star Icon",
                     tint = if (index < (rating.value ?: 0)) {
-                        WorxCustomColorsPalette.current.selectedStar
+                        LocalWorxColorsPalette.current.selectedStar
                     } else {
-                        WorxCustomColorsPalette.current.unselectedStar
+                        LocalWorxColorsPalette.current.unselectedStar
                     }
                 )
             }

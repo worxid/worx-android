@@ -20,10 +20,8 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.Icon
 import androidx.compose.material.LinearProgressIndicator
@@ -33,7 +31,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDownward
 import androidx.compose.material.icons.filled.ArrowUpward
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -60,16 +57,14 @@ import id.worx.device.client.model.BasicForm
 import id.worx.device.client.model.FormSortModel
 import id.worx.device.client.model.FormSortOrderBy
 import id.worx.device.client.model.SubmitForm
-import id.worx.device.client.screen.components.ShimmerListItem
 import id.worx.device.client.screen.components.TransparentButton
 import id.worx.device.client.screen.components.WorxBoxPullRefresh
 import id.worx.device.client.screen.components.WorxSwipeableCard
 import id.worx.device.client.screen.components.WorxTextField
-import id.worx.device.client.screen.components.shimmerEffect
+import id.worx.device.client.theme.LocalWorxColorsPalette
 import id.worx.device.client.theme.PrimaryMain
 import id.worx.device.client.theme.PrimaryMainBlue
 import id.worx.device.client.theme.Typography
-import id.worx.device.client.theme.WorxCustomColorsPalette
 import id.worx.device.client.theme.fontRoboto
 import id.worx.device.client.viewmodel.DetailFormViewModel
 import id.worx.device.client.viewmodel.HomeViewModelImpl
@@ -88,70 +83,45 @@ fun FormScreen(
     openSortBottomSheet: () -> Unit,
     syncWithServer: () -> Unit
 ) {
-    val isLoading = viewModel.uiState.collectAsState().value.isLoading
+    WorxBoxPullRefresh(onRefresh = {
+        syncWithServer()
+    }) {
+        Column(
+            modifier = Modifier
+                .fillMaxHeight()
+                .background(LocalWorxColorsPalette.current.homeBackground),
+        ) {
+            if (data.isNullOrEmpty()) {
+                if (shouldShowEmptyResult) {
+                    EmptyList(type, titleForEmpty, descriptionForEmpty)
+                }
+            } else {
+                FormSort(
+                    selectedSort = selectedSort,
+                    openSortByBottomSheet = openSortBottomSheet
+                )
+                LazyColumn(
+                    modifier = Modifier.padding(start = 16.dp, end = 16.dp),
+                    verticalArrangement = Arrangement.spacedBy(12.dp),
+                    contentPadding = PaddingValues(bottom = 12.dp)
+                ) {
+                    when (type) {
+                        0 -> items(items = data, itemContent = { item ->
+                            ListItemValidForm(item, viewModel, detailFormViewModel)
+                        })
 
-   Box {
-       WorxBoxPullRefresh(onRefresh = {
-           syncWithServer()
-       }) {
-           Column(
-               modifier = Modifier
-                   .fillMaxHeight()
-                   .background(WorxCustomColorsPalette.current.homeBackground),
-           ) {
-               if (data.isNullOrEmpty()) {
-                   if (shouldShowEmptyResult) {
-                       EmptyList(type, titleForEmpty, descriptionForEmpty)
-                   }
-               } else {
-                   FormSort(
-                       selectedSort = selectedSort,
-                       openSortByBottomSheet = openSortBottomSheet
-                   )
-                   LazyColumn(
-                       modifier = Modifier.padding(start = 16.dp, end = 16.dp),
-                       verticalArrangement = Arrangement.spacedBy(12.dp),
-                       contentPadding = PaddingValues(bottom = 12.dp)
-                   ) {
-                       when (type) {
-                           0 -> items(items = data, itemContent = { item ->
-                               ListItemValidForm(item, viewModel, detailFormViewModel)
-                           })
+                        1 -> items(items = data, itemContent = { item ->
+                            DraftWrapper(item as SubmitForm, viewModel, detailFormViewModel)
+                        })
 
-                           1 -> items(items = data, itemContent = { item ->
-                               DraftWrapper(item as SubmitForm, viewModel, detailFormViewModel)
-                           })
-
-                           2 -> items(items = data, itemContent = { item ->
-                               SubmissionItemForm(item as SubmitForm, viewModel, detailFormViewModel)
-                           })
-                       }
-                   }
-               }
-           }
-       }
-
-       if (isLoading) {
-           Column(
-               modifier = Modifier
-                   .verticalScroll(rememberScrollState())
-                   .background(WorxCustomColorsPalette.current.homeBackground)
-                   .padding(top = 16.dp, end = 16.dp, start = 16.dp, bottom = 8.dp)
-           ) {
-               Box(
-                   modifier = Modifier
-                       .width(72.dp)
-                       .height(24.dp)
-                       .shimmerEffect()
-               )
-               Spacer(modifier = Modifier.height(12.dp))
-               for (i in 1..20) {
-                   ShimmerListItem()
-                   Spacer(modifier = Modifier.height(12.dp))
-               }
-           }
-       }
-   }
+                        2 -> items(items = data, itemContent = { item ->
+                            SubmissionItemForm(item as SubmitForm, viewModel, detailFormViewModel)
+                        })
+                    }
+                }
+            }
+        }
+    }
 }
 
 @Composable
@@ -160,7 +130,7 @@ fun NoConnectionFound(modifier: Modifier = Modifier) {
         modifier = modifier
             .fillMaxWidth()
             .height(56.dp)
-            .background(WorxCustomColorsPalette.current.iconBackground)
+            .background(LocalWorxColorsPalette.current.iconBackground)
             .padding(horizontal = 16.dp, vertical = 8.dp)
     ) {
         Icon(
@@ -248,7 +218,7 @@ fun ListItemValidForm(
         modifier = Modifier
             .fillMaxWidth()
             .clip(RoundedCornerShape(4.dp))
-            .background(WorxCustomColorsPalette.current.formItemContainer)
+            .background(LocalWorxColorsPalette.current.formItemContainer)
             .clickable(
                 onClick = {
                     viewModel.goToDetailScreen()
@@ -262,7 +232,7 @@ fun ListItemValidForm(
                 .align(Alignment.CenterVertically),
             painter = painterResource(id = R.drawable.ic_form),
             contentDescription = "Form Icon",
-            tint = WorxCustomColorsPalette.current.iconV2
+            tint = LocalWorxColorsPalette.current.iconV2
         )
         Column(modifier = Modifier.padding(vertical = 13.dp)) {
             Text(
@@ -392,7 +362,7 @@ fun DraftItemForm(
             modifier = Modifier
                 .fillMaxWidth()
                 .clip(RoundedCornerShape(topStart = 4.dp, topEnd = 4.dp))
-                .background(WorxCustomColorsPalette.current.formItemContainer)
+                .background(LocalWorxColorsPalette.current.formItemContainer)
                 .padding(horizontal = 12.dp, vertical = 8.dp)
                 .clickable(
                     onClick = {
@@ -404,7 +374,7 @@ fun DraftItemForm(
             Icon(
                 painter = painterResource(id = R.drawable.ic_form),
                 contentDescription = "Form Icon",
-                tint = WorxCustomColorsPalette.current.iconV2
+                tint = LocalWorxColorsPalette.current.iconV2
             )
             Spacer(modifier = Modifier.width(12.dp))
             Column {
@@ -419,7 +389,7 @@ fun DraftItemForm(
                     Text(
                         text = "Draft",
                         style = Typography.body1,
-                        color = WorxCustomColorsPalette.current.iconBackground
+                        color = LocalWorxColorsPalette.current.iconBackground
                     )
                 }
                 Spacer(modifier = Modifier.height(2.dp))
@@ -457,12 +427,12 @@ fun DraftItemForm(
             LinearProgressIndicator(
                 progress = 1f,
                 modifier = Modifier.fillMaxWidth(),
-                color = WorxCustomColorsPalette.current.draftLinearProgressIndicator
+                color = LocalWorxColorsPalette.current.draftLinearProgressIndicator
             )
             LinearProgressIndicator(
                 progress = initProgress(item.values.toMutableMap(), item.fields) / 100.toFloat(),
                 modifier = Modifier.fillMaxWidth(),
-                color = WorxCustomColorsPalette.current.draftCompletedLinearProgressIndicator,
+                color = LocalWorxColorsPalette.current.draftCompletedLinearProgressIndicator,
                 backgroundColor = Color.Transparent
             )
         }
@@ -480,7 +450,7 @@ fun DialogDuplicateDraftForm(
             Column(
                 modifier = Modifier
                     .wrapContentSize()
-                    .background(WorxCustomColorsPalette.current.bottomSheetBackground)
+                    .background(LocalWorxColorsPalette.current.bottomSheetBackground)
             ) {
                 Text(
                     modifier = Modifier.padding(top = 16.dp, start = 16.dp, end = 16.dp),
@@ -541,7 +511,7 @@ fun DialogDeleteDraftForm(
             Column(
                 modifier = Modifier
                     .wrapContentSize()
-                    .background(WorxCustomColorsPalette.current.bottomSheetBackground)
+                    .background(LocalWorxColorsPalette.current.bottomSheetBackground)
             ) {
                 Text(
                     modifier = Modifier.padding(top = 16.dp, start = 16.dp, end = 16.dp),
@@ -595,7 +565,7 @@ fun SubmissionItemForm(
         modifier = Modifier
             .fillMaxWidth()
             .clip(RoundedCornerShape(4.dp))
-            .background(WorxCustomColorsPalette.current.formItemContainer)
+            .background(LocalWorxColorsPalette.current.formItemContainer)
             .clickable(
                 onClick = {
                     viewModel.goToDetailScreen()

@@ -49,7 +49,7 @@ import id.worx.device.client.screen.components.WorxBoxPullRefresh
 import id.worx.device.client.screen.components.WorxDialog
 import id.worx.device.client.screen.components.WorxTopAppBar
 import id.worx.device.client.theme.Typography
-import id.worx.device.client.theme.WorxCustomColorsPalette
+import id.worx.device.client.theme.LocalWorxColorsPalette
 import id.worx.device.client.theme.WorxTheme
 import id.worx.device.client.viewmodel.CameraViewModel
 import id.worx.device.client.viewmodel.DetailFormViewModel
@@ -159,7 +159,7 @@ fun DraftActionsBottomSheet(
     ModalBottomSheetLayout(
         sheetState = sheetState,
         sheetContent = {
-            val colorPalette = WorxCustomColorsPalette.current
+            val colorPalette = LocalWorxColorsPalette.current
             Column(
                 modifier = Modifier
                     .background(colorPalette.bottomSheetBackground)
@@ -218,7 +218,7 @@ fun DraftActionsBottomSheet(
                 }
             }
         },
-        sheetBackgroundColor = WorxCustomColorsPalette.current.bottomSheetBackground
+        sheetBackgroundColor = LocalWorxColorsPalette.current.bottomSheetBackground
     ) {
         content(openSortByBottomSheet = { scope.launch { sheetState.show() } })
     }

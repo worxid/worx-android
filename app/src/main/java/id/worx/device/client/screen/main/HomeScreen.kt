@@ -1,6 +1,8 @@
 package id.worx.device.client.screen.main
 
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.EnterTransition
+import androidx.compose.animation.ExitTransition
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -43,7 +45,7 @@ import id.worx.device.client.model.SubmitForm
 import id.worx.device.client.screen.components.RedFullWidthButton
 import id.worx.device.client.screen.components.WorxSortByBottomSheet
 import id.worx.device.client.theme.Typography
-import id.worx.device.client.theme.WorxCustomColorsPalette
+import id.worx.device.client.theme.LocalWorxColorsPalette
 import id.worx.device.client.theme.backgroundFormList
 import id.worx.device.client.util.connectivityState
 import id.worx.device.client.util.isNoInternet
@@ -119,7 +121,7 @@ fun HomeScreen(
                         NoConnectionFound()
                     }
                     Divider(
-                        color = WorxCustomColorsPalette.current.bottomNavigationBorder,
+                        color = LocalWorxColorsPalette.current.bottomNavigationBorder,
                         thickness = 1.5.dp
                     )
                     BottomNavigationView(
@@ -202,18 +204,18 @@ fun HomeScreen(
                 )
             }
 
-//            AnimatedVisibility(
-//                visible = viewModel.uiState.collectAsState().value.isLoading,
-//                enter = EnterTransition.None,
-//                exit = ExitTransition.None
-//            ) {
-//                Box(
-//                    modifier = Modifier
-//                        .fillMaxSize()
-//                ) {
-//                    CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
-//                }
-//            }
+            AnimatedVisibility(
+                visible = viewModel.uiState.collectAsState().value.isLoading,
+                enter = EnterTransition.None,
+                exit = ExitTransition.None
+            ) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                ) {
+                    CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
+                }
+            }
             AnimatedVisibility(
                 visible = showSubmittedStatus
             )
@@ -241,7 +243,7 @@ fun BottomNavigationView(
         BottomNavItem.Submission,
         BottomNavItem.Setting
     )
-    val colorPalette = WorxCustomColorsPalette.current
+    val colorPalette = LocalWorxColorsPalette.current
     val scope = rememberCoroutineScope()
     if (showBotNav) {
         BottomNavigation(
@@ -309,7 +311,7 @@ fun MainTopAppBar(
 
     TopAppBar(
         modifier = Modifier.fillMaxWidth(),
-        backgroundColor = WorxCustomColorsPalette.current.appBar,
+        backgroundColor = LocalWorxColorsPalette.current.appBar,
         contentColor = Color.White
     ) {
         if (!searchMode) {

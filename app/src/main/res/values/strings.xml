@@ -8,18 +8,13 @@
     <string name="join_team">Join Existing Team</string>
     <string name="join_an_existing_team">Join An Existing Team</string>
     <string name="text_join_team_fill_form">Fill the form and waiting until admin from your company approve your device.</string>
-    <string name="full_name">Full Name</string>
     <string name="check_email">Check Your Email</string>
     <string name="activate_acc_1">Click the link in your email to</string>
     <string name="activate_acc_2">activate your account</string>
     <string name="open_email">Open Email App</string>
     <string name="not_receive_link">Didn\'t receive the link?</string>
     <string name="resend">Resend</string>
-    <string name="admin_will_approve">Admin will approve your device</string>
     <string name="name">Full Name</string>
-    <string name="email">Email</string>
-    <string name="password">Password</string>
-    <string name="work_phone">Work Phone</string>
     <string name="organization_code">Organization Code</string>
     <string name="cancel_request">Cancel Request</string>
     <string name="request_success_sent">Request successfully sent</string>
@@ -28,8 +23,6 @@
     <string name="verification_rejected_description">Make a new request and make sure your admin knows about your request.</string>
     <string name="make_new_request">Make A New Request</string>
     <string name="title_activity_main">MainActivity</string>
-    <string name="advance_settings">Advance Settings</string>
-    <string name="switch_to_server">Switch to server URL</string>
     <string name="configure_server_url">Configure Server URL</string>
     <string name="configure_server_descr">Access to different server, default is Worx.</string>
     <string name="connect">Connect</string>
@@ -42,15 +35,10 @@
     <string name="text_sort_by">Sort By</string>
     <string name="add_file">Add File</string>
     <string name="gallery">Gallery</string>
-    <string name="camera">Camera</string>
     <string name="add_signature">Add Signature</string>
     <string name="draw_sketch">Draw Sketch</string>
-    <string name="erase">Hapus</string>
     <string name="preview">Preview</string>
-    <string name="clear">Clear</string>
     <string name="clear_signature">Clear Signature</string>
-    <string name="save">Simpan</string>
-    <string name="save_eng">Save</string>
     <string name="draft_descr">Description (Optional)</string>
     <string name="empty_description_form">You currently not signed to any forms. Please contact your admin to add forms to your device.</string>
     <string name="no_forms">No Forms</string>
@@ -62,7 +50,6 @@
     <string name="open_source_licences_cap">Open Source Licences</string>
     <string name="organization_details">Organization details</string>
     <string name="organizations">Organizations</string>
-    <string name="organizations_sub">Fields Service Mobile</string>
     <string name="organizations_key">Organization key</string>
     <string name="device_name">Device name</string>
     <string name="devices_settings">Devices Settings</string>
@@ -90,7 +77,6 @@
     <string name="done">Done</string>
     <string name="upload_error">Upload Error</string>
     <string name="upload_image">Upload Image</string>
-    <string name="input_manual">Input Manual</string>
     <string name="upload_success">Upload Success</string>
     <string name="uploading">Uploading</string>
     <string name="no_connection">No connection found.</string>
@@ -102,8 +88,6 @@
     <string name="text_submit">Submit</string>
 
 <!--    list error/notification message-->
-    <string name="sync_form_message">Sync Empty Form DB with server is done</string>
-    <string name="sync_submission_message">Sync Submission From DB with server is done</string>
     <string name="permission_rejected">Permissions not granted by the user</string>
     <string name="photo_taken">Photo was taken</string>
     <string name="max_files_message">Already achieved max files. Please remove one of the them first</string>

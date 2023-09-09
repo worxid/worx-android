@@ -20,7 +20,7 @@ import id.worx.device.client.data.database.Session
 import id.worx.device.client.model.fieldmodel.DropDownField
 import id.worx.device.client.model.fieldmodel.DropDownValue
 import id.worx.device.client.theme.Typography
-import id.worx.device.client.theme.WorxCustomColorsPalette
+import id.worx.device.client.theme.LocalWorxColorsPalette
 import id.worx.device.client.viewmodel.DetailFormViewModel
 import id.worx.device.client.viewmodel.EventStatus
 
@@ -63,9 +63,9 @@ fun WorxDropdown(indexForm: Int, viewModel: DetailFormViewModel, session: Sessio
                     .clickable { expanded = true },
                 enabled = false,
                 colors = TextFieldDefaults.textFieldColors(
-                    backgroundColor = WorxCustomColorsPalette.current.homeBackground,
-                    unfocusedIndicatorColor = WorxCustomColorsPalette.current.textFieldUnfocusedIndicator,
-                    focusedIndicatorColor = WorxCustomColorsPalette.current.textFieldFocusedIndicator
+                    backgroundColor = LocalWorxColorsPalette.current.homeBackground,
+                    unfocusedIndicatorColor = LocalWorxColorsPalette.current.textFieldUnfocusedIndicator,
+                    focusedIndicatorColor = LocalWorxColorsPalette.current.textFieldFocusedIndicator
                 ),
                 textStyle = if (selected.value.value == null) {
                     Typography.body2.copy(color = MaterialTheme.colors.onSecondary.copy(0.54f))
@@ -77,7 +77,7 @@ fun WorxDropdown(indexForm: Int, viewModel: DetailFormViewModel, session: Sessio
                     Icon(
                         painter = painterResource(id = R.drawable.ic_circle_arrow_right),
                         contentDescription = "DropDown",
-                        tint = WorxCustomColorsPalette.current.textFieldIcon
+                        tint = LocalWorxColorsPalette.current.textFieldIcon
                     )
                 },
                 value = if (selected.value.value != null) {
@@ -97,7 +97,7 @@ fun WorxDropdown(indexForm: Int, viewModel: DetailFormViewModel, session: Sessio
                 onDismissRequest = { expanded = false },
                 modifier = Modifier
                     .fillMaxWidth(0.94f)
-                    .background(WorxCustomColorsPalette.current.formItemContainer),
+                    .background(LocalWorxColorsPalette.current.formItemContainer),
             ) {
                 optionTitles.forEachIndexed { index, item ->
                     DropdownMenuItem(
@@ -106,12 +106,12 @@ fun WorxDropdown(indexForm: Int, viewModel: DetailFormViewModel, session: Sessio
                             viewModel.setComponentData(indexForm, selected.value)
                             expanded = false
                         },
-                        modifier = Modifier.background(WorxCustomColorsPalette.current.formItemContainer)
+                        modifier = Modifier.background(LocalWorxColorsPalette.current.formItemContainer)
                     ) {
                         Text(
                             text = item.label ?: "",
                             style = Typography.body1.copy(
-                                color = WorxCustomColorsPalette.current.textFieldColor
+                                color = LocalWorxColorsPalette.current.textFieldColor
                             )
                         )
                     }
