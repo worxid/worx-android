@@ -1,6 +1,5 @@
 package id.worx.device.client
 
-import android.content.ContentResolver
 import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.Color
@@ -20,11 +19,11 @@ import net.gotev.uploadservice.extensions.getCancelUploadIntent
 import java.io.File
 import java.io.FileOutputStream
 import java.io.OutputStream
-import java.net.URLConnection
 import java.text.SimpleDateFormat
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
-import java.util.*
+import java.util.Calendar
+import java.util.Locale
 
 
 object Util {
@@ -40,7 +39,9 @@ object Util {
         if (connection != null) {
             val hasInternetCapabilities = connection.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
             val hasValidatedCapabilities = connection.hasCapability(NetworkCapabilities.NET_CAPABILITY_VALIDATED)
-            return hasInternetCapabilities && hasValidatedCapabilities
+            val hasCellularConnection = connection.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR)
+            val hasWifiConnection = connection.hasTransport(NetworkCapabilities.TRANSPORT_WIFI)
+            return (hasInternetCapabilities && hasValidatedCapabilities && (hasCellularConnection || hasWifiConnection))
         }
         return false
     }
@@ -55,33 +56,20 @@ object Util {
         }
     }
 
-    fun getFileFromUri(contentResolver: ContentResolver, uri: Uri, directory: File): File {
-        val source = contentResolver.openInputStream(uri)
-        val fileType = URLConnection.guessContentTypeFromStream(source)
-        val file = File.createTempFile(uri.path ?: "file", "", directory)
-        file.outputStream().use {
-            source?.copyTo(it)
-        }
-        source?.close()
-        return file
-    }
-
     fun getRealPathFromURI(context: Context, contentURI: Uri): String {
-        var result = ""
+        var result: String
         val cursor = context.contentResolver.query(contentURI, null, null, null, null)
-        if (cursor == null) {
-            result = contentURI.path!!
+        result = if (cursor == null) {
+            contentURI.path!!
         } else {
             cursor.moveToFirst()
             val idx = cursor.getColumnIndex("_display_name")
-            val id2 = cursor.getColumnIndex("document_id")
-            val id3 = cursor.getColumnIndex("mime_type")
             val fileName = cursor.getString(idx)
             cursor.close()
 
             val file = File(context.cacheDir, fileName)
             copy(context, contentURI, file)
-            result = file.path
+            file.path
         }
         return result
     }
