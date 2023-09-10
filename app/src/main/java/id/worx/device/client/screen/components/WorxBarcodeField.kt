@@ -59,7 +59,6 @@ fun WorxBarcodeField(
         indexForm = indexForm,
         viewModel = viewModel,
         validation = validation,
-        session = session,
         warningInfo = warningInfo
     ) {
         Column(

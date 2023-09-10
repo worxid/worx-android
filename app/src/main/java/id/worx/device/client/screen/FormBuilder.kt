@@ -16,7 +16,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
@@ -92,7 +91,6 @@ fun ValidFormBuilder(
         if (showSubmitDialog) {
             DialogSubmitForm(
                 viewModel = viewModel,
-                session = session,
                 submitForm = {
                     validation = true
                     if (totalNonValidData == 0) {
@@ -215,19 +213,19 @@ fun DetailForm(
                         )
                     }
                     Type.Checkbox.type -> {
-                        WorxCheckBox(index, viewModel, validation, session)
+                        WorxCheckBox(index, viewModel, validation)
                     }
                     Type.RadioGroup.type -> {
-                        WorxRadiobutton(index, viewModel, validation, session)
+                        WorxRadiobutton(index, viewModel, validation)
                     }
                     Type.Dropdown.type -> {
-                        WorxDropdown(index, viewModel, session, validation)
+                        WorxDropdown(index, viewModel, validation)
                     }
                     Type.Date.type -> {
                         WorxDateInput(index, viewModel, session, validation)
                     }
                     Type.Rating.type -> {
-                        WorxRating(index, viewModel, validation, session)
+                        WorxRating(index, viewModel, validation)
                     }
                     Type.File.type -> {
                         WorxAttachFile(index, viewModel, session, validation)
@@ -243,7 +241,7 @@ fun DetailForm(
                         }
                     }
                     Type.Signature.type -> {
-                        WorxSignature(index, viewModel, session, validation)
+                        WorxSignature(index, viewModel, validation)
                     }
                     Type.Separator.type -> {
                         WorxSeparator(index, viewModel, session)
@@ -255,10 +253,10 @@ fun DetailForm(
                         WorxTimeInput(index, viewModel, session)
                     }
                     Type.Boolean.type -> {
-                        WorxBooleanField(index, viewModel, validation, session)
+                        WorxBooleanField(index, viewModel, validation)
                     }
                     Type.Integer.type -> {
-                        WorxIntegerField(index, viewModel, session)
+                        WorxIntegerField(index, viewModel)
                     }
                     Type.Sketch.type -> {
                         WorxSketch(indexForm = index,
@@ -301,7 +299,6 @@ fun DetailForm(
 @Composable
 fun DialogSubmitForm(
     viewModel: DetailFormViewModel,
-    session: Session,
     submitForm: () -> Unit,
     saveDraftForm: () -> Unit,
     onCancel: () -> Unit,
@@ -315,7 +312,6 @@ fun DialogSubmitForm(
     val fieldFilled = viewModel.uiState.collectAsState().value.values.count { it.value != null }
 
     DialogSubmitForm(
-        session = session,
         progress = progress,
         fieldTotal = fieldTotal,
         fieldFilled = fieldFilled,
@@ -327,7 +323,6 @@ fun DialogSubmitForm(
 
 @Composable
 fun DialogSubmitForm(
-    session: Session,
     progress: Int,
     fieldTotal: Int,
     fieldFilled: Int,
@@ -574,7 +569,6 @@ fun PreviewFormComponent() {
 fun DialogSubmitFormPreview() {
     WorxTheme {
         DialogSubmitForm(
-            session = Session(LocalContext.current),
             progress = 30,
             fieldTotal = 6,
             fieldFilled = 1,

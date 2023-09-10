@@ -15,10 +15,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
-import id.worx.device.client.data.database.Session
 import id.worx.device.client.model.IntegerValue
-import id.worx.device.client.theme.Typography
 import id.worx.device.client.theme.LocalWorxColorsPalette
+import id.worx.device.client.theme.Typography
 import id.worx.device.client.theme.fontRoboto
 import id.worx.device.client.viewmodel.DetailFormViewModel
 import id.worx.device.client.viewmodel.EventStatus
@@ -27,7 +26,6 @@ import id.worx.device.client.viewmodel.EventStatus
 fun WorxIntegerField(
     index: Int,
     viewModel:DetailFormViewModel,
-    session: Session,
     validation: Boolean = false,
 ) {
     val form = viewModel.uiState.collectAsState().value.detailForm!!.fields.getOrNull(index)
@@ -45,7 +43,6 @@ fun WorxIntegerField(
         indexForm = index,
         viewModel = viewModel,
         validation = validation,
-        session = session,
         warningInfo = warningInfo
     ) {
         TextField(

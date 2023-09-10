@@ -14,7 +14,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
-import id.worx.device.client.data.database.Session
 import id.worx.device.client.model.fieldmodel.RatingField
 import id.worx.device.client.model.fieldmodel.RatingValue
 import id.worx.device.client.theme.LocalWorxColorsPalette
@@ -22,15 +21,15 @@ import id.worx.device.client.viewmodel.DetailFormViewModel
 import id.worx.device.client.viewmodel.EventStatus
 
 @Composable
-fun WorxRating(indexForm: Int, viewModel: DetailFormViewModel,validation : Boolean, session: Session) {
-    val theme = session.theme
+fun WorxRating(indexForm: Int, viewModel: DetailFormViewModel, validation: Boolean) {
 
-    val form = viewModel.uiState.collectAsState().value.detailForm!!.fields[indexForm] as RatingField
+    val form =
+        viewModel.uiState.collectAsState().value.detailForm!!.fields[indexForm] as RatingField
     val formStatus = viewModel.uiState.collectAsState().value.status
     val title = form.label ?: "Rating"
 
     val ratingValue = viewModel.uiState.collectAsState().value.values[form.id] as RatingValue?
-    val rating = if (ratingValue == null){
+    val rating = if (ratingValue == null) {
         remember {
             mutableStateOf(0)
         }
@@ -39,7 +38,8 @@ fun WorxRating(indexForm: Int, viewModel: DetailFormViewModel,validation : Boole
             mutableStateOf(ratingValue.value!!)
         }
     }
-    val warningInfo = if ((form.required == true) && (rating.value == 0)) "$title is required" else ""
+    val warningInfo =
+        if ((form.required == true) && (rating.value == 0)) "$title is required" else ""
 
     val starSize = if (form.maxStars!! <= 5) {
         42.dp
@@ -53,7 +53,6 @@ fun WorxRating(indexForm: Int, viewModel: DetailFormViewModel,validation : Boole
         indexForm = indexForm,
         viewModel = viewModel,
         validation = validation,
-        session = session,
         warningInfo = warningInfo
     ) {
         LazyRow(
