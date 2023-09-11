@@ -3,6 +3,7 @@ package id.worx.device.client.screen
 import androidx.activity.compose.BackHandler
 import androidx.activity.compose.LocalOnBackPressedDispatcherOwner
 import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -13,6 +14,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.material.Divider
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
@@ -24,9 +26,11 @@ import androidx.compose.material.Text
 import androidx.compose.material.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.CornerRadius
@@ -34,9 +38,10 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
+import androidx.compose.ui.window.Dialog
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -48,9 +53,10 @@ import id.worx.device.client.model.fieldmodel.Separator
 import id.worx.device.client.screen.components.WorxBoxPullRefresh
 import id.worx.device.client.screen.components.WorxDialog
 import id.worx.device.client.screen.components.WorxTopAppBar
-import id.worx.device.client.theme.Typography
 import id.worx.device.client.theme.LocalWorxColorsPalette
+import id.worx.device.client.theme.Typography
 import id.worx.device.client.theme.WorxTheme
+import id.worx.device.client.util.getDrawableBasedOnTheme
 import id.worx.device.client.viewmodel.CameraViewModel
 import id.worx.device.client.viewmodel.DetailFormViewModel
 import id.worx.device.client.viewmodel.EventStatus
@@ -75,6 +81,7 @@ fun DetailFormScreen(
     val uistate = viewModel.uiState.collectAsState().value
     val formStatus = viewModel.uiState.collectAsState().value.status
     val showDialogLeaveForm = remember { mutableStateOf(false) }
+    var showDraftDialog by remember { mutableStateOf(false) }
     val sheetState = rememberModalBottomSheetState(initialValue = ModalBottomSheetValue.Hidden)
 
     BackHandler {
@@ -86,6 +93,15 @@ fun DetailFormScreen(
     }
     val dispatcher = LocalOnBackPressedDispatcherOwner.current!!.onBackPressedDispatcher
     val isDraft = if (uistate.detailForm is SubmitForm) uistate.detailForm.status == 0 else false
+
+    if (showDraftDialog) {
+        DialogDraftForm(
+            saveDraft = { draftDescription ->
+                onEvent(DetailFormEvent.SaveDraft(draftDescription))
+            },
+            closeDialog = { showDraftDialog = false }
+        )
+    }
 
     DraftActionsBottomSheet(
         sheetState = sheetState,
@@ -129,18 +145,23 @@ fun DetailFormScreen(
                     cameraViewModel,
                     scannerViewModel,
                     session,
+                    setDraftDialog = { showDraftDialog = it },
                     onEvent,
                 )
 
                 if (showDialogLeaveForm.value) {
-                    WorxDialog(content = {
+                    Dialog(onDismissRequest = { }) {
                         LeaveForm(
                             setShowDialog = { showDialogLeaveForm.value = it },
-                            onPositiveButton = {
+                            onDiscardClicked = {
                                 viewModel.goToHome()
+                            },
+                            onSaveDraft = {
+                                showDialogLeaveForm.value = false
+                                showDraftDialog = true
                             }
                         )
-                    }, setShowDialog = { showDialogLeaveForm.value = it })
+                    }
                 }
             }
         }
@@ -227,70 +248,125 @@ fun DraftActionsBottomSheet(
 @Composable
 fun LeaveForm(
     setShowDialog: (Boolean) -> Unit = {},
-    onPositiveButton: () -> Unit = {}
+    onDiscardClicked: () -> Unit = {},
+    onSaveDraft: () -> Unit = {}
 ) {
     ConstraintLayout(
         modifier = Modifier
             .fillMaxWidth()
-            .background(MaterialTheme.colors.secondary)
+            .background(MaterialTheme.colors.secondary),
     ) {
-        val (tvTitle, tvSubtitle, tvYes, tvCancel) = createRefs()
+        val (imgQuestion, tvSubtitle, tvSaveDraft, tvDiscard, tvCancel, dividerDesc, dividerSaveDraft, dividerDiscard) = createRefs()
+
+        Image(
+            painter = painterResource(id = R.drawable.ic_question.getDrawableBasedOnTheme(R.drawable.ic_question_white)),
+            contentDescription = "question",
+            modifier = Modifier
+                .size(56.dp)
+                .constrainAs(imgQuestion) {
+                    top.linkTo(parent.top, 16.dp)
+                    start.linkTo(parent.start)
+                    end.linkTo(parent.end)
+                }
+        )
 
         Text(
-            text = stringResource(id = R.string.leave_form),
-            style = Typography.body2.copy(
-                MaterialTheme.colors.onSecondary,
-                fontWeight = FontWeight.Bold
-            ),
-            modifier = Modifier.constrainAs(tvTitle) {
-                top.linkTo(parent.top)
-                start.linkTo(parent.start)
-                end.linkTo(parent.end)
-                width = Dimension.fillToConstraints
-            }
-        )
-        Text(
             text = stringResource(id = R.string.leave_form_sub),
-            style = Typography.body2.copy(
-                color = MaterialTheme.colors.onSecondary.copy(alpha = 0.54f),
-                fontSize = 12.sp
-            ),
+            style = Typography.body2.copy(LocalWorxColorsPalette.current.textFieldColor),
             modifier = Modifier.constrainAs(tvSubtitle) {
-                top.linkTo(tvTitle.bottom, 20.dp)
-                start.linkTo(tvTitle.start)
-                end.linkTo(tvTitle.end)
+                top.linkTo(imgQuestion.bottom, 8.dp)
+                start.linkTo(parent.start, 16.dp)
+                end.linkTo(parent.end, 16.dp)
                 width = Dimension.fillToConstraints
-            }
+            },
+            textAlign = TextAlign.Center
         )
+
+        Divider(
+            color = LocalWorxColorsPalette.current.divider,
+            modifier = Modifier
+                .padding(top = 16.dp)
+                .constrainAs(dividerDesc) {
+                    top.linkTo(tvSubtitle.bottom, 16.dp)
+                    start.linkTo(parent.start)
+                    end.linkTo(parent.end)
+                    width = Dimension.fillToConstraints
+                }
+        )
+
         Text(
-            text = stringResource(id = R.string.leave),
+            text = stringResource(id = R.string.save_draft),
             style = Typography.body2.copy(
-                MaterialTheme.colors.onBackground,
+                color = LocalWorxColorsPalette.current.textFieldColor,
                 fontWeight = FontWeight.W500
             ),
+            textAlign = TextAlign.Center,
             modifier = Modifier
-                .constrainAs(tvYes) {
-                    top.linkTo(tvSubtitle.bottom, 28.dp)
-                    bottom.linkTo(parent.bottom)
+                .constrainAs(tvSaveDraft) {
+                    top.linkTo(dividerDesc.bottom, 16.dp)
+                    start.linkTo(parent.start)
+                    end.linkTo(parent.end)
+                    width = Dimension.matchParent
+                }
+                .clickable {
+                    setShowDialog(false)
+                    onSaveDraft()
+                }
+        )
+
+        Divider(
+            color = LocalWorxColorsPalette.current.divider,
+            modifier = Modifier
+                .constrainAs(dividerSaveDraft) {
+                    top.linkTo(tvSaveDraft.bottom, 16.dp)
+                    start.linkTo(parent.start)
+                    end.linkTo(parent.end)
+                    width = Dimension.fillToConstraints
+                }
+        )
+
+        Text(
+            text = stringResource(id = R.string.discard),
+            style = Typography.body2.copy(
+                color = LocalWorxColorsPalette.current.button,
+                fontWeight = FontWeight.W500
+            ),
+            textAlign = TextAlign.Center,
+            modifier = Modifier
+                .constrainAs(tvDiscard) {
+                    top.linkTo(dividerSaveDraft.bottom, 16.dp)
+                    start.linkTo(parent.start)
                     end.linkTo(parent.end)
                     width = Dimension.fillToConstraints
                 }
                 .clickable {
                     setShowDialog(false)
-                    onPositiveButton()
+                    onDiscardClicked()
                 }
         )
+
+        Divider(
+            color = LocalWorxColorsPalette.current.divider,
+            modifier = Modifier.constrainAs(dividerDiscard) {
+                top.linkTo(tvDiscard.bottom, 16.dp)
+                start.linkTo(parent.start)
+                end.linkTo(parent.end)
+                width = Dimension.fillToConstraints
+            })
+
         Text(
             text = stringResource(id = R.string.cancel),
             style = Typography.body2.copy(
-                MaterialTheme.colors.onSecondary,
+                color = LocalWorxColorsPalette.current.textFieldColor,
                 fontWeight = FontWeight.W500
             ),
+            textAlign = TextAlign.Center,
             modifier = Modifier
                 .constrainAs(tvCancel) {
-                    top.linkTo(tvSubtitle.bottom, 28.dp)
-                    bottom.linkTo(parent.bottom)
-                    end.linkTo(tvYes.start, 38.dp)
+                    top.linkTo(dividerDiscard.top, 16.dp)
+                    start.linkTo(parent.start)
+                    end.linkTo(parent.end)
+                    bottom.linkTo(parent.bottom, 16.dp)
                     width = Dimension.fillToConstraints
                 }
                 .clickable {

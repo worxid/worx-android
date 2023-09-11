@@ -1,6 +1,7 @@
 package id.worx.device.client.screen
 
 import android.util.Log
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -16,7 +17,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
@@ -55,11 +56,11 @@ fun ValidFormBuilder(
     cameraViewModel: CameraViewModel,
     scannerViewModel: ScannerViewModel,
     session: Session,
+    setDraftDialog: (show: Boolean) -> Unit,
     onEvent: (DetailFormEvent) -> Unit,
 ) {
-    var showDraftDialog by remember { mutableStateOf(false) }
+    var showErrorDialog by remember { mutableStateOf(false) }
     var validation by remember { mutableStateOf(false) }
-    var isValid by remember { mutableStateOf(false) }
     val scope = rememberCoroutineScope()
     val state = rememberModalBottomSheetState(
         initialValue = ModalBottomSheetValue.Hidden,
@@ -92,29 +93,34 @@ fun ValidFormBuilder(
         if (showSubmitDialog) {
             DialogSubmitForm(
                 viewModel = viewModel,
-                session = session,
                 submitForm = {
                     validation = true
                     if (totalNonValidData == 0) {
                         onEvent(DetailFormEvent.SubmitForm)
                     }
+                    else {
+                        showErrorDialog = true
+                    }
                     showSubmitDialog = false
                 },
                 saveDraftForm = {
                     showSubmitDialog = false
-                    showDraftDialog = true
+                    setDraftDialog(true)
                 },
                 onCancel = {
                     showSubmitDialog = false
                 }
             )
         }
-        if (showDraftDialog) {
-            DialogDraftForm(
-                saveDraft = { draftDescription ->
-                    onEvent(DetailFormEvent.SaveDraft(draftDescription))
+
+        if (showErrorDialog) {
+            DialogSubmitErrorForm(
+                totalNonValidData = totalNonValidData,
+                onSaveDraft = {
+                    showErrorDialog = false
+                    setDraftDialog(true)
                 },
-                closeDialog = { showDraftDialog = false }
+                closeDialog = { showErrorDialog = false }
             )
         }
     }
@@ -165,8 +171,7 @@ fun DetailForm(
                 }
                 .navigationBarsPadding()
                 .imePadding()
-                .padding(vertical = 12.dp)
-            ,
+                .padding(vertical = 12.dp),
             contentPadding = WindowInsets.statusBars.only(WindowInsetsSides.Horizontal + WindowInsetsSides.Top)
                 .asPaddingValues()
         ) {
@@ -211,27 +216,35 @@ fun DetailForm(
                             ).contains(formStatus),
                             allowMultiline = textField?.allowMultiline ?: false,
                             viewModel = viewModel,
-                            index = index
+                            index = index,
+                            isShowDivider = true
                         )
                     }
+
                     Type.Checkbox.type -> {
-                        WorxCheckBox(index, viewModel, validation, session)
+                        WorxCheckBox(index, viewModel, validation)
                     }
+
                     Type.RadioGroup.type -> {
-                        WorxRadiobutton(index, viewModel, validation, session)
+                        WorxRadiobutton(index, viewModel, validation)
                     }
+
                     Type.Dropdown.type -> {
-                        WorxDropdown(index, viewModel, session, validation)
+                        WorxDropdown(index, viewModel, validation)
                     }
+
                     Type.Date.type -> {
                         WorxDateInput(index, viewModel, session, validation)
                     }
+
                     Type.Rating.type -> {
-                        WorxRating(index, viewModel, validation, session)
+                        WorxRating(index, viewModel, validation)
                     }
+
                     Type.File.type -> {
                         WorxAttachFile(index, viewModel, session, validation)
                     }
+
                     Type.Photo.type -> {
                         WorxAttachImage(
                             index,
@@ -242,30 +255,40 @@ fun DetailForm(
                             viewModel.goToCameraPhoto(index, MainScreen.Detail)
                         }
                     }
+
                     Type.Signature.type -> {
-                        WorxSignature(index, viewModel, session, validation)
+                        WorxSignature(index, viewModel, validation)
                     }
+
                     Type.Separator.type -> {
                         WorxSeparator(index, viewModel, session)
                     }
+
                     Type.BarcodeField.type -> {
                         WorxBarcodeField(index, viewModel, scannerViewModel, session, validation)
                     }
+
                     Type.Time.type -> {
                         WorxTimeInput(index, viewModel, session)
                     }
+
                     Type.Boolean.type -> {
-                        WorxBooleanField(index, viewModel, validation, session)
+                        WorxBooleanField(index, viewModel, validation)
                     }
+
                     Type.Integer.type -> {
-                        WorxIntegerField(index, viewModel, session)
+                        WorxIntegerField(index, viewModel)
                     }
+
                     Type.Sketch.type -> {
-                        WorxSketch(indexForm = index,
+                        WorxSketch(
+                            indexForm = index,
                             viewModel = viewModel,
                             session = session,
-                            validation = validation)
+                            validation = validation
+                        )
                     }
+
                     else -> {
                         Column(modifier = Modifier.padding(horizontal = 16.dp, vertical = 6.dp)) {
                             Text(
@@ -301,7 +324,6 @@ fun DetailForm(
 @Composable
 fun DialogSubmitForm(
     viewModel: DetailFormViewModel,
-    session: Session,
     submitForm: () -> Unit,
     saveDraftForm: () -> Unit,
     onCancel: () -> Unit,
@@ -315,7 +337,6 @@ fun DialogSubmitForm(
     val fieldFilled = viewModel.uiState.collectAsState().value.values.count { it.value != null }
 
     DialogSubmitForm(
-        session = session,
         progress = progress,
         fieldTotal = fieldTotal,
         fieldFilled = fieldFilled,
@@ -327,7 +348,6 @@ fun DialogSubmitForm(
 
 @Composable
 fun DialogSubmitForm(
-    session: Session,
     progress: Int,
     fieldTotal: Int,
     fieldFilled: Int,
@@ -543,6 +563,73 @@ fun DialogDraftForm(
 }
 
 @Composable
+fun DialogSubmitErrorForm(
+    totalNonValidData: Int,
+    onSaveDraft: () -> Unit,
+    closeDialog: () -> Unit,
+) {
+    Dialog(
+        content = {
+            Column(
+                modifier = Modifier
+                    .wrapContentSize()
+                    .clip(shape = RoundedCornerShape(2.dp))
+                    .background(MaterialTheme.colors.secondary)
+                    .padding(top = 16.dp),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Text(
+                    text = stringResource(R.string.cant_submit_form),
+                    style = Typography.h6.copy(LocalWorxColorsPalette.current.textFieldColor),
+                    fontWeight = FontWeight.Bold,
+                    modifier = Modifier.padding(horizontal = 16.dp)
+                )
+
+                Spacer(modifier = Modifier.height(8.dp))
+
+                Image(
+                    painter = painterResource(id = R.drawable.ic_error),
+                    contentDescription = "error"
+                )
+
+                Spacer(modifier = Modifier.height(8.dp))
+
+                Text(
+                    text = String.format(stringResource(R.string.text_form_error_amount), totalNonValidData),
+                    style = Typography.body2.copy(LocalWorxColorsPalette.current.textFieldColor),
+                    modifier = Modifier.padding(horizontal = 16.dp)
+                )
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                Divider(color = LocalWorxColorsPalette.current.divider)
+
+                Text(
+                    text = stringResource(id = R.string.save_draft),
+                    style = Typography.body2.copy(LocalWorxColorsPalette.current.textFieldUnfocusedLabel),
+                    modifier = Modifier
+                        .clickable { onSaveDraft() }
+                        .padding(vertical = 16.dp),
+                    fontWeight = FontWeight.W500
+                )
+
+                Divider(color = LocalWorxColorsPalette.current.divider,)
+
+                Text(
+                    text = stringResource(id = R.string.cancel),
+                    style = Typography.body2.copy(LocalWorxColorsPalette.current.textFieldUnfocusedLabel),
+                    modifier = Modifier
+                        .clickable { closeDialog() }
+                        .padding(vertical = 16.dp),
+                    fontWeight = FontWeight.W500
+                )
+            }
+        },
+        onDismissRequest = {}
+    )
+}
+
+@Composable
 private fun LazyListState.isScrollingUp(): Boolean {
     var previousIndex by remember(this) { mutableStateOf(firstVisibleItemIndex) }
     var previousScrollOffset by remember(this) { mutableStateOf(firstVisibleItemScrollOffset) }
@@ -574,7 +661,6 @@ fun PreviewFormComponent() {
 fun DialogSubmitFormPreview() {
     WorxTheme {
         DialogSubmitForm(
-            session = Session(LocalContext.current),
             progress = 30,
             fieldTotal = 6,
             fieldFilled = 1,

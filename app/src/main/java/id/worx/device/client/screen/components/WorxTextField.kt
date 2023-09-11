@@ -51,7 +51,7 @@ fun WorxTextField(
     viewModel: DetailFormViewModel? = null,
     index: Int = -1,
     allowMultiline: Boolean = false,
-    isShowDivider: Boolean = true,
+    isShowDivider: Boolean = false,
     horizontalPadding: Dp = 16.dp,
 ) {
     var textValue by remember { mutableStateOf(initialValue) }

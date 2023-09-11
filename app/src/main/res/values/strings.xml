@@ -70,8 +70,9 @@
     <string name="leave_organization_title">Leave Organization</string>
     <string name="leave_organization">Are you sure you want to leave the organization?</string>
     <string name="leave_form">Leave This Form?</string>
-    <string name="leave_form_sub">Are you sure you want to leave this page? if you leave this form, your existing work will be included in the draft</string>
-    <string name="leave">Leave</string>
+    <string name="leave_form_sub">This form has unsaved changes. How would you like to proceed?</string>
+    <string name="discard">Discard</string>
+    <string name="save_draft">Save Draft</string>
     <string name="upload_cancel">Upload Cancelled</string>
     <string name="retake">Retake</string>
     <string name="done">Done</string>
@@ -101,4 +102,6 @@
 
     <string name="text_search_empty_title">No Search Results</string>
     <string name="text_search_empty_desc">Please check the menu tabs at the bottom of the screen for all results</string>
+    <string name="text_form_error_amount">%s error found</string>
+    <string name="cant_submit_form">Can\'t Submit Form</string>
 </resources>
