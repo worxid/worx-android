@@ -56,6 +56,7 @@ import id.worx.device.client.screen.components.WorxTopAppBar
 import id.worx.device.client.theme.LocalWorxColorsPalette
 import id.worx.device.client.theme.Typography
 import id.worx.device.client.theme.WorxTheme
+import id.worx.device.client.util.getDrawableBasedOnTheme
 import id.worx.device.client.viewmodel.CameraViewModel
 import id.worx.device.client.viewmodel.DetailFormViewModel
 import id.worx.device.client.viewmodel.EventStatus
@@ -258,7 +259,7 @@ fun LeaveForm(
         val (imgQuestion, tvSubtitle, tvSaveDraft, tvDiscard, tvCancel, dividerDesc, dividerSaveDraft, dividerDiscard) = createRefs()
 
         Image(
-            painter = painterResource(id = R.drawable.ic_question),
+            painter = painterResource(id = R.drawable.ic_question.getDrawableBasedOnTheme(R.drawable.ic_question_white)),
             contentDescription = "question",
             modifier = Modifier
                 .size(56.dp)
