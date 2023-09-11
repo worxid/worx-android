@@ -82,6 +82,7 @@ data class WorxColorsPalette(
     val appBarDivider: Color = Color.Unspecified,
     val signaturePadBorder: Color = Color.Unspecified,
     val signaturePenColor: Color = Color.Unspecified,
+    val datePickerTextColor: Color = Color.Unspecified,
 )
 
 val WorxLightColorsPalette = WorxColorsPalette(
@@ -115,6 +116,7 @@ val WorxLightColorsPalette = WorxColorsPalette(
     appBarDivider = Color.Black,
     signaturePadBorder = Color.Black.copy(alpha = 0.23f),
     signaturePenColor = Color.Black,
+    datePickerTextColor = Color.Black,
 )
 
 val WorxDarkColorsPalette = WorxColorsPalette(
@@ -148,6 +150,7 @@ val WorxDarkColorsPalette = WorxColorsPalette(
     appBarDivider = Abbey2,
     signaturePadBorder = Color.White.copy(alpha = 0.23f),
     signaturePenColor = Color.White,
+    datePickerTextColor = Color.White,
 )
 
 val WorxCustomColorsPalette = compositionLocalOf { WorxColorsPalette() }

@@ -71,8 +71,7 @@ fun WorxDateInput(indexForm: Int, viewModel: DetailFormViewModel, session: Sessi
     }
 
     val style = when(theme){
-        SettingTheme.Blue -> R.style.BlueCalenderViewCustom
-        SettingTheme.Green -> R.style.GreenCalenderViewCustom
+        SettingTheme.Dark -> R.style.CalenderViewCustomDark
         else -> R.style.CalenderViewCustom
     }
     val mDatePickerDialog = WorxDatePickerDialog(
@@ -201,7 +200,6 @@ class WorxDatePickerDialog : DatePickerDialog {
                 context.packageName
             )
         )
-        year?.setTextColor(Color(0x99000000).toArgb())
 
         val date: TextView? = datePicker.findViewById(
             context.resources.getIdentifier(
@@ -210,6 +208,5 @@ class WorxDatePickerDialog : DatePickerDialog {
                 context.packageName
             )
         )
-        date?.setTextColor(android.graphics.Color.BLACK)
     }
 }
