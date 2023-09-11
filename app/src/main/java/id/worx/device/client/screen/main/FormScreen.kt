@@ -472,7 +472,8 @@ fun DialogDuplicateDraftForm(
                     hint = stringResource(R.string.text_hint_description_optional),
                     inputType = KeyboardOptions(keyboardType = KeyboardType.Text),
                     onValueChange = { draftDescription = it },
-                    allowMultiline = false
+                    allowMultiline = false,
+                    isShowDivider = true
                 )
                 Spacer(modifier = Modifier.height(16.dp))
                 Row(
