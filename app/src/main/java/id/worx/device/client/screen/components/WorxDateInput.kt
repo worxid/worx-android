@@ -70,15 +70,17 @@ fun WorxDateInput(indexForm: Int, viewModel: DetailFormViewModel, session: Sessi
         showDatePicker = false
     }
 
-    val style = when(theme){
-        SettingTheme.Dark -> R.style.CalenderViewCustomDark
-        else -> R.style.CalenderViewCustom
-    }
+    val style = if (theme == SettingTheme.Dark) R.style.CalenderViewCustomDark
+    else R.style.CalenderViewCustom
+
     val mDatePickerDialog = WorxDatePickerDialog(
         context,
         style,
         datePickerCallback,
-        year, month, day
+        year,
+        month,
+        day,
+        theme == SettingTheme.Dark
     )
 
     WorxBaseField(
@@ -150,40 +152,20 @@ fun WorxDateInput(indexForm: Int, viewModel: DetailFormViewModel, session: Sessi
     }
 }
 
-class WorxDatePickerDialog : DatePickerDialog {
-
-    @RequiresApi(api = Build.VERSION_CODES.N)
-    constructor(context: Context) : super(context) {
-        init(context)
+class WorxDatePickerDialog(
+    context: Context,
+    themeResId: Int,
+    @Nullable listener: OnDateSetListener?,
+    year: Int,
+    monthOfYear: Int,
+    dayOfMonth: Int,
+    isDarkTheme: Boolean
+) : DatePickerDialog(context, themeResId, listener, year, monthOfYear, dayOfMonth) {
+    init {
+        init(context, isDarkTheme)
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.N)
-    constructor(context: Context, themeResId: Int) : super(context, themeResId) {
-        init(context)
-    }
-
-    constructor(
-        context: Context,
-        @Nullable listener: OnDateSetListener?,
-        year: Int,
-        month: Int,
-        dayOfMonth: Int
-    ) : super(context, listener, year, month, dayOfMonth) {
-        init(context)
-    }
-
-    constructor(
-        context: Context,
-        themeResId: Int,
-        @Nullable listener: OnDateSetListener?,
-        year: Int,
-        monthOfYear: Int,
-        dayOfMonth: Int
-    ) : super(context, themeResId, listener, year, monthOfYear, dayOfMonth) {
-        init(context)
-    }
-
-    private fun init(context: Context) {
+    private fun init(context: Context, isDarkTheme: Boolean) {
         val headerView: ViewGroup? = datePicker.findViewById(
             context.resources.getIdentifier(
                 "android:id/date_picker_header",
@@ -193,20 +175,24 @@ class WorxDatePickerDialog : DatePickerDialog {
         )
         headerView?.setBackgroundColor(0xFFFFFF)
 
-        val year: TextView? = datePicker.findViewById(
-            context.resources.getIdentifier(
-                "android:id/date_picker_header_year",
-                "id",
-                context.packageName
+        if (!isDarkTheme) {
+            val year: TextView? = datePicker.findViewById(
+                context.resources.getIdentifier(
+                    "android:id/date_picker_header_year",
+                    "id",
+                    context.packageName
+                )
             )
-        )
+            year?.setTextColor(Color(0x99000000).toArgb())
 
-        val date: TextView? = datePicker.findViewById(
-            context.resources.getIdentifier(
-                "android:id/date_picker_header_date",
-                "id",
-                context.packageName
+            val date: TextView? = datePicker.findViewById(
+                context.resources.getIdentifier(
+                    "android:id/date_picker_header_date",
+                    "id",
+                    context.packageName
+                )
             )
-        )
+            date?.setTextColor(android.graphics.Color.BLACK)
+        }
     }
 }
