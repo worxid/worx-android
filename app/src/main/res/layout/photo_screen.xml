@@ -6,7 +6,6 @@
     tools:context=".MainActivity">
 
     <View
-        android:id="@+id/status_bar"
         android:layout_width="match_parent"
         android:layout_height="25dp"
         app:layout_constraintStart_toStartOf="parent"
@@ -30,7 +29,6 @@
         app:layout_constraintStart_toStartOf="parent">
 
         <ImageButton
-            android:id="@+id/btn_flash"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_gravity="center"
@@ -40,7 +38,6 @@
             android:src="@drawable/ic_flash" />
 
         <ImageButton
-            android:id="@+id/btn_switch_camera"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_gravity="center"
@@ -50,7 +47,6 @@
             android:src="@drawable/ic_switch" />
 
         <ImageButton
-            android:id="@+id/btn_snap"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_gravity="center"
@@ -60,7 +56,6 @@
             android:src="@drawable/ic_camera_snap" />
 
         <TextView
-            android:id="@+id/tv_cancel"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
