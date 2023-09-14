@@ -225,7 +225,7 @@ fun getImageUri(inContext: Context, inImage: Bitmap): String {
     val bytes = ByteArrayOutputStream()
     inImage.compress(Bitmap.CompressFormat.JPEG, 100, bytes)
     return MediaStore.Images.Media.insertImage(
-        inContext.getContentResolver(),
+        inContext.contentResolver,
         inImage,
         "Signature",
         null
@@ -236,7 +236,7 @@ fun getImageUri(inContext: Context, inImage: Bitmap): String {
 @Composable
 fun PreviewSignatureScreen() {
     val viewModel: DetailFormViewModel = hiltViewModel()
-    WorxTheme() {
+    WorxTheme {
         SignaturePadScreen(viewModel, {})
     }
 }

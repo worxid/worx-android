@@ -78,7 +78,7 @@ fun WorxRating(indexForm: Int, viewModel: DetailFormViewModel, validation: Boole
                         .size(starSize),
                     painter = painterResource(id = R.drawable.star_big_off),
                     contentDescription = "Star Icon",
-                    tint = if (index < (rating.value ?: 0)) {
+                    tint = if (index < rating.value) {
                         LocalWorxColorsPalette.current.selectedStar
                     } else {
                         LocalWorxColorsPalette.current.unselectedStar

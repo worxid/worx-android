@@ -36,7 +36,7 @@ class DetailFormFragment : Fragment() {
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         viewModel.toastMessage.observe(viewLifecycleOwner) {
             it.getContentIfNotHandled()?.let { text ->
                 Toast.makeText(requireContext(), text, Toast.LENGTH_LONG).show()

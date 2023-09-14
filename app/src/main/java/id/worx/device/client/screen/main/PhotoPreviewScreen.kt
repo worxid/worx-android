@@ -133,7 +133,7 @@ fun PhotoPreviewScreen(
 private fun PreviewPhotoScreen() {
     val viewModel: CameraViewModel = hiltViewModel()
     val detailViewModel: DetailFormViewModel = hiltViewModel()
-    WorxTheme() {
+    WorxTheme {
         PhotoPreviewScreen(viewModel = viewModel, detailViewModel) {}
     }
 }

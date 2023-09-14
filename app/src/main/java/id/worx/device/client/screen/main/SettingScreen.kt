@@ -271,7 +271,7 @@ fun SettingDivider() {
 @Preview
 @Composable
 fun TestDialog() {
-    WorxTheme() {
+    WorxTheme {
         WorxDialog(
             content = { LeaveOrganizationDialog(setShowDialog = {}) },
             setShowDialog = {})

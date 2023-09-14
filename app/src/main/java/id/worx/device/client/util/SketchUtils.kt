@@ -90,7 +90,7 @@ suspend fun AwaitPointerEventScope.awaitDragMotionEvent(
             // 🔥🔥 If consumePositionChange() is not consumed drag does not
             // function properly.
             // Consuming position change causes change.positionChanged() to return false.
-            change.consumePositionChange()
+            if (change.positionChange() != Offset.Zero) change.consume()
         }
 
     if (change != null) {

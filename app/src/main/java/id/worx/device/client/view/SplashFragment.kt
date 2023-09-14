@@ -36,7 +36,7 @@ class SplashFragment : Fragment(), SplashViewModel.UIHandler {
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         return ComposeView(requireContext()).apply {
             setContent {
                 val theme = themeViewModel.theme.value

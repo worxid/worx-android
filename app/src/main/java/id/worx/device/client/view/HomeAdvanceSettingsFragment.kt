@@ -33,7 +33,7 @@ class HomeAdvancedSettingsFragment : Fragment(), HomeViewModelImpl.UIHandler {
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         viewModel.uiHandler = this
         viewModel.navigateTo.observe(viewLifecycleOwner) { navigateToEvent ->
             navigateToEvent.getContentIfNotHandled()?.let { navigateTo ->
