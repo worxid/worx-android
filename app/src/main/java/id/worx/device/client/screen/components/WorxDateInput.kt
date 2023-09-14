@@ -34,6 +34,8 @@ import id.worx.device.client.data.database.Session
 import id.worx.device.client.model.fieldmodel.DateField
 import id.worx.device.client.model.fieldmodel.DateValue
 import id.worx.device.client.screen.main.SettingTheme
+import id.worx.device.client.screen.main.isLightMode
+import id.worx.device.client.theme.LocalAppTheme
 import id.worx.device.client.theme.LocalWorxColorsPalette
 import id.worx.device.client.theme.Typography
 import id.worx.device.client.viewmodel.DetailFormViewModel
@@ -77,8 +79,8 @@ fun WorxDateInput(indexForm: Int, viewModel: DetailFormViewModel, session: Sessi
         showDatePicker = false
     }
 
-    val style = if (theme == SettingTheme.Dark) R.style.CalenderViewCustomDark
-    else R.style.CalenderViewCustom
+    val style = if (LocalAppTheme.current.isLightMode()) R.style.CalenderViewCustom
+    else R.style.CalenderViewCustomDark
 
     val mDatePickerDialog = WorxDatePickerDialog(
         context,
@@ -87,7 +89,7 @@ fun WorxDateInput(indexForm: Int, viewModel: DetailFormViewModel, session: Sessi
         year,
         month,
         day,
-        theme == SettingTheme.Dark
+        LocalAppTheme.current.isLightMode()
     )
 
     WorxBaseField(
@@ -165,13 +167,13 @@ class WorxDatePickerDialog(
     year: Int,
     monthOfYear: Int,
     dayOfMonth: Int,
-    isDarkTheme: Boolean
+    isLightMode: Boolean
 ) : DatePickerDialog(context, themeResId, listener, year, monthOfYear, dayOfMonth) {
     init {
-        init(context, isDarkTheme)
+        init(context, isLightMode)
     }
 
-    private fun init(context: Context, isDarkTheme: Boolean) {
+    private fun init(context: Context, isLightMode: Boolean) {
         val headerView: ViewGroup? = datePicker.findViewById(
             context.resources.getIdentifier(
                 "android:id/date_picker_header",
@@ -181,7 +183,7 @@ class WorxDatePickerDialog(
         )
         headerView?.setBackgroundColor(0xFFFFFF)
 
-        if (!isDarkTheme) {
+        if (isLightMode) {
             val year: TextView? = datePicker.findViewById(
                 context.resources.getIdentifier(
                     "android:id/date_picker_header_year",

@@ -117,7 +117,7 @@ val WorxLightColorsPalette = WorxColorsPalette(
     appBarDivider = Color.Black,
     signaturePadBorder = Color.Black.copy(alpha = 0.23f),
     signaturePenColor = Color.Black,
-    textFormDescription = textFormDescription
+    textFormDescription = textFormDescription,
     datePickerTextColor = Color.Black,
 )
 
@@ -152,7 +152,7 @@ val WorxDarkColorsPalette = WorxColorsPalette(
     appBarDivider = Abbey2,
     signaturePadBorder = Color.White.copy(alpha = 0.23f),
     signaturePenColor = Color.White,
-    textFormDescription = textFormDescriptionDark
+    textFormDescription = textFormDescriptionDark,
     datePickerTextColor = Color.White,
 )
 
