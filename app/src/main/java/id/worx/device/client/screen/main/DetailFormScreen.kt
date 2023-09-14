@@ -51,7 +51,6 @@ import id.worx.device.client.data.database.Session
 import id.worx.device.client.model.SubmitForm
 import id.worx.device.client.model.fieldmodel.Separator
 import id.worx.device.client.screen.components.WorxBoxPullRefresh
-import id.worx.device.client.screen.components.WorxDialog
 import id.worx.device.client.screen.components.WorxTopAppBar
 import id.worx.device.client.theme.LocalWorxColorsPalette
 import id.worx.device.client.theme.Typography
