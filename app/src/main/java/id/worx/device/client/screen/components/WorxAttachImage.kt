@@ -267,7 +267,7 @@ private fun GalleryImageButton(
 @Composable
 fun PreviewImageWorx() {
     val viewModel: DetailFormViewModel = hiltViewModel()
-    WorxTheme() {
+    WorxTheme {
         WorxAttachImage(
             indexForm = 0,
             viewModel = viewModel,

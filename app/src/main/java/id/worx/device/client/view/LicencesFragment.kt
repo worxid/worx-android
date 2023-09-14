@@ -22,7 +22,7 @@ class LicencesFragment : Fragment() {
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         return ComposeView(requireActivity()).apply {
             val theme = themeViewModel.theme.value
             setContent {

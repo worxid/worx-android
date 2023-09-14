@@ -14,7 +14,6 @@ import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
 import androidx.core.content.res.ResourcesCompat
-import androidx.core.view.OnApplyWindowInsetsListener
 import androidx.core.view.ViewCompat
 import androidx.core.view.updateMargins
 import androidx.fragment.app.Fragment
@@ -34,9 +33,8 @@ import id.worx.device.client.navigate
 import id.worx.device.client.viewmodel.CameraViewModel
 import java.io.File
 import java.io.FileOutputStream
-import java.lang.Exception
 import java.text.SimpleDateFormat
-import java.util.*
+import java.util.Locale
 
 @AndroidEntryPoint
 class CameraPhotoFragment : Fragment() {

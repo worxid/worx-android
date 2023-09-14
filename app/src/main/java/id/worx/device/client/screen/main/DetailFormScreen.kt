@@ -118,7 +118,7 @@ fun DetailFormScreen(
                     onBack = { dispatcher.onBackPressed() },
                     progress = viewModel.formProgress.value,
                     title = if (uistate.detailForm != null) {
-                        uistate.detailForm!!.label ?: ""
+                        uistate.detailForm.label ?: ""
                     } else {
                         "Loading.."
                     },
@@ -382,7 +382,7 @@ fun PreviewDetail() {
     val viewModel: DetailFormViewModel = hiltViewModel()
     val cameraViewModel: CameraViewModel = hiltViewModel()
     val scannerViewModel: ScannerViewModel = hiltViewModel()
-    WorxTheme() {
+    WorxTheme {
         DetailFormScreen(
             viewModel = viewModel,
             cameraViewModel,

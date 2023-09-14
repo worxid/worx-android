@@ -69,7 +69,6 @@
     <string name="cancel">Cancel</string>
     <string name="leave_organization_title">Leave Organization</string>
     <string name="leave_organization">Are you sure you want to leave the organization?</string>
-    <string name="leave_form">Leave This Form?</string>
     <string name="leave_form_sub">This form has unsaved changes. How would you like to proceed?</string>
     <string name="discard">Discard</string>
     <string name="save_draft">Save Draft</string>

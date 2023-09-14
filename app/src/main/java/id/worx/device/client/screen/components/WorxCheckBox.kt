@@ -58,7 +58,7 @@ fun WorxCheckBox(
         warningInfo = warningInfo
     ) {
         Column {
-            optionTitles.forEachIndexed() { index, item ->
+            optionTitles.forEachIndexed { index, item ->
                 Row(verticalAlignment = Alignment.CenterVertically,
                     modifier = Modifier.clickable {
                         if (!arrayListOf(

@@ -27,7 +27,7 @@
             android:id="@+id/action_photofragment_to_previewfragment"
             app:destination="@id/photo_preview_fragment"
             app:launchSingleTop="true"
-            app:popUpTo="@+id/home_nav_graph"
+            app:popUpTo="@+id/photo"
             app:popUpToInclusive="true" />
     </fragment>
     <fragment
@@ -39,6 +39,12 @@
             app:destination="@id/detail_form_fragment"
             app:launchSingleTop="true"
             app:popUpTo="@+id/home_nav_graph"
+            app:popUpToInclusive="true" />
+        <action
+            android:id="@+id/action_photoPreviewFragment_to_cameraPhotoFragment"
+            app:destination="@id/camera_photo_fragment"
+            app:launchSingleTop="true"
+            app:popUpTo="@+id/camera_photo_fragment"
             app:popUpToInclusive="true" />
     </fragment>
     <fragment

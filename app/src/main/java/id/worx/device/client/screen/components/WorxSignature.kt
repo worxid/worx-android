@@ -72,7 +72,7 @@ fun WorxSignature(indexForm: Int, viewModel: DetailFormViewModel,validation : Bo
                     formStatus
                 )
             ) {
-                AttachSignatureButton() {
+                AttachSignatureButton {
                     viewModel.goToSignaturePad(indexForm)
                 }
             }
