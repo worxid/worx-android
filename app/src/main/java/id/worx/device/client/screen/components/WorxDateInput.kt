@@ -4,6 +4,7 @@ import android.app.DatePickerDialog
 import android.content.Context
 import android.view.ViewGroup
 import android.widget.TextView
+import androidx.annotation.Nullable
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
@@ -33,6 +34,8 @@ import id.worx.device.client.data.database.Session
 import id.worx.device.client.model.fieldmodel.DateField
 import id.worx.device.client.model.fieldmodel.DateValue
 import id.worx.device.client.screen.main.SettingTheme
+import id.worx.device.client.screen.main.isLightMode
+import id.worx.device.client.theme.LocalAppTheme
 import id.worx.device.client.theme.LocalWorxColorsPalette
 import id.worx.device.client.theme.Typography
 import id.worx.device.client.viewmodel.DetailFormViewModel
@@ -76,16 +79,17 @@ fun WorxDateInput(indexForm: Int, viewModel: DetailFormViewModel, session: Sessi
         showDatePicker = false
     }
 
-    val style = when(theme){
-        SettingTheme.Blue -> R.style.BlueCalenderViewCustom
-        SettingTheme.Green -> R.style.GreenCalenderViewCustom
-        else -> R.style.CalenderViewCustom
-    }
+    val style = if (LocalAppTheme.current.isLightMode()) R.style.CalenderViewCustom
+    else R.style.CalenderViewCustomDark
+
     val mDatePickerDialog = WorxDatePickerDialog(
         context,
         style,
         datePickerCallback,
-        year, month, day
+        year,
+        month,
+        day,
+        LocalAppTheme.current.isLightMode()
     )
 
     WorxBaseField(
@@ -156,38 +160,20 @@ fun WorxDateInput(indexForm: Int, viewModel: DetailFormViewModel, session: Sessi
     }
 }
 
-class WorxDatePickerDialog : DatePickerDialog {
-
-    constructor(context: Context) : super(context) {
-        init(context)
+class WorxDatePickerDialog(
+    context: Context,
+    themeResId: Int,
+    @Nullable listener: OnDateSetListener?,
+    year: Int,
+    monthOfYear: Int,
+    dayOfMonth: Int,
+    isLightMode: Boolean
+) : DatePickerDialog(context, themeResId, listener, year, monthOfYear, dayOfMonth) {
+    init {
+        init(context, isLightMode)
     }
 
-    constructor(context: Context, themeResId: Int) : super(context, themeResId) {
-        init(context)
-    }
-
-    constructor(
-        context: Context,
-        listener: OnDateSetListener?,
-        year: Int,
-        month: Int,
-        dayOfMonth: Int
-    ) : super(context, listener, year, month, dayOfMonth) {
-        init(context)
-    }
-
-    constructor(
-        context: Context,
-        themeResId: Int,
-        listener: OnDateSetListener?,
-        year: Int,
-        monthOfYear: Int,
-        dayOfMonth: Int
-    ) : super(context, themeResId, listener, year, monthOfYear, dayOfMonth) {
-        init(context)
-    }
-
-    private fun init(context: Context) {
+    private fun init(context: Context, isLightMode: Boolean) {
         val headerView: ViewGroup? = datePicker.findViewById(
             context.resources.getIdentifier(
                 "android:id/date_picker_header",
@@ -197,22 +183,24 @@ class WorxDatePickerDialog : DatePickerDialog {
         )
         headerView?.setBackgroundColor(0xFFFFFF)
 
-        val year: TextView? = datePicker.findViewById(
-            context.resources.getIdentifier(
-                "android:id/date_picker_header_year",
-                "id",
-                context.packageName
+        if (isLightMode) {
+            val year: TextView? = datePicker.findViewById(
+                context.resources.getIdentifier(
+                    "android:id/date_picker_header_year",
+                    "id",
+                    context.packageName
+                )
             )
-        )
-        year?.setTextColor(Color(0x99000000).toArgb())
+            year?.setTextColor(Color(0x99000000).toArgb())
 
-        val date: TextView? = datePicker.findViewById(
-            context.resources.getIdentifier(
-                "android:id/date_picker_header_date",
-                "id",
-                context.packageName
+            val date: TextView? = datePicker.findViewById(
+                context.resources.getIdentifier(
+                    "android:id/date_picker_header_date",
+                    "id",
+                    context.packageName
+                )
             )
-        )
-        date?.setTextColor(android.graphics.Color.BLACK)
+            date?.setTextColor(android.graphics.Color.BLACK)
+        }
     }
 }

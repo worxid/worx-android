@@ -27,6 +27,18 @@
         <item name="colorSurface">#FFFFFF</item>
     </style>
 
+    <style name="CalenderViewCustomDark" parent="ThemeOverlay.MaterialComponents.MaterialCalendar">
+        <!--Header Background Color and selected Day Background Color-->
+        <item name="colorAccent">#DA3630</item>
+        <!-- Buttons Color-->
+        <item name="android:textColorPrimary">#FFFFFF</item>
+        <item name="android:textColor">#FFFFFF</item>
+        <item name="android:textColorSecondary">#FFFFFF</item>
+        <item name="colorPrimary">#DA3630</item>
+        <item name="colorOnPrimary">#FFFFFF</item>
+        <item name="colorSurface">#3A3A3A</item>
+    </style>
+
     <style name="BlueCalenderViewCustom" parent="ThemeOverlay.MaterialComponents.MaterialCalendar">
         <!--Header Background Color and selected Day Background Color-->
         <item name="colorAccent">#39A0FF</item>

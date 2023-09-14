@@ -14,6 +14,9 @@ import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
 import androidx.core.content.res.ResourcesCompat
+import androidx.core.view.OnApplyWindowInsetsListener
+import androidx.core.view.ViewCompat
+import androidx.core.view.updateMargins
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.NavHostFragment
@@ -31,6 +34,7 @@ import id.worx.device.client.navigate
 import id.worx.device.client.viewmodel.CameraViewModel
 import java.io.File
 import java.io.FileOutputStream
+import java.lang.Exception
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -69,6 +73,8 @@ class CameraPhotoFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        setupInsets()
+
         if (allPermissionsGranted()) {
             startCamera()
         } else {
@@ -91,6 +97,36 @@ class CameraPhotoFragment : Fragment() {
             ResourcesCompat.getColor(resources, R.color.status_bar_color, null)
         _binding = null
         super.onDestroyView()
+    }
+
+    private fun setupInsets() {
+        ViewCompat.setOnApplyWindowInsetsListener(binding.clTopBar) { view, insets ->
+            val marginLayoutParams = view.layoutParams as ViewGroup.MarginLayoutParams
+
+            if (marginLayoutParams.topMargin != insets.systemWindowInsetTop) {
+                marginLayoutParams.updateMargins(top = insets.systemWindowInsetTop)
+                view.parent.requestLayout()
+            }
+
+            insets
+        }
+
+        val isAttached = binding.clTopBar.isAttachedToWindow
+
+        if (isAttached) {
+            binding.clTopBar.invalidateInsets()
+        } else {
+            binding.clTopBar.addOnAttachStateChangeListener(object : View.OnAttachStateChangeListener {
+                override fun onViewAttachedToWindow(v: View) {
+                    binding.clTopBar.removeOnAttachStateChangeListener(this)
+                    binding.clTopBar.invalidateInsets()
+                }
+
+                override fun onViewDetachedFromWindow(p0: View) {
+
+                }
+            })
+        }
     }
 
     private fun takePhoto() {
@@ -189,6 +225,14 @@ class CameraPhotoFragment : Fragment() {
         }
         return if (mediaDir != null && mediaDir.exists())
             mediaDir else requireActivity().filesDir
+    }
+
+    private fun View.invalidateInsets() {
+        try {
+            requestApplyInsets()
+        } catch (e: Throwable) {
+
+        }
     }
 
     companion object {

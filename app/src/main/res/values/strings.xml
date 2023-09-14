@@ -76,6 +76,7 @@
     <string name="upload_cancel">Upload Cancelled</string>
     <string name="retake">Retake</string>
     <string name="done">Done</string>
+    <string name="use_photo">Use Photo</string>
     <string name="upload_error">Upload Error</string>
     <string name="upload_image">Upload Image</string>
     <string name="upload_success">Upload Success</string>
