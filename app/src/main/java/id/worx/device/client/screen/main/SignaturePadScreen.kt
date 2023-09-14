@@ -3,12 +3,10 @@ package id.worx.device.client.screen.main
 import android.content.Context
 import android.graphics.Bitmap
 import android.provider.MediaStore
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -27,8 +25,7 @@ import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.hilt.navigation.compose.hiltViewModel
 import id.worx.device.client.R
 import id.worx.device.client.screen.components.WorxTopAppBar
-import id.worx.device.client.theme.Typography
-import id.worx.device.client.theme.WorxCustomColorsPalette
+import id.worx.device.client.theme.LocalWorxColorsPalette
 import id.worx.device.client.theme.WorxTheme
 import id.worx.device.client.viewmodel.DetailFormViewModel
 import se.warting.signaturepad.SignaturePadAdapter
@@ -60,7 +57,7 @@ fun SignaturePadScreen(
         ConstraintLayout(
             modifier = Modifier
                 .fillMaxSize()
-                .background(WorxCustomColorsPalette.current.homeBackground)
+                .background(LocalWorxColorsPalette.current.homeBackground)
         ) {
             val (
                 signaturePad,
@@ -74,8 +71,8 @@ fun SignaturePadScreen(
                     .fillMaxWidth()
                     .height((configuration.screenWidthDp / 2).dp)
                     .padding(vertical = 8.dp, horizontal = 12.dp)
-                    .background(WorxCustomColorsPalette.current.bottomSheetBackground)
-                    .border(1.5.dp, WorxCustomColorsPalette.current.signaturePadBorder)
+                    .background(LocalWorxColorsPalette.current.bottomSheetBackground)
+                    .border(1.5.dp, LocalWorxColorsPalette.current.signaturePadBorder)
                     .constrainAs(signaturePad) {
                         top.linkTo(parent.top)
                         start.linkTo(parent.start)
@@ -84,7 +81,7 @@ fun SignaturePadScreen(
                     }
             ) {
                 SignaturePadView(
-                    penColor = WorxCustomColorsPalette.current.signaturePenColor,
+                    penColor = LocalWorxColorsPalette.current.signaturePenColor,
                     onReady = {
                         signaturePadAdapter = it
                     },
@@ -97,7 +94,7 @@ fun SignaturePadScreen(
             if (!isSigned) {
                 Text(
                     text = "Draw here",
-                    color = WorxCustomColorsPalette.current.unselectedStar,
+                    color = LocalWorxColorsPalette.current.unselectedStar,
                     modifier = Modifier.constrainAs(txtDrawHere) {
                         top.linkTo(signaturePad.top)
                         bottom.linkTo(signaturePad.bottom)
@@ -109,7 +106,7 @@ fun SignaturePadScreen(
 
             Text(
                 stringResource(id = R.string.clear_signature),
-                color = WorxCustomColorsPalette.current.button.copy(
+                color = LocalWorxColorsPalette.current.button.copy(
                     alpha = if (isSigned) 1.0f else 0.3f
                 ),
                 fontWeight = FontWeight.Bold,
@@ -228,7 +225,7 @@ fun getImageUri(inContext: Context, inImage: Bitmap): String {
     val bytes = ByteArrayOutputStream()
     inImage.compress(Bitmap.CompressFormat.JPEG, 100, bytes)
     return MediaStore.Images.Media.insertImage(
-        inContext.getContentResolver(),
+        inContext.contentResolver,
         inImage,
         "Signature",
         null
@@ -239,7 +236,7 @@ fun getImageUri(inContext: Context, inImage: Bitmap): String {
 @Composable
 fun PreviewSignatureScreen() {
     val viewModel: DetailFormViewModel = hiltViewModel()
-    WorxTheme() {
+    WorxTheme {
         SignaturePadScreen(viewModel, {})
     }
 }

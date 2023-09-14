@@ -94,7 +94,7 @@ fun LicencesScreen(
                 .background(MaterialTheme.colors.secondary)
                 .padding(horizontal = 16.dp),
         ) {
-            items(setOfLibs.size ?: 0) { index ->
+            items(setOfLibs.size) { index ->
                 Text(
 //                    text = "${setOfLibs[index].uniqueId} - ${setOfLibs[index].name}",
                     text = setOfLibs[index].name,
@@ -110,7 +110,7 @@ fun LicencesScreen(
 
 @Composable
 fun ItemLazyColumn(lib: Library) {
-    ConstraintLayout() {
+    ConstraintLayout {
         Text(text = lib.artifactId)
     }
 }
@@ -118,7 +118,7 @@ fun ItemLazyColumn(lib: Library) {
 @Preview
 @Composable
 fun previewLicencesScreen() {
-    WorxTheme() {
+    WorxTheme {
         LicencesScreen(onBackNavigation = { /*TODO*/ })
     }
 }

@@ -1,17 +1,20 @@
 package id.worx.device.client.screen.main
 
 import android.net.Uri
-import androidx.activity.compose.LocalOnBackPressedDispatcherOwner
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
-import androidx.compose.material.Icon
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -21,6 +24,7 @@ import coil.compose.AsyncImage
 import id.worx.device.client.MainScreen
 import id.worx.device.client.R
 import id.worx.device.client.model.fieldmodel.ImageValue
+import id.worx.device.client.theme.MineShaft
 import id.worx.device.client.theme.WorxTheme
 import id.worx.device.client.theme.fontRoboto
 import id.worx.device.client.viewmodel.CameraViewModel
@@ -33,47 +37,46 @@ fun PhotoPreviewScreen(
     detailViewModel: DetailFormViewModel,
     addPhotoToGallery: (String) -> Unit
 ) {
-    val dispatcher = LocalOnBackPressedDispatcherOwner.current!!.onBackPressedDispatcher
-
     Box(modifier = Modifier.fillMaxSize()) {
+        Box(
+            modifier = Modifier
+                .background(MineShaft)
+                .fillMaxWidth()
+                .height(82.dp)
+        )
+
         AsyncImage(
             model = viewModel.photoPath.value?.let { File(it) },
             contentDescription = "Image",
             modifier = Modifier
                 .fillMaxSize()
         )
+
         Row(
             modifier = Modifier
                 .fillMaxWidth()
                 .height(110.dp)
-                .background(Color.Black.copy(0.54f))
+                .background(MineShaft)
                 .align(Alignment.BottomCenter),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
             Row(
                 modifier = Modifier
-                    .padding(start = 24.dp, top = 20.dp, bottom = 20.dp)
+                    .padding(start = 16.dp, top = 20.dp, bottom = 20.dp)
                     .clickable { viewModel.rejectPhoto() },
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Icon(
-                    painter = painterResource(id = R.drawable.ic_retake),
-                    contentDescription = "Retake photo",
-                    tint = Color.White,
-                )
                 Text(
-                    text = stringResource(id = R.string.retake).uppercase(),
+                    text = stringResource(id = R.string.retake),
                     fontSize = 16.sp,
                     color = Color.White,
-                    modifier = Modifier
-                        .padding(start = 8.dp),
                     fontFamily = fontRoboto,
                 )
             }
             Row(
                 modifier = Modifier
-                    .padding(end = 24.dp, top = 20.dp, bottom = 20.dp)
+                    .padding(end = 16.dp, top = 20.dp, bottom = 20.dp)
                     .clickable {
                         val path = viewModel.photoPath.value!!
                         val navigateFrom = detailViewModel.navigateFrom.value!!
@@ -110,17 +113,10 @@ fun PhotoPreviewScreen(
                     },
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Icon(
-                    painter = painterResource(id = R.drawable.ic_confirm),
-                    contentDescription = "Confirm photo",
-                    tint = Color.White,
-                )
                 Text(
-                    text = stringResource(id = R.string.done).uppercase(),
+                    text = stringResource(id = R.string.use_photo),
                     fontSize = 16.sp,
                     color = Color.White,
-                    modifier = Modifier
-                        .padding(start = 8.dp),
                     fontFamily = fontRoboto
                 )
             }
@@ -133,7 +129,7 @@ fun PhotoPreviewScreen(
 private fun PreviewPhotoScreen() {
     val viewModel: CameraViewModel = hiltViewModel()
     val detailViewModel: DetailFormViewModel = hiltViewModel()
-    WorxTheme() {
+    WorxTheme {
         PhotoPreviewScreen(viewModel = viewModel, detailViewModel) {}
     }
 }

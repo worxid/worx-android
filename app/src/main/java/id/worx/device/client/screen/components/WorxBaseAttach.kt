@@ -7,20 +7,19 @@ import androidx.activity.compose.ManagedActivityResultLauncher
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.padding
-import androidx.compose.runtime.*
-import androidx.compose.ui.Modifier
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.unit.dp
 import com.sangcomz.fishbun.FishBun
 import com.sangcomz.fishbun.util.getRealPathFromURI
 import id.worx.device.client.Util
 import id.worx.device.client.data.database.Session
 import id.worx.device.client.model.Fields
 import id.worx.device.client.model.fieldmodel.FileValue
-import id.worx.device.client.model.fieldmodel.ImageField
 import id.worx.device.client.model.fieldmodel.ImageValue
 import id.worx.device.client.viewmodel.DetailFormViewModel
 import id.worx.device.client.viewmodel.EventStatus
@@ -94,7 +93,6 @@ fun WorxBaseAttach(
         indexForm = indexForm,
         viewModel = viewModel,
         validation = validation,
-        session = session,
         warningInfo = warningInfo
     ) {
         WorxListDataView(

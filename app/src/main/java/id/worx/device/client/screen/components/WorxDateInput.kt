@@ -2,23 +2,28 @@ package id.worx.device.client.screen.components
 
 import android.app.DatePickerDialog
 import android.content.Context
-import android.os.Build
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.annotation.Nullable
-import androidx.annotation.RequiresApi
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.TextField
 import androidx.compose.material.TextFieldDefaults
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
@@ -28,13 +33,16 @@ import id.worx.device.client.R
 import id.worx.device.client.data.database.Session
 import id.worx.device.client.model.fieldmodel.DateField
 import id.worx.device.client.model.fieldmodel.DateValue
-import id.worx.device.client.screen.main.SettingTheme
+import id.worx.device.client.screen.main.isLightMode
+import id.worx.device.client.theme.LocalAppTheme
+import id.worx.device.client.theme.LocalWorxColorsPalette
 import id.worx.device.client.theme.Typography
-import id.worx.device.client.theme.WorxCustomColorsPalette
 import id.worx.device.client.viewmodel.DetailFormViewModel
 import id.worx.device.client.viewmodel.EventStatus
 import java.text.SimpleDateFormat
-import java.util.*
+import java.util.Calendar
+import java.util.Date
+import java.util.Locale
 
 @Composable
 fun WorxDateInput(indexForm: Int, viewModel: DetailFormViewModel, session: Session, validation : Boolean = false) {
@@ -70,23 +78,23 @@ fun WorxDateInput(indexForm: Int, viewModel: DetailFormViewModel, session: Sessi
         showDatePicker = false
     }
 
-    val style = when(theme){
-        SettingTheme.Blue -> R.style.BlueCalenderViewCustom
-        SettingTheme.Green -> R.style.GreenCalenderViewCustom
-        else -> R.style.CalenderViewCustom
-    }
+    val style = if (LocalAppTheme.current.isLightMode()) R.style.CalenderViewCustom
+    else R.style.CalenderViewCustomDark
+
     val mDatePickerDialog = WorxDatePickerDialog(
         context,
         style,
         datePickerCallback,
-        year, month, day
+        year,
+        month,
+        day,
+        LocalAppTheme.current.isLightMode()
     )
 
     WorxBaseField(
         indexForm = indexForm,
         viewModel = viewModel,
         validation = validation,
-        session = session,
         warningInfo = warningInfo) {
         Row(
             verticalAlignment = Alignment.CenterVertically,
@@ -100,9 +108,9 @@ fun WorxDateInput(indexForm: Int, viewModel: DetailFormViewModel, session: Sessi
                     .clickable { showDatePicker = true },
                 enabled = false,
                 colors = TextFieldDefaults.textFieldColors(
-                    backgroundColor = WorxCustomColorsPalette.current.homeBackground,
-                    unfocusedIndicatorColor = WorxCustomColorsPalette.current.textFieldUnfocusedIndicator,
-                    focusedIndicatorColor = WorxCustomColorsPalette.current.textFieldFocusedIndicator
+                    backgroundColor = LocalWorxColorsPalette.current.homeBackground,
+                    unfocusedIndicatorColor = LocalWorxColorsPalette.current.textFieldUnfocusedIndicator,
+                    focusedIndicatorColor = LocalWorxColorsPalette.current.textFieldFocusedIndicator
                 ),
                 textStyle = if (value.value.isNullOrEmpty()) {
                     Typography.body2.copy(color = MaterialTheme.colors.onSecondary.copy(0.54f))
@@ -127,7 +135,7 @@ fun WorxDateInput(indexForm: Int, viewModel: DetailFormViewModel, session: Sessi
                                 modifier = Modifier
                                     .align(Alignment.Center)
                                     .padding(16.dp),
-                                tint = WorxCustomColorsPalette.current.textFieldIcon
+                                tint = LocalWorxColorsPalette.current.textFieldIcon
                             )
                         }
                     }
@@ -151,40 +159,20 @@ fun WorxDateInput(indexForm: Int, viewModel: DetailFormViewModel, session: Sessi
     }
 }
 
-class WorxDatePickerDialog : DatePickerDialog {
-
-    @RequiresApi(api = Build.VERSION_CODES.N)
-    constructor(context: Context) : super(context) {
-        init(context)
+class WorxDatePickerDialog(
+    context: Context,
+    themeResId: Int,
+    @Nullable listener: OnDateSetListener?,
+    year: Int,
+    monthOfYear: Int,
+    dayOfMonth: Int,
+    isLightMode: Boolean
+) : DatePickerDialog(context, themeResId, listener, year, monthOfYear, dayOfMonth) {
+    init {
+        init(context, isLightMode)
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.N)
-    constructor(context: Context, themeResId: Int) : super(context, themeResId) {
-        init(context)
-    }
-
-    constructor(
-        context: Context,
-        @Nullable listener: OnDateSetListener?,
-        year: Int,
-        month: Int,
-        dayOfMonth: Int
-    ) : super(context, listener, year, month, dayOfMonth) {
-        init(context)
-    }
-
-    constructor(
-        context: Context,
-        themeResId: Int,
-        @Nullable listener: OnDateSetListener?,
-        year: Int,
-        monthOfYear: Int,
-        dayOfMonth: Int
-    ) : super(context, themeResId, listener, year, monthOfYear, dayOfMonth) {
-        init(context)
-    }
-
-    private fun init(context: Context) {
+    private fun init(context: Context, isLightMode: Boolean) {
         val headerView: ViewGroup? = datePicker.findViewById(
             context.resources.getIdentifier(
                 "android:id/date_picker_header",
@@ -194,22 +182,24 @@ class WorxDatePickerDialog : DatePickerDialog {
         )
         headerView?.setBackgroundColor(0xFFFFFF)
 
-        val year: TextView? = datePicker.findViewById(
-            context.resources.getIdentifier(
-                "android:id/date_picker_header_year",
-                "id",
-                context.packageName
+        if (isLightMode) {
+            val year: TextView? = datePicker.findViewById(
+                context.resources.getIdentifier(
+                    "android:id/date_picker_header_year",
+                    "id",
+                    context.packageName
+                )
             )
-        )
-        year?.setTextColor(Color(0x99000000).toArgb())
+            year?.setTextColor(Color(0x99000000).toArgb())
 
-        val date: TextView? = datePicker.findViewById(
-            context.resources.getIdentifier(
-                "android:id/date_picker_header_date",
-                "id",
-                context.packageName
+            val date: TextView? = datePicker.findViewById(
+                context.resources.getIdentifier(
+                    "android:id/date_picker_header_date",
+                    "id",
+                    context.packageName
+                )
             )
-        )
-        date?.setTextColor(android.graphics.Color.BLACK)
+            date?.setTextColor(android.graphics.Color.BLACK)
+        }
     }
 }
