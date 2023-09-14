@@ -1,6 +1,5 @@
 package id.worx.device.client.screen.main
 
-import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -31,8 +30,6 @@ import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDownward
 import androidx.compose.material.icons.filled.ArrowUpward
-import androidx.compose.material.icons.outlined.ArrowBackIosNew
-import androidx.compose.material.icons.outlined.KeyboardArrowDown
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -43,7 +40,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -57,7 +53,6 @@ import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
 import id.worx.device.client.R
 import id.worx.device.client.Util.initProgress
-import id.worx.device.client.Util.isNetworkAvailable
 import id.worx.device.client.model.BasicForm
 import id.worx.device.client.model.FormSortModel
 import id.worx.device.client.model.FormSortOrderBy
@@ -66,10 +61,10 @@ import id.worx.device.client.screen.components.TransparentButton
 import id.worx.device.client.screen.components.WorxBoxPullRefresh
 import id.worx.device.client.screen.components.WorxSwipeableCard
 import id.worx.device.client.screen.components.WorxTextField
+import id.worx.device.client.theme.LocalWorxColorsPalette
 import id.worx.device.client.theme.PrimaryMain
 import id.worx.device.client.theme.PrimaryMainBlue
 import id.worx.device.client.theme.Typography
-import id.worx.device.client.theme.WorxCustomColorsPalette
 import id.worx.device.client.theme.fontRoboto
 import id.worx.device.client.viewmodel.DetailFormViewModel
 import id.worx.device.client.viewmodel.HomeViewModelImpl
@@ -84,23 +79,22 @@ fun FormScreen(
     titleForEmpty: String,
     descriptionForEmpty: String,
     selectedSort: FormSortModel,
+    shouldShowEmptyResult: Boolean = true,
     openSortBottomSheet: () -> Unit,
     syncWithServer: () -> Unit
 ) {
-    val context = LocalContext.current
-    var isConnected by remember { mutableStateOf(isNetworkAvailable(context)) }
-
     WorxBoxPullRefresh(onRefresh = {
         syncWithServer()
-        isConnected = isNetworkAvailable(context)
     }) {
         Column(
             modifier = Modifier
                 .fillMaxHeight()
-                .background(WorxCustomColorsPalette.current.homeBackground),
+                .background(LocalWorxColorsPalette.current.homeBackground),
         ) {
             if (data.isNullOrEmpty()) {
-                EmptyList(type, titleForEmpty, descriptionForEmpty)
+                if (shouldShowEmptyResult) {
+                    EmptyList(type, titleForEmpty, descriptionForEmpty)
+                }
             } else {
                 FormSort(
                     selectedSort = selectedSort,
@@ -136,7 +130,7 @@ fun NoConnectionFound(modifier: Modifier = Modifier) {
         modifier = modifier
             .fillMaxWidth()
             .height(56.dp)
-            .background(WorxCustomColorsPalette.current.iconBackground)
+            .background(LocalWorxColorsPalette.current.iconBackground)
             .padding(horizontal = 16.dp, vertical = 8.dp)
     ) {
         Icon(
@@ -224,7 +218,7 @@ fun ListItemValidForm(
         modifier = Modifier
             .fillMaxWidth()
             .clip(RoundedCornerShape(4.dp))
-            .background(WorxCustomColorsPalette.current.formItemContainer)
+            .background(LocalWorxColorsPalette.current.formItemContainer)
             .clickable(
                 onClick = {
                     viewModel.goToDetailScreen()
@@ -238,7 +232,7 @@ fun ListItemValidForm(
                 .align(Alignment.CenterVertically),
             painter = painterResource(id = R.drawable.ic_form),
             contentDescription = "Form Icon",
-            tint = WorxCustomColorsPalette.current.iconV2
+            tint = LocalWorxColorsPalette.current.iconV2
         )
         Column(modifier = Modifier.padding(vertical = 13.dp)) {
             Text(
@@ -368,7 +362,7 @@ fun DraftItemForm(
             modifier = Modifier
                 .fillMaxWidth()
                 .clip(RoundedCornerShape(topStart = 4.dp, topEnd = 4.dp))
-                .background(WorxCustomColorsPalette.current.formItemContainer)
+                .background(LocalWorxColorsPalette.current.formItemContainer)
                 .padding(horizontal = 12.dp, vertical = 8.dp)
                 .clickable(
                     onClick = {
@@ -380,7 +374,7 @@ fun DraftItemForm(
             Icon(
                 painter = painterResource(id = R.drawable.ic_form),
                 contentDescription = "Form Icon",
-                tint = WorxCustomColorsPalette.current.iconV2
+                tint = LocalWorxColorsPalette.current.iconV2
             )
             Spacer(modifier = Modifier.width(12.dp))
             Column {
@@ -395,19 +389,19 @@ fun DraftItemForm(
                     Text(
                         text = "Draft",
                         style = Typography.body1,
-                        color = WorxCustomColorsPalette.current.iconBackground
+                        color = LocalWorxColorsPalette.current.iconBackground
                     )
                 }
                 Spacer(modifier = Modifier.height(2.dp))
 //                AnimatedVisibility(visible = isExpanded) {
-                    Text(
-                        text = item.description.toString(),
-                        overflow = TextOverflow.Ellipsis,
-                        maxLines = 1,
-                        style = Typography.caption,
-                        color = MaterialTheme.colors.onSecondary.copy(alpha = 0.6f)
-                    )
-                    Spacer(modifier = Modifier.height(4.dp))
+                Text(
+                    text = item.description.toString(),
+                    overflow = TextOverflow.Ellipsis,
+                    maxLines = 1,
+                    style = Typography.caption,
+                    color = MaterialTheme.colors.onSecondary.copy(alpha = 0.6f)
+                )
+                Spacer(modifier = Modifier.height(4.dp))
 //                }
                 Text(
                     text = "Saved on ${item.lastUpdated}",
@@ -433,12 +427,12 @@ fun DraftItemForm(
             LinearProgressIndicator(
                 progress = 1f,
                 modifier = Modifier.fillMaxWidth(),
-                color = WorxCustomColorsPalette.current.draftLinearProgressIndicator
+                color = LocalWorxColorsPalette.current.draftLinearProgressIndicator
             )
             LinearProgressIndicator(
                 progress = initProgress(item.values.toMutableMap(), item.fields) / 100.toFloat(),
                 modifier = Modifier.fillMaxWidth(),
-                color = WorxCustomColorsPalette.current.draftCompletedLinearProgressIndicator,
+                color = LocalWorxColorsPalette.current.draftCompletedLinearProgressIndicator,
                 backgroundColor = Color.Transparent
             )
         }
@@ -456,7 +450,7 @@ fun DialogDuplicateDraftForm(
             Column(
                 modifier = Modifier
                     .wrapContentSize()
-                    .background(WorxCustomColorsPalette.current.bottomSheetBackground)
+                    .background(LocalWorxColorsPalette.current.bottomSheetBackground)
             ) {
                 Text(
                     modifier = Modifier.padding(top = 16.dp, start = 16.dp, end = 16.dp),
@@ -478,7 +472,8 @@ fun DialogDuplicateDraftForm(
                     hint = stringResource(R.string.text_hint_description_optional),
                     inputType = KeyboardOptions(keyboardType = KeyboardType.Text),
                     onValueChange = { draftDescription = it },
-                    allowMultiline = false
+                    allowMultiline = false,
+                    isShowDivider = true
                 )
                 Spacer(modifier = Modifier.height(16.dp))
                 Row(
@@ -517,7 +512,7 @@ fun DialogDeleteDraftForm(
             Column(
                 modifier = Modifier
                     .wrapContentSize()
-                    .background(WorxCustomColorsPalette.current.bottomSheetBackground)
+                    .background(LocalWorxColorsPalette.current.bottomSheetBackground)
             ) {
                 Text(
                     modifier = Modifier.padding(top = 16.dp, start = 16.dp, end = 16.dp),
@@ -571,7 +566,7 @@ fun SubmissionItemForm(
         modifier = Modifier
             .fillMaxWidth()
             .clip(RoundedCornerShape(4.dp))
-            .background(WorxCustomColorsPalette.current.formItemContainer)
+            .background(LocalWorxColorsPalette.current.formItemContainer)
             .clickable(
                 onClick = {
                     viewModel.goToDetailScreen()

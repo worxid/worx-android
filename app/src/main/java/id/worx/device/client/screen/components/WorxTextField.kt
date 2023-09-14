@@ -30,7 +30,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import id.worx.device.client.R
 import id.worx.device.client.theme.GrayDivider
-import id.worx.device.client.theme.WorxCustomColorsPalette
+import id.worx.device.client.theme.LocalWorxColorsPalette
 import id.worx.device.client.theme.PrimaryMain
 import id.worx.device.client.theme.Typography
 import id.worx.device.client.theme.fontRoboto
@@ -51,7 +51,7 @@ fun WorxTextField(
     viewModel: DetailFormViewModel? = null,
     index: Int = -1,
     allowMultiline: Boolean = false,
-    isShowDivider: Boolean = true,
+    isShowDivider: Boolean = false,
     horizontalPadding: Dp = 16.dp,
 ) {
     var textValue by remember { mutableStateOf(initialValue) }
@@ -65,11 +65,11 @@ fun WorxTextField(
         var passwordVisible by rememberSaveable { mutableStateOf(false) }
         TextField(
             colors = TextFieldDefaults.textFieldColors(
-                backgroundColor = WorxCustomColorsPalette.current.textFieldContainer,
-                focusedLabelColor = WorxCustomColorsPalette.current.textFieldFocusedLabel,
-                focusedIndicatorColor = WorxCustomColorsPalette.current.textFieldFocusedIndicator,
-                unfocusedLabelColor = WorxCustomColorsPalette.current.textFieldUnfocusedLabel,
-                unfocusedIndicatorColor = WorxCustomColorsPalette.current.textFieldUnfocusedIndicator,
+                backgroundColor = LocalWorxColorsPalette.current.textFieldContainer,
+                focusedLabelColor = LocalWorxColorsPalette.current.textFieldFocusedLabel,
+                focusedIndicatorColor = LocalWorxColorsPalette.current.textFieldFocusedIndicator,
+                unfocusedLabelColor = LocalWorxColorsPalette.current.textFieldUnfocusedLabel,
+                unfocusedIndicatorColor = LocalWorxColorsPalette.current.textFieldUnfocusedIndicator,
                 cursorColor = MaterialTheme.colors.onSecondary
             ),
             modifier = Modifier
@@ -129,7 +129,7 @@ fun WorxTextField(
                             .clickable {
                                 textValue = TextFieldValue("")
                             },
-                        tint = WorxCustomColorsPalette.current.textFieldIcon
+                        tint = LocalWorxColorsPalette.current.textFieldIcon
                     )
                 }
             }

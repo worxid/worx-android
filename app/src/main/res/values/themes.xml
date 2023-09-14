@@ -17,9 +17,6 @@
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
     </style>
-    <style name="Theme.Worx.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
-
-    <style name="Theme.Worx.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
 
     <style name="CalenderViewCustom" parent="ThemeOverlay.MaterialComponents.MaterialCalendar">
         <!--Header Background Color and selected Day Background Color-->

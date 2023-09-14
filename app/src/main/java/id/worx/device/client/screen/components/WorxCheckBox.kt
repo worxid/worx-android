@@ -16,11 +16,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
-import id.worx.device.client.data.database.Session
 import id.worx.device.client.model.fieldmodel.CheckBoxField
 import id.worx.device.client.model.fieldmodel.CheckBoxValue
+import id.worx.device.client.theme.LocalWorxColorsPalette
 import id.worx.device.client.theme.Typography
-import id.worx.device.client.theme.WorxCustomColorsPalette
 import id.worx.device.client.viewmodel.DetailFormViewModel
 import id.worx.device.client.viewmodel.EventStatus
 
@@ -28,8 +27,7 @@ import id.worx.device.client.viewmodel.EventStatus
 fun WorxCheckBox(
     indexForm: Int,
     viewModel: DetailFormViewModel,
-    validation: Boolean = false,
-    session: Session
+    validation: Boolean = false
 ) {
     val form =
         viewModel.uiState.collectAsState().value.detailForm!!.fields[indexForm] as CheckBoxField
@@ -57,7 +55,6 @@ fun WorxCheckBox(
         indexForm = indexForm,
         viewModel = viewModel,
         validation = validation,
-        session = session,
         warningInfo = warningInfo
     ) {
         Column {
@@ -109,7 +106,7 @@ fun WorxCheckBox(
                         colors = CheckboxDefaults.colors(
                             checkedColor = MaterialTheme.colors.onBackground,
                             checkmarkColor = Color.White,
-                            uncheckedColor = WorxCustomColorsPalette.current.optionBorder,
+                            uncheckedColor = LocalWorxColorsPalette.current.optionBorder,
                         ),
                         modifier = Modifier.padding(start = 4.dp)
                     )

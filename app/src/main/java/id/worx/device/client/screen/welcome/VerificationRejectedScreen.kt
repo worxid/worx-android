@@ -28,7 +28,7 @@ import id.worx.device.client.screen.components.TransparentButton
 import id.worx.device.client.screen.main.getAppLogoDrawable
 import id.worx.device.client.screen.main.getAppTheme
 import id.worx.device.client.theme.Typography
-import id.worx.device.client.theme.WorxCustomColorsPalette
+import id.worx.device.client.theme.LocalWorxColorsPalette
 import id.worx.device.client.theme.WorxTheme
 
 @Composable
@@ -53,7 +53,7 @@ fun VerificationRejectedScreen(session: Session, onEvent: (VerificationEvent) ->
             Image(
                 painter = painterResource(R.drawable.ic_icon_reject),
                 contentDescription = "Rejected icon",
-                colorFilter = ColorFilter.tint(color = WorxCustomColorsPalette.current.icon)
+                colorFilter = ColorFilter.tint(color = LocalWorxColorsPalette.current.icon)
             )
             Spacer(modifier = Modifier.height(12.dp))
             Text(

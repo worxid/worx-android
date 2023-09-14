@@ -1,9 +1,6 @@
 package id.worx.device.client.screen.main
 
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.material.*
@@ -12,8 +9,6 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
@@ -24,13 +19,11 @@ import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.rememberPagerState
 import id.worx.device.client.R
-import id.worx.device.client.data.database.Session
 import id.worx.device.client.model.EmptyForm
 import id.worx.device.client.model.FormSortModel
 import id.worx.device.client.model.SubmitForm
-import id.worx.device.client.theme.PrimaryMain
 import id.worx.device.client.theme.Typography
-import id.worx.device.client.theme.WorxCustomColorsPalette
+import id.worx.device.client.theme.LocalWorxColorsPalette
 import id.worx.device.client.theme.WorxTheme
 import id.worx.device.client.viewmodel.DetailFormViewModel
 import id.worx.device.client.viewmodel.HomeViewModelImpl
@@ -75,13 +68,13 @@ fun SearchScreen(
                     .constrainAs(tablayout) {
                         top.linkTo(parent.top)
                     },
-                backgroundColor = WorxCustomColorsPalette.current.appBar,
+                backgroundColor = LocalWorxColorsPalette.current.appBar,
                 contentColor = MaterialTheme.colors.onPrimary,
                 divider = {
                     TabRowDefaults.Divider(
                         modifier = Modifier.wrapContentSize(Alignment.BottomStart),
                         thickness = 2.dp,
-                        color = WorxCustomColorsPalette.current.appBarDivider
+                        color = LocalWorxColorsPalette.current.appBarDivider
                     )
                 }
             ) {
@@ -122,6 +115,7 @@ fun SearchScreen(
                         stringResource(R.string.text_search_empty_title),
                         stringResource(R.string.text_search_empty_desc),
                         selectedSort = selectedSort,
+                        shouldShowEmptyResult = searchInput.isNotEmpty(),
                         openSortBottomSheet = openSortBottomSheet,
                         syncWithServer = syncWithServer
                     )
@@ -134,6 +128,7 @@ fun SearchScreen(
                         stringResource(R.string.text_search_empty_title),
                         stringResource(R.string.text_search_empty_desc),
                         selectedSort = selectedSort,
+                        shouldShowEmptyResult = searchInput.isNotEmpty(),
                         openSortBottomSheet = openSortBottomSheet,
                         syncWithServer = syncWithServer
                     )
@@ -146,6 +141,7 @@ fun SearchScreen(
                         stringResource(R.string.text_search_empty_title),
                         stringResource(R.string.text_search_empty_desc),
                         selectedSort = selectedSort,
+                        shouldShowEmptyResult = searchInput.isNotEmpty(),
                         openSortBottomSheet = openSortBottomSheet,
                         syncWithServer = syncWithServer
                     )

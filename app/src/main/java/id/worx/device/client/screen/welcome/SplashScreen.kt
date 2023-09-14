@@ -15,7 +15,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import id.worx.device.client.R
-import id.worx.device.client.theme.WorxCustomColorsPalette
+import id.worx.device.client.theme.LocalWorxColorsPalette
 import id.worx.device.client.theme.WorxTheme
 
 @Composable
@@ -27,7 +27,7 @@ fun SplashScreen() {
         Box {
             Image(
                 modifier = Modifier.fillMaxSize()
-                    .background(color = WorxCustomColorsPalette.current.splashBackground),
+                    .background(color = LocalWorxColorsPalette.current.splashBackground),
                 contentScale = ContentScale.Crop,
                 painter = painterResource(R.drawable.grid_bg),
                 contentDescription = "Background")
