@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    package="id.worx.device.client" >
+    package="id.worx.mobile" >
 
     <uses-permission android:name="android.permission.INTERNET"/>
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
@@ -19,7 +19,7 @@
         tools:node="remove" />
 
     <application
-        android:name=".WorxApplication"
+        android:name="id.worx.mobile.WorxApplication"
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
@@ -35,7 +35,7 @@
             android:name="com.google.android.geo.API_KEY"
             android:value="${MAPS_API_KEY}" />
         <activity
-            android:name=".MainActivity"
+            android:name="id.worx.mobile.MainActivity"
             android:exported="true"
             android:label="@string/title_activity_main"
             android:screenOrientation="portrait"
@@ -49,7 +49,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".WelcomeActivity"
+            android:name="id.worx.mobile.WelcomeActivity"
             android:exported="true"
             android:noHistory="true"
             android:screenOrientation="portrait"

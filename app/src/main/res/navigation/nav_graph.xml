@@ -4,36 +4,36 @@
     app:startDestination="@+id/splash_fragment">
     <fragment
         android:id="@+id/splash_fragment"
-        android:name="id.worx.device.client.view.SplashFragment"
+        android:name="id.worx.mobile.view.SplashFragment"
         android:label="Splash">
     </fragment>
     <fragment
         android:id="@+id/welcome_fragment"
-        android:name="id.worx.device.client.view.WelcomeFragment"
+        android:name="id.worx.mobile.view.WelcomeFragment"
         android:label="Welcome">
     </fragment>
     <fragment
         android:id="@+id/create_team_fragment"
-        android:name="id.worx.device.client.view.CreateTeamFragment"
+        android:name="id.worx.mobile.view.CreateTeamFragment"
         android:label="CreateTeamFragment" />
     <fragment
         android:id="@+id/create_team_submitted_fragment"
-        android:name="id.worx.device.client.view.CreateTeamSubmittedFragment"
+        android:name="id.worx.mobile.view.CreateTeamSubmittedFragment"
         android:label="CreateTeamSubmittedFragment" />
     <fragment
         android:id="@+id/join_team_fragment"
-        android:name="id.worx.device.client.view.JoinTeamFragment"
+        android:name="id.worx.mobile.view.JoinTeamFragment"
         android:label="JoinTeamFragment" />
     <fragment
         android:id="@+id/waiting_verification_fragment"
-        android:name="id.worx.device.client.view.WaitingVerificationFragment"
+        android:name="id.worx.mobile.view.WaitingVerificationFragment"
         android:label="WaitingVerificationFragment" />
     <fragment
         android:id="@+id/verification_rejected_fragment"
-        android:name="id.worx.device.client.view.VerificationRejectedFragment"
+        android:name="id.worx.mobile.view.VerificationRejectedFragment"
         android:label="VerificationRejectedFragment" />
     <fragment
         android:id="@+id/advanced_settings_fragment"
-        android:name="id.worx.device.client.view.AdvancedSettingsFragment"
+        android:name="id.worx.mobile.view.AdvancedSettingsFragment"
         android:label="AdvancedSettingsFragment" />
 </navigation>
