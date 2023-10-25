@@ -34,8 +34,6 @@ import id.worx.device.client.R
 import id.worx.device.client.data.database.Session
 import id.worx.device.client.screen.components.RedFullWidthButton
 import id.worx.device.client.screen.components.WorxTextField
-import id.worx.device.client.screen.main.getAppLogoDrawable
-import id.worx.device.client.screen.main.getAppTheme
 import id.worx.device.client.theme.Typography
 import id.worx.device.client.theme.WorxTheme
 
@@ -55,8 +53,6 @@ fun JoinTeamScreen(
 ) {
     var namePr by remember { mutableStateOf(0) }
     var orgPr by remember { mutableStateOf(0) }
-    val theme = session.theme
-    val appLogoResourceId = theme.getAppTheme().getAppLogoDrawable()
 
     Scaffold { padding ->
         Column(
@@ -71,7 +67,7 @@ fun JoinTeamScreen(
             var organization by remember { mutableStateOf("") }
 
             Image(
-                painter = painterResource(appLogoResourceId),
+                painter = painterResource(R.drawable.worx_logo_red),
                 contentDescription = "Worx Logo",
                 modifier = Modifier
                     .align(Alignment.CenterHorizontally)
