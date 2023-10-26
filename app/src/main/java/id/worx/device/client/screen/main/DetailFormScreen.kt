@@ -48,11 +48,9 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import id.worx.device.client.R
 import id.worx.device.client.data.api.SyncServer.Companion.DOWNLOADFROMSERVER
 import id.worx.device.client.data.database.Session
-import id.worx.device.client.model.EmptyForm
 import id.worx.device.client.model.SubmitForm
 import id.worx.device.client.model.fieldmodel.Separator
 import id.worx.device.client.screen.components.WorxBoxPullRefresh
-import id.worx.device.client.screen.components.WorxFormSubmitButton
 import id.worx.device.client.screen.components.WorxTopAppBar
 import id.worx.device.client.theme.LocalWorxColorsPalette
 import id.worx.device.client.theme.Typography
@@ -84,15 +82,6 @@ fun DetailFormScreen(
     val showDialogLeaveForm = remember { mutableStateOf(false) }
     var showDraftDialog by remember { mutableStateOf(false) }
     val sheetState = rememberModalBottomSheetState(initialValue = ModalBottomSheetValue.Hidden)
-    val detailForm = viewModel.uiState.collectAsState().value.detailForm
-
-    val scope = rememberCoroutineScope()
-    val state = rememberModalBottomSheetState(
-        initialValue = ModalBottomSheetValue.Hidden,
-        confirmStateChange = { true },
-        skipHalfExpanded = true
-    )
-    var showSubmitDialog by remember { mutableStateOf(state.isVisible) }
 
     BackHandler {
         showDialogLeaveForm.value =
@@ -137,25 +126,6 @@ fun DetailFormScreen(
                         openBottomSheet()
                     }
                 )
-            },
-            bottomBar = {
-                if (detailForm is EmptyForm || (detailForm is SubmitForm && detailForm.status == 0)) {
-                    Column(modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(16.dp)) {
-                        WorxFormSubmitButton(
-                            onClickCallback = {
-                                showSubmitDialog = true
-                                scope.launch {
-                                    state.animateTo(ModalBottomSheetValue.Expanded)
-                                }
-                            },
-                            label = stringResource(R.string.text_submit),
-                            modifier = Modifier.fillMaxWidth(),
-                            buttonModifier = Modifier.fillMaxWidth()
-                        )
-                    }
-                }
             }
         ) { padding ->
             val componentList = uistate.detailForm?.fields
@@ -165,8 +135,7 @@ fun DetailFormScreen(
                 })
 
             WorxBoxPullRefresh(
-                onRefresh = { viewModel.syncWithServer(DOWNLOADFROMSERVER) },
-                modifier = Modifier.padding(padding)
+                onRefresh = { viewModel.syncWithServer(DOWNLOADFROMSERVER) }
             ) {
 
                 ValidFormBuilder(
@@ -176,11 +145,7 @@ fun DetailFormScreen(
                     scannerViewModel,
                     session,
                     setDraftDialog = { showDraftDialog = it },
-                    onEvent = onEvent,
-                    shouldShowSubmitDialog = showSubmitDialog,
-                    closeSubmitDialog = {
-                        showSubmitDialog = false
-                    }
+                    onEvent,
                 )
 
                 if (showDialogLeaveForm.value) {

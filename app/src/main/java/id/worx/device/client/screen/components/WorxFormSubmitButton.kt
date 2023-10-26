@@ -12,6 +12,8 @@ import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.Icon
 import androidx.compose.material.OutlinedButton
 import androidx.compose.material.Text
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.Send
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -22,8 +24,8 @@ import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
 import id.worx.device.client.R
-import id.worx.device.client.theme.LocalWorxColorsPalette
 import id.worx.device.client.theme.Typography
+import id.worx.device.client.theme.LocalWorxColorsPalette
 import id.worx.device.client.theme.WorxTheme
 
 /**
@@ -33,8 +35,7 @@ import id.worx.device.client.theme.WorxTheme
 fun WorxFormSubmitButton(
     onClickCallback: () -> Unit,
     label: String,
-    modifier: Modifier,
-    buttonModifier: Modifier = Modifier
+    modifier: Modifier
 ) {
     ConstraintLayout(
         modifier = modifier.clickable {
@@ -61,7 +62,7 @@ fun WorxFormSubmitButton(
         )
 
         OutlinedButton(
-            modifier = buttonModifier
+            modifier = Modifier
                 .constrainAs(outlinedButton) {
                     top.linkTo(parent.top)
                     start.linkTo(parent.start)
