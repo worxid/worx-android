@@ -9,6 +9,7 @@ import id.worx.device.client.common.exception.UnknownErrorException
 import id.worx.device.client.data.database.Session
 import id.worx.device.client.domain.request.GetSubmitLocationRequest
 import id.worx.device.client.model.SubmitLocation
+import java.io.IOException
 import java.util.Locale
 import javax.inject.Inject
 import kotlin.coroutines.resumeWithException
@@ -23,30 +24,34 @@ class GetSubmitLocationUseCase @Inject constructor() :
 
     private suspend fun getSubmitLocation(context: Context, latLng: LatLng) =
         suspendCoroutine { continuation ->
-            val geocoder = Geocoder(context, Locale.getDefault())
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                geocoder.getFromLocation(latLng.latitude, latLng.longitude, 1) { p0 ->
-                    val address = p0[0]
-                    val userAddress = SubmitLocation(
-                        address.getAddressLine(0),
-                        latLng.latitude,
-                        latLng.longitude
-                    )
-                    continuation.resumeWith(Result.success(userAddress))
-                }
-            } else {
-                val address =
-                    geocoder.getFromLocation(latLng.latitude, latLng.longitude, 1)?.get(0)
-                if (address != null) {
-                    val userAddress = SubmitLocation(
-                        address.getAddressLine(0),
-                        latLng.latitude,
-                        latLng.longitude
-                    )
-                    continuation.resumeWith(Result.success(userAddress))
+            try {
+                val geocoder = Geocoder(context, Locale.getDefault())
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                    geocoder.getFromLocation(latLng.latitude, latLng.longitude, 1) { p0 ->
+                        val address = p0[0]
+                        val userAddress = SubmitLocation(
+                            address.getAddressLine(0),
+                            latLng.latitude,
+                            latLng.longitude
+                        )
+                        continuation.resumeWith(Result.success(userAddress))
+                    }
                 } else {
-                    continuation.resumeWithException(UnknownErrorException())
+                    val address =
+                        geocoder.getFromLocation(latLng.latitude, latLng.longitude, 1)?.get(0)
+                    if (address != null) {
+                        val userAddress = SubmitLocation(
+                            address.getAddressLine(0),
+                            latLng.latitude,
+                            latLng.longitude
+                        )
+                        continuation.resumeWith(Result.success(userAddress))
+                    } else {
+                        continuation.resumeWithException(UnknownErrorException())
+                    }
                 }
+            } catch (e: IOException) {
+                continuation.resumeWithException(e)
             }
         }
 

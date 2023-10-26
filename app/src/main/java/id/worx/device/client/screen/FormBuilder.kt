@@ -1,9 +1,9 @@
 package id.worx.device.client.screen
 
 import android.util.Log
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.WindowInsetsSides
 import androidx.compose.foundation.layout.asPaddingValues
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -28,8 +29,6 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material.Button
-import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Divider
 import androidx.compose.material.MaterialTheme
@@ -375,7 +374,9 @@ fun DialogSubmitForm(
                     description,
                     divider1,
                     submit,
+                    divider2,
                     saveDraft,
+                    divider3,
                     cancel,
                 ) = createRefs()
 
@@ -445,77 +446,60 @@ fun DialogSubmitForm(
                     }
                 )
 
-                Button(
-                    onClick = {
-                        submitForm()
-                    }, modifier = Modifier
-                        .height(48.dp)
-                        .fillMaxWidth()
-                        .padding(horizontal = 16.dp)
-                        .border(1.5.dp, color = MaterialTheme.colors.onSecondary)
+                Text(
+                    text = "Submit",
+                    style = Typography.body2.copy(LocalWorxColorsPalette.current.textFieldFocusedLabel),
+                    modifier = Modifier
+                        .clickable { submitForm() }
                         .constrainAs(submit) {
                             top.linkTo(divider1.bottom, 16.dp)
                             start.linkTo(title.start)
                             end.linkTo(title.end)
-                        },
-                    colors = ButtonDefaults.buttonColors(
-                        backgroundColor = LocalWorxColorsPalette.current.button
-                    )
-                ) {
-                    Text(
-                        text = "Submit",
-                        style = Typography.button,
-                        color = MaterialTheme.colors.onPrimary,
-                        textAlign = TextAlign.Center
-                    )
-                }
+                        }
+                )
 
-                Button(
-                    onClick = { saveDraftForm() }, modifier = Modifier
-                        .height(48.dp)
-                        .fillMaxWidth()
-                        .padding(horizontal = 16.dp)
-                        .border(1.5.dp, color = MaterialTheme.colors.onSecondary)
+                Divider(
+                    color = LocalWorxColorsPalette.current.divider,
+                    modifier = Modifier.constrainAs(divider2) {
+                        top.linkTo(submit.bottom, 16.dp)
+                        start.linkTo(parent.start)
+                        end.linkTo(parent.end)
+                    }
+                )
+
+                Text(
+                    text = "Save Draft",
+                    style = Typography.body2.copy(LocalWorxColorsPalette.current.textFieldUnfocusedLabel),
+                    modifier = Modifier
+                        .clickable { saveDraftForm() }
                         .constrainAs(saveDraft) {
-                            top.linkTo(submit.bottom, 12.dp)
+                            top.linkTo(divider2.bottom, 16.dp)
                             start.linkTo(title.start)
                             end.linkTo(title.end)
-                        },
-                    colors = ButtonDefaults.buttonColors(
-                        backgroundColor = LocalWorxColorsPalette.current.formItemContainer
-                    )
-                ) {
-                    Text(
-                        text = "Save Draft",
-                        style = Typography.button,
-                        color = LocalWorxColorsPalette.current.button,
-                        textAlign = TextAlign.Center
-                    )
-                }
+                        }
+                )
 
-                Button(
-                    onClick = { onCancel() }, modifier = Modifier
-                        .height(48.dp)
-                        .fillMaxWidth()
-                        .padding(horizontal = 16.dp)
+                Divider(
+                    color = LocalWorxColorsPalette.current.divider,
+                    modifier = Modifier.constrainAs(divider3) {
+                        top.linkTo(saveDraft.bottom, 16.dp)
+                        start.linkTo(parent.start)
+                        end.linkTo(parent.end)
+                    }
+                )
+
+                Text(
+                    text = "Cancel",
+                    style = Typography.body2.copy(LocalWorxColorsPalette.current.textFieldUnfocusedLabel),
+                    modifier = Modifier
+                        .clickable { onCancel() }
                         .constrainAs(cancel) {
-                            top.linkTo(saveDraft.bottom, 12.dp)
+                            top.linkTo(divider3.bottom, 16.dp)
                             start.linkTo(title.start)
                             end.linkTo(title.end)
                             bottom.linkTo(parent.bottom, 16.dp)
-                        },
-                    elevation = null,
-                    colors = ButtonDefaults.buttonColors(
-                        backgroundColor = Color.White
-                    )
-                ) {
-                    Text(
-                        text = "Cancel",
-                        style = Typography.button,
-                        color = MaterialTheme.colors.onSecondary.copy(alpha = 0.87f),
-                        textAlign = TextAlign.Center
-                    )
-                }
+                        }
+                )
             }
         },
         onDismissRequest = {}
