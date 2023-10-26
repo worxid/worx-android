@@ -320,13 +320,14 @@ fun MainTopAppBar(
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Image(
+                Icon(
                     modifier = Modifier
                         .padding(horizontal = 16.dp)
                         .height(24.dp)
                         .width(24.dp),
-                    painter = painterResource(id = R.drawable.worx_logo_white),
+                    painter = painterResource(id = R.drawable.ic_symbol_worx_white),
                     contentDescription = "Logo Worx",
+                    tint = Color.White
                 )
                 Text(
                     textAlign = TextAlign.Center,

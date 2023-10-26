@@ -2,22 +2,14 @@ package id.worx.device.client.screen
 
 import androidx.activity.compose.BackHandler
 import androidx.activity.compose.LocalOnBackPressedDispatcherOwner
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.core.LinearEasing
-import androidx.compose.animation.core.tween
-import androidx.compose.animation.slideInVertically
-import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.interaction.MutableInteractionSource
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -56,13 +48,9 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import id.worx.device.client.R
 import id.worx.device.client.data.api.SyncServer.Companion.DOWNLOADFROMSERVER
 import id.worx.device.client.data.database.Session
-import id.worx.device.client.model.EmptyForm
 import id.worx.device.client.model.SubmitForm
 import id.worx.device.client.model.fieldmodel.Separator
 import id.worx.device.client.screen.components.WorxBoxPullRefresh
-import id.worx.device.client.screen.components.WorxFormSubmitButton
-import id.worx.device.client.screen.components.WorxNewDropDownBottomSheet
-import id.worx.device.client.screen.components.WorxSubmitErrorDialog
 import id.worx.device.client.screen.components.WorxTopAppBar
 import id.worx.device.client.theme.LocalWorxColorsPalette
 import id.worx.device.client.theme.Typography
@@ -94,15 +82,6 @@ fun DetailFormScreen(
     val showDialogLeaveForm = remember { mutableStateOf(false) }
     var showDraftDialog by remember { mutableStateOf(false) }
     val sheetState = rememberModalBottomSheetState(initialValue = ModalBottomSheetValue.Hidden)
-    val detailForm = viewModel.uiState.collectAsState().value.detailForm
-
-    val scope = rememberCoroutineScope()
-    val state = rememberModalBottomSheetState(
-        initialValue = ModalBottomSheetValue.Hidden,
-        confirmStateChange = { true },
-        skipHalfExpanded = true
-    )
-    var showSubmitDialog by remember { mutableStateOf(state.isVisible) }
 
     BackHandler {
         showDialogLeaveForm.value =
@@ -147,27 +126,6 @@ fun DetailFormScreen(
                         openBottomSheet()
                     }
                 )
-            },
-            bottomBar = {
-                if (detailForm is EmptyForm || (detailForm is SubmitForm && detailForm.status == 0)) {
-                    Column(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(16.dp)
-                    ) {
-                        WorxFormSubmitButton(
-                            onClickCallback = {
-                                showSubmitDialog = true
-                                scope.launch {
-                                    state.animateTo(ModalBottomSheetValue.Expanded)
-                                }
-                            },
-                            label = stringResource(R.string.text_submit),
-                            modifier = Modifier.fillMaxWidth(),
-                            buttonModifier = Modifier.fillMaxWidth()
-                        )
-                    }
-                }
             }
         ) { padding ->
             val componentList = uistate.detailForm?.fields
@@ -177,8 +135,7 @@ fun DetailFormScreen(
                 })
 
             WorxBoxPullRefresh(
-                onRefresh = { viewModel.syncWithServer(DOWNLOADFROMSERVER) },
-                modifier = Modifier.padding(padding)
+                onRefresh = { viewModel.syncWithServer(DOWNLOADFROMSERVER) }
             ) {
 
                 ValidFormBuilder(
@@ -188,11 +145,7 @@ fun DetailFormScreen(
                     scannerViewModel,
                     session,
                     setDraftDialog = { showDraftDialog = it },
-                    onEvent = onEvent,
-                    shouldShowSubmitDialog = showSubmitDialog,
-                    closeSubmitDialog = {
-                        showSubmitDialog = false
-                    }
+                    onEvent,
                 )
 
                 if (showDialogLeaveForm.value) {
@@ -210,52 +163,6 @@ fun DetailFormScreen(
                     }
                 }
             }
-        }
-    }
-
-    if (uistate.isShowSubmitErrorDialog) {
-        WorxSubmitErrorDialog(
-            title = uistate.submitErrorDialog.first,
-            description = uistate.submitErrorDialog.second,
-            submitErrorDialogType = uistate.submitErrorDialog.third,
-            onDismiss = {
-                viewModel.closeSubmitErrorDialog()
-            }
-        )
-    }
-
-    AnimatedVisibility(
-        visible = uistate.isDropdownBottomSheetShown,
-        enter = slideInVertically(
-            initialOffsetY = { it },
-            animationSpec = tween(
-                durationMillis = 100,
-                easing = LinearEasing
-            )
-        ),
-        exit = slideOutVertically(
-            targetOffsetY = { it },
-            animationSpec = tween(
-                durationMillis = 100,
-                easing = LinearEasing
-            )
-        ),
-    ) {
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .background(MaterialTheme.colors.onSurface.copy(alpha = 0.64f))
-                .clickable(
-                    enabled = true,
-                    interactionSource = MutableInteractionSource(),
-                    indication = null
-                ) { viewModel.updateDropDownVisibility(false) },
-            verticalArrangement = Arrangement.Bottom
-        ) {
-            WorxNewDropDownBottomSheet(
-                indexForm = uistate.openedIndexForm,
-                viewModel = viewModel
-            )
         }
     }
 }

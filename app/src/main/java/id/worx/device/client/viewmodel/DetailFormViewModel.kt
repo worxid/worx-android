@@ -34,7 +34,6 @@ import id.worx.device.client.model.fieldmodel.ImageValue
 import id.worx.device.client.model.fieldmodel.SignatureValue
 import id.worx.device.client.model.fieldmodel.SketchValue
 import id.worx.device.client.repository.SourceDataRepository
-import id.worx.device.client.screen.components.SubmitErrorDialogType
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -60,14 +59,6 @@ data class DetailUiState(
     val currentComponent: Int = -1,
     val status: EventStatus = EventStatus.Loading,
     val errorMessages: String = "",
-    val isDropdownBottomSheetShown: Boolean = false,
-    val openedIndexForm: Int = -1,
-    val isShowSubmitErrorDialog: Boolean = false,
-    val submitErrorDialog: Triple<String, String, SubmitErrorDialogType> = Triple(
-        "",
-        "",
-        SubmitErrorDialogType.FAILED
-    )
 )
 
 @HiltViewModel
@@ -226,11 +217,7 @@ class DetailFormViewModel @Inject constructor(
      * @param indexForm the index of fields component inside the form
      * @param typeValue 1 == File, 2 == Image
      */
-    fun getPresignedUrl(
-        fileNames: ArrayList<String>,
-        indexForm: Int,
-        typeValue: Int
-    ) {
+    fun getPresignedUrl(fileNames: ArrayList<String>, indexForm: Int, typeValue: Int) {
         val value: Value = if (typeValue == 2) {
             uiState.value.values[uiState.value.detailForm!!.fields[indexForm].id] ?: ImageValue()
         } else {
@@ -254,19 +241,11 @@ class DetailFormViewModel @Inject constructor(
                 withContext(Dispatchers.Main) {
                     if (response.isSuccessful) {
                         if (typeValue == 1 && value is FileValue) {
-                            uploadMedia(
-                                response.body()!!.url!!,
-                                file,
-                                "File $it"
-                            )
+                            uploadMedia(response.body()!!.url!!, file, "File $it")
                             value.filePath.add(it)
                             value.value.add(response.body()!!.fileId!!)
                         } else if (typeValue == 2 && value is ImageValue) {
-                            uploadMedia(
-                                response.body()!!.url!!,
-                                file,
-                                "Image $it"
-                            )
+                            uploadMedia(response.body()!!.url!!, file, "Image $it")
                             value.filePath.add(it)
                             value.value.add(response.body()!!.fileId!!)
                         }
@@ -279,21 +258,13 @@ class DetailFormViewModel @Inject constructor(
         }
     }
 
-    private fun getPresignedUrlForSignature(
-        indexForm: Int,
-        bitmap: Bitmap,
-        fileName: String
-    ) {
+    private fun getPresignedUrlForSignature(indexForm: Int, bitmap: Bitmap, fileName: String) {
         viewModelScope.launch {
             val file = File(fileName)
             val response = dataSourceRepo.getPresignedUrl(fileName)
             withContext(Dispatchers.Main) {
                 if (response.isSuccessful) {
-                    uploadMedia(
-                        response.body()!!.url!!,
-                        file,
-                        "Signature $fileName"
-                    )
+                    uploadMedia(response.body()!!.url!!, file, "Signature $fileName")
                     setComponentData(
                         indexForm,
                         SignatureValue(value = response.body()!!.fileId, bitmap = bitmap)
@@ -305,21 +276,13 @@ class DetailFormViewModel @Inject constructor(
         }
     }
 
-    private fun getPresignedUrlForSketch(
-        indexForm: Int,
-        bitmap: Bitmap,
-        fileName: String
-    ) {
+    private fun getPresignedUrlForSketch(indexForm: Int, bitmap: Bitmap, fileName: String) {
         viewModelScope.launch {
             val file = File(fileName)
             val response = dataSourceRepo.getPresignedUrl(fileName)
             withContext(Dispatchers.Main) {
                 if (response.isSuccessful) {
-                    uploadMedia(
-                        response.body()!!.url!!,
-                        file,
-                        "Sketch $fileName"
-                    )
+                    uploadMedia(response.body()!!.url!!, file, "Sketch $fileName")
                     setComponentData(
                         indexForm,
                         SketchValue(value = response.body()!!.fileId, bitmap = bitmap)
@@ -331,11 +294,7 @@ class DetailFormViewModel @Inject constructor(
         }
     }
 
-    private fun uploadMedia(
-        url: String,
-        myFile: File,
-        fileExplaination: String
-    ) {
+    private fun uploadMedia(url: String, myFile: File, fileExplaination: String) {
         val request = BinaryUploadRequest(this.application, url)
             .setMethod("PUT")
             .setNotificationConfig { _: Context, uploadId: String ->
@@ -352,62 +311,46 @@ class DetailFormViewModel @Inject constructor(
 
     private fun submitForm(actionAfterSubmitted: () -> Unit) {
         viewModelScope.launch {
-            try {
-                val submitLocation = withContext(Dispatchers.Default) {
-                    return@withContext async {
-                        getSubmitLocationUseCase.execute(
-                            GetSubmitLocationRequest(
-                                application.applicationContext,
-                                session
-                            ),
-                        )
-                    }.await()
-                }
-                val form = createSubmitForm(submitLocation)
-                if (Util.isNetworkAvailable(application.applicationContext)) {
-                    val result = dataSourceRepo.submitForm(form)
-                    if (result.isSuccessful) {
-                        dataSourceRepo.insertOrUpdateSubmitForm(form.copy(status = 2)) //insertSubmission to db
-                    } else {
-                        _toastMessage.value = Event("Submit Form Error ${result.code()}")
-                    }
-                } else {
-                    dataSourceRepo.insertOrUpdateSubmitForm(form.copy(status = 1)) //insertSubmission to db
-                }
-                if (uiState.value.detailForm is SubmitForm) {
-                    (uiState.value.detailForm as SubmitForm).dbId?.let { dbId ->
-                        dataSourceRepo.deleteSubmitFormById(
-                            dbId
-                        )
-                    } // if it is draft delete from DB
-                }
-                _formProgress.value = 0
-                uiState.update {
-                    it.copy(
-                        detailForm = null,
-                        values = mutableMapOf(),
-                        currentComponent = -1,
-                        status = EventStatus.Submitted,
-                        isShowSubmitErrorDialog = false,
-                        submitErrorDialog = Triple("", "", SubmitErrorDialogType.FAILED)
+            val submitLocation = withContext(Dispatchers.Default) {
+                return@withContext async {
+                    getSubmitLocationUseCase.execute(
+                        GetSubmitLocationRequest(
+                            application.applicationContext,
+                            session
+                        ),
                     )
-                }
-                _formProgress.value = 0
-                actionAfterSubmitted()
-                _navigateTo.value = Event(MainScreen.Home)
-            } catch (ex: Exception) {
-                uiState.update {
-                    val errorMessage = ex.message ?: "Something went wrong please try again later"
-                    it.copy(
-                        isShowSubmitErrorDialog = true,
-                        submitErrorDialog = Triple(
-                            "Error to submit form",
-                            errorMessage,
-                            SubmitErrorDialogType.FAILED
-                        )
-                    )
-                }
+                }.await()
             }
+            val form = createSubmitForm(submitLocation)
+            if (Util.isNetworkAvailable(application.applicationContext)) {
+                val result = dataSourceRepo.submitForm(form)
+                if (result.isSuccessful) {
+                    dataSourceRepo.insertOrUpdateSubmitForm(form.copy(status = 2)) //insertSubmission to db
+                } else {
+                    _toastMessage.value = Event("Submit Form Error ${result.code()}")
+                }
+            } else {
+                dataSourceRepo.insertOrUpdateSubmitForm(form.copy(status = 1)) //insertSubmission to db
+            }
+            if (uiState.value.detailForm is SubmitForm) {
+                (uiState.value.detailForm as SubmitForm).dbId?.let { dbId ->
+                    dataSourceRepo.deleteSubmitFormById(
+                        dbId
+                    )
+                } // if it is draft delete from DB
+            }
+            _formProgress.value = 0
+            uiState.update {
+                it.copy(
+                    detailForm = null,
+                    values = mutableMapOf(),
+                    currentComponent = -1,
+                    status = EventStatus.Submitted
+                )
+            }
+            _formProgress.value = 0
+            actionAfterSubmitted()
+            _navigateTo.value = Event(MainScreen.Home)
         }
     }
 
@@ -577,19 +520,6 @@ class DetailFormViewModel @Inject constructor(
     fun syncWithServer(typeData: Int) {
         viewModelScope.launch {
             syncServerWork.syncWithServer(typeData)
-        }
-    }
-
-    fun updateDropDownVisibility(isShow: Boolean, indexForm: Int = -1) {
-        uiState.update { it.copy(isDropdownBottomSheetShown = isShow, openedIndexForm = indexForm) }
-    }
-
-    fun closeSubmitErrorDialog() {
-        uiState.update {
-            it.copy(
-                isShowSubmitErrorDialog = false,
-                submitErrorDialog = Triple("", "", SubmitErrorDialogType.FAILED)
-            )
         }
     }
 }

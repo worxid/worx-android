@@ -25,13 +25,16 @@ import androidx.compose.ui.unit.dp
 import id.worx.device.client.R
 import id.worx.device.client.data.database.Session
 import id.worx.device.client.screen.components.TransparentButton
-import id.worx.device.client.theme.LocalWorxColorsPalette
+import id.worx.device.client.screen.main.getAppLogoDrawable
+import id.worx.device.client.screen.main.getAppTheme
 import id.worx.device.client.theme.Typography
+import id.worx.device.client.theme.LocalWorxColorsPalette
 import id.worx.device.client.theme.WorxTheme
 
 @Composable
 fun VerificationRejectedScreen(session: Session, onEvent: (VerificationEvent) -> Unit) {
     val theme = session.theme
+    val appLogoResourceId = theme.getAppTheme().getAppLogoDrawable()
     Surface(
         modifier = Modifier.fillMaxSize(),
     ) {
@@ -43,7 +46,7 @@ fun VerificationRejectedScreen(session: Session, onEvent: (VerificationEvent) ->
         ) {
             Image(
                 modifier = Modifier.size(78.dp, 24.dp),
-                painter = painterResource(R.drawable.worx_logo_red),
+                painter = painterResource(appLogoResourceId),
                 contentDescription = "Worx Logo"
             )
             Spacer(modifier = Modifier.weight(1f))

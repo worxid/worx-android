@@ -65,6 +65,16 @@ fun AppTheme.isLightMode(): Boolean {
     return this == AppTheme.LIGHT || (this == AppTheme.DEVICE_SYSTEM && !isSystemInDarkTheme())
 }
 
+fun AppTheme.getAppLogoDrawable(): Int {
+    return when (this) {
+        AppTheme.LIGHT -> R.drawable.worx_logo_red
+        AppTheme.DARK -> R.drawable.worx_logo_white
+        else -> {
+            R.drawable.worx_logo
+        }
+    }
+}
+
 @OptIn(ExperimentalMaterialApi::class)
 @SuppressLint("HardwareIds")
 @Composable

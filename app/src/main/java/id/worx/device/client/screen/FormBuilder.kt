@@ -3,44 +3,16 @@ package id.worx.device.client.screen
 import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.layout.WindowInsetsSides
-import androidx.compose.foundation.layout.asPaddingValues
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.imePadding
-import androidx.compose.foundation.layout.navigationBarsPadding
-import androidx.compose.foundation.layout.only
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.statusBars
-import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.wrapContentSize
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material.Button
-import androidx.compose.material.ButtonDefaults
-import androidx.compose.material.CircularProgressIndicator
-import androidx.compose.material.Divider
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.material.*
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -55,28 +27,17 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
+import androidx.hilt.navigation.compose.hiltViewModel
 import id.worx.device.client.MainScreen
 import id.worx.device.client.R
 import id.worx.device.client.data.database.Session
+import id.worx.device.client.model.EmptyForm
 import id.worx.device.client.model.Fields
+import id.worx.device.client.model.SubmitForm
 import id.worx.device.client.model.Type
 import id.worx.device.client.model.fieldmodel.TextField
 import id.worx.device.client.model.fieldmodel.TextFieldValue
-import id.worx.device.client.screen.components.WorxAttachFile
-import id.worx.device.client.screen.components.WorxAttachImage
-import id.worx.device.client.screen.components.WorxBarcodeField
-import id.worx.device.client.screen.components.WorxBooleanField
-import id.worx.device.client.screen.components.WorxCheckBox
-import id.worx.device.client.screen.components.WorxDateInput
-import id.worx.device.client.screen.components.WorxDropdown
-import id.worx.device.client.screen.components.WorxIntegerField
-import id.worx.device.client.screen.components.WorxRadiobutton
-import id.worx.device.client.screen.components.WorxRating
-import id.worx.device.client.screen.components.WorxSeparator
-import id.worx.device.client.screen.components.WorxSignature
-import id.worx.device.client.screen.components.WorxSketch
-import id.worx.device.client.screen.components.WorxTextField
-import id.worx.device.client.screen.components.WorxTimeInput
+import id.worx.device.client.screen.components.*
 import id.worx.device.client.theme.LocalWorxColorsPalette
 import id.worx.device.client.theme.PrimaryMainGreen
 import id.worx.device.client.theme.Typography
@@ -85,7 +46,9 @@ import id.worx.device.client.viewmodel.CameraViewModel
 import id.worx.device.client.viewmodel.DetailFormViewModel
 import id.worx.device.client.viewmodel.EventStatus
 import id.worx.device.client.viewmodel.ScannerViewModel
+import kotlinx.coroutines.launch
 
+@OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun ValidFormBuilder(
     componentList: List<Fields>,
@@ -93,13 +56,18 @@ fun ValidFormBuilder(
     cameraViewModel: CameraViewModel,
     scannerViewModel: ScannerViewModel,
     session: Session,
-    shouldShowSubmitDialog: Boolean,
     setDraftDialog: (show: Boolean) -> Unit,
     onEvent: (DetailFormEvent) -> Unit,
-    closeSubmitDialog: () -> Unit
 ) {
     var showErrorDialog by remember { mutableStateOf(false) }
     var validation by remember { mutableStateOf(false) }
+    val scope = rememberCoroutineScope()
+    val state = rememberModalBottomSheetState(
+        initialValue = ModalBottomSheetValue.Hidden,
+        confirmStateChange = { true },
+        skipHalfExpanded = true
+    )
+    var showSubmitDialog by remember { mutableStateOf(state.isVisible) }
     val totalNonValidData = componentList.filter { !(it.isValid ?: true) }.size
 
     Box(
@@ -113,27 +81,34 @@ fun ValidFormBuilder(
             cameraViewModel,
             scannerViewModel,
             session,
-            validation
+            validation,
+            showSubmitDialog = {
+                showSubmitDialog = true
+                scope.launch {
+                    state.animateTo(ModalBottomSheetValue.Expanded)
+                }
+            }
         )
 
-        if (shouldShowSubmitDialog) {
+        if (showSubmitDialog) {
             DialogSubmitForm(
                 viewModel = viewModel,
                 submitForm = {
                     validation = true
                     if (totalNonValidData == 0) {
                         onEvent(DetailFormEvent.SubmitForm)
-                    } else {
+                    }
+                    else {
                         showErrorDialog = true
                     }
-                    closeSubmitDialog()
+                    showSubmitDialog = false
                 },
                 saveDraftForm = {
-                    closeSubmitDialog()
+                    showSubmitDialog = false
                     setDraftDialog(true)
                 },
                 onCancel = {
-                    closeSubmitDialog()
+                    showSubmitDialog = false
                 }
             )
         }
@@ -158,10 +133,15 @@ fun DetailForm(
     cameraViewModel: CameraViewModel,
     scannerViewModel: ScannerViewModel,
     session: Session,
-    validation: Boolean
+    validation: Boolean,
+    showSubmitDialog: () -> Unit,
 ) {
     val listState = rememberLazyListState(viewModel.indexScroll.value, viewModel.offset.value)
     val formStatus = viewModel.uiState.collectAsState().value.status
+    val detailForm = viewModel.uiState.collectAsState().value.detailForm
+
+    val submitText = stringResource(R.string.text_submit)
+    var submitLabel by remember { mutableStateOf(submitText) }
 
     LaunchedEffect(key1 = listState.isScrollInProgress) {
         if (!listState.isScrollInProgress) {
@@ -176,7 +156,7 @@ fun DetailForm(
             .imePadding()
             .fillMaxSize()
     ) {
-        val (lazyColumn) = createRefs()
+        val (lazyColumn, btnSubmit) = createRefs()
 
         LazyColumn(
             state = listState,
@@ -324,6 +304,20 @@ fun DetailForm(
                 }
             }
         }
+
+        if (detailForm is EmptyForm || (detailForm is SubmitForm && detailForm.status == 0)) {
+            submitLabel = if (listState.isScrollingUp()) submitText else ""
+
+            WorxFormSubmitButton(
+                onClickCallback = { showSubmitDialog() },
+                label = submitLabel,
+                modifier = Modifier
+                    .constrainAs(btnSubmit) {
+                        bottom.linkTo(parent.bottom, 16.dp)
+                        end.linkTo(parent.end, 16.dp)
+                    }
+            )
+        }
     }
 }
 
@@ -375,7 +369,9 @@ fun DialogSubmitForm(
                     description,
                     divider1,
                     submit,
+                    divider2,
                     saveDraft,
+                    divider3,
                     cancel,
                 ) = createRefs()
 
@@ -445,77 +441,60 @@ fun DialogSubmitForm(
                     }
                 )
 
-                Button(
-                    onClick = {
-                        submitForm()
-                    }, modifier = Modifier
-                        .height(48.dp)
-                        .fillMaxWidth()
-                        .padding(horizontal = 16.dp)
-                        .border(1.5.dp, color = MaterialTheme.colors.onSecondary)
+                Text(
+                    text = "Submit",
+                    style = Typography.body2.copy(LocalWorxColorsPalette.current.textFieldFocusedLabel),
+                    modifier = Modifier
+                        .clickable { submitForm() }
                         .constrainAs(submit) {
                             top.linkTo(divider1.bottom, 16.dp)
                             start.linkTo(title.start)
                             end.linkTo(title.end)
-                        },
-                    colors = ButtonDefaults.buttonColors(
-                        backgroundColor = LocalWorxColorsPalette.current.button
-                    )
-                ) {
-                    Text(
-                        text = "Submit",
-                        style = Typography.button,
-                        color = MaterialTheme.colors.onPrimary,
-                        textAlign = TextAlign.Center
-                    )
-                }
+                        }
+                )
 
-                Button(
-                    onClick = { saveDraftForm() }, modifier = Modifier
-                        .height(48.dp)
-                        .fillMaxWidth()
-                        .padding(horizontal = 16.dp)
-                        .border(1.5.dp, color = MaterialTheme.colors.onSecondary)
+                Divider(
+                    color = LocalWorxColorsPalette.current.divider,
+                    modifier = Modifier.constrainAs(divider2) {
+                        top.linkTo(submit.bottom, 16.dp)
+                        start.linkTo(parent.start)
+                        end.linkTo(parent.end)
+                    }
+                )
+
+                Text(
+                    text = "Save Draft",
+                    style = Typography.body2.copy(LocalWorxColorsPalette.current.textFieldUnfocusedLabel),
+                    modifier = Modifier
+                        .clickable { saveDraftForm() }
                         .constrainAs(saveDraft) {
-                            top.linkTo(submit.bottom, 12.dp)
+                            top.linkTo(divider2.bottom, 16.dp)
                             start.linkTo(title.start)
                             end.linkTo(title.end)
-                        },
-                    colors = ButtonDefaults.buttonColors(
-                        backgroundColor = LocalWorxColorsPalette.current.formItemContainer
-                    )
-                ) {
-                    Text(
-                        text = "Save Draft",
-                        style = Typography.button,
-                        color = LocalWorxColorsPalette.current.button,
-                        textAlign = TextAlign.Center
-                    )
-                }
+                        }
+                )
 
-                Button(
-                    onClick = { onCancel() }, modifier = Modifier
-                        .height(48.dp)
-                        .fillMaxWidth()
-                        .padding(horizontal = 16.dp)
+                Divider(
+                    color = LocalWorxColorsPalette.current.divider,
+                    modifier = Modifier.constrainAs(divider3) {
+                        top.linkTo(saveDraft.bottom, 16.dp)
+                        start.linkTo(parent.start)
+                        end.linkTo(parent.end)
+                    }
+                )
+
+                Text(
+                    text = "Cancel",
+                    style = Typography.body2.copy(LocalWorxColorsPalette.current.textFieldUnfocusedLabel),
+                    modifier = Modifier
+                        .clickable { onCancel() }
                         .constrainAs(cancel) {
-                            top.linkTo(saveDraft.bottom, 12.dp)
+                            top.linkTo(divider3.bottom, 16.dp)
                             start.linkTo(title.start)
                             end.linkTo(title.end)
                             bottom.linkTo(parent.bottom, 16.dp)
-                        },
-                    elevation = null,
-                    colors = ButtonDefaults.buttonColors(
-                        backgroundColor = Color.White
-                    )
-                ) {
-                    Text(
-                        text = "Cancel",
-                        style = Typography.button,
-                        color = MaterialTheme.colors.onSecondary.copy(alpha = 0.87f),
-                        textAlign = TextAlign.Center
-                    )
-                }
+                        }
+                )
             }
         },
         onDismissRequest = {}
@@ -616,10 +595,7 @@ fun DialogSubmitErrorForm(
                 Spacer(modifier = Modifier.height(8.dp))
 
                 Text(
-                    text = String.format(
-                        stringResource(R.string.text_form_error_amount),
-                        totalNonValidData
-                    ),
+                    text = String.format(stringResource(R.string.text_form_error_amount), totalNonValidData),
                     style = Typography.body2.copy(LocalWorxColorsPalette.current.textFieldColor),
                     modifier = Modifier.padding(horizontal = 16.dp)
                 )
@@ -637,7 +613,7 @@ fun DialogSubmitErrorForm(
                     fontWeight = FontWeight.W500
                 )
 
-                Divider(color = LocalWorxColorsPalette.current.divider)
+                Divider(color = LocalWorxColorsPalette.current.divider,)
 
                 Text(
                     text = stringResource(id = R.string.cancel),
@@ -653,9 +629,30 @@ fun DialogSubmitErrorForm(
     )
 }
 
+@Composable
+private fun LazyListState.isScrollingUp(): Boolean {
+    var previousIndex by remember(this) { mutableStateOf(firstVisibleItemIndex) }
+    var previousScrollOffset by remember(this) { mutableStateOf(firstVisibleItemScrollOffset) }
+    return remember(this) {
+        derivedStateOf {
+            if (previousIndex != firstVisibleItemIndex) {
+                previousIndex > firstVisibleItemIndex
+            } else {
+                previousScrollOffset >= firstVisibleItemScrollOffset
+            }.also {
+                previousIndex = firstVisibleItemIndex
+                previousScrollOffset = firstVisibleItemScrollOffset
+            }
+        }
+    }.value
+}
+
 @Preview(name = "PreviewDetailForm", showSystemUi = true)
 @Composable
 fun PreviewFormComponent() {
+    val viewModel: DetailFormViewModel = hiltViewModel()
+    val cameraViewModel: CameraViewModel = hiltViewModel()
+
     //ValidFormBuilder(list, viewModel, cameraViewModel)
 }
 
