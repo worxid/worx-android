@@ -59,6 +59,8 @@ data class DetailUiState(
     val currentComponent: Int = -1,
     val status: EventStatus = EventStatus.Loading,
     val errorMessages: String = "",
+    val isDropdownBottomSheetShown: Boolean = false,
+    val openedIndexForm: Int = -1
 )
 
 @HiltViewModel
@@ -521,5 +523,9 @@ class DetailFormViewModel @Inject constructor(
         viewModelScope.launch {
             syncServerWork.syncWithServer(typeData)
         }
+    }
+
+    fun updateDropDownVisibility(isShow: Boolean, indexForm: Int = -1) {
+        uiState.update { it.copy(isDropdownBottomSheetShown = isShow, openedIndexForm = indexForm) }
     }
 }

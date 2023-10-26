@@ -2,14 +2,25 @@ package id.worx.device.client.screen
 
 import androidx.activity.compose.BackHandler
 import androidx.activity.compose.LocalOnBackPressedDispatcherOwner
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.EnterTransition
+import androidx.compose.animation.core.LinearEasing
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.slideInHorizontally
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutHorizontally
+import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -34,6 +45,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.CornerRadius
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -53,6 +65,7 @@ import id.worx.device.client.model.SubmitForm
 import id.worx.device.client.model.fieldmodel.Separator
 import id.worx.device.client.screen.components.WorxBoxPullRefresh
 import id.worx.device.client.screen.components.WorxFormSubmitButton
+import id.worx.device.client.screen.components.WorxNewDropDownBottomSheet
 import id.worx.device.client.screen.components.WorxTopAppBar
 import id.worx.device.client.theme.LocalWorxColorsPalette
 import id.worx.device.client.theme.Typography
@@ -198,6 +211,35 @@ fun DetailFormScreen(
                     }
                 }
             }
+        }
+    }
+
+    AnimatedVisibility(
+        visible = uistate.isDropdownBottomSheetShown,
+        enter = slideInVertically(
+            initialOffsetY = { it },
+            animationSpec = tween(
+                durationMillis = 100,
+                easing = LinearEasing
+            )
+        ),
+        exit = slideOutVertically(
+            targetOffsetY = { it },
+            animationSpec = tween(
+                durationMillis = 100,
+                easing = LinearEasing
+            )
+        ),
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(MaterialTheme.colors.onSurface.copy(alpha = 0.64f)), verticalArrangement = Arrangement.Bottom
+        ) {
+            WorxNewDropDownBottomSheet(
+                indexForm = uistate.openedIndexForm,
+                viewModel = viewModel
+            )
         }
     }
 }
