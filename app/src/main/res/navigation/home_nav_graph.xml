@@ -6,11 +6,11 @@
 
     <fragment
         android:id="@+id/home_fragment"
-        android:name="id.worx.device.client.view.HomeFragment"
+        android:name="id.worx.mobile.view.HomeFragment"
         android:label="HomeFragment" />
     <fragment
         android:id="@+id/detail_form_fragment"
-        android:name="id.worx.device.client.view.DetailFormFragment"
+        android:name="id.worx.mobile.view.DetailFormFragment"
         android:label="DetailFormFragment">
         <action
             android:id="@+id/action_detail_to_home"
@@ -21,7 +21,7 @@
     </fragment>
     <fragment
         android:id="@+id/camera_photo_fragment"
-        android:name="id.worx.device.client.view.CameraPhotoFragment"
+        android:name="id.worx.mobile.view.CameraPhotoFragment"
         android:label="CameraPhotoFragment" >
         <action
             android:id="@+id/action_photofragment_to_previewfragment"
@@ -32,7 +32,7 @@
     </fragment>
     <fragment
         android:id="@+id/photo_preview_fragment"
-        android:name="id.worx.device.client.view.PhotoPreviewFragment"
+        android:name="id.worx.mobile.view.PhotoPreviewFragment"
         android:label="PhotoPreviewFragment">
         <action
             android:id="@+id/action_previewfragment_to_detailfragment"
@@ -49,7 +49,7 @@
     </fragment>
     <fragment
         android:id="@+id/signature_pad_fragment"
-        android:name="id.worx.device.client.view.SignaturePadFragment"
+        android:name="id.worx.mobile.view.SignaturePadFragment"
         android:label="SignaturePadFragment">
         <action
             android:id="@+id/action_signaturepad_to_detail"
@@ -60,19 +60,19 @@
     </fragment>
     <fragment
         android:id="@+id/settingsFragment"
-        android:name="id.worx.device.client.view.SettingsFragment"
+        android:name="id.worx.mobile.view.SettingsFragment"
         android:label="SettingsFragment" />
     <fragment
         android:id="@+id/licencesFragment"
-        android:name="id.worx.device.client.view.LicencesFragment"
+        android:name="id.worx.mobile.view.LicencesFragment"
         android:label="LicencesFragment" />
     <fragment
         android:id="@+id/advanced_settings_fragment"
-        android:name="id.worx.device.client.view.HomeAdvancedSettingsFragment"
+        android:name="id.worx.mobile.view.HomeAdvancedSettingsFragment"
         android:label="AdvancedSettingsFragment" />
     <fragment
         android:id="@+id/scannerFragment"
-        android:name="id.worx.device.client.view.ScannerFragment"
+        android:name="id.worx.mobile.view.ScannerFragment"
         android:label="ScannerFragment">
         <action
             android:id="@+id/action_scannerFragment_to_detail_form_fragment"
@@ -83,7 +83,7 @@
     </fragment>
     <fragment
         android:id="@+id/barcodePreviewFragment"
-        android:name="id.worx.device.client.view.BarcodePreviewFragment"
+        android:name="id.worx.mobile.view.BarcodePreviewFragment"
         android:label="BarcodePreviewFragment" >
         <action
             android:id="@+id/action_barcodePreviewFragment_to_detail_form_fragment"
@@ -94,7 +94,7 @@
     </fragment>
     <fragment
         android:id="@+id/sketchFragment"
-        android:name="id.worx.device.client.view.SketchFragment"
+        android:name="id.worx.mobile.view.SketchFragment"
         android:label="SketchFragment" >
         <action
             android:id="@+id/action_sketchFragment_to_detail_form_fragment"

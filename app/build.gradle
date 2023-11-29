@@ -23,11 +23,11 @@ android {
     compileSdk 33
 
     defaultConfig {
-        applicationId "id.worx.device.client"
+        applicationId "id.worx.mobile"
         minSdk 24
         targetSdk 33
-        versionCode 30
-        versionName "1.30"
+        versionCode 1
+        versionName "1"
 
         testInstrumentationRunner  "id.worx.device.client.CustomTestRunner"
     }
