@@ -97,7 +97,7 @@ class WelcomeViewModel @Inject constructor(
     }
 
     fun backToJoinRequest() {
-        _navigateTo.value = Event(WelcomeScreen.Welcome)
+        _navigateTo.value = Event(WelcomeScreen.JoinTeam)
     }
 
     fun makeNewRequest() {

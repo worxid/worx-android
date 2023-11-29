@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.platform.ComposeView
 import androidx.fragment.app.Fragment
@@ -23,7 +24,7 @@ import id.worx.mobile.viewmodel.ThemeViewModelImpl
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class HomeFragment : Fragment() {
+class HomeFragment : Fragment(), HomeViewModelImpl.UIHandler {
 
     private val viewModel by activityViewModels<HomeViewModelImpl>()
     private val detailViewModel by activityViewModels<DetailFormViewModel>()
@@ -37,6 +38,7 @@ class HomeFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
+        viewModel.uiHandler = this
         viewModel.navigateTo.observe(viewLifecycleOwner) { navigateToEvent ->
             navigateToEvent.getContentIfNotHandled()?.let { navigateTo ->
                 navigate(navigateTo, MainScreen.Home)
@@ -84,5 +86,9 @@ class HomeFragment : Fragment() {
 
     private fun syncWithServer() {
         viewModel.syncWithServer(DOWNLOADFROMSERVER)
+    }
+
+    override fun showToast(text: String) {
+        Toast.makeText(this.requireActivity().applicationContext, text, Toast.LENGTH_SHORT).show()
     }
 }

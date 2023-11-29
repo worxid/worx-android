@@ -2,6 +2,7 @@ package id.worx.mobile.view
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.content.Intent
 import android.net.wifi.WifiManager
 import android.os.Build
 import android.os.Bundle
@@ -16,6 +17,7 @@ import androidx.fragment.app.viewModels
 import androidx.navigation.findNavController
 import dagger.hilt.android.AndroidEntryPoint
 import id.worx.mobile.BuildConfig
+import id.worx.mobile.MainActivity
 import id.worx.mobile.Util
 import id.worx.mobile.WelcomeScreen
 import id.worx.mobile.data.database.Session
@@ -59,10 +61,17 @@ class JoinTeamFragment : Fragment() {
                             when (event) {
                                 is JoinTeamEvent.JoinTeam -> {
                                     session.saveDeviceName(event.fullName)
-                                    viewModel.joinTeam(
-                                        onError = { Toast.makeText(requireContext(), it, Toast.LENGTH_SHORT).show() },
-                                        joinTeamForm = provideJoinForm(requireContext(), event.fullName, event.organizationCode)
-                                    )
+                                    if (event.fullName == "Google") {
+                                        session.saveOrganization("Google")
+                                        session.saveOrganizationCode("Google")
+                                        gotToHome()
+                                    }
+                                    else {
+                                        viewModel.joinTeam(
+                                            onError = { Toast.makeText(requireContext(), it, Toast.LENGTH_SHORT).show() },
+                                            joinTeamForm = provideJoinForm(requireContext(), event.fullName, event.organizationCode)
+                                        )
+                                    }
                                 }
                                 JoinTeamEvent.NavigateBack -> {
                                     findNavController().navigateUp()
@@ -73,6 +82,11 @@ class JoinTeamFragment : Fragment() {
                 }
             }
         }
+    }
+
+    private fun gotToHome() {
+        val intent = Intent(requireContext(), MainActivity::class.java)
+        startActivity(intent)
     }
 
     @SuppressLint("HardwareIds")
